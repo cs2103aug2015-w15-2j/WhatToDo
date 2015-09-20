@@ -9,11 +9,9 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-public class WhatToDo extends Application {
+import todo.Parser;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+public class WhatToDo extends Application {
 
     // Variables used in scene construction
     private final double MIN_WINDOW_HEIGHT = 400;
@@ -23,9 +21,10 @@ public class WhatToDo extends Application {
     private final String MESSAGE_WELCOME = "Welcome to WhatToDo.";
 
     // Create the controls
-    TextField userInput;
-    Label commandLabel;
-    ScrollPane labelPane;
+    private TextField inputTextField;
+    private Label welcomeLabel;
+    private ScrollPane labelScrollPane;
+    private VBox outputLabels;
 
     // Class field for primaryStage
     Stage stage;
@@ -48,53 +47,62 @@ public class WhatToDo extends Application {
 
     private Scene initializeScene() {
         // Set up the initial label
-        commandLabel = new Label(MESSAGE_WELCOME);
+        welcomeLabel = new Label(MESSAGE_WELCOME);
 
         // Set up the VBox for Labels with entered text
-        VBox outputLabels = new VBox(commandLabel);
+        outputLabels = new VBox(welcomeLabel);
 
         // Setting up the text field used for user input
-        userInput = new TextField();
-        userInput.requestFocus();
-        userInput.setOnAction(
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        // Create a new Label for the entered text
-                        Label newInput = new Label(userInput.getText());
-                        // Add the label to the VBox
-                        outputLabels.getChildren().add(newInput);
-                        // Clear the text field
-                        userInput.setText("");
-                    }
-                }
-        );
+        inputTextField = new TextField();
+        inputTextField.requestFocus();
+        inputTextField.setOnAction(new TextInputHandler());
 
         // Set up the ScrollPane for the labels
-        labelPane = new ScrollPane(outputLabels);
-        labelPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        labelPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        VBox.setMargin(labelPane, new Insets(0, PREF_PADDING, 0, PREF_PADDING));
+        labelScrollPane = new ScrollPane(outputLabels);
+        labelScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        labelScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        VBox.setMargin(labelScrollPane, new Insets(0, PREF_PADDING, 0, PREF_PADDING));
 
-        // Set labelPane to grow with stage resize
-        VBox.setVgrow(labelPane, Priority.ALWAYS);
+        // Set labelScrollPane to grow with stage resize
+        VBox.setVgrow(labelScrollPane, Priority.ALWAYS);
         // Add ChangeListener to change scroll position when height of outputLabels changes
-        outputLabels.heightProperty().addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(
-                            ObservableValue observable, Object oldValue, Object newValue) {
-                        labelPane.setVvalue(labelPane.getHmax());
-                    }
-                }
-        );
+        outputLabels.heightProperty().addListener(new ScrollListener());
 
         // Add margins to the scene
         VBox.setMargin(outputLabels, new Insets(PREF_PADDING));
-        VBox.setMargin(userInput, new Insets(PREF_PADDING));
-        VBox pane = new VBox(labelPane, userInput);
+        VBox.setMargin(inputTextField, new Insets(PREF_PADDING));
+        VBox pane = new VBox(labelScrollPane, inputTextField);
 
         // Construct the scene
         return new Scene(pane);
+    }
+
+    // private EventHandler and ChangeListener classes
+    private class ScrollListener implements ChangeListener {
+        @Override
+        public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+            labelScrollPane.setVvalue(labelScrollPane.getVmax());
+        }
+    }
+
+    private class TextInputHandler implements EventHandler<ActionEvent>{
+        @Override
+        public void handle(ActionEvent event) {
+
+            // Create a todo.Parser object to parse the input and return the command type
+            Parser parser = new Parser();
+
+            // Create a Logic object to perform the operation
+            Logic logicUnit = new Logic();
+            String returnMessage = logicUnit.runOperation(
+                    parser.getCommandType(inputTextField.getText()));
+
+            // Display the result notification message in the window
+            outputLabels.getChildren().add(new Label(returnMessage));
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
