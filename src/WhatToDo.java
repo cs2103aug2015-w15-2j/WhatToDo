@@ -13,12 +13,14 @@ import todo.*;
 
 public class WhatToDo extends Application {
 
+    private final char LINE_SKIP = '\n';
+
     // Variables used in scene construction
     private final double MIN_WINDOW_HEIGHT = 400;
     private final double MIN_WINDOW_WIDTH = 650;
     private final double PREF_PADDING = 5;
     private final String TITLE_STAGE = "WhatToDo";
-    private final String MESSAGE_WELCOME = "Welcome to WhatToDo." + '\n' + " ";
+    private final String MESSAGE_WELCOME = "Welcome to WhatToDo." + LINE_SKIP;
 
     // Create the controls
     private TextField inputTextField;
@@ -98,7 +100,7 @@ public class WhatToDo extends Application {
                     parser.getCommandType(inputTextField.getText()));
 
             // Display the result notification message in the window
-            outputLabels.getChildren().add(new Label(returnMessage));
+            outputLabels.getChildren().add(new Label(returnMessage + LINE_SKIP));
 
             // Clear the text field
             inputTextField.setText("");
