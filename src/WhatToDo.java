@@ -9,7 +9,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-import todo.Parser;
+import todo.*;
 
 public class WhatToDo extends Application {
 
@@ -18,7 +18,7 @@ public class WhatToDo extends Application {
     private final double MIN_WINDOW_WIDTH = 650;
     private final double PREF_PADDING = 5;
     private final String TITLE_STAGE = "WhatToDo";
-    private final String MESSAGE_WELCOME = "Welcome to WhatToDo.";
+    private final String MESSAGE_WELCOME = "Welcome to WhatToDo." + '\n' + " ";
 
     // Create the controls
     private TextField inputTextField;
@@ -99,6 +99,9 @@ public class WhatToDo extends Application {
 
             // Display the result notification message in the window
             outputLabels.getChildren().add(new Label(returnMessage));
+
+            // Clear the text field
+            inputTextField.setText("");
         }
     }
 
