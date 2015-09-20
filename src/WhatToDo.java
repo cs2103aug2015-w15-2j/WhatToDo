@@ -47,6 +47,11 @@ public class WhatToDo extends Application {
         stage.show();
     }
 
+    /**
+     * Creates the default UI scene for the program from UI controls
+     *
+     * @return A Scene object which is used to set primaryStage
+     */
     private Scene initializeScene() {
         // Set up the initial label
         welcomeLabel = new Label(MESSAGE_WELCOME);
@@ -79,7 +84,12 @@ public class WhatToDo extends Application {
         return new Scene(pane);
     }
 
-    // private EventHandler and ChangeListener classes
+    // -----------------private EventHandler and ChangeListener classes-----------------
+
+    /*
+     * ChangeListener implementation.
+     * Checks for when the text output height exceeds window height
+     */
     private class ScrollListener implements ChangeListener {
         @Override
         public void changed(ObservableValue observable, Object oldValue, Object newValue) {
@@ -87,6 +97,10 @@ public class WhatToDo extends Application {
         }
     }
 
+    /*
+     * EventHandler implementation.
+     * Checks for when the user presses the Enter key to send information to the program
+     */
     private class TextInputHandler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent event) {
