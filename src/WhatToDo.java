@@ -68,7 +68,6 @@ public class WhatToDo extends Application {
         labelScrollPane = new ScrollPane(outputLabels);
         labelScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         labelScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        VBox.setMargin(labelScrollPane, new Insets(0, PREF_PADDING, 0, PREF_PADDING));
 
         // Set labelScrollPane to grow with stage resize
         VBox.setVgrow(labelScrollPane, Priority.ALWAYS);
@@ -76,7 +75,7 @@ public class WhatToDo extends Application {
         outputLabels.heightProperty().addListener(new ScrollListener());
 
         // Add margins to the scene
-        VBox.setMargin(outputLabels, new Insets(PREF_PADDING));
+        VBox.setMargin(welcomeLabel, new Insets(PREF_PADDING));
         VBox.setMargin(inputTextField, new Insets(PREF_PADDING));
         VBox pane = new VBox(labelScrollPane, inputTextField);
 
@@ -116,7 +115,9 @@ public class WhatToDo extends Application {
                     parser.getCommandType(inputTextField.getText()));
 
             // Display the result notification message in the window
-            outputLabels.getChildren().add(new Label(returnMessage + LINE_SKIP));
+            Label returnMsgLabel = new Label(returnMessage + LINE_SKIP);
+            VBox.setMargin(returnMsgLabel, new Insets(0, PREF_PADDING, 0, PREF_PADDING));
+            outputLabels.getChildren().add(returnMsgLabel);
 
             // Clear the text field
             inputTextField.setText("");
