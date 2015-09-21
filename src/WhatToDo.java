@@ -4,6 +4,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -47,6 +48,7 @@ public class WhatToDo extends Application {
 
         stage.setMinHeight(MIN_WINDOW_HEIGHT);
         stage.setMinWidth(MIN_WINDOW_WIDTH);
+        stage.getIcons().add(new Image("icon.png"));
         stage.show();
     }
 
