@@ -90,9 +90,11 @@ public class WhatToDo extends Application {
      * ChangeListener implementation.
      * Checks for when the text output height exceeds window height
      */
-    private class ScrollListener implements ChangeListener {
+    private class ScrollListener implements ChangeListener<Object> {
         @Override
-        public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+        public void changed(ObservableValue<? extends Object> observable,
+                            Object oldValue,
+                            Object newValue) {
             labelScrollPane.setVvalue(labelScrollPane.getVmax());
         }
     }
