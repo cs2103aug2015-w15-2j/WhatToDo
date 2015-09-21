@@ -13,14 +13,14 @@ import todo.*;
 
 public class WhatToDo extends Application {
 
-    private final char LINE_SKIP = '\n';
-
     // Variables used in scene construction
+    private final String EMPTY_LINE = "\n" + " " + "\n";
+    private final double TAB_PADDING = 30;
     private final double MIN_WINDOW_HEIGHT = 400;
     private final double MIN_WINDOW_WIDTH = 650;
     private final double PREF_PADDING = 5;
     private final String TITLE_STAGE = "WhatToDo";
-    private final String MESSAGE_WELCOME = "Welcome to WhatToDo." + LINE_SKIP;
+    private final String MESSAGE_WELCOME = "Welcome to WhatToDo." + EMPTY_LINE;
 
     // Create the controls
     private TextField inputTextField;
@@ -42,6 +42,9 @@ public class WhatToDo extends Application {
         // Set the stage
         stage.setScene(scene);
         stage.setTitle(TITLE_STAGE);
+        stage.setHeight(MIN_WINDOW_HEIGHT);
+        stage.setWidth(MIN_WINDOW_WIDTH);
+
         stage.setMinHeight(MIN_WINDOW_HEIGHT);
         stage.setMinWidth(MIN_WINDOW_WIDTH);
         stage.show();
@@ -68,6 +71,7 @@ public class WhatToDo extends Application {
         labelScrollPane = new ScrollPane(outputLabels);
         labelScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         labelScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        labelScrollPane.setFitToWidth(true);
 
         // Set labelScrollPane to grow with stage resize
         VBox.setVgrow(labelScrollPane, Priority.ALWAYS);
@@ -75,12 +79,12 @@ public class WhatToDo extends Application {
         outputLabels.heightProperty().addListener(new ScrollListener());
 
         // Add margins to the scene
-        VBox.setMargin(welcomeLabel, new Insets(PREF_PADDING));
+        VBox.setMargin(welcomeLabel, new Insets(PREF_PADDING, PREF_PADDING, 0, PREF_PADDING));
         VBox.setMargin(inputTextField, new Insets(PREF_PADDING));
         VBox pane = new VBox(labelScrollPane, inputTextField);
 
         // Construct the scene
-        return new Scene(pane);
+        return new Scene(pane, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
     }
 
     // -----------------private EventHandler and ChangeListener classes-----------------
@@ -115,9 +119,12 @@ public class WhatToDo extends Application {
                     parser.getCommandType(inputTextField.getText()));
 
             // Display the result notification message in the window
-            Label returnMsgLabel = new Label(returnMessage + LINE_SKIP);
-            VBox.setMargin(returnMsgLabel, new Insets(0, PREF_PADDING, 0, PREF_PADDING));
-            outputLabels.getChildren().add(returnMsgLabel);
+            Label returnMsgLabel = new Label(returnMessage + EMPTY_LINE);
+            returnMsgLabel.setWrapText(true);
+            HBox returnMsgHBox = new HBox(returnMsgLabel);
+            HBox.setMargin(returnMsgLabel, new Insets(0, TAB_PADDING, 0, TAB_PADDING));
+
+            outputLabels.getChildren().add(returnMsgHBox);
 
             // Clear the text field
             inputTextField.setText("");
