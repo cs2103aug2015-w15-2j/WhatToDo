@@ -21,13 +21,11 @@ public class MainApp extends Application {
         stage = primaryStage;
 
         // Initialize the scene
-        Scene scene = ScrollViewController.initScrollView();
+        Scene scene = SplitViewController.initSplitView();
 
         // Set the stage
         stage.setScene(scene);
         stage.setTitle(TITLE_STAGE);
-        stage.setHeight(MIN_WINDOW_HEIGHT);
-        stage.setWidth(MIN_WINDOW_WIDTH);
 
         // Customize the window
         stage.setMinHeight(MIN_WINDOW_HEIGHT);

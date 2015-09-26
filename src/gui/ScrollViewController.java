@@ -24,18 +24,20 @@ public class ScrollViewController {
 
     private static final String MESSAGE_WELCOME = "Welcome to WhatToDo." + EMPTY_LINE;
 
-    // Create the controls
+    // Controls
     private static TextField inputTextField;
     private static Label welcomeLabel;
     private static ScrollPane labelScrollPane;
     private static VBox outputLabels;
 
     /**
-     * Creates the default UI scene for the program from UI controls
+     * Creates the default scroll UI scene for the program used to display feedback
+     * to the user when commands are entered.
      *
      * @return A Scene object which is used to set primaryStage
      */
     public static Scene initScrollView() {
+
         // Set up the initial label
         welcomeLabel = new Label(MESSAGE_WELCOME);
 
