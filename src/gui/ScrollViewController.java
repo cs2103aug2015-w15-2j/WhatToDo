@@ -1,63 +1,42 @@
-import javafx.application.Application;
+package gui;
+
+import backend.Logic;
+import backend.Parser;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
-import todo.*;
-
-public class WhatToDo extends Application {
+public class ScrollViewController {
 
     // Variables used in scene construction
-    private final String EMPTY_LINE = "\n" + " " + "\n";
-    private final double TAB_PADDING = 30;
-    private final double MIN_WINDOW_HEIGHT = 400;
-    private final double MIN_WINDOW_WIDTH = 650;
-    private final double PREF_PADDING = 5;
-    private final String TITLE_STAGE = "WhatToDo";
-    private final String MESSAGE_WELCOME = "Welcome to WhatToDo." + EMPTY_LINE;
+    private static final String EMPTY_LINE = "\n" + " " + "\n";
+
+    private static final double TAB_PADDING = 30;
+    private static final double PREF_PADDING = 5;
+
+    private static final String MESSAGE_WELCOME = "Welcome to WhatToDo." + EMPTY_LINE;
 
     // Create the controls
-    private TextField inputTextField;
-    private Label welcomeLabel;
-    private ScrollPane labelScrollPane;
-    private VBox outputLabels;
-
-    // Class field for primaryStage
-    Stage stage;
-
-    @Override
-    public void start(Stage primaryStage) {
-
-        stage = primaryStage;
-
-        // Initialize the scene
-        Scene scene = initializeScene();
-
-        // Set the stage
-        stage.setScene(scene);
-        stage.setTitle(TITLE_STAGE);
-        stage.setHeight(MIN_WINDOW_HEIGHT);
-        stage.setWidth(MIN_WINDOW_WIDTH);
-
-        stage.setMinHeight(MIN_WINDOW_HEIGHT);
-        stage.setMinWidth(MIN_WINDOW_WIDTH);
-        stage.getIcons().add(new Image("icon.png"));
-        stage.show();
-    }
+    private static TextField inputTextField;
+    private static Label welcomeLabel;
+    private static ScrollPane labelScrollPane;
+    private static VBox outputLabels;
 
     /**
      * Creates the default UI scene for the program from UI controls
      *
      * @return A Scene object which is used to set primaryStage
      */
-    private Scene initializeScene() {
+    public static Scene initScrollView() {
         // Set up the initial label
         welcomeLabel = new Label(MESSAGE_WELCOME);
 
@@ -86,16 +65,19 @@ public class WhatToDo extends Application {
         VBox pane = new VBox(labelScrollPane, inputTextField);
 
         // Construct the scene
-        return new Scene(pane, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
+        return new Scene(pane, MainApp.MIN_WINDOW_WIDTH, MainApp.MIN_WINDOW_HEIGHT);
     }
 
-    // -----------------private EventHandler and ChangeListener classes-----------------
+    /* ================================================================================
+     * private EventHandler and ChangeListener classes
+     * ================================================================================
+     */
 
     /*
      * ChangeListener implementation.
      * Checks for when the text output height exceeds window height
      */
-    private class ScrollListener implements ChangeListener<Object> {
+    private static class ScrollListener implements ChangeListener<Object> {
         @Override
         public void changed(ObservableValue<? extends Object> observable,
                             Object oldValue,
@@ -108,17 +90,13 @@ public class WhatToDo extends Application {
      * EventHandler implementation.
      * Checks for when the user presses the Enter key to send information to the program
      */
-    private class TextInputHandler implements EventHandler<ActionEvent>{
+    private static class TextInputHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
 
-            // Create a todo.Parser object to parse the input and return the command type
-            Parser parser = new Parser();
-
-            // Create a Logic object to perform the operation
+            // Create a Logic object to receive the user input and send to Parser
             Logic logicUnit = new Logic();
-            String returnMessage = logicUnit.runOperation(
-                    parser.getCommandType(inputTextField.getText()));
+            String returnMessage = logicUnit.runOperation(inputTextField.getText());
 
             // Display the result notification message in the window
             Label returnMsgLabel = new Label(returnMessage + EMPTY_LINE);
@@ -131,9 +109,5 @@ public class WhatToDo extends Application {
             // Clear the text field
             inputTextField.setText("");
         }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
