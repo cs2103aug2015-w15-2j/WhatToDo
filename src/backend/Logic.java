@@ -1,6 +1,8 @@
 package backend;
 
-import struct.*;
+import struct.Date;
+import struct.Input;
+import struct.Task;
 
 public class Logic {
 

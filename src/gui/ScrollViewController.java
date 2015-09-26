@@ -1,7 +1,6 @@
 package gui;
 
 import backend.Logic;
-import backend.Parser;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;

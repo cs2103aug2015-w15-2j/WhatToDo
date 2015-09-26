@@ -1,6 +1,9 @@
 package backend;
 
-import struct.*;
+import struct.Date;
+import struct.Event;
+import struct.Input;
+import struct.Task;
 
 public class Parser {
 
