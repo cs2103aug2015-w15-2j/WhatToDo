@@ -12,6 +12,9 @@ public class MainApp extends Application {
     protected static final double MIN_WINDOW_WIDTH = 650;
     protected static final String TITLE_STAGE = "WhatToDo";
 
+    // Scenes used for display
+    protected static Scene scrollView, splitView, defaultView;
+
     // Class field for primaryStage
     protected static Stage stage;
 
@@ -20,11 +23,14 @@ public class MainApp extends Application {
 
         stage = primaryStage;
 
-        // Initialize the scene
-        Scene scene = SplitViewController.initSplitView();
+        // Initialize both scenes
+        scrollView = ScrollViewController.initScrollView();
+        splitView = SplitViewController.initSplitView();
 
         // Set the stage
-        stage.setScene(scene);
+        stage.setScene(scrollView);
+        stage.setWidth(MIN_WINDOW_WIDTH);
+        stage.setHeight(MIN_WINDOW_HEIGHT);
         stage.setTitle(TITLE_STAGE);
 
         // Customize the window

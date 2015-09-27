@@ -21,6 +21,7 @@ public class ScrollViewController {
 
     private static final double TAB_PADDING = 30;
     private static final double PREF_PADDING = 5;
+    private static final double BUFFER_HORIZONTAL = 100;
 
     private static final String MESSAGE_WELCOME = "Welcome to WhatToDo." + EMPTY_LINE;
 
@@ -66,7 +67,7 @@ public class ScrollViewController {
         VBox pane = new VBox(labelScrollPane, inputTextField);
 
         // Construct the scene
-        return new Scene(pane, MainApp.MIN_WINDOW_WIDTH, MainApp.MIN_WINDOW_HEIGHT);
+        return new Scene(pane);
     }
 
     /* ================================================================================
@@ -95,18 +96,29 @@ public class ScrollViewController {
         @Override
         public void handle(ActionEvent event) {
 
-            // Create a Logic object to receive the user input and send to Parser
-            Logic logicUnit = new Logic();
-            String returnMessage = logicUnit.runOperation(inputTextField.getText());
+            String keyword = inputTextField.getText();
+            if (keyword.toLowerCase().equals("switch")) {
+                // Switch to SplitView
+                MainApp.stage.setScene(MainApp.splitView);
+                MainApp.stage.setWidth(MainApp.MIN_WINDOW_WIDTH + BUFFER_HORIZONTAL);
+                MainApp.stage.setHeight(MainApp.MIN_WINDOW_HEIGHT);
 
-            // Display the result notification message in the window
-            Label returnMsgLabel = new Label(returnMessage + EMPTY_LINE);
-            returnMsgLabel.setWrapText(true);
-            HBox returnMsgHBox = new HBox(returnMsgLabel);
-            HBox.setMargin(returnMsgLabel, new Insets(0, TAB_PADDING, 0, TAB_PADDING));
+                // Set the new minimum widths and heights
+                MainApp.stage.setMinWidth(MainApp.MIN_WINDOW_WIDTH + BUFFER_HORIZONTAL);
+                MainApp.stage.setMinHeight(MainApp.MIN_WINDOW_HEIGHT);
+            } else {
+                // Create a Logic object to receive the user input and send to Parser
+                Logic logicUnit = new Logic();
+                String returnMessage = logicUnit.runOperation(inputTextField.getText());
 
-            outputLabels.getChildren().add(returnMsgHBox);
+                // Display the result notification message in the window
+                Label returnMsgLabel = new Label(returnMessage + EMPTY_LINE);
+                returnMsgLabel.setWrapText(true);
+                HBox returnMsgHBox = new HBox(returnMsgLabel);
+                HBox.setMargin(returnMsgLabel, new Insets(0, TAB_PADDING, 0, TAB_PADDING));
 
+                outputLabels.getChildren().add(returnMsgHBox);
+            }
             // Clear the text field
             inputTextField.setText("");
         }
