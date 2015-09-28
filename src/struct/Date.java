@@ -71,4 +71,14 @@ public class Date {
     public boolean isLaterThan(String date) {
         return getIntDate(getReverseDate(fullDate)) > getIntDate(getReverseDate(date));
     }
+    
+    /**
+     * Checks if the date is the same as another date specified by user
+     * 
+     * @param date  The date to be compared against
+     * @return      true if this.fullDate is the same as date, false otherwise.
+     */
+    public boolean isSameDate(String date) {
+    	return fullDate.equals(date);
+    }
 }

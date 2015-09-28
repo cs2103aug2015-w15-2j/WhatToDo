@@ -12,7 +12,7 @@ public class Parser {
         // Function stub, emulating a Task
         Task task = new Task();
         task.setTaskName(inputText);
-        task.setTaskDeadline(new Date("Monday", "21092015"));
+        task.setTaskDeadline(new Date("Monday", "210915"));
         task.setTaskFloating(false);
 
         return new Input(task);
