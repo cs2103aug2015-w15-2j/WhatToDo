@@ -1,3 +1,9 @@
+/**
+ * This class defines the Date object and its methods used in the application
+ *
+ * @author Adrian
+ */
+
 package struct;
 
 public class Date {
@@ -79,6 +85,6 @@ public class Date {
      * @return      true if this.fullDate is the same as date, false otherwise.
      */
     public boolean isSameDate(String date) {
-    	return fullDate.equals(date);
+        return fullDate.equals(date);
     }
 }

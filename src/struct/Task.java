@@ -1,3 +1,9 @@
+/**
+ * This class defines the Task object and its methods used in the application
+ *
+ * @author Adrian
+ */
+
 package struct;
 
 public class Task {
