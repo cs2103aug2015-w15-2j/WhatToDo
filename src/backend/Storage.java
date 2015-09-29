@@ -13,7 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import java.nio.file.FileSystemException;
+
 import java.util.ArrayList;
 
 import struct.Date;
@@ -26,7 +28,12 @@ public class Storage {
 	private static final String MESSAGE_ADD_TASK = "Added \"%s\" to list.\nDue on %s, %s.";
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added \"%s\" to list.";
 	private static final String MESSAGE_ADD_EVENT = "Added \"%s\" to list.\nEvent Start: %s, %s, %s\nEvent End: %s, %s, %s";
+	private static final String MESSAGE_DELETE_LINE = "Deleted \"%s\" from list.";
+	private static final String MESSAGE_EMPTY_FILE = "The list is empty.";
+	
 	private static final String MESSAGE_ERROR_CREATE_FILE = "Error encountered when creating file.";
+	private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
+	private static final String MESSAGE_ERROR_INVALID_LINE_DELETE = "Line %d is invalid.";
 
 	private static final String TEXT_FILE_FORMAT_TASK = "task;%s;%s";
 	private static final String TEXT_FILE_FORMAT_FLOAT_TASK = "float;%s";
@@ -37,6 +44,8 @@ public class Storage {
 	private static final String STRING_TASK = "task";
 	private static final String STRING_FLOAT_TASK = "float";
 	private static final String STRING_EVENT = "event";
+	
+	private static final String NEWLINE = "\n";
 
 	// This string stores the whole file name with directory.
 	private String filePath;
@@ -117,6 +126,108 @@ public class Storage {
 	}
 
 	// To refactor and improve.
+	/**
+	 * Deletes a line in the text file with specified line number. (1-based counting)
+	 * An error message will be returned when line number is less than 0 or greater than
+	 * the number of lines present in text file.
+	 * 
+	 * @param lineNumber    line number in text file to be deleted.
+	 * @return              feedback based on line number.
+	 */
+	public String deleteLine(int lineNumber) {
+		String lineToDelete = "dummy";
+		
+		try {
+			if (lineNumber <= 0) {
+				return String.format(MESSAGE_ERROR_INVALID_LINE_DELETE,
+						lineNumber);
+			}
+			
+			ArrayList<String> fileContents = new ArrayList<String>();
+			FileReader fileToBeRead = new FileReader(filePath);
+			BufferedReader fileReader = new BufferedReader(fileToBeRead);
+
+			for (int i = 0; i < lineNumber - 1; i++) {
+				String lineRead = fileReader.readLine();
+
+				if (lineRead == null) {
+					fileReader.close();
+					return String.format(MESSAGE_ERROR_INVALID_LINE_DELETE,
+							lineNumber);
+				}
+
+				fileContents.add(lineRead);
+			}
+
+			lineToDelete = fileReader.readLine();
+
+			while (true) {
+				String lineRead = fileReader.readLine();
+
+				if (lineRead == null) {
+					break;
+				} else {
+					fileContents.add(lineRead);
+				}
+			}
+			
+			fileReader.close();
+
+			writeContentsToFile(fileContents);
+		} catch (FileNotFoundException e) {
+
+		} catch (IOException e) {
+
+		}
+		
+		return String.format(MESSAGE_DELETE_LINE, lineToDelete);
+	}
+
+	/**
+	 * Displays the contents in the text file (to-do list).
+	 * 
+	 * @return    the contents of text file in a String.
+	 */
+	public String display() {
+		try {
+			return showAllFileContents();	
+		} catch (IOException exception) {
+			return MESSAGE_ERROR_READ_FILE;
+		}
+	}
+	
+	private String showAllFileContents() throws IOException {
+		FileReader fileToBeRead = new FileReader(filePath);
+		BufferedReader fileReader = new BufferedReader(fileToBeRead);
+		
+		String fileContents = readContentFromFile(fileReader);
+		
+		return fileContents;
+	}
+	
+	// To refactor and improve
+	private String readContentFromFile(BufferedReader fileReader) throws IOException {
+		StringBuilder fileContents = new StringBuilder();
+		
+		while(true) {
+			String lineRead = fileReader.readLine();
+			
+			if (lineRead == null) {
+				break;
+			} else {
+				fileContents.append(lineRead);
+				fileContents.append(NEWLINE);
+			}
+		}
+		
+		if (fileContents.length() == 0) {
+			return MESSAGE_EMPTY_FILE;
+		}
+		
+		return fileContents.toString();
+	}
+	
+	// To refactor and improve.
 	private void addEventToFile(String eventName, Date eventStartDate,
 			String eventStartTime, Date eventEndDate, String eventEndTime) {
 		try {
@@ -126,7 +237,7 @@ public class Storage {
 			boolean hasAddedLine = false;
 
 			String lineToAdd = String.format(TEXT_FILE_FORMAT_EVENT, eventName,
-					eventStartDate.getFullDate(), eventStartTime, 
+					eventStartDate.getFullDate(), eventStartTime,
 					eventEndDate.getFullDate(), eventEndTime);
 
 			while (true) {
@@ -143,7 +254,8 @@ public class Storage {
 					if (parameters[0].equals(STRING_TASK)) {
 						fileContents.add(lineRead);
 					} else if (parameters[0].equals(STRING_EVENT)) {
-						if (eventIsLater(eventStartDate, eventStartTime, eventEndDate, eventEndTime, parameters)) {
+						if (eventIsLater(eventStartDate, eventStartTime,
+								eventEndDate, eventEndTime, parameters)) {
 							fileContents.add(lineRead);
 						} else {
 							fileContents.add(lineToAdd);
@@ -160,11 +272,7 @@ public class Storage {
 
 			fileReader.close();
 
-			PrintWriter writer = new PrintWriter(filePath);
-			for (int i = 0; i < fileContents.size(); i++) {
-				writer.println(fileContents.get(i));
-			}
-			writer.close();
+			writeContentsToFile(fileContents);
 		} catch (FileNotFoundException e) {
 
 		} catch (IOException e) {
@@ -176,23 +284,27 @@ public class Storage {
 	// To refactor and improve.
 	private boolean eventIsLater(Date eventStartDate, String eventStartTime,
 			Date eventEndDate, String eventEndTime, String[] parameters) {
-		if (eventStartDate.isLaterThan(parameters[parameters.length-4])) {
+		if (eventStartDate.isLaterThan(parameters[parameters.length - 4])) {
 			return true;
-		} else if (eventStartDate.isSameDate(parameters[parameters.length-4])) {
-			if (Integer.parseInt(eventStartTime) > Integer.parseInt(parameters[parameters.length-3])) {
+		} else if (eventStartDate.isSameDate(parameters[parameters.length - 4])) {
+			if (Integer.parseInt(eventStartTime) > Integer
+					.parseInt(parameters[parameters.length - 3])) {
 				return true;
-			} else if (Integer.parseInt(eventStartTime) == Integer.parseInt(parameters[parameters.length-3])) {
-				if (eventEndDate.isLaterThan(parameters[parameters.length-2])) {
+			} else if (Integer.parseInt(eventStartTime) == Integer
+					.parseInt(parameters[parameters.length - 3])) {
+				if (eventEndDate.isLaterThan(parameters[parameters.length - 2])) {
 					return true;
-				} else if (eventEndDate.isSameDate(parameters[parameters.length-2])) {
-					if (Integer.parseInt(eventEndTime) > Integer.parseInt(parameters[parameters.length-1])) {
+				} else if (eventEndDate
+						.isSameDate(parameters[parameters.length - 2])) {
+					if (Integer.parseInt(eventEndTime) > Integer
+							.parseInt(parameters[parameters.length - 1])) {
 						return true;
 					} else {
 						return false;
 					}
 				} else {
 					return false;
-				}	
+				}
 			} else {
 				return false;
 			}
@@ -242,17 +354,22 @@ public class Storage {
 
 			fileReader.close();
 
-			PrintWriter writer = new PrintWriter(filePath);
-			for (int i = 0; i < fileContents.size(); i++) {
-				writer.println(fileContents.get(i));
-			}
-			writer.close();
+			writeContentsToFile(fileContents);
 		} catch (FileNotFoundException e) {
 
 		} catch (IOException e) {
 
 		}
 
+	}
+
+	private void writeContentsToFile(ArrayList<String> fileContents)
+			throws FileNotFoundException {
+		PrintWriter writer = new PrintWriter(filePath);
+		for (int i = 0; i < fileContents.size(); i++) {
+			writer.println(fileContents.get(i));
+		}
+		writer.close();
 	}
 
 	// To refactor and improve.
@@ -291,11 +408,7 @@ public class Storage {
 
 			fileReader.close();
 
-			PrintWriter writer = new PrintWriter(filePath);
-			for (int i = 0; i < fileContents.size(); i++) {
-				writer.println(fileContents.get(i));
-			}
-			writer.close();
+			writeContentsToFile(fileContents);
 		} catch (FileNotFoundException e) {
 
 		} catch (IOException e) {
