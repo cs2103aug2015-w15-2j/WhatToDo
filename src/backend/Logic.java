@@ -1,5 +1,7 @@
 package backend;
 
+import java.nio.file.FileSystemException;
+
 import struct.Date;
 import struct.Event;
 import struct.Task;
@@ -9,11 +11,20 @@ import java.util.ArrayList;
 
 public class Logic {
 
-    private final char CHAR_NEWLINE = '\n';
+    private static final String CHAR_NEWLINE = "\n";
+    private Storage storage;
 
     public ArrayList<String> runOperation(String userInput) {
         // Function stub, assumed add operation for a task
+
         ArrayList<String> returnMessages = new ArrayList<String>();
+    	
+    	// stub to test storage.
+    	try {
+    		storage = new Storage();
+    	} catch (FileSystemException fileException) {
+    		returnMessages.add(fileException.getMessage());
+    	}
 
         // Creates a Parser object to determine command type
         Parser parser = new Parser();
@@ -28,9 +39,8 @@ public class Logic {
                 taskAdd.setTaskName(textToAdd);
                 taskAdd.setTaskDeadline(new Date("Wednesday", "300915"));
                 taskAdd.setTaskFloating(false);
-                returnMessages.add("Added " + taskAdd.getTaskName() + " to list." + CHAR_NEWLINE +
-                        "Due on " + taskAdd.getTaskDeadline().getDayString() + ", " +
-                        taskAdd.getTaskDeadline().getFormatDate() + ".");
+                returnMessages.add(
+                        storage.addTask(taskAdd.getTaskName(), taskAdd.getTaskDeadline()));
                 break;
             case SEARCH:
                 // Add a task and an event to return list
