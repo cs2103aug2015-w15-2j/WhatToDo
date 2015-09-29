@@ -23,9 +23,9 @@ public class Storage {
 	private static final String FILENAME = "whattodo.txt";
 	private static final String COLLATED_FILE_PATH_FORMAT = "%s\\%s";
 
-	private static final String MESSAGE_ADD_TASK = "Added \"%s\" to list.\n\tDue on %s, %s.";
+	private static final String MESSAGE_ADD_TASK = "Added \"%s\" to list.\nDue on %s, %s.";
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added \"%s\" to list.";
-	private static final String MESSAGE_ADD_EVENT = "Added \"%s\" to list.\n\tEvent Start: %s, %s, %s\n\tEvent End: %s, %s, %s";
+	private static final String MESSAGE_ADD_EVENT = "Added \"%s\" to list.\nEvent Start: %s, %s, %s\nEvent End: %s, %s, %s";
 	private static final String MESSAGE_ERROR_CREATE_FILE = "Error encountered when creating file.";
 
 	private static final String TEXT_FILE_FORMAT_TASK = "task;%s;%s";
