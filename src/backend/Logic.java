@@ -27,7 +27,7 @@ public class Logic {
     	}
 
         // Creates a Parser object to determine command type
-        Parser parser = new Parser();
+        CommandParser parser = new CommandParser();
         Command command = parser.getCommandType(userInput);
 
         // Stub FOR TESTING ONLY
@@ -73,7 +73,7 @@ public class Logic {
 
     public boolean isSwapCommand(String currentState, String userInput) {
         // Create a parser object to parse
-        Parser parser = new Parser();
+        CommandParser parser = new CommandParser();
         return parser.isSwapCommand(currentState, userInput);
     }
 }

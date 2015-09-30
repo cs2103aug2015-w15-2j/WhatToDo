@@ -2,7 +2,7 @@ package backend;
 
 import struct.Command;
 
-public class Parser {
+public class CommandParser {
 
     public Command getCommandType(String inputText) {
 
