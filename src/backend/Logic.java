@@ -5,7 +5,7 @@ import java.nio.file.FileSystemException;
 import struct.Date;
 import struct.Event;
 import struct.Task;
-import struct.Command;
+import struct.CommandStub;
 
 import java.util.ArrayList;
 
@@ -28,7 +28,7 @@ public class Logic {
 
         // Creates a Parser object to determine command type
         CommandParser parser = new CommandParser();
-        Command command = parser.getCommandType(userInput);
+        CommandStub command = parser.getCommandType(userInput);
 
         // Stub FOR TESTING ONLY
         switch(command) {

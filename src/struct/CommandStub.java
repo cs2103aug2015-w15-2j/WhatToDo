@@ -1,5 +1,5 @@
 package struct;
 
-public enum Command {
+public enum CommandStub {
     ADD, SEARCH
 }

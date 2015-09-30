@@ -1,20 +1,20 @@
 package backend;
 
-import struct.Command;
+import struct.CommandStub;
 
 public class CommandParser {
 
-    public Command getCommandType(String inputText) {
+    public CommandStub getCommandType(String inputText) {
 
         // Function stub, only has add and search commands
         String command = inputText.split(" ")[0];
         if (command.toLowerCase().equals("add")) {
-            return Command.ADD;
+            return CommandStub.ADD;
         } else if (command.toLowerCase().equals("search")) {
-            return Command.SEARCH;
+            return CommandStub.SEARCH;
         } else {
             // Dummy condition
-            return Command.ADD;
+            return CommandStub.ADD;
         }
     }
 
