@@ -1,6 +1,7 @@
 /out
 whattodo.txt
-/.idea
+/.idea/workspace.xml
 WhatToDo.eml
-WhatToDo.iml
 WhatToDo.userlibraries
+main.eml
+main.userlibraries

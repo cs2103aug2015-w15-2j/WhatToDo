@@ -36,6 +36,7 @@ public class MainApp extends Application {
         // Initialize both scenes
         scrollView = ScrollViewController.initScrollView();
         splitView = SplitViewController.initSplitView();
+        defaultView = DefaultViewController.initDefaultView();
 
         // Initialize the default stage to be displayed
         initPrimaryStage();
@@ -54,7 +55,7 @@ public class MainApp extends Application {
      */
     public static void initPrimaryStage() {
         // Set the scene to be displayed
-        stage.setScene(scrollView);
+        stage.setScene(defaultView);
 
         // Customize the stage
         stage.setTitle(TITLE_STAGE);
