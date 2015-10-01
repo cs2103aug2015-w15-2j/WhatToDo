@@ -17,8 +17,8 @@ public class MainApp extends Application {
      * Variables used in scene construction
      * ================================================================================
      */
-    protected static final double MIN_WINDOW_HEIGHT = 450;
-    protected static final double MIN_WINDOW_WIDTH = 750;
+    protected static final double MIN_WINDOW_HEIGHT = 540;
+    protected static final double MIN_WINDOW_WIDTH = 960;
     protected static final String TITLE_STAGE = "WhatToDo";
 
     /* ================================================================================
@@ -59,7 +59,7 @@ public class MainApp extends Application {
 
         // Customize the stage
         stage.setTitle(TITLE_STAGE);
-        stage.getIcons().add(new Image("gui/icon.png"));
+        stage.getIcons().add(new Image("gui/resources/icon.png"));
 
         stage.setWidth(MIN_WINDOW_WIDTH);
         stage.setHeight(MIN_WINDOW_HEIGHT);

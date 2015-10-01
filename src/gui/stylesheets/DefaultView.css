@@ -1,0 +1,35 @@
+@font-face {
+    font-family: 'Helvetica CE 35 Thin';
+    src: url('../resources/HelveticaCE35Thin.ttf');
+}
+
+@font-face {
+    font-family: 'HelveticaNeue LT 37 ThinCn';
+    src: url('../resources/HelveticaLT37ThinCondensed.ttf');
+}
+
+.root {
+    -fx-background-color: white;
+    -fx-font-family: 'Helvetica CE 35 Thin';
+    -fx-font-size: 14;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: white;
+}
+
+.label-header-title {
+    -fx-font-size: 30;
+    -fx-font-family: 'Helvetica CE 35 Thin';
+}
+
+.label-header-filepath {
+    -fx-font-size: 13;
+    -fx-font-family: 'Helvetica CE 35 Thin';
+}
+
+.label-scroll-title {
+    -fx-font-size: 16;
+    -fx-underline: true;
+}
