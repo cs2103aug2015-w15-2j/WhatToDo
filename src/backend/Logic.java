@@ -84,4 +84,21 @@ public class Logic {
         CommandParser parser = new CommandParser();
         return parser.isSwapCommand(currentState, userInput);
     }
+
+    // STUBS
+    public ArrayList<String> readTasks() {
+        ArrayList<String> stub = new ArrayList<String>();
+        stub.add("stub");
+        return stub;
+    }
+
+    public ArrayList<String> readEvents() {
+        ArrayList<String> stub = new ArrayList<String>();
+        stub.add("stub");
+        return stub;
+    }
+
+    public String getFilepath() {
+        return "C:/Users/todo.txt";
+    }
 }

@@ -23,7 +23,7 @@ public class DefaultViewController {
      */
     private static final String HEADER_WELCOME = "Welcome to WhatToDo";
     private static final String HEADER_WRITE = "Currently writing to ";
-    private static final String HEADER_FILEPATH = "C:/Users/ToDo.txt";
+    private static final String HEADER_FILEPATH = "%1$s";
     private static final String HEADER_HISTORY = "History";
     private static final String HEADER_TASK = "Tasks";
     private static final String HEADER_EVENT = "Events";
@@ -31,6 +31,8 @@ public class DefaultViewController {
     private static final String PATH_CSS_DEFAULT = "/gui/stylesheets/DefaultView.css";
 
     private static final double PADDING_UNIT = 10.0;
+
+    private static Logic logic;
 
     /* ================================================================================
      * JavaFX controls used in the scene:
@@ -68,7 +70,18 @@ public class DefaultViewController {
             historyLabel, taskLabel, eventLabel;
     private static TextField textField;
 
+    /**
+     * Creates the default UI scene for the program used to display feedback
+     * to the user when commands are entered.
+     * Consists of three separate scroll panes with History, Tasks, and Events.
+     *
+     * @return A Scene object which is used to set primaryStage
+     */
     public static Scene initDefaultView() {
+
+        // Create the logic object for this scene and get the filepath
+        logic = new Logic();
+        String filepath = logic.getFilepath();
 
         /* ================================================================================
          * Construct the scene from bottom up starting with the deepest nested nodes
@@ -96,7 +109,8 @@ public class DefaultViewController {
         eventLabel = new Label(HEADER_EVENT);
         welcomeLabel = new Label(HEADER_WELCOME);
 
-        filepathLabel = new Label(HEADER_WRITE + HEADER_FILEPATH);
+        filepathLabel = new Label(HEADER_WRITE +
+                String.format(HEADER_FILEPATH, filepath));
         filepathLabel.setWrapText(true);
 
         // historyPane, taskPane, eventPane
@@ -175,6 +189,25 @@ public class DefaultViewController {
         defaultScene = new Scene(mainPane);
         defaultScene.getStylesheets().add(
                 DefaultViewController.class.getResource(PATH_CSS_DEFAULT).toExternalForm());
+
+        /* ================================================================================
+         * Read from the file and print to the Task and Event scroll panes
+         * ================================================================================
+         */
+        ArrayList<String> taskArray, eventArray;
+        taskArray = logic.readTasks();
+        eventArray = logic.readEvents();
+
+        // Add the Tasks and the Events to their respective scroll panes
+        HBox tempHolder;
+        for (int i = 0; i < taskArray.size(); i++) {
+            tempHolder = new HBox(new Label(taskArray.get(i)));
+            taskBox.getChildren().add(tempHolder);
+        }
+        for (int i = 0; i < eventArray.size(); i++) {
+            tempHolder = new HBox(new Label(eventArray.get(i)));
+            eventBox.getChildren().add(tempHolder);
+        }
 
         return defaultScene;
     }
