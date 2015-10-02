@@ -1,4 +1,4 @@
-package backend;
+package struct;
 
 public class Command {
 
