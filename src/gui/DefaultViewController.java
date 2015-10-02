@@ -1,5 +1,6 @@
 package gui;
 
+import backend.Logic;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -7,16 +8,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.layout.*;
+
+import java.util.ArrayList;
 
 public class DefaultViewController {
 
@@ -25,152 +22,172 @@ public class DefaultViewController {
      * ================================================================================
      */
     private static final String HEADER_WELCOME = "Welcome to WhatToDo";
+    private static final String HEADER_WRITE = "Currently writing to ";
+    private static final String HEADER_FILEPATH = "C:/Users/ToDo.txt";
     private static final String HEADER_HISTORY = "History";
     private static final String HEADER_TASK = "Tasks";
     private static final String HEADER_EVENT = "Events";
+
     private static final String PATH_CSS_DEFAULT = "/gui/stylesheets/DefaultView.css";
 
-    private static final double PADDING_PREF = 5.0;
+    private static final double PADDING_UNIT = 10.0;
 
     /* ================================================================================
-     * JavaFX controls used in the scene
+     * JavaFX controls used in the scene:
+     *
+     *  Scene defaultScene
+     *      VBox mainPane
+     *          StackPane welcomeStack
+     *              Label welcomeLabel
+     *          StackPane filepathStack
+     *              Label filepathLabel
+     *          HBox paneLabels
+     *              StackPane historyStack
+     *                  Label historyLabel
+     *              StackPane taskStack
+     *                  Label taskLabel
+     *              StackPane eventStack
+     *                  Label eventLabel
+     *          HBox scrollPanes
+     *              ScrollPane historyPane
+     *                  VBox historyBox
+     *              ScrollPane taskPane
+     *                  VBox taskBox
+     *              ScrollPane eventPane
+     *                  VBox eventBox
+     *          TextField textField
      * ================================================================================
      */
-    // Main display pane containing all the components
-    private static VBox mainPane;
-
-    // Header and its components
-    private static VBox header;
-    private static Label welcomeLabel, filepathLabel;
-
-    // Scroll panes and its components
-    private static HBox scrollPanes;
-    private static VBox historyVBox, taskVBox, eventVBox;
-    private static Label historyLabel, taskLabel, eventLabel;
-    private static StackPane historyStack, taskStack, eventStack;
+    private static Scene defaultScene;
+    private static VBox mainPane, historyBox, taskBox, eventBox;
+    private static StackPane welcomeStack, filepathStack,
+            historyStack, taskStack, eventStack;
     private static ScrollPane historyPane, taskPane, eventPane;
-    private static VBox innerHistoryVBox, innerTaskVBox, innerEventVBox;
-
-    // The text field
-    private static TextField inputTextField;
+    private static HBox paneLabels, scrollPanes;
+    private static Label welcomeLabel, filepathLabel,
+            historyLabel, taskLabel, eventLabel;
+    private static TextField textField;
 
     public static Scene initDefaultView() {
 
-        // Construct the header
-        // ==================================================
-        // Set up the header labels
-        welcomeLabel = new Label(HEADER_WELCOME);
-        welcomeLabel.getStyleClass().add("label-header-title");
-        filepathLabel = new Label("Currently writing to C:/Users/todo.txt");
-        filepathLabel.getStyleClass().add("label-header-filepath");
+        /* ================================================================================
+         * Construct the scene from bottom up starting with the deepest nested nodes
+         * ================================================================================
+         */
 
-        welcomeLabel.setWrapText(true);
-        filepathLabel.setWrapText(true);
-        filepathLabel.setTextAlignment(TextAlignment.CENTER);
+        // textField
+        textField = new TextField();
+        textField.requestFocus();
+        textField.setOnAction(new TextInputHandler());
 
-        StackPane welcomeStack = new StackPane(welcomeLabel);
-        welcomeStack.setAlignment(Pos.CENTER);
-        StackPane filepathStack = new StackPane(filepathLabel);
-        filepathStack.setAlignment(Pos.CENTER);
+        // historyBox, taskBox, eventBox
+        historyBox = new VBox();
+        historyBox.heightProperty().addListener(new HistoryScroller());
 
-        // Store the labels in the header
-        header = new VBox(welcomeStack, filepathStack);
+        taskBox = new VBox();
+        taskBox.heightProperty().addListener(new TaskScroller());
 
-        // Construct the HBox with display scroll panes
-        // ==================================================
-        // Set up the labels into StackPanes for alignment
+        eventBox = new VBox();
+        eventBox.heightProperty().addListener(new EventScroller());
+
+        // welcomeLabel, filepathLabel, historyLabel, taskLabel, eventLabel
         historyLabel = new Label(HEADER_HISTORY);
         taskLabel = new Label(HEADER_TASK);
         eventLabel = new Label(HEADER_EVENT);
+        welcomeLabel = new Label(HEADER_WELCOME);
 
+        filepathLabel = new Label(HEADER_WRITE + HEADER_FILEPATH);
+        filepathLabel.setWrapText(true);
+
+        // historyPane, taskPane, eventPane
+        historyPane = new ScrollPane(historyBox);
+        historyPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        historyPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        historyPane.setFitToWidth(true);
+        historyPane.prefViewportWidthProperty().bind(historyBox.widthProperty());
+
+        taskPane = new ScrollPane(taskBox);
+        taskPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        taskPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        taskPane.setFitToWidth(true);
+        taskPane.prefViewportWidthProperty().bind(historyBox.widthProperty());
+
+        eventPane = new ScrollPane(eventBox);
+        eventPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        eventPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        eventPane.setFitToWidth(true);
+        eventPane.prefViewportWidthProperty().bind(historyBox.widthProperty());
+
+        // historyStack, taskStack, eventStack
+        historyStack = new StackPane(historyLabel);
+        historyStack.setAlignment(Pos.CENTER);
+
+        taskStack = new StackPane(taskLabel);
+        taskStack.setAlignment(Pos.CENTER);
+
+        eventStack = new StackPane(eventLabel);
+        eventStack.setAlignment(Pos.CENTER);
+
+        // welcomeStack, filepathStack
+        welcomeStack = new StackPane(welcomeLabel);
+        welcomeStack.setAlignment(Pos.CENTER);
+
+        filepathStack = new StackPane(filepathLabel);
+        filepathStack.setAlignment(Pos.CENTER);
+        filepathStack.setMaxHeight(100);
+
+        // scrollPanes
+        scrollPanes = new HBox(historyPane, taskPane, eventPane);
+        HBox.setHgrow(historyPane, Priority.ALWAYS);
+        HBox.setHgrow(taskPane, Priority.ALWAYS);
+        HBox.setHgrow(eventPane, Priority.ALWAYS);
+
+        // paneLabels
+        paneLabels = new HBox(historyStack, taskStack, eventStack);
+        HBox.setHgrow(historyStack, Priority.ALWAYS);
+        HBox.setHgrow(taskStack, Priority.ALWAYS);
+        HBox.setHgrow(eventStack, Priority.ALWAYS);
+
+        // mainPane
+        mainPane = new VBox(welcomeStack, filepathStack,
+                paneLabels, scrollPanes, textField);
+        VBox.setVgrow(scrollPanes, Priority.ALWAYS);
+
+        /* ================================================================================
+         * Add style classes to the components
+         * ================================================================================
+         */
         historyLabel.getStyleClass().add("label-scroll-title");
         taskLabel.getStyleClass().add("label-scroll-title");
         eventLabel.getStyleClass().add("label-scroll-title");
+        welcomeLabel.getStyleClass().add("label-title");
+        filepathLabel.getStyleClass().add("label-filepath");
 
-        historyStack = new StackPane(historyLabel);
-        taskStack = new StackPane(taskLabel);
-        eventStack = new StackPane(eventLabel);
+        historyPane.getStyleClass().add("scroll-pane-history");
+        taskPane.getStyleClass().add("scroll-pane-tasks");
+        eventPane.getStyleClass().add("scroll-pane-events");
 
-        // Set up the scroll panes
-        innerHistoryVBox = new VBox();
-        innerHistoryVBox.heightProperty().addListener(new ScrollListener());
-        historyPane = new ScrollPane(innerHistoryVBox);
-        historyPane.setFitToWidth(true);
-        historyPane.setFitToHeight(true);
-        historyPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        historyPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        // Set margin using VBox since CSS does not support direct margins for TextFields
+        VBox.setMargin(textField, new Insets(
+                2 * PADDING_UNIT, PADDING_UNIT, PADDING_UNIT, PADDING_UNIT));
 
-        taskPane = initVertScrollPane();
-        eventPane = initVertScrollPane();
-
-        // Set the VBoxes
-        historyVBox = new VBox(historyStack, historyPane);
-        taskVBox = new VBox(taskStack, taskPane);
-        eventVBox = new VBox(eventStack, eventPane);
-
-        // Set the horizontal scroll panes as one HBox
-        scrollPanes = new HBox(historyVBox, taskVBox, eventVBox);
-
-        VBox.setVgrow(historyPane, Priority.ALWAYS);
-        VBox.setVgrow(taskPane, Priority.ALWAYS);
-        VBox.setVgrow(eventPane, Priority.ALWAYS);
-
-        HBox.setHgrow(historyVBox, Priority.ALWAYS);
-        HBox.setHgrow(taskVBox, Priority.ALWAYS);
-        HBox.setHgrow(eventVBox, Priority.ALWAYS);
-
-        VBox.setVgrow(scrollPanes, Priority.ALWAYS);
-
-        // Construct the text field
-        // ==================================================
-        inputTextField = new TextField();
-        inputTextField.requestFocus();
-        inputTextField.setOnAction(new TextInputHandler());
-
-        // Construct the overall VBox
-        // ==================================================
-        mainPane = new VBox(header, scrollPanes, inputTextField);
-
-        // Add margins to the view
-        VBox.setMargin(filepathStack, new Insets(PADDING_PREF, PADDING_PREF, 0, PADDING_PREF));
-        VBox.setMargin(header, new Insets(PADDING_PREF, 0, 4 * PADDING_PREF, 0));
-        HBox.setMargin(historyVBox, new Insets(
-                PADDING_PREF, PADDING_PREF / 2, 0, PADDING_PREF));
-        HBox.setMargin(taskVBox, new Insets(
-                PADDING_PREF, PADDING_PREF / 2, 0, PADDING_PREF / 2));
-        HBox.setMargin(eventVBox, new Insets(
-                PADDING_PREF, PADDING_PREF, 0, PADDING_PREF / 2));
-        VBox.setMargin(inputTextField, new Insets(PADDING_PREF));
-
-        // Construct the scene
-        Scene scene = new Scene(mainPane);
-
-        // Add CSS stylesheet to scene for customization
-        scene.getStylesheets().add(
+        // defaultScene
+        defaultScene = new Scene(mainPane);
+        defaultScene.getStylesheets().add(
                 DefaultViewController.class.getResource(PATH_CSS_DEFAULT).toExternalForm());
 
-        return scene;
+        return defaultScene;
     }
 
-    private static ScrollPane initVertScrollPane() {
-
-        // Create the interior VBox and store in in the pane
-        VBox paneVBox = new VBox();
-        ScrollPane tempPane = new ScrollPane(paneVBox);
-
-        // Set the ScrollPane properties
-        tempPane.setFitToWidth(true);
-        tempPane.setFitToHeight(true);
-        tempPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        tempPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
-        // Set automatic scroll-to-bottom for the scroll pane
-        ((VBox)tempPane.getContent()).heightProperty().addListener(
-                new ScrollListener());
-        return tempPane;
-    }
-
-    private static class ScrollListener implements ChangeListener<Object> {
+    /* ================================================================================
+     * Private ChangeListener classes
+     *
+     * Classes implementing ChangeListener for the individual panes.
+     * Sets the current window position of both scrollbars to the bottommost vertical
+     * position whenever the size of historyPane, taskPane, and eventPane changes.
+     * ================================================================================
+     */
+    private static class HistoryScroller implements ChangeListener<Object> {
         @Override
         public void changed(ObservableValue<? extends Object> observable,
                             Object oldValue, Object newValue) {
@@ -178,32 +195,39 @@ public class DefaultViewController {
         }
     }
 
+    private static class TaskScroller implements ChangeListener<Object> {
+        @Override
+        public void changed(ObservableValue<? extends Object> observable,
+                            Object oldValue, Object newValue) {
+            taskPane.setVvalue(taskPane.getVmax());
+        }
+    }
+
+    private static class EventScroller implements ChangeListener<Object> {
+        @Override
+        public void changed(ObservableValue<? extends Object> observable,
+                            Object oldValue, Object newValue) {
+            eventPane.setVvalue(eventPane.getVmax());
+        }
+    }
+
+    /* ================================================================================
+     * Private EventHandler class
+     *
+     * Class implementing EventHandler.
+     * Sends the text input by the user as a String to the Logic component to work on
+     * when the user presses the enter button
+     * ================================================================================
+     */
     private static class TextInputHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            // function stub
-            String userInput = inputTextField.getText();
-            String userCommand = userInput.split(" ")[0];
-            String userText = "";
-            for (int i = 1; i < userInput.split(" ").length; i++) {
-                userText += userInput.split(" ")[i];
-            }
-            Label temp = new Label(userText + '\n' + " ");
-            temp.setWrapText(true);
-            VBox tempBox = new VBox(temp);
-            tempBox.setMaxWidth(300);
-            if (userCommand.toLowerCase().equals("task")) {
-                VBox.setMargin(temp, new Insets(0, 15, 0, 15));
-                innerHistoryVBox.getChildren().add(tempBox);
-            } else if (userCommand.toLowerCase().equals("event")) {
-                VBox.setMargin(temp, new Insets(0, 15, 0, 15));
-                ((VBox)eventPane.getContent()).getChildren().add(tempBox);
-            } else {
-                // Assume regular operation, print to history
-                VBox.setMargin(temp, new Insets(0, 15, 0, 15));
-                ((VBox)historyPane.getContent()).getChildren().add(tempBox);
-            }
-            inputTextField.setText("");
+
+            // Create a Logic object to parse the user input
+            Logic logic = new Logic();
+
+            // Get the appropriate output from Logic
+            ArrayList<String> returnMessages = logic.runOperation(textField.getText());
         }
     }
 }
