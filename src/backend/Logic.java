@@ -12,8 +12,16 @@ import java.util.ArrayList;
 public class Logic {
 
     private static final String CHAR_NEWLINE = "\n";
+    
     private Storage storage;
-
+    
+    
+    
+    /**
+     * runOperation - stub of executeCommand 
+     * @param userInput
+     * @return
+     */
     public ArrayList<String> runOperation(String userInput) {
         // Function stub, assumed add operation for a task
 
