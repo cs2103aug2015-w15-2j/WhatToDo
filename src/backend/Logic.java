@@ -14,6 +14,7 @@ public class Logic {
     
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Failed to add item to file."; 
+    private static final String MESSAGE_ERROR_DELETE = "Failed to delete item from file."; 
     
     private CommandParser commandParser; 
     private Storage storage;
@@ -116,9 +117,15 @@ public class Logic {
     	}
     }
    
-    //TODO delete 
     private String executeDelete(Command command){
-    	return "sth"; 
+    	try{
+    		int lineNumber = command.getIndex(); 
+    		String feedback = storage.deleteLine(lineNumber); 
+    		return feedback; 
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_DELETE; 
+    	}
     }
     
     //TODO edit
