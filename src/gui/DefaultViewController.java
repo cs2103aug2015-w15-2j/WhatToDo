@@ -13,8 +13,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 
-import java.util.ArrayList;
-
 public class DefaultViewController {
 
     /* ================================================================================
@@ -168,6 +166,15 @@ public class DefaultViewController {
         VBox.setVgrow(scrollPanes, Priority.ALWAYS);
 
         /* ================================================================================
+         * Read from the file and print to the Task and Event scroll panes
+         * ================================================================================
+         */
+        taskBox.getChildren().add(
+                new HBox(new Label(logic.readTasks())));
+        eventBox.getChildren().add(
+                new HBox(new Label(logic.readEvents())));
+
+        /* ================================================================================
          * Add style classes to the components
          * ================================================================================
          */
@@ -189,25 +196,6 @@ public class DefaultViewController {
         defaultScene = new Scene(mainPane);
         defaultScene.getStylesheets().add(
                 DefaultViewController.class.getResource(PATH_CSS_DEFAULT).toExternalForm());
-
-        /* ================================================================================
-         * Read from the file and print to the Task and Event scroll panes
-         * ================================================================================
-         */
-        ArrayList<String> taskArray, eventArray;
-        taskArray = logic.readTasks();
-        eventArray = logic.readEvents();
-
-        // Add the Tasks and the Events to their respective scroll panes
-        HBox tempHolder;
-        for (int i = 0; i < taskArray.size(); i++) {
-            tempHolder = new HBox(new Label(taskArray.get(i)));
-            taskBox.getChildren().add(tempHolder);
-        }
-        for (int i = 0; i < eventArray.size(); i++) {
-            tempHolder = new HBox(new Label(eventArray.get(i)));
-            eventBox.getChildren().add(tempHolder);
-        }
 
         return defaultScene;
     }
@@ -260,7 +248,7 @@ public class DefaultViewController {
             Logic logic = new Logic();
 
             // Get the appropriate output from Logic
-            ArrayList<String> returnMessages = logic.runOperation(textField.getText());
+            String returnMessage = logic.runOperation(textField.getText());
         }
     }
 }
