@@ -7,13 +7,14 @@ public class Command {
     }
 	
 	public enum DataType { 
-		TASK, FLOATING_TASK, EVENT, ALL   
+		TASK, FLOATING_TASK, EVENT, ALL
 	}
 	
 	private CommandType commandType;
 	private DataType dataType;
 	//name may contain arguments for commands instead of event or task name
 	private String name;
+	private int index;
 	private Date dueDate; 
 	private Date startDate;
 	private Date endDate; 
@@ -24,15 +25,16 @@ public class Command {
 	// Constructors
 	//============================================
 	
-	public Command() {
-		
+	public Command(CommandType commandType) {
+		this.commandType = commandType;
 	}
 	
-	public Command(CommandType commandType, DataType dataType, String name, Date dueDate, Date startDate, Date endDate,
-			String startTime, String endTime) {
+	public Command(CommandType commandType, DataType dataType, String name, int index, Date dueDate, Date startDate, 
+			Date endDate, String startTime, String endTime) {
 		this.commandType = commandType;
 		this.dataType = dataType;
 		this.name = name;
+		this.index = index;
 		this.dueDate = dueDate;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -54,6 +56,10 @@ public class Command {
 
 	public String getName() {
 		return name;
+	}
+	
+	public int getIndex(){
+		return index;
 	}
 
 	public Date getDueDate() {
@@ -90,6 +96,10 @@ public class Command {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public void setDueDate(Date dueDate) {
