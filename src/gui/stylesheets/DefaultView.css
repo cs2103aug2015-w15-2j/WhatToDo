@@ -1,18 +1,23 @@
 /* Load external fonts as a font face */
 @font-face {
-    font-family: 'Helvetica CE 35 Thin';
-    src: url('../resources/HelveticaCE35Thin.ttf');
+    font-family: 'Helvetica CE 55 Roman';
+    src: url('../resources/HelveticaNeueCE55.ttf');
 }
 
 @font-face {
-    font-family: 'HelveticaNeue LT 37 ThinCn';
-    src: url('../resources/HelveticaLT37ThinCondensed.ttf');
+    font-family: 'Helvetica CE 55 Roman';
+    src: url('../resources/HelveticaNeueCE55Italic.ttf');
+}
+
+@font-face {
+    font-family: 'Helvetica CE 55 Roman';
+    src: url('../resources/HelveticaNeueCE55Bold.ttf');
 }
 
 /* Component margin and padding settings */
 .root {
     -fx-background-color: white;
-    -fx-font-family: 'Helvetica CE 35 Thin';
+    -fx-font-family: 'Helvetica CE 55 Roman';
     -fx-font-size: 14;
 }
 
@@ -22,28 +27,47 @@
 }
 
 .scroll-pane-history {
-    -fx-padding: 0 15 0 30;
+    -fx-padding: 20 15 10 30;
 }
 
 .scroll-pane-tasks {
-    -fx-padding: 0 15 0 15;
+    -fx-padding: 20 15 10 19;
 }
+
 .scroll-pane-events {
-    -fx-padding: 0 30 0 15;
+    -fx-padding: 20 30 10 10;
 }
 
 /* Component font settings */
-.label-title {
-    -fx-font-size: 30;
-    -fx-padding: 10 0 0 5;
+.text {
+    -fx-font-smoothing-type: gray;
+    -fx-opacity: 0.9;
+}
+
+.line {
+    -fx-opacity: 0.5;
+}
+
+.label-welcome {
+    -fx-font-size: 34;
+    -fx-padding: 20 30 0 30;
 }
 
 .label-filepath {
-    -fx-font-size: 13;
+    -fx-padding: 0 30 20 30;
 }
 
-.label-scroll-title {
-    -fx-font-size: 16;
-    -fx-underline: true;
-    -fx-padding: 30 20 20 20;
+.label-scroll-history {
+    -fx-font-weight: bold;
+    -fx-padding: 5 15 5 30;
+}
+
+.label-scroll-tasks {
+    -fx-font-weight: bold;
+    -fx-padding: 5 15 5 15;
+}
+
+.label-scroll-events {
+    -fx-font-weight: bold;
+    -fx-padding: 5 30 5 15;
 }
