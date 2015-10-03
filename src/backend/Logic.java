@@ -15,11 +15,15 @@ public class Logic {
     private static final String CHAR_NEWLINE = "\n";
     
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
-    private static final String MESSAGE_ERROR_ADD = "Failed to add item to file because its type is unrecognized."; 
+    private static final String MESSAGE_ERROR_ADD = "Failed to add item to file."; 
     
     private CommandParser commandParser; 
     private Storage storage;
  
+	//============================================
+	// Constructor
+	//============================================
+    
     public Logic() {
 		try{
 			commandParser = new CommandParser(); 
@@ -30,6 +34,15 @@ public class Logic {
 		}
 	}
     
+	//============================================
+	// Public method
+	//============================================
+    
+    /**
+     * 
+     * @param userInput
+     * @return
+     */
     public String executeCommand(String userInput) {
     	//TODO - call commandParser when it is ready 
     	//Command command = commandParser.parse(userInput);
@@ -52,20 +65,61 @@ public class Logic {
     	
     }
     
-    //TODO add 
+	//============================================
+	// Private methods 
+	//============================================
+
     private String executeAdd(Command command){
     	switch (command.getDataType()) {
     		case TASK :
-    		
+    			return executeAddTask(command); 
     		case FLOATING_TASK : 
-    			
+    			return executeAddFloatingTask(command); 
     		case EVENT :
-    			
+    			return executeAddEvent(command); 
     		default: 
     			return MESSAGE_ERROR_ADD;
     	}
     }
     
+    private String executeAddTask(Command command){
+    	String taskName = command.getName(); 
+    	Date taskDeadline = command.getDueDate();
+    	try{
+    		String feedback = storage.addTask(taskName, taskDeadline);
+    		return feedback; 
+    	}
+    	catch(Exception e){ 
+    		return MESSAGE_ERROR_ADD; 
+    	}
+    }
+    
+    private String executeAddFloatingTask(Command command){
+    	String taskName = command.getName(); 
+    	try{
+    		String feedback = storage.addFloatingTask(taskName); 
+    		return feedback; 
+    	}
+    	catch(Exception e){ 
+    		return MESSAGE_ERROR_ADD; 
+    	}
+    }
+    
+    private String executeAddEvent(Command command){
+    	String eventName = command.getName(); 
+    	Date eventStartDate = command.getStartDate();
+    	Date eventEndDate = command.getEndDate();
+    	String eventStartTime = command.getStartTime(); 
+    	String eventEndTime = command.getEndTime();
+    	try{
+    		String feedback = storage.addEvent(eventName, eventStartDate, eventStartTime, eventEndDate, eventEndTime); 
+    		return feedback; 
+    	}
+    	catch(Exception e){ 
+    		return MESSAGE_ERROR_ADD; 
+    	}
+    }
+   
     //TODO delete 
     private String executeDelete(Command command){
     	return "sth"; 
