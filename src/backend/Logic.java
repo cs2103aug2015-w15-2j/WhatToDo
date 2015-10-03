@@ -42,9 +42,7 @@ public class Logic {
      * @return
      */
     public String executeCommand(String userInput) {
-    	//TODO - call commandParser when it is ready 
-    	//Command command = commandParser.parse(userInput);
-    	Command command = new Command();
+    	Command command = commandParser.parse(userInput);
     	switch (command.getCommandType()) {
     		case ADD : 
     			return executeAdd(command);
