@@ -1,3 +1,4 @@
+/* Load external fonts as a font face */
 @font-face {
     font-family: 'Helvetica CE 35 Thin';
     src: url('../resources/HelveticaCE35Thin.ttf');
@@ -8,6 +9,7 @@
     src: url('../resources/HelveticaLT37ThinCondensed.ttf');
 }
 
+/* Component margin and padding settings */
 .root {
     -fx-background-color: white;
     -fx-font-family: 'Helvetica CE 35 Thin';
@@ -19,17 +21,29 @@
     -fx-background: white;
 }
 
-.label-header-title {
-    -fx-font-size: 30;
-    -fx-font-family: 'Helvetica CE 35 Thin';
+.scroll-pane-history {
+    -fx-padding: 0 15 0 30;
 }
 
-.label-header-filepath {
+.scroll-pane-tasks {
+    -fx-padding: 0 15 0 15;
+}
+.scroll-pane-events {
+    -fx-padding: 0 30 0 15;
+}
+
+/* Component font settings */
+.label-title {
+    -fx-font-size: 30;
+    -fx-padding: 10 0 0 5;
+}
+
+.label-filepath {
     -fx-font-size: 13;
-    -fx-font-family: 'Helvetica CE 35 Thin';
 }
 
 .label-scroll-title {
     -fx-font-size: 16;
     -fx-underline: true;
+    -fx-padding: 30 20 20 20;
 }

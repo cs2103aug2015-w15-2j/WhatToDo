@@ -17,15 +17,15 @@ public class MainApp extends Application {
      * Variables used in scene construction
      * ================================================================================
      */
-    protected static final double MIN_WINDOW_HEIGHT = 540;
-    protected static final double MIN_WINDOW_WIDTH = 960;
+    protected static final double MIN_WINDOW_HEIGHT = 576;
+    protected static final double MIN_WINDOW_WIDTH = 1024;
     protected static final String TITLE_STAGE = "WhatToDo";
 
     /* ================================================================================
       * Scenes and stage used by the program
       * ================================================================================
       */
-    protected static Scene scrollView, splitView, defaultView;
+    protected static Scene defaultView;
     protected static Stage stage;
 
     @Override
@@ -34,8 +34,6 @@ public class MainApp extends Application {
         stage = primaryStage;
 
         // Initialize both scenes
-        scrollView = ScrollViewController.initScrollView();
-        splitView = SplitViewController.initSplitView();
         defaultView = DefaultViewController.initDefaultView();
 
         // Initialize the default stage to be displayed
