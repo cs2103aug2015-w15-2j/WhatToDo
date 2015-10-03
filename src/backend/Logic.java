@@ -2,10 +2,11 @@ package backend;
 
 import java.nio.file.FileSystemException;
 
+import struct.Command;
+import struct.CommandStub;
 import struct.Date;
 import struct.Event;
 import struct.Task;
-import struct.CommandStub;
 
 import java.util.ArrayList;
 
@@ -13,8 +14,81 @@ public class Logic {
 
     private static final String CHAR_NEWLINE = "\n";
     
-    private Storage storage;
+    private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
+    private static final String MESSAGE_ERROR_ADD = "Failed to add item to file because its type is unrecognized."; 
     
+    private CommandParser commandParser; 
+    private Storage storage;
+ 
+    public Logic() {
+		try{
+			commandParser = new CommandParser(); 
+			storage = new Storage(); 
+		}
+		catch(FileSystemException e){
+			
+		}
+	}
+    
+    public String executeCommand(String userInput) {
+    	//TODO - call commandParser when it is ready 
+    	//Command command = commandParser.parse(userInput);
+    	Command command = new Command();
+    	switch (command.getCommandType()) {
+    		case ADD : 
+    			return executeAdd(command);
+    		case DELETE : 
+    			return executeDelete(command); 
+    		case EDIT : 
+    			return executeEdit(command); 
+    		case SEARCH :
+    			return executeSearch(command); 
+    		case EXIT :
+    			return executeExit(command); 
+    		case INVALID :
+            default :
+            	return handleInvalid(userInput);
+    	}
+    	
+    }
+    
+    //TODO add 
+    private String executeAdd(Command command){
+    	switch (command.getDataType()) {
+    		case TASK :
+    		
+    		case FLOATING_TASK : 
+    			
+    		case EVENT :
+    			
+    		default: 
+    			return MESSAGE_ERROR_ADD;
+    	}
+    }
+    
+    //TODO delete 
+    private String executeDelete(Command command){
+    	return "sth"; 
+    }
+    
+    //TODO edit
+    private String executeEdit(Command command){
+    	return "sth"; 
+    }
+    
+    //TODO search
+    private String executeSearch(Command command){
+    	return "sth"; 
+    }
+    
+    //TODO exit
+    private String executeExit(Command command){
+    	return "sth"; 
+    }
+    
+    private String handleInvalid(String userInput){ 
+    	return String.format(MESSAGE_ERROR_INVALID_COMMAND, userInput); 
+    }
     
     
     /**
