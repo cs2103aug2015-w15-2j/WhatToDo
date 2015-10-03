@@ -8,8 +8,6 @@ import struct.Date;
 import struct.Event;
 import struct.Task;
 
-import java.util.ArrayList;
-
 public class Logic {
 
     private static final String CHAR_NEWLINE = "\n";
@@ -144,22 +142,25 @@ public class Logic {
     	return String.format(MESSAGE_ERROR_INVALID_COMMAND, userInput); 
     }
     
+	//============================================
+	// Stub methods for testing 
+	//============================================
     
     /**
      * runOperation - stub of executeCommand 
      * @param userInput
      * @return
      */
-    public ArrayList<String> runOperation(String userInput) {
+    public String runOperation(String userInput) {
         // Function stub, assumed add operation for a task
 
-        ArrayList<String> returnMessages = new ArrayList<String>();
+        String returnMessages = "";
     	
     	// stub to test storage.
     	try {
     		storage = new Storage();
     	} catch (FileSystemException fileException) {
-    		returnMessages.add(fileException.getMessage());
+    		returnMessages = fileException.getMessage();
     	}
 
         // Creates a Parser object to determine command type
@@ -175,8 +176,7 @@ public class Logic {
                 taskAdd.setTaskName(textToAdd);
                 taskAdd.setTaskDeadline(new Date("Wednesday", "300915"));
                 taskAdd.setTaskFloating(false);
-                returnMessages.add(
-                        storage.addTask(taskAdd.getTaskName(), taskAdd.getTaskDeadline()));
+                returnMessages = storage.addTask(taskAdd.getTaskName(), taskAdd.getTaskDeadline());
                 break;
             case SEARCH:
                 // Add a task and an event to return list
@@ -184,9 +184,9 @@ public class Logic {
                 taskSearch.setTaskName("Some task name");
                 taskSearch.setTaskDeadline(new Date("Wednesday", "300915"));
                 taskSearch.setTaskFloating(false);
-                returnMessages.add("Task: " + taskSearch.getTaskName() + CHAR_NEWLINE +
+                returnMessages = "Task: " + taskSearch.getTaskName() + CHAR_NEWLINE +
                         "Due on " + taskSearch.getTaskDeadline().getDayString() + ", " +
-                        taskSearch.getTaskDeadline().getFormatDate() + ".");
+                        taskSearch.getTaskDeadline().getFormatDate() + ".";
 
                 Event event = new Event();
                 event.setEventName("Some event name");
@@ -194,11 +194,11 @@ public class Logic {
                 event.setEventEndDate(new Date("Friday", "021015"));
                 event.setEventStartTime("0800");
                 event.setEventEndTime("1800");
-                returnMessages.add("Event: " + event.getEventName() + CHAR_NEWLINE +
+                returnMessages = "Event: " + event.getEventName() + CHAR_NEWLINE +
                         "Start Date: " + event.getEventStartDate().getFormatDate() + CHAR_NEWLINE +
                         "End Date: " + event.getEventEndDate().getFormatDate() + CHAR_NEWLINE +
                         "Start Time: " + event.getEventStartTime() + CHAR_NEWLINE +
-                        "End Time: " + event.getEventEndTime());
+                        "End Time: " + event.getEventEndTime();
                 break;
             default:
                 // Do nothing
@@ -213,17 +213,12 @@ public class Logic {
         return parser.isSwapCommand(currentState, userInput);
     }
 
-    // STUBS
-    public ArrayList<String> readTasks() {
-        ArrayList<String> stub = new ArrayList<String>();
-        stub.add("stub");
-        return stub;
+    public String readTasks() {
+        return "stub";
     }
 
-    public ArrayList<String> readEvents() {
-        ArrayList<String> stub = new ArrayList<String>();
-        stub.add("stub");
-        return stub;
+    public String readEvents() {
+        return "stub";
     }
 
     public String getFilepath() {
