@@ -25,8 +25,8 @@ public class Logic {
 	//============================================
     
     public Logic() throws FileSystemException {
-			commandParser = new CommandParser(); 
-			storage = new Storage(); 
+			commandParser = new CommandParser();
+			storage = new Storage();
 	}
     
 	//============================================

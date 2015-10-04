@@ -14,6 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 
+import java.nio.file.FileSystemException;
+
 public class DefaultViewController {
 
     /* ================================================================================
@@ -26,11 +28,15 @@ public class DefaultViewController {
     private static final String HEADER_TASK = "Tasks";
     private static final String HEADER_EVENT = "Events";
 
+    private static final String MESSAGE_ERROR_FILE = "Failed to create file";
+
     private static final String PATH_CSS_DEFAULT = "/gui/stylesheets/DefaultView.css";
 
     private static final String NEWLINE = "\n" + " ";
 
     private static final double PADDING_UNIT = 10.0;
+
+    private static String filepath;
 
     private static Logic logic;
 
@@ -83,8 +89,12 @@ public class DefaultViewController {
     public static Scene initDefaultView() {
 
         // Create the logic object for this scene and get the filepath
-        logic = new Logic();
-        String filepath = logic.getFilepath();
+        try {
+            logic = new Logic();
+            filepath = logic.getFilepath();
+        } catch (FileSystemException e) {
+            filepath = MESSAGE_ERROR_FILE;
+        }
 
         /* ================================================================================
          * Construct the scene from bottom up starting with the deepest nested nodes
@@ -112,7 +122,12 @@ public class DefaultViewController {
         eventLabel = new Label(HEADER_EVENT);
         welcomeLabel = new Label(HEADER_WELCOME);
 
-        filepathLabel = new Label(HEADER_WRITE + filepath);
+        if (!filepath.equals(MESSAGE_ERROR_FILE)) {
+            filepathLabel = new Label(HEADER_WRITE + filepath);
+        } else {
+            filepathLabel = new Label(filepath);
+        }
+
         filepathLabel.setWrapText(true);
 
         // historyPane, taskPane, eventPane
@@ -216,23 +231,28 @@ public class DefaultViewController {
      */
     public static void updateView() {
 
-        // Clear the old information
-        taskBox.getChildren().clear();
-        eventBox.getChildren().clear();
+        if (!filepath.equals(MESSAGE_ERROR_FILE)) {
 
-        // Redisplay the Tasks
-        Label tempLabel = new Label(logic.readTasks());
-        tempLabel.setWrapText(true);
+            // Clear the old information
+            taskBox.getChildren().clear();
+            eventBox.getChildren().clear();
 
-        HBox tempBox = new HBox(tempLabel);
-        taskBox.getChildren().addAll(tempBox);
+            // Redisplay the Tasks
+            Label tempLabel = new Label(logic.readTasks());
+            tempLabel.setWrapText(true);
 
-        // Redisplay the Events
-        tempLabel = new Label(logic.readEvents());
-        tempLabel.setWrapText(true);
+            HBox tempBox = new HBox(tempLabel);
+            taskBox.getChildren().addAll(tempBox);
 
-        tempBox = new HBox(tempLabel);
-        eventBox.getChildren().addAll(tempBox);
+            // Redisplay the Events
+            tempLabel = new Label(logic.readEvents());
+            tempLabel.setWrapText(true);
+
+            tempBox = new HBox(tempLabel);
+            eventBox.getChildren().addAll(tempBox);
+        } else {
+            // Do nothing
+        }
     }
 
     /* ================================================================================
