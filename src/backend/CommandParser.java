@@ -130,12 +130,12 @@ public class CommandParser {
 	}
 	
 	private String getName(ArrayList<String> arguments) {
-		String name = null;
+		String name = "";
 		for (int i = 0; i < arguments.size(); i++) {
 			String currentArgument = arguments.get(i);
-			name += STRING_ONE_SPACE + currentArgument;
+			name += currentArgument + STRING_ONE_SPACE;
 		}
-		return name;
+		return name.trim();
 	}
 
 	
