@@ -132,6 +132,7 @@ public class DefaultViewController {
         }
 
         filepathLabel.setWrapText(true);
+        filepathLabel.setMaxHeight(60);
 
         // historyPane, taskPane, eventPane
         historyPane = new ScrollPane(historyBox);
