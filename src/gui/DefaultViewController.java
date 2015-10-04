@@ -1,5 +1,7 @@
 package gui;
 
+import java.nio.file.FileSystemException;
+
 import backend.Logic;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -83,7 +85,13 @@ public class DefaultViewController {
     public static Scene initDefaultView() {
 
         // Create the logic object for this scene and get the filepath
-        logic = new Logic();
+    	try{
+    		logic = new Logic();
+    	}
+    	catch(FileSystemException e){
+    		//TODO print some error msg about failure to set up txt file
+    	}
+        
         String filepath = logic.getFilepath();
 
         /* ================================================================================
