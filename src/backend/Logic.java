@@ -17,6 +17,8 @@ public class Logic {
     private static final String MESSAGE_ERROR_DELETE = "Failed to delete item from file."; 
     private static final String MESSAGE_ERROR_EDIT = "Failed to edit item."; 
     
+    private static final String MESSAGE_EXIT = "exit"; 
+    
     private CommandParser commandParser; 
     private Storage storage;
  
@@ -143,9 +145,9 @@ public class Logic {
     	return "sth"; 
     }
     
-    //TODO exit
+    
     private String executeExit(Command command){
-    	return "sth"; 
+    	return MESSAGE_EXIT; 
     }
     
     private String handleInvalid(String userInput){ 
