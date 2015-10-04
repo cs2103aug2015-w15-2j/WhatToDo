@@ -15,6 +15,7 @@ public class Logic {
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Failed to add item to file."; 
     private static final String MESSAGE_ERROR_DELETE = "Failed to delete item from file."; 
+    private static final String MESSAGE_ERROR_EDIT = "Failed to edit item."; 
     
     private CommandParser commandParser; 
     private Storage storage;
@@ -23,14 +24,9 @@ public class Logic {
 	// Constructor
 	//============================================
     
-    public Logic() {
-		try{
+    public Logic() throws FileSystemException {
 			commandParser = new CommandParser(); 
 			storage = new Storage(); 
-		}
-		catch(FileSystemException e){
-			
-		}
 	}
     
 	//============================================
@@ -130,7 +126,16 @@ public class Logic {
     
     //TODO edit
     private String executeEdit(Command command){
-    	return "sth"; 
+    	try{
+    		int lineNumber = command.getIndex(); 
+    		String edited = command.getEndTime(); 
+    		//call edit method from storage 
+    		String feedback = "feedback"; 
+    		return feedback; 
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_EDIT; 
+    	}
     }
     
     //TODO search
