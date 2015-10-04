@@ -1,5 +1,7 @@
 package gui;
 
+import java.nio.file.FileSystemException;
+
 import backend.Logic;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,6 +14,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Line;
+
+import java.nio.file.FileSystemException;
 
 public class DefaultViewController {
 
@@ -21,14 +26,19 @@ public class DefaultViewController {
      */
     private static final String HEADER_WELCOME = "Welcome to WhatToDo";
     private static final String HEADER_WRITE = "Currently writing to ";
-    private static final String HEADER_FILEPATH = "%1$s";
     private static final String HEADER_HISTORY = "History";
     private static final String HEADER_TASK = "Tasks";
     private static final String HEADER_EVENT = "Events";
 
+    private static final String MESSAGE_ERROR_FILE = "Failed to create file";
+
     private static final String PATH_CSS_DEFAULT = "/gui/stylesheets/DefaultView.css";
 
+    private static final String NEWLINE = "\n" + " ";
+
     private static final double PADDING_UNIT = 10.0;
+
+    private static String filepath;
 
     private static Logic logic;
 
@@ -41,6 +51,7 @@ public class DefaultViewController {
      *              Label welcomeLabel
      *          StackPane filepathStack
      *              Label filepathLabel
+     *          Line lineTop
      *          HBox paneLabels
      *              StackPane historyStack
      *                  Label historyLabel
@@ -48,6 +59,7 @@ public class DefaultViewController {
      *                  Label taskLabel
      *              StackPane eventStack
      *                  Label eventLabel
+     *          Line lineBot
      *          HBox scrollPanes
      *              ScrollPane historyPane
      *                  VBox historyBox
@@ -62,6 +74,7 @@ public class DefaultViewController {
     private static VBox mainPane, historyBox, taskBox, eventBox;
     private static StackPane welcomeStack, filepathStack,
             historyStack, taskStack, eventStack;
+    private static Line lineTop, lineBot;
     private static ScrollPane historyPane, taskPane, eventPane;
     private static HBox paneLabels, scrollPanes;
     private static Label welcomeLabel, filepathLabel,
@@ -78,8 +91,13 @@ public class DefaultViewController {
     public static Scene initDefaultView() {
 
         // Create the logic object for this scene and get the filepath
-        logic = new Logic();
-        String filepath = logic.getFilepath();
+
+        try {
+            logic = new Logic();
+            filepath = logic.getFilepath();
+        } catch (FileSystemException e) {
+            filepath = MESSAGE_ERROR_FILE;
+        }
 
         /* ================================================================================
          * Construct the scene from bottom up starting with the deepest nested nodes
@@ -107,8 +125,12 @@ public class DefaultViewController {
         eventLabel = new Label(HEADER_EVENT);
         welcomeLabel = new Label(HEADER_WELCOME);
 
-        filepathLabel = new Label(HEADER_WRITE +
-                String.format(HEADER_FILEPATH, filepath));
+        if (!filepath.equals(MESSAGE_ERROR_FILE)) {
+            filepathLabel = new Label(HEADER_WRITE + filepath);
+        } else {
+            filepathLabel = new Label(filepath);
+        }
+
         filepathLabel.setWrapText(true);
 
         // historyPane, taskPane, eventPane
@@ -132,20 +154,20 @@ public class DefaultViewController {
 
         // historyStack, taskStack, eventStack
         historyStack = new StackPane(historyLabel);
-        historyStack.setAlignment(Pos.CENTER);
+        historyStack.setAlignment(Pos.CENTER_LEFT);
 
         taskStack = new StackPane(taskLabel);
-        taskStack.setAlignment(Pos.CENTER);
+        taskStack.setAlignment(Pos.CENTER_LEFT);
 
         eventStack = new StackPane(eventLabel);
-        eventStack.setAlignment(Pos.CENTER);
+        eventStack.setAlignment(Pos.CENTER_LEFT);
 
         // welcomeStack, filepathStack
         welcomeStack = new StackPane(welcomeLabel);
-        welcomeStack.setAlignment(Pos.CENTER);
+        welcomeStack.setAlignment(Pos.CENTER_LEFT);
 
         filepathStack = new StackPane(filepathLabel);
-        filepathStack.setAlignment(Pos.CENTER);
+        filepathStack.setAlignment(Pos.CENTER_LEFT);
         filepathStack.setMaxHeight(100);
 
         // scrollPanes
@@ -153,6 +175,13 @@ public class DefaultViewController {
         HBox.setHgrow(historyPane, Priority.ALWAYS);
         HBox.setHgrow(taskPane, Priority.ALWAYS);
         HBox.setHgrow(eventPane, Priority.ALWAYS);
+
+        // lineTop, lineBot
+        lineTop = new Line(0, 0, MainApp.MIN_WINDOW_WIDTH, 0);
+        lineBot = new Line(0, 0, MainApp.MIN_WINDOW_WIDTH, 0);
+
+        lineTop.endXProperty().bind(MainApp.stage.widthProperty());
+        lineBot.endXProperty().bind(MainApp.stage.widthProperty());
 
         // paneLabels
         paneLabels = new HBox(historyStack, taskStack, eventStack);
@@ -162,35 +191,34 @@ public class DefaultViewController {
 
         // mainPane
         mainPane = new VBox(welcomeStack, filepathStack,
-                paneLabels, scrollPanes, textField);
+                lineTop, paneLabels, lineBot, scrollPanes, textField);
         VBox.setVgrow(scrollPanes, Priority.ALWAYS);
 
         /* ================================================================================
          * Read from the file and print to the Task and Event scroll panes
          * ================================================================================
          */
-        taskBox.getChildren().add(
-                new HBox(new Label(logic.readTasks())));
-        eventBox.getChildren().add(
-                new HBox(new Label(logic.readEvents())));
+        updateView();
 
         /* ================================================================================
          * Add style classes to the components
          * ================================================================================
          */
-        historyLabel.getStyleClass().add("label-scroll-title");
-        taskLabel.getStyleClass().add("label-scroll-title");
-        eventLabel.getStyleClass().add("label-scroll-title");
-        welcomeLabel.getStyleClass().add("label-title");
+        historyLabel.getStyleClass().add("label-scroll-history");
+        taskLabel.getStyleClass().add("label-scroll-tasks");
+        eventLabel.getStyleClass().add("label-scroll-events");
+        welcomeLabel.getStyleClass().add("label-welcome");
         filepathLabel.getStyleClass().add("label-filepath");
 
         historyPane.getStyleClass().add("scroll-pane-history");
         taskPane.getStyleClass().add("scroll-pane-tasks");
         eventPane.getStyleClass().add("scroll-pane-events");
 
-        // Set margin using VBox since CSS does not support direct margins for TextFields
-        VBox.setMargin(textField, new Insets(
-                2 * PADDING_UNIT, PADDING_UNIT, PADDING_UNIT, PADDING_UNIT));
+        lineTop.getStyleClass().add("line");
+        lineBot.getStyleClass().add("line");
+
+        // Set margin since CSS does not support direct margins for certain components
+        VBox.setMargin(textField, new Insets(PADDING_UNIT));
 
         // defaultScene
         defaultScene = new Scene(mainPane);
@@ -198,6 +226,36 @@ public class DefaultViewController {
                 DefaultViewController.class.getResource(PATH_CSS_DEFAULT).toExternalForm());
 
         return defaultScene;
+    }
+
+    /**
+     * Refreshes the Task and Event scroll panes with updated information after
+     * every operation has been performed on the file.
+     */
+    public static void updateView() {
+
+        if (!filepath.equals(MESSAGE_ERROR_FILE)) {
+
+            // Clear the old information
+            taskBox.getChildren().clear();
+            eventBox.getChildren().clear();
+
+            // Redisplay the Tasks
+            Label tempLabel = new Label(logic.readTasks());
+            tempLabel.setWrapText(true);
+
+            HBox tempBox = new HBox(tempLabel);
+            taskBox.getChildren().addAll(tempBox);
+
+            // Redisplay the Events
+            tempLabel = new Label(logic.readEvents());
+            tempLabel.setWrapText(true);
+
+            tempBox = new HBox(tempLabel);
+            eventBox.getChildren().addAll(tempBox);
+        } else {
+            // Do nothing
+        }
     }
 
     /* ================================================================================
@@ -244,11 +302,26 @@ public class DefaultViewController {
         @Override
         public void handle(ActionEvent event) {
 
-            // Create a Logic object to parse the user input
-            Logic logic = new Logic();
+            String textFieldInput = textField.getText();
 
-            // Get the appropriate output from Logic
-            String returnMessage = logic.runOperation(textField.getText());
+            // Clear the textField
+            textField.setText("");
+
+            // Run the operation
+            String returnMessage = logic.runOperation(textFieldInput);
+
+            // Wrap the output in a Label for display
+            // Use a newline to standardize line spacings across all scroll panes
+            Label returnLabel = new Label(returnMessage + NEWLINE);
+            returnLabel.setWrapText(true);
+
+            HBox returnBox = new HBox(returnLabel);
+
+            // Add the returnMessage to the History pane
+            historyBox.getChildren().add(returnBox);
+
+            // Update the Tasks and Events
+            updateView();
         }
     }
 }

@@ -14,6 +14,10 @@ public class Logic {
     
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Failed to add item to file."; 
+    private static final String MESSAGE_ERROR_DELETE = "Failed to delete item from file."; 
+    private static final String MESSAGE_ERROR_EDIT = "Failed to edit item."; 
+    
+    private static final String MESSAGE_EXIT = "exit"; 
     
     private CommandParser commandParser; 
     private Storage storage;
@@ -22,14 +26,9 @@ public class Logic {
 	// Constructor
 	//============================================
     
-    public Logic() {
-		try{
-			commandParser = new CommandParser(); 
-			storage = new Storage(); 
-		}
-		catch(FileSystemException e){
-			
-		}
+    public Logic() throws FileSystemException {
+			commandParser = new CommandParser();
+			storage = new Storage();
 	}
     
 	//============================================
@@ -42,9 +41,7 @@ public class Logic {
      * @return
      */
     public String executeCommand(String userInput) {
-    	//TODO - call commandParser when it is ready 
-    	//Command command = commandParser.parse(userInput);
-    	Command command = new Command();
+    	Command command = commandParser.parse(userInput);
     	switch (command.getCommandType()) {
     		case ADD : 
     			return executeAdd(command);
@@ -118,14 +115,29 @@ public class Logic {
     	}
     }
    
-    //TODO delete 
     private String executeDelete(Command command){
-    	return "sth"; 
+    	try{
+    		int lineNumber = command.getIndex(); 
+    		String feedback = storage.deleteLine(lineNumber); 
+    		return feedback; 
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_DELETE; 
+    	}
     }
     
     //TODO edit
     private String executeEdit(Command command){
-    	return "sth"; 
+    	try{
+    		int lineNumber = command.getIndex(); 
+    		String edited = command.getEndTime(); 
+    		//call edit method from storage 
+    		String feedback = "feedback"; 
+    		return feedback; 
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_EDIT; 
+    	}
     }
     
     //TODO search
@@ -133,9 +145,9 @@ public class Logic {
     	return "sth"; 
     }
     
-    //TODO exit
+    
     private String executeExit(Command command){
-    	return "sth"; 
+    	return MESSAGE_EXIT; 
     }
     
     private String handleInvalid(String userInput){ 
