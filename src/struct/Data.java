@@ -1,6 +1,6 @@
 package struct;
 
-public class Data {
+public abstract class Data {
 	
 	protected String name; 
 	protected boolean isDone;
