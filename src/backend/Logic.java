@@ -17,10 +17,12 @@ public class Logic {
     private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
     private static final String MESSAGE_EXIT = "exit";
     
-    private static final String DISPLAY_NO_TODAY_TASKS = "There are no tasks due today.\n"; 
-    private static final String DISPLAY_NO_TOMORROW_TASKS = "There are no tasks due tommorrow.\n"; 
+    private static final String DISPLAY_NO_TASK_TODAY = "There are no tasks due today.\n"; 
+    private static final String DISPLAY_NO_TASK_TOMMORROW = "There are no tasks due tommorrow.\n"; 
+    private static final String DISPLAY_NO_EVENT_TODAY = "There are no events today.\n"; 
+    private static final String DISPLAY_NO_EVENT_TOMMORROW = "There are no events tommorrow.\n"; 
     private static final String DISPLAY_FORMAT_TASK = "%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_TASK_VIEW = "TODAY, %s \n%s\nTOMMORROW, %s \n%s";
+    private static final String DISPLAY_LAYOUT = "TODAY, %s \n%s\nTOMMORROW, %s \n%s";
     
     
     private static final String TYPE_FLOAT = "float";
@@ -96,20 +98,49 @@ public class Logic {
     	}
     	
     	if(todayContent.length() == 0){
-    		todayContent.append(DISPLAY_NO_TODAY_TASKS);
+    		todayContent.append(DISPLAY_NO_TASK_TODAY);
     	}
     	
     	if(tomorrowContent.length() == 0){
-    		tomorrowContent.append(DISPLAY_NO_TOMORROW_TASKS);
+    		tomorrowContent.append(DISPLAY_NO_TASK_TOMMORROW);
     	}
     	
-    	return String.format(DISPLAY_FORMAT_TASK_VIEW, todayDate, todayContent.toString(), tomorrowDate, tomorrowContent.toString()).trim();
+    	return String.format(DISPLAY_LAYOUT, todayDate, todayContent.toString(), tomorrowDate, tomorrowContent.toString()).trim();
     }
     
-    //TODO event default view
+    //TODO event default view - need to think abt how to get and display events that are currently going on 
+    // on top of events that start today
     public String eventDefaultView(){
+    	StringBuffer todayContent = new StringBuffer(); 
+    	StringBuffer tomorrowContent = new StringBuffer(); 
+    	String todayDate = getTodayDate(); 
+    	String tomorrowDate = getTomorrowDate();
+    	String[] lines = getLinesInFile(); 
     	
-    	return "sth";
+//    	for(int index = 0; index < lines.length; index++){
+//    		String line = lines[index].trim(); 
+//    		String[] lineComponents = line.split(SEMICOLON);
+//    		if(lineComponents[0].equals(TYPE_)){
+//    			if(lineComponents[2].equals(todayDate)){
+//    				String formatted = String.format(DISPLAY_FORMAT_TASK, index+1, lineComponents[1]);
+//    				todayContent.append(formatted);
+//    			}
+//    			else if(lineComponents[2].equals(tomorrowDate)){
+//    				String formatted = String.format(DISPLAY_FORMAT_TASK, index+1, lineComponents[1]);
+//    				tomorrowContent.append(formatted);
+//    			}
+//    		}
+//    	}
+    	
+    	if(todayContent.length() == 0){
+    		todayContent.append(DISPLAY_NO_EVENT_TODAY);
+    	}
+    	
+    	if(tomorrowContent.length() == 0){
+    		tomorrowContent.append(DISPLAY_NO_EVENT_TOMMORROW);
+    	}
+    	
+    	return String.format(DISPLAY_LAYOUT, todayDate, todayContent.toString(), tomorrowDate, tomorrowContent.toString()).trim();
     }
     
 	//============================================
