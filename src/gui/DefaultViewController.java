@@ -16,8 +16,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 
-import java.nio.file.FileSystemException;
-
 public class DefaultViewController {
 
     /* ================================================================================
@@ -243,6 +241,7 @@ public class DefaultViewController {
 
             // Redisplay the Tasks
             Label tempLabel = new Label(logic.readTasks());
+            tempLabel.maxWidthProperty().bind(historyPane.widthProperty());
             tempLabel.setWrapText(true);
 
             HBox tempBox = new HBox(tempLabel);
@@ -250,6 +249,7 @@ public class DefaultViewController {
 
             // Redisplay the Events
             tempLabel = new Label(logic.readEvents());
+            tempLabel.maxWidthProperty().bind(historyPane.widthProperty());
             tempLabel.setWrapText(true);
 
             tempBox = new HBox(tempLabel);
