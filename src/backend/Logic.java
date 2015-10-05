@@ -13,9 +13,7 @@ public class Logic {
     private static final String CHAR_NEWLINE = "\n";
     
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
-    private static final String MESSAGE_ERROR_ADD = "Failed to add item to file."; 
-    private static final String MESSAGE_ERROR_DELETE = "Failed to delete item from file."; 
-    private static final String MESSAGE_ERROR_EDIT = "Failed to edit item."; 
+    private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     
     private static final String MESSAGE_EXIT = "exit"; 
     
@@ -80,24 +78,12 @@ public class Logic {
     private String executeAddTask(Command command){
     	String taskName = command.getName(); 
     	Date taskDeadline = command.getDueDate();
-    	try{
-    		String feedback = storage.addTask(taskName, taskDeadline);
-    		return feedback; 
-    	}
-    	catch(Exception e){ 
-    		return MESSAGE_ERROR_ADD; 
-    	}
+    	return storage.addTask(taskName, taskDeadline);
     }
     
     private String executeAddFloatingTask(Command command){
     	String taskName = command.getName(); 
-    	try{
-    		String feedback = storage.addFloatingTask(taskName); 
-    		return feedback; 
-    	}
-    	catch(Exception e){ 
-    		return MESSAGE_ERROR_ADD; 
-    	}
+    	return storage.addFloatingTask(taskName); 
     }
     
     private String executeAddEvent(Command command){
@@ -106,38 +92,20 @@ public class Logic {
     	Date eventEndDate = command.getEndDate();
     	String eventStartTime = command.getStartTime(); 
     	String eventEndTime = command.getEndTime();
-    	try{
-    		String feedback = storage.addEvent(eventName, eventStartDate, eventStartTime, eventEndDate, eventEndTime); 
-    		return feedback; 
-    	}
-    	catch(Exception e){ 
-    		return MESSAGE_ERROR_ADD; 
-    	}
+    	return storage.addEvent(eventName, eventStartDate, eventStartTime, eventEndDate, eventEndTime); 
     }
    
     private String executeDelete(Command command){
-    	try{
-    		int lineNumber = command.getIndex(); 
-    		String feedback = storage.deleteLine(lineNumber); 
-    		return feedback; 
-    	}
-    	catch(Exception e){
-    		return MESSAGE_ERROR_DELETE; 
-    	}
+    	int lineNumber = command.getIndex(); 
+    	return storage.deleteLine(lineNumber); 
     }
     
     //TODO edit now only edit name of task - need to add code to determine 
     //whether user wants to edit date, 
     private String executeEdit(Command command){
-    	try{
-    		int lineNumber = command.getIndex(); 
-    		String newName = command.getName();  
-    		String feedback = storage.editName(lineNumber, newName); 
-    		return feedback; 
-    	}
-    	catch(Exception e){
-    		return MESSAGE_ERROR_EDIT; 
-    	}
+    	int lineNumber = command.getIndex(); 
+    	String newName = command.getName();  
+    	return storage.editName(lineNumber, newName); 
     }
     
     //TODO search
