@@ -325,7 +325,15 @@ public class Storage {
 					break;
 				}
 			}
+			for (int i = lineNumber-1; i < fileContents.size()-1; i++) {
+				if (fileContents.get(i).compareTo(fileContents.get(i+1)) > 0) {
+					Collections.swap(fileContents, i, i + 1);
+				} else {
+					break;
+				}
+			}
 		}
+		
 
 		writeContentsToFile(fileContents);
 		fileReader.close();
@@ -390,9 +398,9 @@ public class Storage {
 				fileContents.add(lineRead);
 			} else {
 				String[] parameters = lineRead.split(TEXT_FILE_DIVIDER);
-				if (parameters[0].equals(STRING_TASK)) {
+				if (!parameters[0].equals(STRING_EVENT)) {
 					fileContents.add(lineRead);
-				} else if (parameters[0].equals(STRING_EVENT)) {
+				} else {
 					if (eventIsLater(eventStartDate, eventStartTime,
 							eventEndDate, eventEndTime, parameters)) {
 						fileContents.add(lineRead);
@@ -401,11 +409,7 @@ public class Storage {
 						fileContents.add(lineRead);
 						hasAddedLine = true;
 					}
-				} else {
-					fileContents.add(lineToAdd);
-					fileContents.add(lineRead);
-					hasAddedLine = true;
-				}
+				} 
 			}
 		}
 
@@ -469,7 +473,9 @@ public class Storage {
 				fileContents.add(lineRead);
 			} else {
 				String[] parameters = lineRead.split(TEXT_FILE_DIVIDER);
-				if (parameters[0].equals(STRING_TASK)) {
+				if (parameters[0].equals(STRING_FLOAT_TASK)) {
+					fileContents.add(lineRead);
+				} else if (parameters[0].equals(STRING_TASK)) {
 					if (taskDeadline
 							.isLaterThan(parameters[parameters.length - 1])) {
 						fileContents.add(lineRead);
@@ -521,8 +527,7 @@ public class Storage {
 				fileContents.add(lineRead);
 			} else {
 				String[] parameters = lineRead.split(TEXT_FILE_DIVIDER);
-				if (!parameters[0].equals(STRING_FLOAT_TASK)
-						|| parameters[parameters.length - 1]
+				if (parameters[0].equals(STRING_FLOAT_TASK) && parameters[parameters.length - 1]
 								.compareTo(taskName) < 0) {
 					fileContents.add(lineRead);
 				} else {
