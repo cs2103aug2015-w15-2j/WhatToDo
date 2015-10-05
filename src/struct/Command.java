@@ -20,6 +20,7 @@ public class Command {
 	private Date endDate; 
 	private String startTime; 
 	private String endTime;
+	private boolean isStart; 
 	
 	//============================================
 	// Constructors
@@ -30,7 +31,7 @@ public class Command {
 	}
 	
 	public Command(CommandType commandType, DataType dataType, String name, int index, Date dueDate, Date startDate, 
-			Date endDate, String startTime, String endTime) {
+			Date endDate, String startTime, String endTime, boolean isStart) {
 		this.commandType = commandType;
 		this.dataType = dataType;
 		this.name = name;
@@ -40,6 +41,7 @@ public class Command {
 		this.endDate = endDate;
 		this.startTime = startTime;
 		this.endTime = endTime;
+		this.isStart = isStart; 
 	}
 
 	//============================================
@@ -82,6 +84,10 @@ public class Command {
 		return endTime;
 	}
 	
+	public boolean getIsStart(){
+		return isStart; 
+	}
+	
 	//============================================
 	// Setters
 	//============================================
@@ -120,5 +126,9 @@ public class Command {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+	
+	public void setIsStartTime(boolean isStart) {
+		this.isStart = isStart; 
 	}
 }
