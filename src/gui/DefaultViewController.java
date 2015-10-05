@@ -240,7 +240,7 @@ public class DefaultViewController {
             eventBox.getChildren().clear();
 
             // Redisplay the Tasks
-            Label tempLabel = new Label(logic.readTasks());
+            Label tempLabel = new Label(logic.taskDefaultView());
             tempLabel.maxWidthProperty().bind(historyPane.widthProperty());
             tempLabel.setWrapText(true);
 
@@ -248,7 +248,7 @@ public class DefaultViewController {
             taskBox.getChildren().addAll(tempBox);
 
             // Redisplay the Events
-            tempLabel = new Label(logic.readEvents());
+            tempLabel = new Label(logic.eventDefaultView());
             tempLabel.maxWidthProperty().bind(historyPane.widthProperty());
             tempLabel.setWrapText(true);
 
