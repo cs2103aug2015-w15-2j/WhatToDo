@@ -1,6 +1,8 @@
 package backend;
 
 import java.nio.file.FileSystemException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import struct.Command;
 import struct.CommandStub;
@@ -14,6 +16,7 @@ public class Logic {
     
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
+    private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
     
     private static final String MESSAGE_EXIT = "exit"; 
     
@@ -58,8 +61,22 @@ public class Logic {
     	
     }
     
+    //TODO task default view
+    public String taskDefaultView(){
+    	String todayDate = getTodayDate(); 
+    	String fileContents = storage.display();
+
+    	return "sth";
+    }
+    
+    //TODO event default view
+    public String eventDefaultView(){
+    	
+    	return "sth";
+    }
+    
 	//============================================
-	// Private methods 
+	// Private methods for executeCommand 
 	//============================================
 
     private String executeAdd(Command command){
@@ -121,6 +138,17 @@ public class Logic {
     private String handleInvalid(String userInput){ 
     	return String.format(MESSAGE_ERROR_INVALID_COMMAND, userInput); 
     }
+    
+	//============================================
+	// Private methods for defaultView 
+	//============================================    
+    
+    private String getTodayDate(){
+    	Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy");
+		return sdf.format(cal.getTime());
+    }
+    
     
 	//============================================
 	// Stub methods for testing 
