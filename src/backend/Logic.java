@@ -12,13 +12,23 @@ import struct.Task;
 
 public class Logic {
 
-    private static final String CHAR_NEWLINE = "\n";
-    
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
+    private static final String MESSAGE_EXIT = "exit";
     
-    private static final String MESSAGE_EXIT = "exit"; 
+    private static final String DISPLAY_NO_TODAY_TASKS = "There are no tasks due today.\n"; 
+    private static final String DISPLAY_NO_TOMORROW_TASKS = "There are no tasks due tommorrow.\n"; 
+    private static final String DISPLAY_FORMAT_TASK = "%d. %s\n"; 
+    private static final String DISPLAY_FORMAT_TASK_VIEW = "TODAY, %s \n%s\nTOMMORROW, %s \n%s";
+    
+    
+    private static final String TYPE_FLOAT = "float";
+    private static final String TYPE_TASK = "task";
+    private static final String TYPE_EVENT = "event";
+    
+    private static final String NEWLINE = "\n";
+    private static final String SEMICOLON = ";";
     
     private CommandParser commandParser; 
     private Storage storage;
@@ -61,12 +71,39 @@ public class Logic {
     	
     }
     
-    //TODO task default view
+    //TODO refactor task default view
     public String taskDefaultView(){
+    	StringBuffer todayContent = new StringBuffer(); 
+    	StringBuffer tomorrowContent = new StringBuffer(); 
     	String todayDate = getTodayDate(); 
-    	String fileContents = storage.display();
-
-    	return "sth";
+    	String tomorrowDate = getTomorrowDate();
+    	String[] lines = getLinesInFile(); 
+    	
+    	for(int index = 0; index < lines.length; index++){
+    		String line = lines[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		if(lineComponents[0].equals(TYPE_TASK)){
+    			//TODO assert lineComponent.length == 3 
+    			if(lineComponents[2].equals(todayDate)){
+    				String formatted = String.format(DISPLAY_FORMAT_TASK, index+1, lineComponents[1]);
+    				todayContent.append(formatted);
+    			}
+    			else if(lineComponents[2].equals(tomorrowDate)){
+    				String formatted = String.format(DISPLAY_FORMAT_TASK, index+1, lineComponents[1]);
+    				tomorrowContent.append(formatted);
+    			}
+    		}
+    	}
+    	
+    	if(todayContent.length() == 0){
+    		todayContent.append(DISPLAY_NO_TODAY_TASKS);
+    	}
+    	
+    	if(tomorrowContent.length() == 0){
+    		tomorrowContent.append(DISPLAY_NO_TOMORROW_TASKS);
+    	}
+    	
+    	return String.format(DISPLAY_FORMAT_TASK_VIEW, todayDate, todayContent.toString(), tomorrowDate, tomorrowContent.toString()).trim();
     }
     
     //TODO event default view
@@ -149,6 +186,18 @@ public class Logic {
 		return sdf.format(cal.getTime());
     }
     
+    private String getTomorrowDate(){
+    	Calendar cal = Calendar.getInstance();
+    	cal.add(Calendar.DATE, 1);
+		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy");
+		return sdf.format(cal.getTime());
+    }
+    
+    private String[] getLinesInFile(){
+    	String fileContents = storage.display();
+    	return fileContents.split(NEWLINE);
+    }
+    
     
 	//============================================
 	// Stub methods for testing 
@@ -192,7 +241,7 @@ public class Logic {
                 taskSearch.setTaskName("Some task name");
                 taskSearch.setTaskDeadline(new Date("Wednesday", "300915"));
                 taskSearch.setTaskFloating(false);
-                returnMessages = "Task: " + taskSearch.getTaskName() + CHAR_NEWLINE +
+                returnMessages = "Task: " + taskSearch.getTaskName() + NEWLINE +
                         "Due on " + taskSearch.getTaskDeadline().getDayString() + ", " +
                         taskSearch.getTaskDeadline().getFormatDate() + ".";
 
@@ -202,10 +251,10 @@ public class Logic {
                 event.setEventEndDate(new Date("Friday", "021015"));
                 event.setEventStartTime("0800");
                 event.setEventEndTime("1800");
-                returnMessages = "Event: " + event.getEventName() + CHAR_NEWLINE +
-                        "Start Date: " + event.getEventStartDate().getFormatDate() + CHAR_NEWLINE +
-                        "End Date: " + event.getEventEndDate().getFormatDate() + CHAR_NEWLINE +
-                        "Start Time: " + event.getEventStartTime() + CHAR_NEWLINE +
+                returnMessages = "Event: " + event.getEventName() + NEWLINE +
+                        "Start Date: " + event.getEventStartDate().getFormatDate() + NEWLINE +
+                        "End Date: " + event.getEventEndDate().getFormatDate() + NEWLINE +
+                        "Start Time: " + event.getEventStartTime() + NEWLINE +
                         "End Time: " + event.getEventEndTime();
                 break;
             default:
