@@ -126,13 +126,13 @@ public class Logic {
     	}
     }
     
-    //TODO edit
+    //TODO edit now only edit name of task - need to add code to determine 
+    //whether user wants to edit date, 
     private String executeEdit(Command command){
     	try{
     		int lineNumber = command.getIndex(); 
-    		String edited = command.getEndTime(); 
-    		//call edit method from storage 
-    		String feedback = "feedback"; 
+    		String newName = command.getName();  
+    		String feedback = storage.editName(lineNumber, newName); 
     		return feedback; 
     	}
     	catch(Exception e){
