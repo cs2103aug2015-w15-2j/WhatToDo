@@ -6,80 +6,47 @@
 
 package struct;
 
-public class Task {
+public class Task extends Data{
 
-    // Class variables for tasks
-    private Date taskDeadline;
-    private String taskName, taskFlag, taskDescription, taskTag;
-    private boolean taskFloating, taskDone;
+    private Date deadline;
+    private boolean isFloating;
+    
+	//============================================
+	// Constructors
+	//============================================
 
     public Task() {
-        // Initialize task variables
-        taskDeadline = new Date();
-        taskName = "";
-        taskFlag = "";
-        taskDescription = "";
-        taskTag = "";
-        taskFloating = true;
-        taskDone = false;
+        super(); 
+        this.deadline = new Date();
+        this.isFloating = true;
+    }
+   
+	public Task(String name, boolean isDone, Date deadline, boolean isFloating) {
+		super(name, isDone);
+		this.deadline = deadline;
+		this.isFloating = isFloating;
+	}
+
+	//============================================
+	// Getters
+	//============================================
+    public Date getDeadline() {
+        return deadline;
     }
 
-    // ------------------------Getters------------------------
-    public Date getTaskDeadline() {
-        return taskDeadline;
+    public boolean getIsFloating() {
+        return isFloating;
     }
 
-    public String getTaskName() {
-        return taskName;
+	//============================================
+	// Setters
+	//============================================
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
     }
 
-    public String getTaskFlag() {
-        return taskFlag;
-    }
-
-    public String getTaskDescription() {
-        return taskDescription;
-    }
-
-    public String getTaskTag() {
-        return taskTag;
-    }
-
-    public boolean isTaskFloating() {
-        return taskFloating;
-    }
-
-    public boolean isTaskDone() {
-        return taskDone;
-    }
-
-    // ------------------------Setters------------------------
-    public void setTaskDeadline(Date taskDeadline) {
-        this.taskDeadline = taskDeadline;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public void setTaskFlag(String taskFlag) {
-        this.taskFlag = taskFlag;
-    }
-
-    public void setTaskDescription(String taskDescription) {
-        this.taskDescription = taskDescription;
-    }
-
-    public void setTaskTag(String taskTag) {
-        this.taskTag = taskTag;
-    }
-
-    public void setTaskFloating(boolean taskFloating) {
-        this.taskFloating = taskFloating;
-    }
-
-    public void setTaskDone(boolean taskDone) {
-        this.taskDone = taskDone;
+    public void setIsFloating(boolean isFloating) {
+        this.isFloating = isFloating;
     }
 }
 

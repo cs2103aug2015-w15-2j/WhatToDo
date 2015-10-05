@@ -6,24 +6,32 @@
 
 package struct;
 
-public class Event {
+public class Event extends Data{
 
-    // Class variables for events
     private Date eventStartDate, eventEndDate;
-    private String eventName, eventDescription, eventStartTime, eventEndTime;
-    private boolean eventDone;
-
+    private String eventStartTime, eventEndTime;
+    
+	//============================================
+	// Constructors
+	//============================================
+    
     public Event() {
-        eventStartDate = new Date();
-        eventEndDate = new Date();
-        eventName = "";
-        eventDescription = "";
-        eventStartTime = "";
-        eventEndTime = "";
-        eventDone = false;
+    	super();
+        this.eventStartDate = new Date();
+        this.eventEndDate = new Date();
+        this.eventStartTime = "";
+        this.eventEndTime = "";
     }
 
-    // ------------------------Getters------------------------
+	public Event(String name, boolean isDone, Date eventStartDate, Date eventEndDate, String eventStartTime, String eventEndTime) {
+		super(name, isDone);
+		this.eventStartDate = eventStartDate;
+		this.eventEndDate = eventEndDate;
+		this.eventStartTime = eventStartTime;
+		this.eventEndTime = eventEndTime;
+	}
+
+	// ------------------------Getters------------------------
     public Date getEventStartDate() {
         return eventStartDate;
     }
@@ -32,24 +40,12 @@ public class Event {
         return eventEndDate;
     }
 
-    public String getEventName() {
-        return eventName;
-    }
-
-    public String getEventDescription() {
-        return eventDescription;
-    }
-
     public String getEventStartTime() {
         return eventStartTime;
     }
 
     public String getEventEndTime() {
         return eventEndTime;
-    }
-
-    public boolean isEventDone() {
-        return eventDone;
     }
 
     // ------------------------Setters------------------------
@@ -61,14 +57,6 @@ public class Event {
         this.eventEndDate = eventEndDate;
     }
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public void setEventDescription(String eventDescription) {
-        this.eventDescription = eventDescription;
-    }
-
     public void setEventStartTime(String eventStartTime) {
         this.eventStartTime = eventStartTime;
     }
@@ -76,8 +64,5 @@ public class Event {
     public void setEventEndTime(String eventEndTime) {
         this.eventEndTime = eventEndTime;
     }
-
-    public void setEventDone(boolean eventDone) {
-        this.eventDone = eventDone;
-    }
+    
 }
