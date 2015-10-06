@@ -30,16 +30,14 @@ public class FloatingTask extends Data implements Comparable<FloatingTask>{
 	// Public Methods
 	//============================================
 	
+	/**
+	 * compareTo
+	 * @return negative number if this < other 
+	 * 		   positive number if this > other 
+	 * 		   zero if this == other         
+	 */
 	public int compareTo(FloatingTask other){ 
-		if(this.getName().compareTo(other.getName()) < 0){
-			return -1; 
-		}
-		else if (this.getName().compareTo(other.getName()) > 0 ){
-			return 1; 
-		}
-		else{
-			return 0; 
-		}
+		return this.getName().compareTo(other.getName());
 	}
 	
 }

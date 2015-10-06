@@ -9,11 +9,8 @@ package struct;
 public class Task extends Data implements Comparable<Task>{
 
 	private static final String SEMICOLON = ";";
-	private static final String TYPE_FLOAT = "float";
-	private static final String TYPE_TASK = "task";
 	
     private Date deadline;
-    private boolean isFloating;
     
 	//============================================
 	// Constructors
@@ -22,40 +19,43 @@ public class Task extends Data implements Comparable<Task>{
     public Task() {
         super(); 
         this.deadline = new Date();
-        this.isFloating = true;
     }
     
     public Task(String line) {
     	line.trim();
     	String[] lineComponents = line.split(SEMICOLON);
     	
+    	//assert correct no. of components == 3
+    	//assert first word is task 
     	this.name = lineComponents[1]; 
     	this.isDone = false; 
+    	this.deadline = new Date(lineComponents[2]);
     	
-    	//assert correct no. of components 2 or 3
-    	//assert first word is float or task 
-    	if(lineComponents[0].equals(TYPE_FLOAT)){
-    		this.isFloating = true; 
-    		this.deadline = null; 
-    	}
-    	else{
-    		this.isFloating = false; 
-    		this.deadline = new Date(lineComponents[2]);
-    	}
     }
    
-	public Task(String name, boolean isDone, Date deadline, boolean isFloating) {
+	public Task(String name, boolean isDone, Date deadline) {
 		super(name, isDone);
 		this.deadline = deadline;
-		this.isFloating = isFloating;
 	}
 	
 	//============================================
 	// Public Methods
 	//============================================
-	//TODO compareTo
+	
+	/**
+	 * compareTo
+	 * @return negative number if this < other 
+	 * 		   positive number if this > other 
+	 * 		   zero if this == other         
+	 */
 	public int compareTo(Task other){
-		return 0; 
+		int compareDate = this.getDeadline().compareTo(other.getDeadline());
+		int compareName = this.getName().compareTo(other.getName());
+		if(compareDate != 0){
+			return compareDate; 
+		}else{
+			return compareName; 
+		}
 	}
 
 	//============================================
@@ -65,19 +65,11 @@ public class Task extends Data implements Comparable<Task>{
         return deadline;
     }
 
-    public boolean getIsFloating() {
-        return isFloating;
-    }
-
 	//============================================
 	// Setters
 	//============================================
     public void setDeadline(Date deadline) {
         this.deadline = deadline;
-    }
-
-    public void setIsFloating(boolean isFloating) {
-        this.isFloating = isFloating;
     }
 }
 

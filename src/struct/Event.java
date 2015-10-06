@@ -6,6 +6,7 @@
 
 package struct;
 
+
 public class Event extends Data implements Comparable<Event>{
 
 	private static final String SEMICOLON = ";";
@@ -29,16 +30,14 @@ public class Event extends Data implements Comparable<Event>{
     	line.trim();
     	String[] lineComponents = line.split(SEMICOLON);
     	
-    	this.name = lineComponents[1]; 
-    	this.isDone = false; 
-
     	//assert correct no. of components 
     	//assert first word is event
+    	this.name = lineComponents[1]; 
+    	this.isDone = false; 
     	this.eventStartDate = new Date(lineComponents[2]);
     	this.eventEndDate = new Date(lineComponents[4]);
     	this.eventStartTime = lineComponents[3];
     	this.eventEndTime = lineComponents[5];
-    	
     }
 
 	public Event(String name, boolean isDone, Date eventStartDate, Date eventEndDate, String eventStartTime, String eventEndTime) {
@@ -49,20 +48,39 @@ public class Event extends Data implements Comparable<Event>{
 		this.eventEndTime = eventEndTime;
 	}
 	
-	//TODO compareto 
-	public int compareTo(Event other){ 
-		Date thisStartDate = this.getEventStartDate(); 
-		
-		Date otherStartDate = other.getEventStartDate(); 
+	//============================================
+	// Public Methods
+	//============================================
 	
-		if(thisStartDate.compareTo(otherStartDate) == -1){ 
-			return -1;
-		}
+	/**
+	 * compareTo
+	 * @return negative number if this < other 
+	 * 		   positive number if this > other 
+	 * 		   zero if this == other         
+	 */
+	public int compareTo(Event other){ 
+		int compareStartDate = this.getEventStartDate().compareTo(other.getEventStartDate());
+		int compareEndDate = this.getEventEndDate().compareTo(other.getEventEndDate());
+		int compareStartTime = this.getEventStartTime().compareTo(other.getEventStartTime()); 
+		int compareEndTime = this.getEventEndTime().compareTo(other.getEventEndTime());
+		int compareName = this.getName().compareTo(other.getName());
 		
-		return 0; 
+		if(compareStartDate != 0){ 
+			return compareStartDate; 
+		}else if (compareStartTime != 0){ 
+			return compareStartTime; 
+		}else if (compareEndDate != 0){ 
+			return compareEndDate; 
+		}else if (compareEndTime != 0){ 
+			return compareEndTime; 
+		}else{
+			return compareName; 
+		}
 	}
 
-	// ------------------------Getters------------------------
+	//============================================
+	// Getters 
+	//============================================
     public Date getEventStartDate() {
         return eventStartDate;
     }
@@ -79,7 +97,9 @@ public class Event extends Data implements Comparable<Event>{
         return eventEndTime;
     }
 
-    // ------------------------Setters------------------------
+	//============================================
+	// Setters 
+	//============================================
     public void setEventStartDate(Date eventStartDate) {
         this.eventStartDate = eventStartDate;
     }
@@ -95,5 +115,4 @@ public class Event extends Data implements Comparable<Event>{
     public void setEventEndTime(String eventEndTime) {
         this.eventEndTime = eventEndTime;
     }
-    
 }
