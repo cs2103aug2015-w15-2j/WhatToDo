@@ -131,7 +131,7 @@ public class Logic {
      * @param userInput
      * @return
      */
-    public String runOperation(String userInput) {
+/*    public String runOperation(String userInput) {
         // Function stub, assumed add operation for a task
 
         String returnMessages = "";
@@ -185,7 +185,7 @@ public class Logic {
         }
 
         return returnMessages;
-    }
+    }*/
 
     public boolean isSwapCommand(String currentState, String userInput) {
         // Create a parser object to parse
