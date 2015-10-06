@@ -6,24 +6,63 @@
 
 package struct;
 
-public class Event {
+public class Event extends Data implements Comparable<Event>{
 
-    // Class variables for events
+	private static final String SEMICOLON = ";";
+	
     private Date eventStartDate, eventEndDate;
-    private String eventName, eventDescription, eventStartTime, eventEndTime;
-    private boolean eventDone;
-
+    private String eventStartTime, eventEndTime;
+    
+	//============================================
+	// Constructors
+	//============================================
+    
     public Event() {
-        eventStartDate = new Date();
-        eventEndDate = new Date();
-        eventName = "";
-        eventDescription = "";
-        eventStartTime = "";
-        eventEndTime = "";
-        eventDone = false;
+    	super();
+        this.eventStartDate = new Date();
+        this.eventEndDate = new Date();
+        this.eventStartTime = "";
+        this.eventEndTime = "";
+    }
+    
+    public Event(String line){ 
+    	line.trim();
+    	String[] lineComponents = line.split(SEMICOLON);
+    	
+    	this.name = lineComponents[1]; 
+    	this.isDone = false; 
+
+    	//assert correct no. of components 
+    	//assert first word is event
+    	this.eventStartDate = new Date(lineComponents[2]);
+    	this.eventEndDate = new Date(lineComponents[4]);
+    	this.eventStartTime = lineComponents[3];
+    	this.eventEndTime = lineComponents[5];
+    	
     }
 
-    // ------------------------Getters------------------------
+	public Event(String name, boolean isDone, Date eventStartDate, Date eventEndDate, String eventStartTime, String eventEndTime) {
+		super(name, isDone);
+		this.eventStartDate = eventStartDate;
+		this.eventEndDate = eventEndDate;
+		this.eventStartTime = eventStartTime;
+		this.eventEndTime = eventEndTime;
+	}
+	
+	//TODO compareto 
+	public int compareTo(Event other){ 
+		Date thisStartDate = this.getEventStartDate(); 
+		
+		Date otherStartDate = other.getEventStartDate(); 
+	
+		if(thisStartDate.compareTo(otherStartDate) == -1){ 
+			return -1;
+		}
+		
+		return 0; 
+	}
+
+	// ------------------------Getters------------------------
     public Date getEventStartDate() {
         return eventStartDate;
     }
@@ -32,24 +71,12 @@ public class Event {
         return eventEndDate;
     }
 
-    public String getEventName() {
-        return eventName;
-    }
-
-    public String getEventDescription() {
-        return eventDescription;
-    }
-
     public String getEventStartTime() {
         return eventStartTime;
     }
 
     public String getEventEndTime() {
         return eventEndTime;
-    }
-
-    public boolean isEventDone() {
-        return eventDone;
     }
 
     // ------------------------Setters------------------------
@@ -61,14 +88,6 @@ public class Event {
         this.eventEndDate = eventEndDate;
     }
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public void setEventDescription(String eventDescription) {
-        this.eventDescription = eventDescription;
-    }
-
     public void setEventStartTime(String eventStartTime) {
         this.eventStartTime = eventStartTime;
     }
@@ -76,8 +95,5 @@ public class Event {
     public void setEventEndTime(String eventEndTime) {
         this.eventEndTime = eventEndTime;
     }
-
-    public void setEventDone(boolean eventDone) {
-        this.eventDone = eventDone;
-    }
+    
 }

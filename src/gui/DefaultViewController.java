@@ -309,7 +309,7 @@ public class DefaultViewController {
             textField.setText("");
 
             // Run the operation
-            String returnMessage = logic.runOperation(textFieldInput);
+            String returnMessage = logic.executeCommand(textFieldInput);
 
             // Wrap the output in a Label for display
             // Use a newline to standardize line spacings across all scroll panes

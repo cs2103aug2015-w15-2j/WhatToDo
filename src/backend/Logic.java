@@ -233,67 +233,6 @@ public class Logic {
 	//============================================
 	// Stub methods for testing 
 	//============================================
-    
-    /**
-     * runOperation - stub of executeCommand 
-     * @param userInput
-     * @return
-     */
-    public String runOperation(String userInput) {
-        // Function stub, assumed add operation for a task
-
-        String returnMessages = "";
-    	
-    	// stub to test storage.
-    	try {
-    		storage = new Storage();
-    	} catch (FileSystemException fileException) {
-    		returnMessages = fileException.getMessage();
-    	}
-
-        // Creates a Parser object to determine command type
-        CommandParser parser = new CommandParser();
-        CommandStub command = parser.getCommandType(userInput);
-
-        // Stub FOR TESTING ONLY
-        switch(command) {
-            case ADD:
-                // Add just a task to return list
-                String textToAdd = userInput.split(" ")[1];
-                Task taskAdd = new Task();
-                taskAdd.setTaskName(textToAdd);
-                taskAdd.setTaskDeadline(new Date("Wednesday", "300915"));
-                taskAdd.setTaskFloating(false);
-                returnMessages = storage.addTask(taskAdd.getTaskName(), taskAdd.getTaskDeadline());
-                break;
-            case SEARCH:
-                // Add a task and an event to return list
-                Task taskSearch = new Task();
-                taskSearch.setTaskName("Some task name");
-                taskSearch.setTaskDeadline(new Date("Wednesday", "300915"));
-                taskSearch.setTaskFloating(false);
-                returnMessages = "Task: " + taskSearch.getTaskName() + NEWLINE +
-                        "Due on " + taskSearch.getTaskDeadline().getDayString() + ", " +
-                        taskSearch.getTaskDeadline().getFormatDate() + ".";
-
-                Event event = new Event();
-                event.setEventName("Some event name");
-                event.setEventStartDate(new Date("Thursday", "011015"));
-                event.setEventEndDate(new Date("Friday", "021015"));
-                event.setEventStartTime("0800");
-                event.setEventEndTime("1800");
-                returnMessages = "Event: " + event.getEventName() + NEWLINE +
-                        "Start Date: " + event.getEventStartDate().getFormatDate() + NEWLINE +
-                        "End Date: " + event.getEventEndDate().getFormatDate() + NEWLINE +
-                        "Start Time: " + event.getEventStartTime() + NEWLINE +
-                        "End Time: " + event.getEventEndTime();
-                break;
-            default:
-                // Do nothing
-        }
-
-        return returnMessages;
-    }
 
     public boolean isSwapCommand(String currentState, String userInput) {
         // Create a parser object to parse
