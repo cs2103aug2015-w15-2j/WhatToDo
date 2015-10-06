@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'PT Sans';
+    src: url('../resources/PTS75F.ttf');
+}
+
+.root {
+    -fx-background-color: black;
+}
+
+.text {
+    -fx-font-family: 'PT Sans';
+    -fx-font-size: 14;
+    -fx-font-smoothing-type: gray;
+    -fx-opacity: 0.9;
+}
