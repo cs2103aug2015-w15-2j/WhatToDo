@@ -1,29 +1,29 @@
 package backend;
 
 import java.nio.file.FileSystemException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import struct.Command;
-import struct.CommandStub;
 import struct.Date;
-import struct.Event;
-import struct.Task;
 
 public class Logic {
 
+	private static final int INDEX_TYPE = 0; 
+	private static final int INDEX_NAME = 1; 
+	private static final int INDEX_DUEDATE = 2;
+	private static final int INDEX_STARTDATE = 2; 
+	private static final int INDEX_STARTTIME = 3; 
+	private static final int INDEX_ENDDATE = 4; 
+	private static final int INDEX_ENDTIME = 5; 
+
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
-    private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
-    private static final String MESSAGE_EXIT = "exit";
+    private static final String MESSAGE_EXIT = "Exit";
     
-    private static final String DISPLAY_NO_TASK_TODAY = "There are no tasks due today.\n"; 
-    private static final String DISPLAY_NO_TASK_TOMMORROW = "There are no tasks due tommorrow.\n"; 
-    private static final String DISPLAY_NO_EVENT_TODAY = "There are no events today.\n"; 
-    private static final String DISPLAY_NO_EVENT_TOMMORROW = "There are no events tommorrow.\n"; 
-    private static final String DISPLAY_FORMAT_TASK = "%d. %s\n"; 
-    private static final String DISPLAY_LAYOUT = "TODAY, %s \n%s\nTOMMORROW, %s \n%s";
-    
+    private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
+    private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
+    private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s]\t%s"; 
+    private static final String DISPLAY_LAYOUT_TASK = "FLOAT\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_EVENT = "ONGOING\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
     
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
@@ -72,75 +72,23 @@ public class Logic {
     	}
     	
     }
-    
-    //TODO refactor task default view
+       
     public String taskDefaultView(){
-    	StringBuffer todayContent = new StringBuffer(); 
-    	StringBuffer tomorrowContent = new StringBuffer(); 
-    	String todayDate = getTodayDate(); 
-    	String tomorrowDate = getTomorrowDate();
-    	String[] lines = getLinesInFile(); 
-    	
-    	for(int index = 0; index < lines.length; index++){
-    		String line = lines[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		if(lineComponents[0].equals(TYPE_TASK)){
-    			//TODO assert lineComponent.length == 3 
-    			if(lineComponents[2].equals(todayDate)){
-    				String formatted = String.format(DISPLAY_FORMAT_TASK, index+1, lineComponents[1]);
-    				todayContent.append(formatted);
-    			}
-    			else if(lineComponents[2].equals(tomorrowDate)){
-    				String formatted = String.format(DISPLAY_FORMAT_TASK, index+1, lineComponents[1]);
-    				tomorrowContent.append(formatted);
-    			}
-    		}
-    	}
-    	
-    	if(todayContent.length() == 0){
-    		todayContent.append(DISPLAY_NO_TASK_TODAY);
-    	}
-    	
-    	if(tomorrowContent.length() == 0){
-    		tomorrowContent.append(DISPLAY_NO_TASK_TOMMORROW);
-    	}
-    	
-    	return String.format(DISPLAY_LAYOUT, todayDate, todayContent.toString(), tomorrowDate, tomorrowContent.toString()).trim();
+    	String floatContent = getFloatContent(); 
+    	String todayContent = getTaskContent(Date.todayDateShort()); 
+    	String tomorrowContent = getTaskContent(Date.tomorrowDateShort()); 
+   
+    	return String.format(DISPLAY_LAYOUT_TASK, floatContent, Date.todayDateLong(), todayContent, 
+    			Date.tomorrowDateLong(), tomorrowContent).trim();
     }
     
-    //TODO event default view - need to think abt how to get and display events that are currently going on 
-    // on top of events that start today
     public String eventDefaultView(){
-    	StringBuffer todayContent = new StringBuffer(); 
-    	StringBuffer tomorrowContent = new StringBuffer(); 
-    	String todayDate = getTodayDate(); 
-    	String tomorrowDate = getTomorrowDate();
-    	String[] lines = getLinesInFile(); 
+    	String onGoingContent = getOngoingEventContent(); 
+    	String todayContent = getEventContent(Date.todayDateShort()); 
+    	String tomorrowContent = getEventContent(Date.tomorrowDateShort()); 
     	
-//    	for(int index = 0; index < lines.length; index++){
-//    		String line = lines[index].trim(); 
-//    		String[] lineComponents = line.split(SEMICOLON);
-//    		if(lineComponents[0].equals(TYPE_)){
-//    			if(lineComponents[2].equals(todayDate)){
-//    				String formatted = String.format(DISPLAY_FORMAT_TASK, index+1, lineComponents[1]);
-//    				todayContent.append(formatted);
-//    			}
-//    			else if(lineComponents[2].equals(tomorrowDate)){
-//    				String formatted = String.format(DISPLAY_FORMAT_TASK, index+1, lineComponents[1]);
-//    				tomorrowContent.append(formatted);
-//    			}
-//    		}
-//    	}
-    	
-    	if(todayContent.length() == 0){
-    		todayContent.append(DISPLAY_NO_EVENT_TODAY);
-    	}
-    	
-    	if(tomorrowContent.length() == 0){
-    		tomorrowContent.append(DISPLAY_NO_EVENT_TOMMORROW);
-    	}
-    	
-    	return String.format(DISPLAY_LAYOUT, todayDate, todayContent.toString(), tomorrowDate, tomorrowContent.toString()).trim();
+    	return String.format(DISPLAY_LAYOUT_EVENT, onGoingContent, Date.todayDateLong(), todayContent, 
+    			Date.tomorrowDateLong(), tomorrowContent).trim();
     }
     
 	//============================================
@@ -211,24 +159,97 @@ public class Logic {
 	// Private methods for defaultView 
 	//============================================    
     
-    private String getTodayDate(){
-    	Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy");
-		return sdf.format(cal.getTime());
-    }
-    
-    private String getTomorrowDate(){
-    	Calendar cal = Calendar.getInstance();
-    	cal.add(Calendar.DATE, 1);
-		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy");
-		return sdf.format(cal.getTime());
-    }
-    
     private String[] getLinesInFile(){
     	String fileContents = storage.display();
     	return fileContents.split(NEWLINE);
     }
     
+    private String getFloatContent(){ 
+    	String[] lines = getLinesInFile(); 
+    	StringBuffer floatContentBuffer = new StringBuffer();
+    			
+    	for(int index = 0; index < lines.length; index++){
+    		String line = lines[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		if(lineComponents[INDEX_TYPE].equals(TYPE_FLOAT)){
+    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
+    			floatContentBuffer.append(formatted);
+    		}
+    	}
+    	return addMsgIfEmpty(floatContentBuffer);
+    }
+    
+    private String getTaskContent(String date){ 
+    	String[] lines = getLinesInFile(); 
+    	StringBuffer contentBuffer = new StringBuffer();
+    			
+    	for(int index = 0; index < lines.length; index++){
+    		String line = lines[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		if(lineComponents[INDEX_TYPE].equals(TYPE_TASK) && lineComponents[INDEX_DUEDATE].equals(date)){
+    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[1]);
+    			contentBuffer.append(formatted);
+    		}
+    	}
+    	return addMsgIfEmpty(contentBuffer);
+    }
+    
+    private String getOngoingEventContent(){
+    	String[] lines = getLinesInFile(); 
+    	StringBuffer contentBuffer = new StringBuffer();
+    	
+    	for(int index = 0; index < lines.length; index++){
+    		String line = lines[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		if(isOngoingEvent(line)){
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
+    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
+    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+    			contentBuffer.append(formatted);
+    		}
+    	}
+    	
+    	return addMsgIfEmpty(contentBuffer);
+    }
+    
+    private boolean isOngoingEvent(String lineInFile){
+    	String line = lineInFile.trim(); 
+    	String[] lineComponents = line.split(SEMICOLON);
+    	if(lineComponents.length < 6){
+    		return false; 
+    	}else{
+    		String type = lineComponents[INDEX_TYPE]; 
+        	Date startDate = new Date(lineComponents[INDEX_STARTDATE]);
+        	Date endDate = new Date(lineComponents[INDEX_ENDDATE]);
+        	Date todayDate = new Date(Date.todayDateShort());
+        	
+        	return (type.equals(TYPE_EVENT) && startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) > 0); 
+    	}
+    }
+    
+    private String getEventContent(String date){ 
+    	String[] lines = getLinesInFile(); 
+    	StringBuffer contentBuffer = new StringBuffer();
+    	
+    	for(int index = 0; index < lines.length; index++){
+    		String line = lines[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		if(lineComponents[INDEX_TYPE].equals(TYPE_EVENT) && lineComponents[INDEX_STARTDATE].equals(date)){
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
+    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
+    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+    			contentBuffer.append(formatted);
+    		}
+    	}
+    	return addMsgIfEmpty(contentBuffer);
+    }
+    
+    private String addMsgIfEmpty(StringBuffer buffer){
+    	if(buffer.length() == 0){ 
+    		buffer.append(DISPLAY_NO_ITEMS);
+    	}
+    	return buffer.toString().trim();
+    }
     
 	//============================================
 	// Stub methods for testing 
