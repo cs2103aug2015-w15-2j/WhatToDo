@@ -10,6 +10,8 @@ public class Task extends Data implements Comparable<Task>{
 
 	private static final String SEMICOLON = ";";
 	
+	private static final String FORMAT_TO_STRING = "task;%s;%s";
+	
     private Date deadline;
     
 	//============================================
@@ -56,6 +58,14 @@ public class Task extends Data implements Comparable<Task>{
 		}else{
 			return compareName; 
 		}
+	}
+	
+	/**
+	 * toString 
+	 * @return formatted string to write into txt file
+	 */
+	public String toString(){
+		return String.format(FORMAT_TO_STRING, this.name, this.deadline.getFullDate());
 	}
 
 	//============================================

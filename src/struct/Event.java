@@ -11,6 +11,8 @@ public class Event extends Data implements Comparable<Event>{
 
 	private static final String SEMICOLON = ";";
 	
+	private static final String FORMAT_TO_STRING = "event;%s;%s;%s;%s;%s";
+	
     private Date eventStartDate, eventEndDate;
     private String eventStartTime, eventEndTime;
     
@@ -76,6 +78,15 @@ public class Event extends Data implements Comparable<Event>{
 		}else{
 			return compareName; 
 		}
+	}
+	
+	/**
+	 * toString 
+	 * @return formatted string to write into txt file
+	 */
+	public String toString(){
+		return String.format(FORMAT_TO_STRING, this.name, this.eventStartDate.getFullDate(), 
+				this.eventStartTime, this.eventEndDate.getFullDate(), this.eventEndTime);
 	}
 
 	//============================================

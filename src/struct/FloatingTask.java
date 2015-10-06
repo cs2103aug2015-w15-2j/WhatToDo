@@ -3,6 +3,8 @@ package struct;
 public class FloatingTask extends Data implements Comparable<FloatingTask>{
 	
 	private static final String SEMICOLON = ";";
+	
+	private static final String FORMAT_TO_STRING = "float;%s";
 
 	//============================================
 	// Constructors
@@ -40,4 +42,11 @@ public class FloatingTask extends Data implements Comparable<FloatingTask>{
 		return this.getName().compareTo(other.getName());
 	}
 	
+	/**
+	 * toString 
+	 * @return formatted string to write into txt file
+	 */
+	public String toString(){
+		return String.format(FORMAT_TO_STRING, this.name); 
+	}	
 }
