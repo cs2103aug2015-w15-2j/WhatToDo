@@ -270,7 +270,19 @@ public class CommandParser {
     // ================================================================
 	
 	private Command initEditCommand(ArrayList<String> arguments) {
-		return initInvalidCommand();
+		int index = Integer.parseInt(arguments.get(0));
+		if (index > 0) {
+			arguments.remove(0);
+			String name = getName(arguments);
+			Command command = new Command(Command.CommandType.EDIT);
+			command.setIndex(index);
+			command.setName(name);
+			return command;
+		} else {
+			return initInvalidCommand();
+		}
+		
+		
 	}
 	
 	
