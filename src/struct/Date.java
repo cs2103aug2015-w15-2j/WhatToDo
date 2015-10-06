@@ -67,6 +67,12 @@ public class Date implements Comparable<Date>{
 	// Public methods
 	//============================================    
     
+    /**
+	 * compareTo
+	 * @return -1 if this < other 
+	 * 		    1 if this > other 
+	 * 		    0 if this == other         
+	 */
     public int compareTo(Date other){
     	int thisDateInt = getIntReverseDate(this); 
     	int otherDateInt = getIntReverseDate(other); 
