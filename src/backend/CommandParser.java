@@ -1,6 +1,7 @@
 package backend;
 
 import struct.CommandStub;
+import struct.Date;
 import struct.Command;
 
 import java.util.ArrayList;
@@ -83,29 +84,35 @@ public class CommandParser {
     // ================================================================
 	
 	private Command initAddCommand(ArrayList<String> arguments) {
-		Command command;
 		String dataType = arguments.get(0);
 		
 		switch (dataType) {
 		case USER_COMMAND_ADD_TASK :
-			command = addTask(arguments);
+			return addTask(arguments);
 		case USER_COMMAND_ADD_FLOATING_TASK :
-			command = addFloatingTask(arguments);
+			return addFloatingTask(arguments);
 		case USER_COMMAND_ADD_EVENT :
-			command = addEvent(arguments);
+			return addEvent(arguments);
 		default :
-			command = addDefaultTask(arguments);
+			return addDefaultTask(arguments);
 		}
-		return command;
 	}
 	
 	private Command addTask(ArrayList<String> arguments) {
-		Command command = new Command(Command.CommandType.ADD);
-		command.setDataType(Command.DataType.TASK);
-		arguments.remove(0);
-		String name = getName(arguments);
-		command.setName(name);
-		return command;
+		String dateString = arguments.get(arguments.size() - 1);
+		Date date = isValidDate(dateString);
+		if (date != null) {
+			Command command = new Command(Command.CommandType.ADD);
+			command.setDataType(Command.DataType.TASK);
+			arguments.remove(0);
+			arguments.remove(arguments.size() - 1);
+			String name = getName(arguments);
+			command.setName(name);
+			command.setDueDate(date);
+			return command;
+		} else {
+			return initInvalidCommand();
+		}
 	}
 	
 	private Command addFloatingTask(ArrayList<String> arguments) {
@@ -118,7 +125,64 @@ public class CommandParser {
 	}
 	
 	private Command addEvent(ArrayList<String> arguments) {
-		return initInvalidCommand();
+		if (arguments.size() < 5) {
+			return initInvalidCommand();
+		}
+		boolean hasEndDate = true;
+		String endTime = arguments.get(arguments.size() - 1);
+		Date endDate = isValidDate(arguments.get(arguments.size() - 2));
+		String startTime;
+		Date startDate;
+		if (endDate != null) {
+			startTime = arguments.get(arguments.size() - 3);
+			startDate = isValidDate(arguments.get(arguments.size() - 4));
+		} else {
+			hasEndDate = false;
+			startTime = arguments.get(arguments.size() - 2);
+			startDate = isValidDate(arguments.get(arguments.size() - 3));
+		}
+		if (isValidTime(endTime) && isValidTime(startTime) && startDate != null) {
+			if (hasEndDate) {
+				if (startDate.compareTo(endDate) == -1) {
+					Command command = new Command(Command.CommandType.ADD);
+					command.setDataType(Command.DataType.EVENT);
+					arguments.remove(0);
+					arguments.remove(arguments.size() - 1);
+					arguments.remove(arguments.size() - 1);
+					arguments.remove(arguments.size() - 1);
+					arguments.remove(arguments.size() - 1);
+					String name = getName(arguments);
+					command.setName(name);
+					command.setEndDate(endDate);
+					command.setEndTime(endTime);
+					command.setStartDate(startDate);
+					command.setStartTime(startTime);
+					return command;
+				} else {
+					return initInvalidCommand();
+				}
+			} else {
+				if (areValidTimes(startTime, endTime)) {
+					Command command = new Command(Command.CommandType.ADD);
+					command.setDataType(Command.DataType.EVENT);
+					arguments.remove(0);
+					arguments.remove(arguments.size() - 1);
+					arguments.remove(arguments.size() - 1);
+					arguments.remove(arguments.size() - 1);
+					String name = getName(arguments);
+					command.setName(name);
+					command.setEndDate(endDate);
+					command.setEndTime(endTime);
+					command.setStartTime(startTime);
+					System.out.println("i got here");
+					return command;
+				} else {
+					return initInvalidCommand();
+				}
+			}
+		} else {
+			return initInvalidCommand();
+		}
 	}
 	
 	private Command addDefaultTask(ArrayList<String> arguments) {
@@ -136,6 +200,41 @@ public class CommandParser {
 			name += currentArgument + STRING_ONE_SPACE;
 		}
 		return name.trim();
+	}
+	
+	private Date isValidDate(String date) {
+		Date todayDate = Date.todayDate();
+		if (String.valueOf(date).length() == 6) {
+			Date currDate = new Date(date);
+			if (todayDate.compareTo(currDate) <= 0) {
+				return currDate;
+			}
+		} else if (date.equals("today")){
+			return todayDate;
+		} else if (date.equals("tomorrow")) {
+			return Date.tomorrowDate();
+		}
+		return null;
+	}
+	
+	private boolean isValidTime(String time) {
+		if (String.valueOf(time).length() == 4) {
+			int intTime = Integer.parseInt(time);
+			if (intTime >= 0 && intTime < 2400) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean areValidTimes(String startTime, String endTime) {
+		int intStartTime = Integer.parseInt(startTime);
+		int intEndTime = Integer.parseInt(endTime);
+		if (intEndTime >= intStartTime) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	
@@ -237,4 +336,5 @@ public class CommandParser {
             return false;
         }
     }
+    
 }

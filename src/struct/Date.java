@@ -62,6 +62,14 @@ public class Date implements Comparable<Date>{
     	SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd MMM yyyy"); 
     	return sdf.format(cal.getTime());
     }
+    
+    public static Date todayDate(){
+    	 return new Date(Date.todayDateShort()); 
+    }
+    
+    public static Date tomorrowDate() {
+    	return new Date(Date.tomorrowDateShort());
+    }
 
 	//============================================
 	// Public methods
