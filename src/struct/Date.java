@@ -81,6 +81,29 @@ public class Date implements Comparable<Date>{
     	}
     }
     
+    //TODO isLaterThan is to be removed do not use
+    /**
+     * Checks if the date is later than another date specified by user
+     *
+     * @param date
+     *            The date to be compared against
+     * @return true if this.fullDate is later than date, false otherwise
+     */
+    public boolean isLaterThan(String date) {
+        return getIntDate(getReverseDate(fullDate)) > getIntDate(getReverseDate(date));
+    }
+    
+    //TODO isSameDate is to be removed do not use
+    /**
+     * Checks if the date is the same as another date specified by user
+     * 
+     * @param date  The date to be compared against
+     * @return      true if this.fullDate is the same as date, false otherwise.
+     */
+    public boolean isSameDate(String date) {
+        return fullDate.equals(date);
+    }
+    
     public String getDayString() {
     	
         Calendar cal = Calendar.getInstance(); 
@@ -98,26 +121,6 @@ public class Date implements Comparable<Date>{
         return "" + day + "/" + month + "/" + year;
     }
 
-    /**
-     * Checks if the date is later than another date specified by user
-     *
-     * @param date
-     *            The date to be compared against
-     * @return true if this.fullDate is later than date, false otherwise
-     */
-    public boolean isLaterThan(String date) {
-        return getIntDate(getReverseDate(fullDate)) > getIntDate(getReverseDate(date));
-    }
-    
-    /**
-     * Checks if the date is the same as another date specified by user
-     * 
-     * @param date  The date to be compared against
-     * @return      true if this.fullDate is the same as date, false otherwise.
-     */
-    public boolean isSameDate(String date) {
-        return fullDate.equals(date);
-    }
     
 	//============================================
 	// Private methods 
