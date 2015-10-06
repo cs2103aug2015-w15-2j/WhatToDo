@@ -32,6 +32,8 @@ public class Storage {
 	private static final String MESSAGE_EDIT_TASK_DEADLINE = "Edited task \"%s\" deadline from \"%s\" to \"%s\".";
 	private static final String MESSAGE_EDIT_EVENT_START_DATE = "Edited event \"%s\" start date from \"%s\" to \"%s\".";
 	private static final String MESSAGE_EDIT_EVENT_END_DATE = "Edited event \"%s\" end date from \"%s\" to \"%s\".";
+	private static final String MESSAGE_EDIT_EVENT_START_TIME = "Edited event \"%s\" start time from \"%s\" to \"%s\".";
+	private static final String MESSAGE_EDIT_EVENT_END_TIME = "Edited event \"%s\" end time from \"%s\" to \"%s\".";
 	private static final String MESSAGE_EMPTY_FILE = "The list is empty.";
 
 	private static final String MESSAGE_ERROR_CREATE_FILE = "Error encountered when creating file.";
@@ -46,8 +48,10 @@ public class Storage {
 	private static final String MESSAGE_ERROR_REPLACE_NAME = "Error encountered when renaming.";
 	private static final String MESSAGE_ERROR_REPLACE_TASK_DEADLINE = "Error encountered when editing deadline.";
 	private static final String MESSAGE_ERROR_REPLACE_EVENT_START_DATE = "Error encountered when editing event start date.";
-	private static final String MESSAGE_ERROR_REPLACE_EVENT_END_DATE = "Error encountered when editing event start date.";
-	
+	private static final String MESSAGE_ERROR_REPLACE_EVENT_END_DATE = "Error encountered when editing event end date.";
+	private static final String MESSAGE_ERROR_REPLACE_EVENT_START_TIME = "Error encountered when editing event start time.";
+	private static final String MESSAGE_ERROR_REPLACE_EVENT_END_TIME = "Error encountered when editing event end time.";
+
 	private static final String TEXT_FILE_FORMAT_TASK = "task;%s;%s";
 	private static final String TEXT_FILE_FORMAT_FLOAT_TASK = "float;%s";
 	private static final String TEXT_FILE_FORMAT_EVENT = "event;%s;%s;%s;%s;%s";
@@ -225,8 +229,7 @@ public class Storage {
 
 	/**
 	 * Replaces task deadline in text file of given line number. (1-based
-	 * counting) 
-	 * An error message will be returned when line number is less than
+	 * counting) An error message will be returned when line number is less than
 	 * 0 or greater than the number of lines present in text file, or when the
 	 * object at line number is not a task.
 	 * 
@@ -248,216 +251,208 @@ public class Storage {
 
 	/**
 	 * Replaces event start date in text file of given line number. (1-based
-	 * counting) 
-	 * An error message will be returned when line number is less than
+	 * counting) An error message will be returned when line number is less than
 	 * 0 or greater than the number of lines present in text file, or when the
-	 * object at line number is not an event, or when event start later than event end.
+	 * object at line number is not an event, or when event start later than
+	 * event end.
 	 * 
 	 * @param lineNumber
 	 *            line number in text file to be replaced.
-	 * @param newDeadline
+	 * @param newDate
 	 *            new event start date to replace old start date with.
 	 * @return feedback based on line number.
 	 */
 	public String editEventStartDate(int lineNumber, Date newDate) {
 		try {
 			String feedback = replaceEventStartDate(lineNumber, newDate);
-			
+
 			return feedback;
 		} catch (IOException exception) {
 			return MESSAGE_ERROR_REPLACE_EVENT_START_DATE;
 		}
 	}
-	
+
 	/**
 	 * Replaces event end date in text file of given line number. (1-based
-	 * counting) 
-	 * An error message will be returned when line number is less than
+	 * counting) An error message will be returned when line number is less than
 	 * 0 or greater than the number of lines present in text file, or when the
-	 * object at line number is not an event, or when event start later than event end.
+	 * object at line number is not an event, or when event start later than
+	 * event end.
 	 * 
 	 * @param lineNumber
 	 *            line number in text file to be replaced.
-	 * @param newDeadline
+	 * @param newDate
 	 *            new event end date to replace old end date with.
 	 * @return feedback based on line number.
 	 */
 	public String editEventEndDate(int lineNumber, Date newDate) {
 		try {
 			String feedback = replaceEventEndDate(lineNumber, newDate);
-			
+
 			return feedback;
 		} catch (IOException exception) {
 			return MESSAGE_ERROR_REPLACE_EVENT_END_DATE;
 		}
 	}
-	
-	// TODO: stubs
+
+	/**
+	 * Replaces event start time in text file of given line number. (1-based
+	 * counting) An error message will be returned when line number is less than
+	 * 0 or greater than the number of lines present in text file, or when the
+	 * object at line number is not an event, or when event start later than
+	 * event end.
+	 * 
+	 * @param lineNumber
+	 *            line number in text file to be replaced.
+	 * @param newTime
+	 *            new event start time to replace old start time with.
+	 * @return feedback based on line number.
+	 */
 	public String editEventStartTime(int lineNumber, String newTime) {
-		return "stub";
+		try {
+			String feedback = replaceEventStartTime(lineNumber, newTime);
+
+			return feedback;
+		} catch (IOException exception) {
+			return MESSAGE_ERROR_REPLACE_EVENT_START_TIME;
+		}
 	}
 
+	/**
+	 * Replaces event end time in text file of given line number. (1-based
+	 * counting) An error message will be returned when line number is less than
+	 * 0 or greater than the number of lines present in text file, or when the
+	 * object at line number is not an event, or when event start later than
+	 * event end.
+	 * 
+	 * @param lineNumber
+	 *            line number in text file to be replaced.
+	 * @param newTime
+	 *            new event end time to replace old end time with.
+	 * @return feedback based on line number.
+	 */
 	public String editEventEndTime(int lineNumber, String newTime) {
-		return "stub";
+		try {
+			String feedback = replaceEventEndTime(lineNumber, newTime);
+
+			return feedback;
+		} catch (IOException exception) {
+			return MESSAGE_ERROR_REPLACE_EVENT_END_TIME;
+		}
 	}
 
 	/*
 	 * Private Methods Start Here.
 	 */
-	
+
 	// To refactor and improve
-		private String replaceEventStartDate(int lineNumber, Date newDeadline)
-				throws IOException {
-			if (lineNumber <= 0) {
-				return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			}
-
-			ArrayList<String> fileContents = new ArrayList<String>();
-
-			initialiseReader();
-			addFileContentsToArrayList(fileContents);
-
-			if (lineNumber > fileContents.size()) {
-				return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			}
-
-			String[] params = fileContents.get(lineNumber - 1).split(
-					TEXT_FILE_DIVIDER);
-			String type = params[0];
-
-			if (!type.equals(STRING_EVENT)) {
-				return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT,
-						lineNumber);
-			}
-
-			String oldDeadline = params[2];
-			String name = params[1];
-			String startTime = params[3];
-			String endDate = params[4];
-			String endTime = params[5];
-			
-			if (!isValidStartAndEnd(newDeadline, startTime, new Date(endDate), endTime)) {
-				return MESSAGE_ERROR_INVALID_EVENT_DATE;
-			}
-
-			String newDeadlineString = newDeadline.getFullDate();
-			params[2] = newDeadlineString;
-
-			String editedLine = params[0];
-			for (int i = 1; i < params.length; i++) {
-				editedLine += TEXT_FILE_DIVIDER + params[i];
-			}
-
-			fileContents.set(lineNumber - 1, editedLine);
-
-			// sort by event start/end date/time.
-			for (int i = lineNumber - 2; i >= 0; i--) {
-				params = fileContents.get(i).split(TEXT_FILE_DIVIDER);
-				if (!params[0].equals(STRING_EVENT)) {
-					break;
-				}
-				String currentEventInfo[] = fileContents.get(i + 1).split(
-						TEXT_FILE_DIVIDER);
-				if (eventIsLater(new Date(params[2]), params[3], new Date(params[4]), params[5], currentEventInfo)) {
-					Collections.swap(fileContents, i, i + 1);
-				} else {
-					break;
-				}
-			}
-			for (int i = lineNumber - 1; i < fileContents.size() - 1; i++) {
-				params = fileContents.get(i+1).split(TEXT_FILE_DIVIDER);
-				if (!params[0].equals(STRING_EVENT)) {
-					break;
-				}
-				String currentDateInfo[] = fileContents.get(i).split(TEXT_FILE_DIVIDER);
-				if (eventIsLater(new Date(currentDateInfo[2]),currentDateInfo[3],new Date(currentDateInfo[4]),currentDateInfo[5], params)) {
-					Collections.swap(fileContents, i, i + 1);
-				} else {
-					break;
-				}
-			}
-
-			writeContentsToFile(fileContents);
-			fileReader.close();
-
-			return String.format(MESSAGE_EDIT_EVENT_START_DATE, name, oldDeadline,
-					newDeadlineString);
+	private String replaceEventStartTime(int lineNumber, String newTime)
+			throws IOException {
+		if (lineNumber <= 0) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
 
-	
-	// To refactor and improve
-		private String replaceTaskDeadline(int lineNumber, Date newDeadline)
-				throws IOException {
-			if (lineNumber <= 0) {
-				return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			}
+		ArrayList<String> fileContents = new ArrayList<String>();
 
-			ArrayList<String> fileContents = new ArrayList<String>();
+		initialiseReader();
+		addFileContentsToArrayList(fileContents);
 
-			initialiseReader();
-			addFileContentsToArrayList(fileContents);
-
-			if (lineNumber > fileContents.size()) {
-				return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			}
-
-			String[] params = fileContents.get(lineNumber - 1).split(
-					TEXT_FILE_DIVIDER);
-			String type = params[0];
-
-			if (!type.equals(STRING_TASK)) {
-				return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK,
-						lineNumber);
-			}
-
-			String oldDeadline = params[params.length - 1];
-			String name = params[1];
-
-			String newDeadlineString = newDeadline.getFullDate();
-			params[params.length - 1] = newDeadlineString;
-
-			String editedLine = params[0];
-			for (int i = 1; i < params.length; i++) {
-				editedLine += TEXT_FILE_DIVIDER + params[i];
-			}
-
-			fileContents.set(lineNumber - 1, editedLine);
-
-			// sort by deadline
-			for (int i = lineNumber - 2; i >= 0; i--) {
-				params = fileContents.get(i).split(TEXT_FILE_DIVIDER);
-				if (!params[0].equals(STRING_TASK)) {
-					break;
-				}
-				String comparingDate = params[2];
-				String currentDate = fileContents.get(i + 1).split(
-						TEXT_FILE_DIVIDER)[2];
-				if (new Date(comparingDate).compareTo(new Date(currentDate)) > 0) {
-					Collections.swap(fileContents, i, i + 1);
-				} else {
-					break;
-				}
-			}
-			for (int i = lineNumber - 1; i < fileContents.size() - 1; i++) {
-				params = fileContents.get(i+1).split(TEXT_FILE_DIVIDER);
-				if (!params[0].equals(STRING_TASK)) {
-					break;
-				}
-				String currentDate = fileContents.get(i).split(TEXT_FILE_DIVIDER)[2];
-				String comparingDate = params[2];
-				if (new Date(currentDate).compareTo(new Date(comparingDate)) > 0) {
-					Collections.swap(fileContents, i, i + 1);
-				} else {
-					break;
-				}
-			}
-
-			writeContentsToFile(fileContents);
-			fileReader.close();
-
-			return String.format(MESSAGE_EDIT_TASK_DEADLINE, name, oldDeadline,
-					newDeadlineString);
+		if (lineNumber > fileContents.size()) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
+
+		String[] params = fileContents.get(lineNumber - 1).split(
+				TEXT_FILE_DIVIDER);
+		String type = params[0];
+
+		if (!type.equals(STRING_EVENT)) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT,
+					lineNumber);
+		}
+
+		String oldTime = params[3];
+		String name = params[1];
+		String startDate = params[2];
+		String endDate = params[4];
+		String endTime = params[5];
+
+		if (!isValidStartAndEnd(new Date(startDate), oldTime,
+				new Date(endDate), endTime)) {
+			return MESSAGE_ERROR_INVALID_EVENT_DATE;
+		}
+
+		params[3] = newTime;
+
+		String editedLine = params[0];
+		for (int i = 1; i < params.length; i++) {
+			editedLine += TEXT_FILE_DIVIDER + params[i];
+		}
+
+		fileContents.set(lineNumber - 1, editedLine);
+
+		sortLineToCorrectPlace(lineNumber, fileContents);
+
+		writeContentsToFile(fileContents);
+		fileReader.close();
+
+		return String.format(MESSAGE_EDIT_EVENT_START_TIME, name, oldTime,
+				newTime);
+	}
+
+	// To refactor and improve
+	private String replaceEventStartDate(int lineNumber, Date newDeadline)
+			throws IOException {
+		if (lineNumber <= 0) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
+		}
+
+		ArrayList<String> fileContents = new ArrayList<String>();
+
+		initialiseReader();
+		addFileContentsToArrayList(fileContents);
+
+		if (lineNumber > fileContents.size()) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
+		}
+
+		String[] params = fileContents.get(lineNumber - 1).split(
+				TEXT_FILE_DIVIDER);
+		String type = params[0];
+
+		if (!type.equals(STRING_EVENT)) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT,
+					lineNumber);
+		}
+
+		String oldDeadline = params[2];
+		String name = params[1];
+		String startTime = params[3];
+		String endDate = params[4];
+		String endTime = params[5];
+
+		if (!isValidStartAndEnd(newDeadline, startTime, new Date(endDate),
+				endTime)) {
+			return MESSAGE_ERROR_INVALID_EVENT_DATE;
+		}
+
+		String newDeadlineString = newDeadline.getFullDate();
+		params[2] = newDeadlineString;
+
+		String editedLine = params[0];
+		for (int i = 1; i < params.length; i++) {
+			editedLine += TEXT_FILE_DIVIDER + params[i];
+		}
+
+		fileContents.set(lineNumber - 1, editedLine);
+
+		sortLineToCorrectPlace(lineNumber, fileContents);
+
+		writeContentsToFile(fileContents);
+		fileReader.close();
+
+		return String.format(MESSAGE_EDIT_EVENT_START_DATE, name, oldDeadline,
+				newDeadlineString);
+	}
 
 	// To refactor and improve
 	private String replaceEventEndDate(int lineNumber, Date newDeadline)
@@ -489,8 +484,9 @@ public class Storage {
 		String startTime = params[3];
 		String startDate = params[2];
 		String endTime = params[5];
-		
-		if (!isValidStartAndEnd(new Date(startDate), startTime, newDeadline, endTime)) {
+
+		if (!isValidStartAndEnd(new Date(startDate), startTime, newDeadline,
+				endTime)) {
 			return MESSAGE_ERROR_INVALID_EVENT_DATE;
 		}
 
@@ -504,6 +500,73 @@ public class Storage {
 
 		fileContents.set(lineNumber - 1, editedLine);
 
+		sortLineToCorrectPlace(lineNumber, fileContents);
+
+		writeContentsToFile(fileContents);
+		fileReader.close();
+
+		return String.format(MESSAGE_EDIT_EVENT_END_DATE, name, oldDeadline,
+				newDeadlineString);
+	}
+
+	// To refactor and improve
+	private String replaceEventEndTime(int lineNumber, String newTime)
+			throws IOException {
+		if (lineNumber <= 0) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
+		}
+
+		ArrayList<String> fileContents = new ArrayList<String>();
+
+		initialiseReader();
+		addFileContentsToArrayList(fileContents);
+
+		if (lineNumber > fileContents.size()) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
+		}
+
+		String[] params = fileContents.get(lineNumber - 1).split(
+				TEXT_FILE_DIVIDER);
+		String type = params[0];
+
+		if (!type.equals(STRING_EVENT)) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT,
+					lineNumber);
+		}
+
+		String oldTime = params[5];
+		String name = params[1];
+		String startDate = params[2];
+		String endDate = params[4];
+		String startTime = params[3];
+
+		if (!isValidStartAndEnd(new Date(startDate), startTime, new Date(
+				endDate), oldTime)) {
+			return MESSAGE_ERROR_INVALID_EVENT_DATE;
+		}
+
+		params[5] = newTime;
+
+		String editedLine = params[0];
+		for (int i = 1; i < params.length; i++) {
+			editedLine += TEXT_FILE_DIVIDER + params[i];
+		}
+
+		fileContents.set(lineNumber - 1, editedLine);
+
+		sortLineToCorrectPlace(lineNumber, fileContents);
+
+		writeContentsToFile(fileContents);
+		fileReader.close();
+
+		return String.format(MESSAGE_EDIT_EVENT_END_TIME, name, oldTime,
+				newTime);
+	}
+
+	// Refactor
+	private void sortLineToCorrectPlace(int lineNumber,
+			ArrayList<String> fileContents) {
+		String[] params;
 		// sort by event start/end date/time.
 		for (int i = lineNumber - 2; i >= 0; i--) {
 			params = fileContents.get(i).split(TEXT_FILE_DIVIDER);
@@ -512,19 +575,90 @@ public class Storage {
 			}
 			String currentEventInfo[] = fileContents.get(i + 1).split(
 					TEXT_FILE_DIVIDER);
-			if (eventIsLater(new Date(params[2]), params[3], new Date(params[4]), params[5], currentEventInfo)) {
+			if (eventIsLater(new Date(params[2]), params[3],
+					new Date(params[4]), params[5], currentEventInfo)) {
 				Collections.swap(fileContents, i, i + 1);
 			} else {
 				break;
 			}
 		}
 		for (int i = lineNumber - 1; i < fileContents.size() - 1; i++) {
-			params = fileContents.get(i+1).split(TEXT_FILE_DIVIDER);
+			params = fileContents.get(i + 1).split(TEXT_FILE_DIVIDER);
 			if (!params[0].equals(STRING_EVENT)) {
 				break;
 			}
-			String currentDateInfo[] = fileContents.get(i).split(TEXT_FILE_DIVIDER);
-			if (eventIsLater(new Date(currentDateInfo[2]),currentDateInfo[3],new Date(currentDateInfo[4]),currentDateInfo[5], params)) {
+			String currentDateInfo[] = fileContents.get(i).split(
+					TEXT_FILE_DIVIDER);
+			if (eventIsLater(new Date(currentDateInfo[2]), currentDateInfo[3],
+					new Date(currentDateInfo[4]), currentDateInfo[5], params)) {
+				Collections.swap(fileContents, i, i + 1);
+			} else {
+				break;
+			}
+		}
+	}
+
+	// To refactor and improve
+	private String replaceTaskDeadline(int lineNumber, Date newDeadline)
+			throws IOException {
+		if (lineNumber <= 0) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
+		}
+
+		ArrayList<String> fileContents = new ArrayList<String>();
+
+		initialiseReader();
+		addFileContentsToArrayList(fileContents);
+
+		if (lineNumber > fileContents.size()) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
+		}
+
+		String[] params = fileContents.get(lineNumber - 1).split(
+				TEXT_FILE_DIVIDER);
+		String type = params[0];
+
+		if (!type.equals(STRING_TASK)) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK,
+					lineNumber);
+		}
+
+		String oldDeadline = params[params.length - 1];
+		String name = params[1];
+
+		String newDeadlineString = newDeadline.getFullDate();
+		params[params.length - 1] = newDeadlineString;
+
+		String editedLine = params[0];
+		for (int i = 1; i < params.length; i++) {
+			editedLine += TEXT_FILE_DIVIDER + params[i];
+		}
+
+		fileContents.set(lineNumber - 1, editedLine);
+
+		// sort by deadline
+		for (int i = lineNumber - 2; i >= 0; i--) {
+			params = fileContents.get(i).split(TEXT_FILE_DIVIDER);
+			if (!params[0].equals(STRING_TASK)) {
+				break;
+			}
+			String comparingDate = params[2];
+			String currentDate = fileContents.get(i + 1).split(
+					TEXT_FILE_DIVIDER)[2];
+			if (new Date(comparingDate).compareTo(new Date(currentDate)) > 0) {
+				Collections.swap(fileContents, i, i + 1);
+			} else {
+				break;
+			}
+		}
+		for (int i = lineNumber - 1; i < fileContents.size() - 1; i++) {
+			params = fileContents.get(i + 1).split(TEXT_FILE_DIVIDER);
+			if (!params[0].equals(STRING_TASK)) {
+				break;
+			}
+			String currentDate = fileContents.get(i).split(TEXT_FILE_DIVIDER)[2];
+			String comparingDate = params[2];
+			if (new Date(currentDate).compareTo(new Date(comparingDate)) > 0) {
 				Collections.swap(fileContents, i, i + 1);
 			} else {
 				break;
@@ -534,7 +668,7 @@ public class Storage {
 		writeContentsToFile(fileContents);
 		fileReader.close();
 
-		return String.format(MESSAGE_EDIT_EVENT_END_DATE, name, oldDeadline,
+		return String.format(MESSAGE_EDIT_TASK_DEADLINE, name, oldDeadline,
 				newDeadlineString);
 	}
 
