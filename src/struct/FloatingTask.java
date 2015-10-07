@@ -4,7 +4,11 @@ public class FloatingTask extends Data implements Comparable<FloatingTask>{
 	
 	private static final String SEMICOLON = ";";
 	
-	private static final String FORMAT_TO_STRING = "float;%s";
+	private static final String FORMAT_TO_STRING = "float;%s;%s";
+	
+	private static final String STRING_FLOAT = "float";
+	private static final String STRING_DONE = "done";
+	private static final String STRING_NOT_DONE = "todo";
 
 	//============================================
 	// Constructors
@@ -18,10 +22,11 @@ public class FloatingTask extends Data implements Comparable<FloatingTask>{
 		line.trim();
     	String[] lineComponents = line.split(SEMICOLON);
     	
-    	//assert first word is float 
-    	//assert no. of components == 2 
+    	assert(lineComponents[0].equals(STRING_FLOAT));
+    	assert(lineComponents.length == 3);
+    	
     	this.name = lineComponents[1]; 
-    	this.isDone = false; 
+    	this.isDone = lineComponents[2].equals(STRING_DONE); 
 	}
 	
 	public FloatingTask(String name, boolean isDone){
@@ -47,6 +52,12 @@ public class FloatingTask extends Data implements Comparable<FloatingTask>{
 	 * @return formatted string to write into txt file
 	 */
 	public String toString(){
-		return String.format(FORMAT_TO_STRING, this.name); 
+		String status;
+		if (this.isDone) {
+			status = STRING_DONE;
+		} else {
+			status = STRING_NOT_DONE;
+		}
+		return String.format(FORMAT_TO_STRING, this.name, status); 
 	}	
 }

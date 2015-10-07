@@ -11,7 +11,11 @@ public class Event extends Data implements Comparable<Event>{
 
 	private static final String SEMICOLON = ";";
 	
-	private static final String FORMAT_TO_STRING = "event;%s;%s;%s;%s;%s";
+	private static final String FORMAT_TO_STRING = "event;%s;%s;%s;%s;%s;%s";
+	
+	private static final String STRING_EVENT = "event";
+	private static final String STRING_DONE = "done";
+	private static final String STRING_NOT_DONE = "todo";
 	
     private Date eventStartDate, eventEndDate;
     private String eventStartTime, eventEndTime;
@@ -32,14 +36,15 @@ public class Event extends Data implements Comparable<Event>{
     	line.trim();
     	String[] lineComponents = line.split(SEMICOLON);
     	
-    	//assert correct no. of components 
-    	//assert first word is event
+    	assert(lineComponents[0].equals(STRING_EVENT));
+    	assert(lineComponents.length == 7);
+    	
     	this.name = lineComponents[1]; 
-    	this.isDone = false; 
-    	this.eventStartDate = new Date(lineComponents[2]);
-    	this.eventEndDate = new Date(lineComponents[4]);
-    	this.eventStartTime = lineComponents[3];
-    	this.eventEndTime = lineComponents[5];
+    	this.isDone = lineComponents[2].equals(STRING_DONE); 
+    	this.eventStartDate = new Date(lineComponents[3]);
+    	this.eventEndDate = new Date(lineComponents[5]);
+    	this.eventStartTime = lineComponents[4];
+    	this.eventEndTime = lineComponents[6];
     }
 
 	public Event(String name, boolean isDone, Date eventStartDate, Date eventEndDate, String eventStartTime, String eventEndTime) {
@@ -85,7 +90,13 @@ public class Event extends Data implements Comparable<Event>{
 	 * @return formatted string to write into txt file
 	 */
 	public String toString(){
-		return String.format(FORMAT_TO_STRING, this.name, this.eventStartDate.getFullDate(), 
+		String status;
+		if (this.isDone) {
+			status = STRING_DONE;
+		} else {
+			status = STRING_NOT_DONE;
+		}
+		return String.format(FORMAT_TO_STRING, this.name, status, this.eventStartDate.getFullDate(), 
 				this.eventStartTime, this.eventEndDate.getFullDate(), this.eventEndTime);
 	}
 

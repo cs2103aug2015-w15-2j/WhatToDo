@@ -10,7 +10,11 @@ public class Task extends Data implements Comparable<Task>{
 
 	private static final String SEMICOLON = ";";
 	
-	private static final String FORMAT_TO_STRING = "task;%s;%s";
+	private static final String FORMAT_TO_STRING = "task;%s;%s;%s";
+	
+	private static final String STRING_TASK = "task";
+	private static final String STRING_DONE = "done";
+	private static final String STRING_NOT_DONE = "todo";
 	
     private Date deadline;
     
@@ -27,11 +31,12 @@ public class Task extends Data implements Comparable<Task>{
     	line.trim();
     	String[] lineComponents = line.split(SEMICOLON);
     	
-    	//assert correct no. of components == 3
-    	//assert first word is task 
+    	assert(lineComponents[0].equals(STRING_TASK));
+    	assert(lineComponents.length == 4);
+
     	this.name = lineComponents[1]; 
-    	this.isDone = false; 
-    	this.deadline = new Date(lineComponents[2]);
+    	this.isDone = lineComponents[2].equals(STRING_DONE); 
+    	this.deadline = new Date(lineComponents[3]);
     	
     }
    
@@ -65,7 +70,13 @@ public class Task extends Data implements Comparable<Task>{
 	 * @return formatted string to write into txt file
 	 */
 	public String toString(){
-		return String.format(FORMAT_TO_STRING, this.name, this.deadline.getFullDate());
+		String status;
+		if (this.isDone) {
+			status = STRING_DONE;
+		} else {
+			status = STRING_NOT_DONE;
+		}
+		return String.format(FORMAT_TO_STRING, this.name, status, this.deadline.getFullDate());
 	}
 
 	//============================================
