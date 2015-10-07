@@ -719,8 +719,12 @@ public class Storage {
 			fileContents.add(lineRead);
 		}
 
+		
 		lineToDelete = fileReader.readLine();
-
+		if (lineToDelete == null) return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS,
+				lineNumber);
+		
+		
 		addFileContentsToArrayList(fileContents);
 
 		writeContentsToFile(fileContents);
