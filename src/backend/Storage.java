@@ -23,8 +23,9 @@ import struct.Task;
 
 public class Storage {
 
-	private static final String FILENAME = "whattodo.txt";
+	private static final String FILE_NAME = "whattodo.txt";
 	private static final String COLLATED_FILE_PATH_FORMAT = "%s\\%s";
+	private static final String CONFIG_FILE_PATH = "config\\config";
 
 	private static final String MESSAGE_ADD_TASK = "Added \"%s\" to list.\nDue on %s, %s.";
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added \"%s\" to list.";
@@ -38,9 +39,12 @@ public class Storage {
 	private static final String MESSAGE_EDIT_EVENT_END_TIME = "Edited event \"%s\" end time from \"%s\" to \"%s\".";
 	private static final String MESSAGE_MARK_DONE = "The %s \"%s\" has been marked as done.";
 	private static final String MESSAGE_EMPTY_FILE = "The list is empty.";
+	private static final String MESSAGE_CHANGE_STORAGE_SUCCESS = "You are now writing to \"%s\"";
+	private static final String MESSAGE_SAME_FILE = "Your file location remains unchanged.";
 
 	private static final String MESSAGE_ERROR_CREATE_FILE = "Error encountered when creating file.";
 	private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
+	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH = "Error encountered when changing file location.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS = "Cannot find line %d in text file.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK = "Line %d is not a task!";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT = "Line %d is not an event!";
@@ -64,6 +68,7 @@ public class Storage {
 	private static final String STRING_EVENT = "event";
 
 	private static final String NEWLINE = "\n";
+	private static final String EMPTY_STRING = "";
 
 	private static final int PARAM_EMPTY_STRING_BUILDER = 0;
 	private static final int PARAM_LINE_NUMBER_ZERO = 0;
@@ -78,29 +83,39 @@ public class Storage {
 	private PrintWriter fileWriter;
 
 	/**
-	 * Constructors
+	 * Constructor
 	 * 
-	 * @throws FileSystemException
-	 *             when error in creating file.
-	 * @throws FileNotFoundException
-	 *             when error in locating file.
+	 * @throws FileSystemException  when error in creating file.
 	 */
 	public Storage() throws FileSystemException {
-		filePath = FILENAME;
+		filePath = getPathFromConfig();
 
-		createFileWithoutDirectory();
+		createFile();
 	}
 
-	public Storage(String directory) throws FileSystemException {
-		filePath = String
-				.format(COLLATED_FILE_PATH_FORMAT, directory, FILENAME);
-
-		createFileWithDirectory();
-	}
-
-	// Accessor
 	public String getFilePath() {
 		return filePath;
+	}
+	
+	/**
+	 * Changes location to store text file to given newLocation string.
+	 * Directories/Folders will be created if missing.
+	 * 
+	 * Here are some examples of what newLocation parameter can be:
+	 * " "                    - store text file at default location.
+	 * "TaskList"             - store text file in folder called TaskList. TaskList created at default location.
+	 * "One\Two"              - store text file in folder Two which is nested in folder One (at default location)
+	 * "C:\Users\Jim\DropBox" - store text file in DropBox.
+	 * 
+	 * Returns error message when given newLocation is invalid name for directory or file.
+	 * 
+	 * @param newLocation   file path of location to change to
+	 * @return              status message to indicate if changing is a success.
+	 */
+	public String changeFileStorageLocation(String newLocation) {
+		String feedback = changeFilePath(newLocation);
+		
+		return feedback;
 	}
 
 	/**
@@ -797,7 +812,6 @@ public class Storage {
 
 	// Use this instead of the one below.
 	private void addEventToFile(Event newEvent) throws IOException {
-
 		ArrayList<String> fileContents = new ArrayList<String>();
 
 		boolean hasAddedLine = false;
@@ -944,37 +958,121 @@ public class Storage {
 		fileReader.close();
 
 	}
+	
+	private String changeFilePath(String newLocation) {
+		File toBeReplaced = new File(filePath);
+		ArrayList<String> fileContents = new ArrayList<String>();
+		
+		try {
+			addFileContentsToArrayList(fileContents);
+			
+			updateFilePath(newLocation);
+			
+			if (filePath.equals(toBeReplaced.getPath())) {
+				return MESSAGE_SAME_FILE;
+			}
+
+			createFile();		
+			writeContentsToFile(fileContents);
+			updateConfigFile(newLocation);
+		} catch (IOException exception) {
+			filePath = toBeReplaced.getPath();
+			return MESSAGE_ERROR_CHANGING_FILE_PATH;
+		}
+		
+		toBeReplaced.delete();
+		
+		return String.format(MESSAGE_CHANGE_STORAGE_SUCCESS, getFilePath());
+	}
+
+	private void updateFilePath(String newLocation) {
+		if (hasDirectorySpecifiedInPath(newLocation)) {
+			filePath = String.format(COLLATED_FILE_PATH_FORMAT, newLocation, FILE_NAME);
+		} else {
+			filePath = FILE_NAME;
+		}
+	}
 
 	private String getFirstWord(String text) {
 		String parameters[] = text.split(TEXT_FILE_DIVIDER);
 
 		return parameters[0];
 	}
-
-	private void createFileWithoutDirectory() throws FileSystemException {
-		File file = new File(filePath);
-
-		createNewFile(file);
-	}
-
-	private void createFileWithDirectory() throws FileSystemException {
-		File file = new File(filePath);
+	
+	private String getPathFromConfig() throws FileSystemException {
+		File file = new File(CONFIG_FILE_PATH);
+		String readFilePath;
 
 		createDirectoryIfMissing(file);
 
-		createNewFile(file);
+		createNewFileIfFileDoesNotExist(file);
+		
+		try {
+			readFilePath = readFirstLine(CONFIG_FILE_PATH);
+		} catch (IOException exception) {
+			return FILE_NAME;
+		}
+		
+		if (!hasDirectorySpecifiedInPath(readFilePath)) {
+			return FILE_NAME;
+		}
+		
+		return String.format(COLLATED_FILE_PATH_FORMAT, readFilePath, FILE_NAME);
+	}
+
+	private boolean hasDirectorySpecifiedInPath(String readFilePath) {
+		if (readFilePath == null) {
+			return false;
+		} else if (readFilePath.trim().equals(EMPTY_STRING)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private String readFirstLine(String configFilePath) throws IOException {
+		FileReader fileToBeRead = new FileReader(configFilePath);
+		BufferedReader configFileReader = new BufferedReader(fileToBeRead);
+		
+		String lineRead = configFileReader.readLine();
+		configFileReader.close();
+		
+		return lineRead;		
+	}
+
+	private void createFile() throws FileSystemException {
+		File file = new File(filePath);
+		
+		if (hasDirectorySpecifiedInPath()) {
+			createDirectoryIfMissing(file);
+		}
+
+		createNewFileIfFileDoesNotExist(file);
+	}
+
+	private boolean hasDirectorySpecifiedInPath() {
+		return !filePath.equals(FILE_NAME);
 	}
 
 	private void createDirectoryIfMissing(File file) {
 		file.getParentFile().mkdirs();
 	}
 
-	private void createNewFile(File file) throws FileSystemException {
+	private void createNewFileIfFileDoesNotExist(File file) throws FileSystemException {
 		try {
 			file.createNewFile();
 		} catch (IOException exception) {
 			throw new FileSystemException(MESSAGE_ERROR_CREATE_FILE);
 		}
+	}
+
+	private void updateConfigFile(String newLocation)
+			throws FileNotFoundException {
+		PrintWriter configWriter = new PrintWriter(CONFIG_FILE_PATH);
+
+		configWriter.println(newLocation);
+
+		configWriter.close();
 	}
 
 	private void initialiseReader() throws FileNotFoundException {
