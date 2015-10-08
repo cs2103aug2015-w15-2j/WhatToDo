@@ -1,10 +1,12 @@
 package gui;
 
 import backend.Logic;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -47,8 +49,8 @@ public class InterfaceController {
     // Used for initSideBar
     private static Pane sbPane;
     private static StackPane sbStack;
-    private static VBox sbVBox;
-    private static HBox sbHBox;
+    private static VBox sbBox;
+    private static HBox sbBoxWithLine;
     private static Rectangle sbRect;
     private static Line sbLine;
 
@@ -69,6 +71,20 @@ public class InterfaceController {
     // Used for initMainInterface
     private static HBox contentBoxWithSideBar;
     private static VBox contentBox, mainBox;
+
+    // Used for initDefTaskView
+    private static Pane defTaskPane;
+    private static VBox defTaskBox, defTaskContentBox;
+    private static ScrollPane defTaskScroll;
+    private static ImageView defTaskImage;
+
+    // Used for initDefView
+    private static Pane defPane;
+    private static HBox defBox;
+
+    // Used for initMainInterface
+    private static Scene mainScene;
+    private static Line contentBoxLine;
 
     private static Logic logic;
 
@@ -106,14 +122,11 @@ public class InterfaceController {
         filepathBox = new VBox(filepathStack, filepathLine);
         filepathPane = new Pane(filepathBox);
 
-        // Set the line to scale with the width of the window when resized
-        filepathLine.endXProperty().bind(MainApp.stage.widthProperty());
-
-        // Make the background scale with the width of the window when resized
-        filepathRect.widthProperty().bind(MainApp.stage.widthProperty());
-
         // Set the alignment for the label to be in the center
         StackPane.setAlignment(filepathLabel, Pos.CENTER);
+
+        // Set the alignment for the rectangle to begin from the left
+        StackPane.setAlignment(filepathRect, Pos.CENTER_LEFT);
 
         // Fix height for the filepath bar
         // +1 for the line width
@@ -144,18 +157,22 @@ public class InterfaceController {
 
         // Set the background to fit to width and height
         sbHomeRect.widthProperty().bind(sbHomePane.widthProperty());
+
+        // Set the background to align to the left
+        StackPane.setAlignment(sbHomeRect, Pos.CENTER_LEFT);
     }
 
     private static void initSideBar() {
 
         initSideBarHomeButton("gui/resources/homeButton.png");
-        sbVBox = new VBox(sbHomePane);
+
+        sbBox = new VBox(sbHomePane);
         sbLine = new Line(0, 0, 0, 250);
         sbRect = new Rectangle(50, 250, background);
 
-        sbStack = new StackPane(sbRect, sbVBox);
-        sbHBox = new HBox(sbStack, sbLine);
-        sbPane = new Pane(sbHBox);
+        sbStack = new StackPane(sbRect, sbBox);
+        sbBoxWithLine = new HBox(sbStack, sbLine);
+        sbPane = new Pane(sbBoxWithLine);
 
         // Fix the width for the sidebar
         // +1 for line width
@@ -173,9 +190,10 @@ public class InterfaceController {
         textStack = new StackPane(textRect, textField);
         textPane = new Pane(textStack);
 
-        // Align the text field in the center of the pane
-        StackPane.setAlignment(textField, Pos.CENTER);
         StackPane.setMargin(textField, new Insets(0, 10, 0, 10));
+
+        // Set the alignment of the background to start from left
+        StackPane.setAlignment(textRect, Pos.CENTER_LEFT);
 
         // Fix the height of the text field
         textPane.setMaxHeight(40);
@@ -196,14 +214,41 @@ public class InterfaceController {
         StackPane.setAlignment(feedbackLabel, Pos.CENTER_LEFT);
         StackPane.setMargin(feedbackLabel, new Insets(0, 10, 0, 10));
 
+        // Set the alignment for the background to start from the left
+        StackPane.setAlignment(feedbackRect, Pos.CENTER_LEFT);
+
         // Fix the height of the feedback bar
         // +1 for line width
         feedbackPane.setMaxHeight(36);
         feedbackPane.setMinHeight(36);
     }
 
-    private static void initDefaultView() {
+    private static void initDefTaskView() {
 
+        defTaskImage = new ImageView("gui/resources/taskHeader.png");
+
+        String returnMessage = logic.taskDefaultView();
+        Label defTaskLabel = new Label(returnMessage);
+
+        defTaskContentBox = new VBox(defTaskLabel);
+        defTaskScroll = new ScrollPane(defTaskContentBox);
+        defTaskBox = new VBox(defTaskImage, defTaskScroll);
+        defTaskPane = new Pane(defTaskBox);
+
+        // Set the text to wrap
+        defTaskLabel.setWrapText(true);
+
+        // Set the size of the task pane to grow
+        // Will even out with defEventBox
+        HBox.setHgrow(defTaskBox, Priority.ALWAYS);
+    }
+
+    private static void initDefView() {
+
+        initDefTaskView();
+
+        defBox = new HBox(defTaskPane);
+        defPane = new Pane(defBox);
     }
 
     public static Scene initMainInterface() {
@@ -224,10 +269,14 @@ public class InterfaceController {
         initSideBar();
         initTextField();
         initFeedbackBar();
+        initDefView();
 
         // Create the content box without the sidebar first
-        contentBox = new VBox(feedbackPane, textPane);
+        contentBoxLine = new Line(0, 0, MainApp.MIN_WINDOW_WIDTH, 0);
+
+        contentBox = new VBox(defPane, contentBoxLine, feedbackPane, textPane);
         HBox.setHgrow(contentBox, Priority.ALWAYS);
+        VBox.setVgrow(defPane, Priority.ALWAYS);
 
         // Add the sidebar to another content box
         contentBoxWithSideBar = new HBox(sbPane, contentBox);
@@ -236,10 +285,18 @@ public class InterfaceController {
         // Add the file path bar on top
         mainBox = new VBox(filepathPane, contentBoxWithSideBar);
 
+        mainScene = new Scene(mainBox);
+
         /* ================================================================================
          * Perform width and height bindings that require all components to be created
          * ================================================================================
          */
+
+        // Set the line to scale with the width of the window when resized
+        filepathLine.endXProperty().bind(mainScene.widthProperty());
+
+        // Make the background scale with the width of the window when resized
+        filepathRect.widthProperty().bind(mainScene.widthProperty());
 
         // Set height of the sidebar background to scale with height of the sidebar
         // Sidebar height set by VBox.setVgrow()
@@ -258,7 +315,14 @@ public class InterfaceController {
         // Set the feedback box line separator to scale with width of content box
         feedbackLine.endXProperty().bind(contentBox.widthProperty());
 
-        return new Scene(mainBox);
+        // Set the default line to scale with window width
+        contentBoxLine.endXProperty().bind(contentBox.widthProperty());
+
+        // Set CSS styling
+        mainScene.getStylesheets().add(InterfaceController.class.getResource(
+                "/gui/stylesheets/Interface.css").toExternalForm());
+
+        return mainScene;
     }
 
     //public static Scene initInterface() {
