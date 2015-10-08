@@ -13,9 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import java.nio.file.FileSystemException;
-
 import java.util.ArrayList;
 
 import struct.Date;
@@ -38,11 +36,12 @@ public class Storage {
 	private static final String MESSAGE_EDIT_EVENT_END_DATE = "Edited event \"%s\" end date from \"%s\" to \"%s\".";
 	private static final String MESSAGE_EDIT_EVENT_START_TIME = "Edited event \"%s\" start time from \"%s\" to \"%s\".";
 	private static final String MESSAGE_EDIT_EVENT_END_TIME = "Edited event \"%s\" end time from \"%s\" to \"%s\".";
+	private static final String MESSAGE_MARK_DONE = "The %s \"%s\" has been marked as done.";
 	private static final String MESSAGE_EMPTY_FILE = "The list is empty.";
 
 	private static final String MESSAGE_ERROR_CREATE_FILE = "Error encountered when creating file.";
 	private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
-	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS = "Line %d is invalid.";
+	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS = "Cannot find line %d in text file.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK = "Line %d is not a task!";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT = "Line %d is not an event!";
 	private static final String MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE = "Event start date/time is not earlier than end date/time.";
@@ -55,6 +54,8 @@ public class Storage {
 	private static final String MESSAGE_ERROR_REPLACE_EVENT_END_DATE = "Error encountered when editing event end date.";
 	private static final String MESSAGE_ERROR_REPLACE_EVENT_START_TIME = "Error encountered when editing event start time.";
 	private static final String MESSAGE_ERROR_REPLACE_EVENT_END_TIME = "Error encountered when editing event end time.";
+	private static final String MESSAGE_ERROR_ALREADY_DONE = "Error encountered: the %s \"%s\" has already been completed.";
+	private static final String MESSAGE_ERROR_MARK_DONE = "Error encountered when marking line as done.";
 
 	private static final String TEXT_FILE_DIVIDER = ";";
 
@@ -63,6 +64,9 @@ public class Storage {
 	private static final String STRING_EVENT = "event";
 
 	private static final String NEWLINE = "\n";
+
+	private static final int PARAM_EMPTY_STRING_BUILDER = 0;
+	private static final int PARAM_LINE_NUMBER_ZERO = 0;
 
 	// This string stores the whole file name with directory.
 	private String filePath;
@@ -171,8 +175,8 @@ public class Storage {
 	// deprecated method, use the one below.
 	public String addEvent(String eventName, Date eventStartDate,
 			String eventStartTime, Date eventEndDate, String eventEndTime) {
-		return addEvent(new Event(eventName, false, eventStartDate, eventEndDate,
-				eventStartTime, eventEndTime));
+		return addEvent(new Event(eventName, false, eventStartDate,
+				eventEndDate, eventStartTime, eventEndTime));
 	}
 
 	public String addEvent(Event newEvent) {
@@ -359,15 +363,35 @@ public class Storage {
 			return MESSAGE_ERROR_REPLACE_EVENT_END_TIME;
 		}
 	}
-	
+
 	/**
 	 * Overwrites the entire text file with given string input.
 	 * 
-	 * @param textToWrite              text used to overwrite the text file with.
-	 * @throws FileNotFoundException   when unable to find file to write to.
+	 * @param textToWrite
+	 *            text used to overwrite the text file with.
+	 * @throws FileNotFoundException
+	 *             when unable to find file to write to.
 	 */
 	public void overwriteFile(String textToWrite) throws FileNotFoundException {
 		writeContentsToFile(textToWrite);
+	}
+
+	/**
+	 * Marks the task/event/float at given line number in text file as done.
+	 * (1-based counting)
+	 * 
+	 * @param lineNumber
+	 *            line number in text file to be marked as done.
+	 * @return feedback based on line number
+	 */
+	public String markAsDone(int lineNumber) {
+		try {
+			String feedback = markAsCompleted(lineNumber);
+
+			return feedback;
+		} catch (IOException exception) {
+			return MESSAGE_ERROR_MARK_DONE;
+		}
 	}
 
 	/*
@@ -377,220 +401,196 @@ public class Storage {
 	// To refactor and improve
 	private String replaceEventStartTime(int lineNumber, String newStartTime)
 			throws IOException {
-		if (lineNumber <= 0) {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-		}
-
 		ArrayList<String> fileContents = new ArrayList<String>();
 		String oldStartTime;
 		String eventName;
 
-		initialiseReader();
 		addFileContentsToArrayList(fileContents);
 
-		if (lineNumber > fileContents.size()) {
+		if (!isValidLineNumber(lineNumber, fileContents)) {
 			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
 
 		String lineToBeEdited = fileContents.get(lineNumber - 1);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		
-		fileReader.close();
-		
+
 		if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
-			
-			if (!isValidStartAndEnd(editedEvent.getEventStartDate(), newStartTime, editedEvent.getEventEndDate(),
+
+			if (!isValidStartAndEnd(editedEvent.getEventStartDate(),
+					newStartTime, editedEvent.getEventEndDate(),
 					editedEvent.getEventEndTime())) {
 				return MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE;
 			}
-			
+
 			oldStartTime = editedEvent.getEventStartTime();
 			editedEvent.setEventStartTime(newStartTime);
 			eventName = editedEvent.getName();
-			
+
 			deleteLineFromFile(lineNumber);
 			addEventToFile(editedEvent);
 		} else {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT, lineNumber);
-		} 
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT,
+					lineNumber);
+		}
 
-		return String.format(MESSAGE_EDIT_EVENT_START_TIME, eventName, oldStartTime,
-				newStartTime);
+		return String.format(MESSAGE_EDIT_EVENT_START_TIME, eventName,
+				oldStartTime, newStartTime);
 	}
 
 	// To refactor and improve
 	private String replaceEventStartDate(int lineNumber, Date newStartDate)
 			throws IOException {
-		if (lineNumber <= 0) {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-		}
-
 		ArrayList<String> fileContents = new ArrayList<String>();
 		String oldStartDate;
 		String eventName;
 
-		initialiseReader();
 		addFileContentsToArrayList(fileContents);
 
-		if (lineNumber > fileContents.size()) {
+		if (!isValidLineNumber(lineNumber, fileContents)) {
 			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
 
 		String lineToBeEdited = fileContents.get(lineNumber - 1);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		
-		fileReader.close();
-		
+
 		if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
-			
-			if (!isValidStartAndEnd(newStartDate, editedEvent.getEventStartTime(), editedEvent.getEventEndDate(),
+
+			if (!isValidStartAndEnd(newStartDate,
+					editedEvent.getEventStartTime(),
+					editedEvent.getEventEndDate(),
 					editedEvent.getEventEndTime())) {
 				return MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE;
 			}
-			
+
 			oldStartDate = editedEvent.getEventStartDate().getFormatDate();
 			editedEvent.setEventStartDate(newStartDate);
 			eventName = editedEvent.getName();
-			
+
 			deleteLineFromFile(lineNumber);
 			addEventToFile(editedEvent);
 		} else {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT, lineNumber);
-		} 
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT,
+					lineNumber);
+		}
 
-		return String.format(MESSAGE_EDIT_EVENT_START_DATE, eventName, oldStartDate,
-				newStartDate.getFormatDate());
+		return String.format(MESSAGE_EDIT_EVENT_START_DATE, eventName,
+				oldStartDate, newStartDate.getFormatDate());
 	}
 
 	// To refactor and improve
 	private String replaceEventEndDate(int lineNumber, Date newEndDate)
 			throws IOException {
-		if (lineNumber <= 0) {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-		}
-
 		ArrayList<String> fileContents = new ArrayList<String>();
 		String oldEndDate;
 		String eventName;
 
-		initialiseReader();
 		addFileContentsToArrayList(fileContents);
 
-		if (lineNumber > fileContents.size()) {
+		if (!isValidLineNumber(lineNumber, fileContents)) {
 			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
 
 		String lineToBeEdited = fileContents.get(lineNumber - 1);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		
-		fileReader.close();
-		
+
 		if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
-			
-			if (!isValidStartAndEnd(editedEvent.getEventStartDate(), editedEvent.getEventStartTime(), newEndDate,
+
+			if (!isValidStartAndEnd(editedEvent.getEventStartDate(),
+					editedEvent.getEventStartTime(), newEndDate,
 					editedEvent.getEventEndTime())) {
 				return MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE;
 			}
-			
+
 			oldEndDate = editedEvent.getEventEndDate().getFormatDate();
 			editedEvent.setEventEndDate(newEndDate);
 			eventName = editedEvent.getName();
-			
+
 			deleteLineFromFile(lineNumber);
 			addEventToFile(editedEvent);
 		} else {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT, lineNumber);
-		} 
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT,
+					lineNumber);
+		}
 
-		return String.format(MESSAGE_EDIT_EVENT_END_DATE, eventName, oldEndDate,
-				newEndDate.getFormatDate());
+		return String.format(MESSAGE_EDIT_EVENT_END_DATE, eventName,
+				oldEndDate, newEndDate.getFormatDate());
 	}
 
 	// To refactor and improve
 	private String replaceEventEndTime(int lineNumber, String newEndTime)
 			throws IOException {
-		if (lineNumber <= 0) {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-		}
-
 		ArrayList<String> fileContents = new ArrayList<String>();
 		String oldEndTime;
 		String eventName;
 
-		initialiseReader();
 		addFileContentsToArrayList(fileContents);
 
-		if (lineNumber > fileContents.size()) {
+		if (!isValidLineNumber(lineNumber, fileContents)) {
 			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
 
 		String lineToBeEdited = fileContents.get(lineNumber - 1);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		
-		fileReader.close();
-		
+
 		if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
-			
-			if (!isValidStartAndEnd(editedEvent.getEventStartDate(), editedEvent.getEventStartTime(), editedEvent.getEventEndDate(),
-					newEndTime)) {
+
+			if (!isValidStartAndEnd(editedEvent.getEventStartDate(),
+					editedEvent.getEventStartTime(),
+					editedEvent.getEventEndDate(), newEndTime)) {
 				return MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE;
 			}
-			
+
 			oldEndTime = editedEvent.getEventEndTime();
 			editedEvent.setEventEndTime(newEndTime);
 			eventName = editedEvent.getName();
-			
+
 			deleteLineFromFile(lineNumber);
 			addEventToFile(editedEvent);
 		} else {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT, lineNumber);
-		} 
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT,
+					lineNumber);
+		}
 
-		return String.format(MESSAGE_EDIT_EVENT_END_TIME, eventName, oldEndTime,
-				newEndTime);
+		return String.format(MESSAGE_EDIT_EVENT_END_TIME, eventName,
+				oldEndTime, newEndTime);
 	}
 
 	// To refactor and improve
 	private String replaceTaskDeadline(int lineNumber, Date newDeadline)
 			throws IOException {
-		if (lineNumber <= 0) {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-		}
-
 		ArrayList<String> fileContents = new ArrayList<String>();
 		String oldDeadline;
 		String taskName;
 
-		initialiseReader();
 		addFileContentsToArrayList(fileContents);
 
-		if (lineNumber > fileContents.size()) {
+		if (!isValidLineNumber(lineNumber, fileContents)) {
 			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
 
 		String lineToBeEdited = fileContents.get(lineNumber - 1);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		
-		fileReader.close();
-		
+
 		if (typeToBeEdited.equals(STRING_TASK)) {
 			Task editedTask = new Task(lineToBeEdited);
-			
+
 			oldDeadline = editedTask.getDeadline().getFormatDate();
 			editedTask.setDeadline(newDeadline);
 			taskName = editedTask.getName();
-			
+
 			deleteLineFromFile(lineNumber);
 			addTaskToFile(editedTask);
 		} else {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK, lineNumber);
-		} 
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK,
+					lineNumber);
+		}
 
-		return String.format(MESSAGE_EDIT_TASK_DEADLINE, taskName, oldDeadline, newDeadline.getFormatDate());
+		return String.format(MESSAGE_EDIT_TASK_DEADLINE, taskName, oldDeadline,
+				newDeadline.getFormatDate());
 	}
 
 	// Refactor
@@ -607,6 +607,8 @@ public class Storage {
 
 	private void addFileContentsToArrayList(ArrayList<String> fileContents)
 			throws IOException {
+		initialiseReader();
+
 		while (true) {
 			String lineRead = fileReader.readLine();
 
@@ -616,28 +618,23 @@ public class Storage {
 				fileContents.add(lineRead);
 			}
 		}
+
+		fileReader.close();
 	}
 
 	// Refactor and improve
 	private String deleteLineFromFile(int lineNumber) throws IOException {
-		initialiseReader();
-		
-		if (lineNumber <= 0) {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-		}
-
 		ArrayList<String> fileContents = new ArrayList<String>();
-		
+
 		addFileContentsToArrayList(fileContents);
-		
-		if (lineNumber > fileContents.size()) {
+
+		if (!isValidLineNumber(lineNumber, fileContents)) {
 			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
 
 		String lineToDelete = fileContents.remove(lineNumber - 1);
 
 		writeContentsToFile(fileContents);
-		fileReader.close();
 
 		return String.format(MESSAGE_DELETE_LINE, lineToDelete);
 	}
@@ -645,54 +642,59 @@ public class Storage {
 	// To refactor and improve
 	private String replaceName(int lineNumber, String newName)
 			throws IOException {
-		if (lineNumber <= 0) {
-			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-		}
-
 		ArrayList<String> fileContents = new ArrayList<String>();
 		String oldName;
 
-		initialiseReader();
 		addFileContentsToArrayList(fileContents);
 
-		if (lineNumber > fileContents.size()) {
+		if (!isValidLineNumber(lineNumber, fileContents)) {
 			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
 		}
 
 		String lineToBeEdited = fileContents.get(lineNumber - 1);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		
-		fileReader.close();
-		
+
 		if (typeToBeEdited.equals(STRING_TASK)) {
 			Task editedTask = new Task(lineToBeEdited);
-			
+
 			oldName = editedTask.getName();
 			editedTask.setName(newName);
-			
+
 			deleteLineFromFile(lineNumber);
 			addTaskToFile(editedTask);
 		} else if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
-			
+
 			oldName = editedEvent.getName();
 			editedEvent.setName(newName);
-			
+
 			deleteLineFromFile(lineNumber);
 			addEventToFile(editedEvent);
-		} else if (typeToBeEdited.equals(STRING_FLOAT_TASK)){
+		} else if (typeToBeEdited.equals(STRING_FLOAT_TASK)) {
 			FloatingTask editedFloat = new FloatingTask(lineToBeEdited);
-			
+
 			oldName = editedFloat.getName();
 			editedFloat.setName(newName);
-			
+
 			deleteLineFromFile(lineNumber);
 			addFloatTaskToFile(editedFloat);
 		} else {
 			return MESSAGE_ERROR_REPLACE_NAME;
 		}
 
-		return String.format(MESSAGE_EDIT_NAME, typeToBeEdited, oldName, newName);
+		return String.format(MESSAGE_EDIT_NAME, typeToBeEdited, oldName,
+				newName);
+	}
+
+	private boolean isValidLineNumber(int lineNumber,
+			ArrayList<String> fileContents) {
+		if (lineNumber <= PARAM_LINE_NUMBER_ZERO) {
+			return false;
+		} else if (lineNumber > fileContents.size()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private String showAllFileContents() throws IOException {
@@ -701,9 +703,82 @@ public class Storage {
 		return fileContents;
 	}
 
-	// To refactor and improve
 	private String readContentFromFile() throws IOException {
 		StringBuilder fileContents = new StringBuilder();
+
+		readLineByLine(fileContents);
+
+		if (fileContents.length() == PARAM_EMPTY_STRING_BUILDER) {
+			return MESSAGE_EMPTY_FILE;
+		}
+
+		return fileContents.toString();
+	}
+
+	// To refactor and improve
+	private String markAsCompleted(int lineNumber) throws IOException {
+		ArrayList<String> fileContents = new ArrayList<String>();
+
+		addFileContentsToArrayList(fileContents);
+
+		if (!isValidLineNumber(lineNumber, fileContents)) {
+			return String.format(MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
+		}
+
+		String lineToMarkDone = fileContents.get(lineNumber - 1);
+		String typeToMarkDone = getFirstWord(lineToMarkDone);
+
+		if (typeToMarkDone.equals(STRING_TASK)) {
+			Task choosenTask = new Task(lineToMarkDone);
+
+			if (choosenTask.isDone()) {
+				return String.format(MESSAGE_ERROR_ALREADY_DONE,
+						typeToMarkDone, choosenTask.getName());
+			}
+
+			choosenTask.setDone(true);
+
+			deleteLineFromFile(lineNumber);
+			addTaskToFile(choosenTask);
+
+			return String.format(MESSAGE_MARK_DONE, typeToMarkDone,
+					choosenTask.getName());
+		} else if (typeToMarkDone.equals(STRING_EVENT)) {
+			Event choosenEvent = new Event(lineToMarkDone);
+
+			if (choosenEvent.isDone()) {
+				return String.format(MESSAGE_ERROR_ALREADY_DONE,
+						typeToMarkDone, choosenEvent.getName());
+			}
+
+			choosenEvent.setDone(true);
+
+			deleteLineFromFile(lineNumber);
+			addEventToFile(choosenEvent);
+
+			return String.format(MESSAGE_MARK_DONE, typeToMarkDone,
+					choosenEvent.getName());
+		} else if (typeToMarkDone.equals(STRING_FLOAT_TASK)) {
+			FloatingTask choosenFloat = new FloatingTask(lineToMarkDone);
+
+			if (choosenFloat.isDone()) {
+				return String.format(MESSAGE_ERROR_ALREADY_DONE,
+						typeToMarkDone, choosenFloat.getName());
+			}
+
+			choosenFloat.setDone(true);
+
+			deleteLineFromFile(lineNumber);
+			addFloatTaskToFile(choosenFloat);
+
+			return String.format(MESSAGE_MARK_DONE, typeToMarkDone,
+					choosenFloat.getName());
+		} else {
+			return MESSAGE_ERROR_MARK_DONE;
+		}
+	}
+
+	private void readLineByLine(StringBuilder fileContents) throws IOException {
 		initialiseReader();
 
 		while (true) {
@@ -717,13 +792,7 @@ public class Storage {
 			}
 		}
 
-		if (fileContents.length() == 0) {
-			return MESSAGE_EMPTY_FILE;
-		}
-
 		fileReader.close();
-
-		return fileContents.toString();
 	}
 
 	// Use this instead of the one below.
@@ -820,13 +889,13 @@ public class Storage {
 		}
 		fileWriter.close();
 	}
-	
+
 	private void writeContentsToFile(String textToWrite)
 			throws FileNotFoundException {
 		initialiseWriter();
 
 		fileWriter.println(textToWrite);
-		
+
 		fileWriter.close();
 	}
 
