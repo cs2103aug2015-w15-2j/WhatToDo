@@ -4,7 +4,7 @@
 }
 
 .root {
-    -fx-background-color: black;
+    -fx-background-color: #dedede;
 }
 
 .text {
@@ -12,4 +12,18 @@
     -fx-font-size: 14;
     -fx-font-smoothing-type: gray;
     -fx-opacity: 0.9;
+}
+
+.line {
+    -fx-opacity: 0.5;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: #dedede;
+}
+
+.gradient-regular {
+    -fx-background-color:
+        linear-gradient(to top, #f0f0f0, #fafafa);
 }

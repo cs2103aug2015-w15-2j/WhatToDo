@@ -35,6 +35,7 @@ public class MainApp extends Application {
 
         // Initialize both scenes
         defaultView = DefaultViewController.initDefaultView();
+        //InterfaceController.initMainInterface();
 
         // Initialize the default stage to be displayed
         initPrimaryStage();
