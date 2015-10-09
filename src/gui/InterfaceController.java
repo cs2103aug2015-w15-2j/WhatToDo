@@ -46,8 +46,9 @@ public class InterfaceController {
     private static Line sbLine;
 
     // Used for initTextField
+    // textField set to protected to allow LogicController to access
     private static VBox textBox;
-    private static TextField textField;
+    protected static TextField textField;
 
     // Used for initFeedbackBar
     private static VBox feedbackBox, feedbackBoxWithLine;
@@ -66,6 +67,7 @@ public class InterfaceController {
 
     // Used for initDefView
     private static HBox defBox, tempBox;
+    private static Line defScrollLine;
 
     // Used for initMainInterface
     private static Scene mainScene;
@@ -108,17 +110,11 @@ public class InterfaceController {
         filepathLabel = new Label("something");
         filepathLine = new Line(0, 0, DEFAULT_WIDTH, 0);
 
-        // Create space nodes to center the text
-        leftSpace = new Region();
-        rightSpace = new Region();
-        HBox.setHgrow(leftSpace, Priority.ALWAYS);
-        HBox.setHgrow(rightSpace, Priority.ALWAYS);
-
-        filepathBox = new HBox(leftSpace, filepathLabel, rightSpace);
+        filepathBox = new HBox(filepathLabel);
         filepathBoxWithLine = new VBox(filepathBox, filepathLine);
 
         // Set margins for the filepath label
-        HBox.setMargin(filepathLabel, new Insets(8, 10, 0, 10));
+        HBox.setMargin(filepathLabel, new Insets(8, 71, 0, 71));
 
         // Fix height for the filepath bar without lines
         filepathBox.setMaxHeight(35);
@@ -203,7 +199,7 @@ public class InterfaceController {
         feedbackBoxWithLine = new VBox(feedbackBox, feedbackLine);
 
         // Set margins for the feedback label
-        VBox.setMargin(feedbackLabel, new Insets(8, 15, 0, 15));
+        VBox.setMargin(feedbackLabel, new Insets(8, 20, 0, 20));
 
         // Fix the height of the feedback label
         feedbackBox.setMaxHeight(35);
@@ -236,22 +232,37 @@ public class InterfaceController {
     	
     	return elementBox;
     }
+    
+    private static void initDefTaskContents() {
+    	
+    	// TODO
+    }
 
     private static void initDefTaskView() {
 
         defTaskImage = new ImageView("gui/resources/taskHeader.png");
 
         String returnMessage = "something\nsomething else\nsomething\ntest";
-        String returnMessage2 = "something\nsomething else\nsomething\ntest";
+        String returnMessage2 = "something\nsomething else\nsomething even longer to test\ntest";
 
         defTaskContentBox = new VBox();
         
         // Use a temporary component for formatting
         tempBox = initDisplayElement(returnMessage);
-        tempBox.setPrefWidth(300);
+        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
+        defTaskContentBox.getChildren().add(tempBox);
+        
+        tempBox = initDisplayElement(returnMessage2);
+        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));       
+        defTaskContentBox.getChildren().add(tempBox);
         
         defTaskScroll = new ScrollPane(defTaskContentBox);
+        defTaskScroll.setFitToWidth(true);
+        
         defTaskBox = new VBox(defTaskImage, defTaskScroll);
+        
+        // Set margins for the scroll pane
+        VBox.setMargin(defTaskScroll, new Insets(10));
         
         // Set the alignment of the header image to be in the center
         defTaskBox.setAlignment(Pos.CENTER);
@@ -260,7 +271,7 @@ public class InterfaceController {
         VBox.setVgrow(defTaskScroll, Priority.ALWAYS);
         
         // Set the scrollbar policy of the scroll pane
-        defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
     }
 
     private static void initDefEventView() {
@@ -268,17 +279,41 @@ public class InterfaceController {
         defEventImage = new ImageView("gui/resources/eventHeader.png");
 
         String returnMessage = "something\nsomething else\nsomething\ntest";
-        Label defTaskLabel = new Label(returnMessage);
-
         String returnMessage2 = "something\nsomething else\nsomething\ntest";
-        Label defTaskLabel2 = new Label(returnMessage2);
-
         String returnMessage3 = "something\nsomething else\nsomething\ntest";
-        Label defTaskLabel3 = new Label(returnMessage3);
+        String returnMessage4 = "something\nsomething else\nsomething\ntest";
+        String returnMessage5 = "something\nsomething else\nsomething\ntest";
 
-        defEventContentBox = new VBox(defTaskLabel, defTaskLabel2, defTaskLabel3);
+        defEventContentBox = new VBox();
+        
+        // Use a temporary component for formatting
+        tempBox = initDisplayElement(returnMessage);
+        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
+        defEventContentBox.getChildren().add(tempBox);
+        
+        tempBox = initDisplayElement(returnMessage2);
+        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
+        defEventContentBox.getChildren().add(tempBox);
+        
+        tempBox = initDisplayElement(returnMessage3);
+        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
+        defEventContentBox.getChildren().add(tempBox);
+        
+        tempBox = initDisplayElement(returnMessage4);
+        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
+        defEventContentBox.getChildren().add(tempBox);
+        
+        tempBox = initDisplayElement(returnMessage5);
+        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
+        defEventContentBox.getChildren().add(tempBox);
+        
         defEventScroll = new ScrollPane(defEventContentBox);
+        defEventScroll.setFitToWidth(true);
+        
         defEventBox = new VBox(defEventImage, defEventScroll);
+        
+        // Set margins for the scroll pane
+        VBox.setMargin(defEventScroll, new Insets(10));
         
         // Set the alignment of the header image to be in the center
         defEventBox.setAlignment(Pos.CENTER);
@@ -287,7 +322,7 @@ public class InterfaceController {
         VBox.setVgrow(defEventScroll, Priority.ALWAYS);
         
         // Set the scrollbar policy of the scroll pane
-        defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
     }
 
     private static void initDefView() {
@@ -295,13 +330,17 @@ public class InterfaceController {
         initDefTaskView();
         initDefEventView();
         
-        defBox = new HBox(defTaskBox, defEventBox);
+        defScrollLine = new Line(0, 0, 0, DEFAULT_SIZE_BUTTON);
         
-        // Set the width of defTaskBox and defEventBox to grow with the window
-        HBox.setHgrow(defTaskBox, Priority.ALWAYS);
-        HBox.setHgrow(defEventBox, Priority.ALWAYS);
+        defBox = new HBox(defTaskBox, defScrollLine, defEventBox);
         
-        defEventBox.prefWidthProperty().bind(defTaskBox.widthProperty());
+        // Set the preferred viewport width of the two scroll panes to be half
+        // of the entire view pane
+        defTaskScroll.prefViewportWidthProperty().bind(defBox.widthProperty().divide(2));
+        defEventScroll.prefViewportWidthProperty().bind(defBox.widthProperty().divide(2));
+        
+        // CSS
+        defScrollLine.getStyleClass().add("line");
     }
 
     public static void initMainInterface() {
@@ -355,18 +394,26 @@ public class InterfaceController {
     }
 
     private static class HeightListener implements ChangeListener<Number> {
+    	
         @Override
         public void changed(ObservableValue<? extends Number> observable,
                             Number oldValue,
                             Number newValue) {
 
             // Set the height of the sidebar separator to
-            // window height - height of filepath bar(35) - 2 * height of line(1)
+            // window height - height of filepath bar(35) - height of line(1)
             sbLine.setEndY((Double)newValue - 36);
+            
+            // Set the height of the scroll pane separator to
+            // window height - height of the filepath bar(35) -
+            // height of feedback bar(35) - height of text bar(45) - 
+            // 2 * height of line(1)
+            defScrollLine.setEndY((Double)newValue - 117);
         }
     }
 
     private static class WidthListener implements ChangeListener<Number> {
+    	
         @Override
         public void changed(ObservableValue<? extends Number> observable,
                             Number oldValue,
