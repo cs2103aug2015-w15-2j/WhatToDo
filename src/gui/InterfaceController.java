@@ -4,6 +4,7 @@ import backend.Logic;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -29,62 +30,47 @@ public class InterfaceController {
 
     // Used for initFilePathBar
     private static HBox filepathBox;
-    private static VBox filepathBoxWithLines;
+    private static VBox filepathBoxWithLine;
     private static Label filepathLabel;
     private static Region leftSpace, rightSpace;
-    private static Line titleLine, filepathLine;
+    private static Line filepathLine;
 
     // Used for initSideBarHomeButton
-    private static Pane sbHomePane;
     private static VBox sbHomeBox;
-    private static StackPane sbHomeStack;
     private static ImageView sbHomeImage;
-    private static Rectangle sbHomeRect;
     private static Line sbHomeLine;
 
     // Used for initSideBar
-    private static Pane sbPane;
-    private static StackPane sbStack;
     private static VBox sbBox;
     private static HBox sbBoxWithLine;
-    private static Rectangle sbRect;
     private static Line sbLine;
 
     // Used for initTextField
-    private static Pane textPane;
     private static VBox textBox;
-    private static StackPane textStack;
-    private static Rectangle textRect;
     private static TextField textField;
 
     // Used for initFeedbackBar
-    private static Pane feedbackPane;
     private static VBox feedbackBox, feedbackBoxWithLine;
-    private static StackPane feedbackStack;
     private static Label feedbackLabel;
-    private static Rectangle feedbackRect;
     private static Line feedbackLine;
 
     // Used for initDefTaskView
-    private static Pane defTaskPane;
     private static VBox defTaskBox, defTaskContentBox;
     private static ScrollPane defTaskScroll;
     private static ImageView defTaskImage;
 
     // Used for initDefEventView
-    private static Pane defEventPane;
     private static VBox defEventBox, defEventContentBox;
     private static ScrollPane defEventScroll;
     private static ImageView defEventImage;
 
     // Used for initDefView
-    private static Pane defPane;
-    private static HBox defBox;
+    private static HBox defBox, tempBox;
 
     // Used for initMainInterface
     private static Scene mainScene;
     private static VBox mainBox;
-    private static Line contentBoxLine;
+    private static Line defLine;
 
     private static Logic logic;
 
@@ -119,8 +105,7 @@ public class InterfaceController {
 
     private static void initFilePathBar() {
 
-        filepathLabel = new Label(logic.getFilepath());
-        titleLine = new Line(0, 0, DEFAULT_WIDTH, 0);
+        filepathLabel = new Label("something");
         filepathLine = new Line(0, 0, DEFAULT_WIDTH, 0);
 
         // Create space nodes to center the text
@@ -130,7 +115,7 @@ public class InterfaceController {
         HBox.setHgrow(rightSpace, Priority.ALWAYS);
 
         filepathBox = new HBox(leftSpace, filepathLabel, rightSpace);
-        filepathBoxWithLines = new VBox(titleLine, filepathBox, filepathLine);
+        filepathBoxWithLine = new VBox(filepathBox, filepathLine);
 
         // Set margins for the filepath label
         HBox.setMargin(filepathLabel, new Insets(8, 10, 0, 10));
@@ -140,12 +125,11 @@ public class InterfaceController {
         filepathBox.setMinHeight(35);
 
         // Fix height for the filepath bar
-        // +2 for line widths
-        filepathBoxWithLines.setMaxHeight(37);
-        filepathBoxWithLines.setMinHeight(37);
+        // +1 for line widths
+        filepathBoxWithLine.setMaxHeight(36);
+        filepathBoxWithLine.setMinHeight(36);
 
         // CSS
-        titleLine.getStyleClass().add("line");
         filepathLine.getStyleClass().add("line");
         filepathBox.getStyleClass().add("gradient-regular");
     }
@@ -234,22 +218,48 @@ public class InterfaceController {
         feedbackLine.getStyleClass().add("line");
         feedbackBox.getStyleClass().add("gradient-regular");
     }
+    
+    private static HBox initDisplayElement(String displayData) {
+    	
+    	// Define a containing HBox that will contain a label with the 
+    	// formatted data and a background
+    	HBox elementBox;
+    	
+    	Label elementLabel = new Label(displayData);
+    	elementBox = new HBox(elementLabel);
+    	
+    	// Set the margins of the element node label within the HBox
+    	HBox.setMargin(elementLabel, new Insets(10));
+    	
+    	// CSS
+    	elementBox.getStyleClass().add("element-box");
+    	
+    	return elementBox;
+    }
 
     private static void initDefTaskView() {
 
         defTaskImage = new ImageView("gui/resources/taskHeader.png");
 
         String returnMessage = "something\nsomething else\nsomething\ntest";
-        Label defTaskLabel = new Label(returnMessage);
-
         String returnMessage2 = "something\nsomething else\nsomething\ntest";
-        Label defTaskLabel2 = new Label(returnMessage2);
 
-        defTaskContentBox = new VBox(defTaskLabel, defTaskLabel2);
+        defTaskContentBox = new VBox();
+        
+        // Use a temporary component for formatting
+        tempBox = initDisplayElement(returnMessage);
+        tempBox.setPrefWidth(300);
+        
         defTaskScroll = new ScrollPane(defTaskContentBox);
         defTaskBox = new VBox(defTaskImage, defTaskScroll);
-        defTaskPane = new Pane(defTaskBox);
-
+        
+        // Set the alignment of the header image to be in the center
+        defTaskBox.setAlignment(Pos.CENTER);
+        
+        // Set the height of the scroll pane to grow with window height
+        VBox.setVgrow(defTaskScroll, Priority.ALWAYS);
+        
+        // Set the scrollbar policy of the scroll pane
         defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
     }
 
@@ -269,8 +279,14 @@ public class InterfaceController {
         defEventContentBox = new VBox(defTaskLabel, defTaskLabel2, defTaskLabel3);
         defEventScroll = new ScrollPane(defEventContentBox);
         defEventBox = new VBox(defEventImage, defEventScroll);
-        defEventPane = new Pane(defEventBox);
+        
+        // Set the alignment of the header image to be in the center
+        defEventBox.setAlignment(Pos.CENTER);
 
+        // Set the height of the scroll pane to grow with the window height
+        VBox.setVgrow(defEventScroll, Priority.ALWAYS);
+        
+        // Set the scrollbar policy of the scroll pane
         defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
     }
 
@@ -278,27 +294,39 @@ public class InterfaceController {
 
         initDefTaskView();
         initDefEventView();
-
-        defBox = new HBox(defTaskPane, defEventPane);
-        defPane = new Pane(defBox);
+        
+        defBox = new HBox(defTaskBox, defEventBox);
+        
+        // Set the width of defTaskBox and defEventBox to grow with the window
+        HBox.setHgrow(defTaskBox, Priority.ALWAYS);
+        HBox.setHgrow(defEventBox, Priority.ALWAYS);
+        
+        defEventBox.prefWidthProperty().bind(defTaskBox.widthProperty());
     }
 
     public static void initMainInterface() {
 
         // Attempt to create a logic object to obtain the filepath
-        try {
+        /*try {
             logic = new Logic();
         } catch (FileSystemException e) {
             // nothing
-        }
+        }*/
 
         initFilePathBar();
         initSideBar();
+        initDefView();
         initFeedbackBar();
         initTextField();
+        
+        // Create the line separator for defBox
+        defLine = new Line(0, 0, DEFAULT_WIDTH, 0);
 
         // Create the region below the filepath bar excluding the sidebar
-        VBox contentBoxNoSideBar = new VBox(feedbackBoxWithLine, textBox);
+        VBox contentBoxNoSideBar = new VBox(defBox, defLine, feedbackBoxWithLine, textBox);
+        
+        // Set the height of defBox to grow with the window
+        VBox.setVgrow(defBox, Priority.ALWAYS);
 
         // Create the region below the filepath bar including the sidebar
         HBox contentBoxWithSideBar = new HBox(sbBoxWithLine, contentBoxNoSideBar);
@@ -307,7 +335,7 @@ public class InterfaceController {
         HBox.setHgrow(contentBoxNoSideBar, Priority.ALWAYS);
 
         // Create the main VBox containing everything
-        mainBox = new VBox(filepathBoxWithLines, contentBoxWithSideBar);
+        mainBox = new VBox(filepathBoxWithLine, contentBoxWithSideBar);
 
         // Set the height of contentBoxWithSideBar to grow with window
         VBox.setVgrow(contentBoxWithSideBar, Priority.ALWAYS);
@@ -331,7 +359,10 @@ public class InterfaceController {
         public void changed(ObservableValue<? extends Number> observable,
                             Number oldValue,
                             Number newValue) {
-            sbLine.setEndY((Double)newValue - 37);
+
+            // Set the height of the sidebar separator to
+            // window height - height of filepath bar(35) - 2 * height of line(1)
+            sbLine.setEndY((Double)newValue - 36);
         }
     }
 
@@ -340,8 +371,13 @@ public class InterfaceController {
         public void changed(ObservableValue<? extends Number> observable,
                             Number oldValue,
                             Number newValue) {
+
+            // Set the width of the feedback and view box separators to
+            // window width - size of sidebar(50) - width of line(1)
             feedbackLine.setEndX((Double)newValue - 51);
-            titleLine.setEndX((Double)newValue);
+            defLine.setEndX((Double)newValue - 51);
+
+            // Set the width of the filepath separator to window width
             filepathLine.setEndX((Double)newValue);
         }
     }
