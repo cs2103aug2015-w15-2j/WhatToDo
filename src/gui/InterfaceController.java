@@ -115,7 +115,7 @@ public class InterfaceController {
         filepathBoxWithLine = new VBox(filepathBox, filepathLine);
 
         // Set margins for the filepath label
-        HBox.setMargin(filepathLabel, new Insets(8, 71, 0, 71));
+        HBox.setMargin(filepathLabel, new Insets(8, 30, 0, 30));
 
         // Fix height for the filepath bar without lines
         filepathBox.setMaxHeight(35);
