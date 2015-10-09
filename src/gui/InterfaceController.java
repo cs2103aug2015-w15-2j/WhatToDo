@@ -10,17 +10,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 
 import java.nio.file.FileSystemException;
+import java.util.ArrayList;
 
 public class InterfaceController {
 
-    /*
-     * ================================================================================
+    /* ================================================================================
      * JavaFX controls used in the general interface
      * ================================================================================
      */
@@ -46,9 +48,8 @@ public class InterfaceController {
     private static Line sbLine;
 
     // Used for initTextField
-    // textField set to protected to allow LogicController to access
     private static VBox textBox;
-    protected static TextField textField;
+    private static TextField textField;
 
     // Used for initFeedbackBar
     private static VBox feedbackBox, feedbackBoxWithLine;
@@ -74,7 +75,7 @@ public class InterfaceController {
     private static VBox mainBox;
     private static Line defLine;
 
-    private static Logic logic;
+    private static LogicController logicControl;
 
     private static final double DEFAULT_WIDTH = 100;
     private static final double DEFAULT_SIZE_BUTTON = 50;
@@ -107,7 +108,7 @@ public class InterfaceController {
 
     private static void initFilePathBar() {
 
-        filepathLabel = new Label("something");
+        filepathLabel = new Label(logicControl.getFilePath());
         filepathLine = new Line(0, 0, DEFAULT_WIDTH, 0);
 
         filepathBox = new HBox(filepathLabel);
@@ -127,6 +128,7 @@ public class InterfaceController {
 
         // CSS
         filepathLine.getStyleClass().add("line");
+        filepathBox.getStyleClass().add("display-bar");
         filepathBox.getStyleClass().add("gradient-regular");
     }
 
@@ -150,7 +152,7 @@ public class InterfaceController {
 
         // CSS
         sbHomeLine.getStyleClass().add("line");
-        sbHomeBox.getStyleClass().add("gradient-regular");
+        sbHomeBox.getStyleClass().add("gradient-selected");
     }
 
     private static void initSideBar() {
@@ -169,14 +171,19 @@ public class InterfaceController {
 
         // CSS
         sbLine.getStyleClass().add("line");
-        sbBoxWithLine.getStyleClass().add("gradient-regular");
+        sbBoxWithLine.getStyleClass().add("gradient-sidebar");
     }
 
     private static void initTextField() {
 
         textField = new TextField();
         textField.requestFocus();
-
+        
+        // Assign text handlers to the text field
+        textField.setOnAction(logicControl.getTextInputHandler());
+        textField.addEventFilter(KeyEvent.KEY_PRESSED, logicControl.getUpKeyHandler());
+        textField.addEventFilter(KeyEvent.KEY_PRESSED, logicControl.getDownKeyHandler());
+        
         textBox = new VBox(textField);
 
         // Set the margins for the text field
@@ -212,7 +219,15 @@ public class InterfaceController {
 
         // CSS
         feedbackLine.getStyleClass().add("line");
+        feedbackBox.getStyleClass().add("display-bar");
         feedbackBox.getStyleClass().add("gradient-regular");
+    }
+    
+    private static boolean isTitle(String displayData) {
+    	
+    	String firstWord = displayData.split(" ")[0];
+    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
+    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
     }
     
     private static HBox initDisplayElement(String displayData) {
@@ -224,45 +239,54 @@ public class InterfaceController {
     	Label elementLabel = new Label(displayData);
     	elementBox = new HBox(elementLabel);
     	
-    	// Set the margins of the element node label within the HBox
-    	HBox.setMargin(elementLabel, new Insets(10));
+    	// Set the text wrap for the label to true
+    	elementLabel.setWrapText(true);
     	
-    	// CSS
-    	elementBox.getStyleClass().add("element-box");
-    	
+    	// Apply different CSS styles and formatting depending on whether it 
+    	// contains a data field or a title field
+    	if (isTitle(displayData)) {
+    		
+    		// Set the margins of the element node label within the HBox
+        	HBox.setMargin(elementLabel, new Insets(0, 10, 0, 10));
+        	
+        	// Apply CSS style for titles
+    		elementBox.getStyleClass().add("element-title");
+    	} else {
+    		
+    		// Set the margins of the element node label within the HBox
+        	HBox.setMargin(elementLabel, new Insets(10));
+        	
+        	// Apply CSS style for regular data field
+    		elementBox.getStyleClass().add("element");
+    	}
+
     	return elementBox;
     }
-    
-    private static void initDefTaskContents() {
-    	
-    	// TODO
-    }
 
-    private static void initDefTaskView() {
+    private static void initDefTaskView(ArrayList<String> tasks) {
 
         defTaskImage = new ImageView("gui/resources/taskHeader.png");
 
-        String returnMessage = "something\nsomething else\nsomething\ntest";
-        String returnMessage2 = "something\nsomething else\nsomething even longer to test\ntest";
-
         defTaskContentBox = new VBox();
         
-        // Use a temporary component for formatting
-        tempBox = initDisplayElement(returnMessage);
-        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
-        defTaskContentBox.getChildren().add(tempBox);
-        
-        tempBox = initDisplayElement(returnMessage2);
-        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));       
-        defTaskContentBox.getChildren().add(tempBox);
+        // Run the loop through the entire task list
+        for (int i = 0; i < tasks.size(); i++) {
+        	// Use a temporary component for formatting
+        	tempBox = initDisplayElement(tasks.get(i));
+        	VBox.setMargin(tempBox, new Insets(0, 0, 20, 0));
+            defTaskContentBox.getChildren().add(tempBox);
+        }
         
         defTaskScroll = new ScrollPane(defTaskContentBox);
         defTaskScroll.setFitToWidth(true);
         
         defTaskBox = new VBox(defTaskImage, defTaskScroll);
         
+        // Set margins for the image
+        VBox.setMargin(defTaskImage, new Insets(0, 0, 10, 0));
+        
         // Set margins for the scroll pane
-        VBox.setMargin(defTaskScroll, new Insets(10));
+        VBox.setMargin(defTaskScroll, new Insets(10, 30, 0, 30));
         
         // Set the alignment of the header image to be in the center
         defTaskBox.setAlignment(Pos.CENTER);
@@ -272,48 +296,36 @@ public class InterfaceController {
         
         // Set the scrollbar policy of the scroll pane
         defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        
+        // CSS
+        defTaskImage.getStyleClass().add("image");
     }
 
-    private static void initDefEventView() {
+    private static void initDefEventView(ArrayList<String> events) {
 
         defEventImage = new ImageView("gui/resources/eventHeader.png");
 
-        String returnMessage = "something\nsomething else\nsomething\ntest";
-        String returnMessage2 = "something\nsomething else\nsomething\ntest";
-        String returnMessage3 = "something\nsomething else\nsomething\ntest";
-        String returnMessage4 = "something\nsomething else\nsomething\ntest";
-        String returnMessage5 = "something\nsomething else\nsomething\ntest";
-
         defEventContentBox = new VBox();
         
-        // Use a temporary component for formatting
-        tempBox = initDisplayElement(returnMessage);
-        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
-        defEventContentBox.getChildren().add(tempBox);
+        // Run the loop through the entire task list
+        for (int i = 0; i < events.size(); i++) {
+        	// Use a temporary component for formatting
+        	tempBox = initDisplayElement(events.get(i));
+        	VBox.setMargin(tempBox, new Insets(0, 0, 20, 0));
+            defEventContentBox.getChildren().add(tempBox);
+        }
         
-        tempBox = initDisplayElement(returnMessage2);
-        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
-        defEventContentBox.getChildren().add(tempBox);
-        
-        tempBox = initDisplayElement(returnMessage3);
-        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
-        defEventContentBox.getChildren().add(tempBox);
-        
-        tempBox = initDisplayElement(returnMessage4);
-        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
-        defEventContentBox.getChildren().add(tempBox);
-        
-        tempBox = initDisplayElement(returnMessage5);
-        VBox.setMargin(tempBox, new Insets(0, 0, 15, 0));
-        defEventContentBox.getChildren().add(tempBox);
         
         defEventScroll = new ScrollPane(defEventContentBox);
         defEventScroll.setFitToWidth(true);
         
         defEventBox = new VBox(defEventImage, defEventScroll);
         
+        // Set margins for the image
+        VBox.setMargin(defEventImage, new Insets(0, 0, 10, 0));
+        
         // Set margins for the scroll pane
-        VBox.setMargin(defEventScroll, new Insets(10));
+        VBox.setMargin(defEventScroll, new Insets(10, 30, 0, 30));
         
         // Set the alignment of the header image to be in the center
         defEventBox.setAlignment(Pos.CENTER);
@@ -323,12 +335,15 @@ public class InterfaceController {
         
         // Set the scrollbar policy of the scroll pane
         defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        
+        // CSS
+        defEventImage.getStyleClass().add("image");
     }
 
     private static void initDefView() {
 
-        initDefTaskView();
-        initDefEventView();
+        initDefTaskView(logicControl.getDefTasks());
+        initDefEventView(logicControl.getDefEvents());
         
         defScrollLine = new Line(0, 0, 0, DEFAULT_SIZE_BUTTON);
         
@@ -342,15 +357,16 @@ public class InterfaceController {
         // CSS
         defScrollLine.getStyleClass().add("line");
     }
+    
+    public static void updateView() {
+    	
+    	initDefView();
+    }
 
     public static void initMainInterface() {
-
-        // Attempt to create a logic object to obtain the filepath
-        /*try {
-            logic = new Logic();
-        } catch (FileSystemException e) {
-            // nothing
-        }*/
+    	
+    	// Initialize a LogicController
+        logicControl = new LogicController();
 
         initFilePathBar();
         initSideBar();
@@ -382,8 +398,8 @@ public class InterfaceController {
         mainScene = new Scene(mainBox);
 
         // Set resize listeners for the main scene
-        mainScene.heightProperty().addListener(new HeightListener());
-        mainScene.widthProperty().addListener(new WidthListener());
+        mainScene.heightProperty().addListener(logicControl.getHeightListener());
+        mainScene.widthProperty().addListener(logicControl.getWidthListener());
 
         // Set CSS styling
         mainScene.getStylesheets().add(InterfaceController.class.getResource(
@@ -393,39 +409,38 @@ public class InterfaceController {
         MainApp.defaultView = mainScene;
     }
 
-    private static class HeightListener implements ChangeListener<Number> {
-    	
-        @Override
-        public void changed(ObservableValue<? extends Number> observable,
-                            Number oldValue,
-                            Number newValue) {
-
-            // Set the height of the sidebar separator to
-            // window height - height of filepath bar(35) - height of line(1)
-            sbLine.setEndY((Double)newValue - 36);
-            
-            // Set the height of the scroll pane separator to
-            // window height - height of the filepath bar(35) -
-            // height of feedback bar(35) - height of text bar(45) - 
-            // 2 * height of line(1)
-            defScrollLine.setEndY((Double)newValue - 117);
-        }
+    /* ================================================================================
+     * Getters for LogicController to access required JavaFX components
+     * ================================================================================
+     */
+    
+    public static TextField getTextField() {
+    	return textField;
     }
-
-    private static class WidthListener implements ChangeListener<Number> {
-    	
-        @Override
-        public void changed(ObservableValue<? extends Number> observable,
-                            Number oldValue,
-                            Number newValue) {
-
-            // Set the width of the feedback and view box separators to
-            // window width - size of sidebar(50) - width of line(1)
-            feedbackLine.setEndX((Double)newValue - 51);
-            defLine.setEndX((Double)newValue - 51);
-
-            // Set the width of the filepath separator to window width
-            filepathLine.setEndX((Double)newValue);
-        }
+    
+    public static Label getFeedbackLabel() {
+    	return feedbackLabel;
+    }
+    
+    // Return lines so as to dynamically adjust line height and width within the
+    // ChangeListener
+    public static Line getSbLine() {
+    	return sbLine;
+    }
+    
+    public static Line getDefScrollLine() {
+    	return defScrollLine;
+    }
+    
+    public static Line getFeedbackLine() {
+    	return feedbackLine;
+    }
+    
+    public static Line getDefLine() {
+    	return defLine;
+    }
+    
+    public static Line getFilepathLine() {
+    	return filepathLine;
     }
 }

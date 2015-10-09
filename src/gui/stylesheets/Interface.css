@@ -1,6 +1,17 @@
 @font-face {
-    font-family: 'PT Sans';
-    src: url('../resources/PTS75F.ttf');
+	src: url('../resources/PTS75F.ttf');
+}
+
+@font-face {
+	src: url('../resources/PTS56F.ttf');
+}
+
+@font-face {
+	src: url('../resources/PTS55F_0.ttf');
+}
+
+@font-face {
+	src: url('../resources/PTS76F.ttf');
 }
 
 .root {
@@ -9,9 +20,12 @@
 
 .text {
     -fx-font-family: 'PT Sans';
-    -fx-font-size: 14;
     -fx-font-smoothing-type: gray;
     -fx-opacity: 0.9;
+}
+
+.display-bar {
+	-fx-font-size: 14;
 }
 
 .line {
@@ -21,13 +35,35 @@
 .scroll-pane {
     -fx-background-color: transparent;
     -fx-background: #dedede;
+    -fx-font-size: 14;
 }
 
 .gradient-regular {
     -fx-background-color:
-        linear-gradient(to top, #f0f0f0, #fafafa);
+        linear-gradient(to top, #f0f0f0, #f8f8f8);
 }
 
-.element-box {
+.gradient-sidebar {
+    -fx-background-color:
+        linear-gradient(to top, #f0f0f0, #f5f5f5);
+}
+
+.gradient-selected {
+	-fx-background-color:
+        linear-gradient(to top, #f0f0f0, #dcdcdc);
+}
+
+.element {
 	-fx-background-color: #f0f0f0;
+	-fx-effect: dropshadow(gaussian, gray, 3, 0.2, 0, 1);
+}
+
+.element-title {
+	-fx-font-size: 20;
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
+
+.image {
+	-fx-effect: dropshadow(gaussian, gray, 3, 0.2, 0, 1);
 }

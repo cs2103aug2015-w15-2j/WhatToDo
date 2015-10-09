@@ -1,11 +1,18 @@
 package gui;
 
 import java.nio.file.FileSystemException;
+import java.util.ArrayList;
 
 import backend.Logic;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 
 public class LogicController {
 
@@ -14,17 +21,33 @@ public class LogicController {
 	private static Logic logic;
 	private static CommandHistory commandHistory;
 	
+	// Static event handlers
+	private static TextInputHandler textInputHandler;
+	private static UpKeyHandler upKeyHandler;
+	private static DownKeyHandler downKeyHandler;
+	private static HeightListener heightListener;
+	private static WidthListener widthListener;
+	
 	public LogicController() {
+		
 		try {
 			logic = new Logic();
 		} catch (FileSystemException e) {
 			logic = null;
 		}
 		
+		// Initialize the command history object
 		commandHistory = new CommandHistory();
+		
+		// Initialize the event handlers
+		textInputHandler = new TextInputHandler();
+		upKeyHandler = new UpKeyHandler();
+		downKeyHandler = new DownKeyHandler();
+		heightListener = new HeightListener();
+		widthListener = new WidthListener();
 	}
 	
-	public static String getFilePath() {
+	public String getFilePath() {
 		
 		if (logic != null) {
 			return logic.getFilepath();
@@ -33,20 +56,111 @@ public class LogicController {
 		}
 	}
 	
+	public ArrayList<String> getDefTasks() {
+		
+		ArrayList<String> temp = new ArrayList<String>();
+		
+		// Get the string from logic
+		String defTasks = logic.taskDefaultView();
+		
+		// Split the string by newline
+		String[] defTasksSplit = defTasks.split("\n");
+		
+		// Traverse the split string array and ignore the empty lines
+		for (int i = 0; i < defTasksSplit.length; i++) {
+			if (!defTasksSplit[i].equals("")) {
+				// Add it to the ArrayList
+				temp.add(defTasksSplit[i]);
+			}
+		}
+		
+		return temp;
+	}
+	
+	public ArrayList<String> getDefEvents() {
+		
+		ArrayList<String> temp = new ArrayList<String>();
+		
+		// Get the string from logic
+		String defEvents = logic.eventDefaultView();
+		
+		// Split the string by newline
+		String[] defEventsSplit = defEvents.split("\n");
+		
+		// Traverse the split string array and ignore the empty lines
+		for (int i = 0; i < defEventsSplit.length; i++) {
+			if (!defEventsSplit[i].equals("")) {
+				// Add it to the ArrayList
+				temp.add(defEventsSplit[i]);
+			}
+		}
+		
+		return temp;
+	}
+	
+	/* ================================================================================
+     * Getters to allow InterfaceController to access the private handling classes
+     * ================================================================================
+     */
+	
+	public TextInputHandler getTextInputHandler() {
+		return textInputHandler;
+	}
+	
 	public UpKeyHandler getUpKeyHandler() {
-		return new UpKeyHandler();
+		return upKeyHandler;
 	}
 	
 	public DownKeyHandler getDownKeyHandler() {
-		return new DownKeyHandler();
+		return downKeyHandler;
 	}
+	
+	public HeightListener getHeightListener() {
+		return heightListener;
+	}
+	
+	public WidthListener getWidthListener() {
+		return widthListener;
+	}
+	
+	/* ================================================================================
+     * Private event handlers for InterfaceController
+     * ================================================================================
+     */	
+	
+	private static class TextInputHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent event) {
+
+        	// Get the text field from InterfaceController
+        	TextField textField = InterfaceController.getTextField();
+        	
+            String textFieldInput = textField.getText();
+
+            // Add the input into command history
+            commandHistory.add(textFieldInput);
+            commandHistory.resetIndex();
+
+            // Clear the textField
+            textField.setText("");
+
+            // Run the operation
+            String returnMessage = logic.executeCommand(textFieldInput);
+
+            // Add the returnMessage to the History pane
+            InterfaceController.getFeedbackLabel().setText(returnMessage);
+
+            // Update the Tasks and Events
+            InterfaceController.updateView();
+        }
+    }
 	
 	private static class UpKeyHandler implements EventHandler<KeyEvent> {
 
         @Override
         public void handle(KeyEvent event) {
             if (event.getCode() == KeyCode.UP) {
-                InterfaceController.textField.setText(commandHistory.getPrevious());
+                InterfaceController.getTextField().setText(commandHistory.getPrevious());
             }
         }
     }
@@ -56,8 +170,42 @@ public class LogicController {
         @Override
         public void handle(KeyEvent event) {
             if (event.getCode() == KeyCode.DOWN) {
-                InterfaceController.textField.setText(commandHistory.getNext());
+                InterfaceController.getTextField().setText(commandHistory.getNext());
             }
         }
+    }
+    
+    private static class HeightListener implements ChangeListener<Number> {
+
+    	@Override
+    	public void changed(ObservableValue<? extends Number> observable,
+    			Number oldValue, Number newValue) {
+
+    		// Set the height of the sidebar separator to
+    		// window height - height of filepath bar(35) - height of line(1)
+    		InterfaceController.getSbLine().setEndY((Double)newValue - 36);
+
+    		// Set the height of the scroll pane separator to
+    		// window height - height of the filepath bar(35) -
+    		// height of feedback bar(35) - height of text bar(45) - 
+    		// 2 * height of line(1)
+    		InterfaceController.getDefScrollLine().setEndY((Double)newValue - 117);
+    	}
+    }
+
+    private static class WidthListener implements ChangeListener<Number> {
+
+    	@Override
+    	public void changed(ObservableValue<? extends Number> observable,
+    			Number oldValue, Number newValue) {
+
+    		// Set the width of the feedback and view box separators to
+    		// window width - size of sidebar(50) - width of line(1)
+    		InterfaceController.getFeedbackLine().setEndX((Double)newValue - 51);
+    		InterfaceController.getDefLine().setEndX((Double)newValue - 51);
+
+    		// Set the width of the filepath separator to window width
+    		InterfaceController.getFilepathLine().setEndX((Double)newValue);
+    	}
     }
 }
