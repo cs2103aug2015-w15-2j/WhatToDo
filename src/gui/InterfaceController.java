@@ -251,6 +251,7 @@ public class InterfaceController {
         	
         	// Apply CSS style for titles
     		elementBox.getStyleClass().add("element-title");
+    		//elementLabel.getStyleClass().add("text-title");
     	} else {
     		
     		// Set the margins of the element node label within the HBox

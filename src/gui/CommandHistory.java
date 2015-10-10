@@ -25,7 +25,7 @@ public class CommandHistory {
 
         // If command history is empty or
         // currentIndex = -1, meaning the user has viewed till the very first command
-        if (history.isEmpty() || currentIndex == -1) {
+        if (history.isEmpty()) {
             return "";
         } else {
             String returnedCommand = history.get(currentIndex);
@@ -40,7 +40,7 @@ public class CommandHistory {
 
         // If command history is empty or
         // currentIndex = history.size() - 1, meaning the user has viewed till the very last command
-        if (history.isEmpty() || currentIndex > history.size() - 1) {
+        if (history.isEmpty()) {
             return "";
         } else {
             String returnedCommand = history.get(currentIndex);

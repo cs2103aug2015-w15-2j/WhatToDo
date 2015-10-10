@@ -61,7 +61,11 @@
 .element-title {
 	-fx-font-size: 20;
 	-fx-font-weight: bold;
-	-fx-font-style: italic;
+	-fx-text-fill: white;
+}
+
+.text-title {
+	-fx-text-fill: red;
 }
 
 .image {

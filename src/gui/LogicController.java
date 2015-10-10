@@ -21,13 +21,6 @@ public class LogicController {
 	private static Logic logic;
 	private static CommandHistory commandHistory;
 	
-	// Static event handlers
-	private static TextInputHandler textInputHandler;
-	private static UpKeyHandler upKeyHandler;
-	private static DownKeyHandler downKeyHandler;
-	private static HeightListener heightListener;
-	private static WidthListener widthListener;
-	
 	public LogicController() {
 		
 		try {
@@ -38,13 +31,6 @@ public class LogicController {
 		
 		// Initialize the command history object
 		commandHistory = new CommandHistory();
-		
-		// Initialize the event handlers
-		textInputHandler = new TextInputHandler();
-		upKeyHandler = new UpKeyHandler();
-		downKeyHandler = new DownKeyHandler();
-		heightListener = new HeightListener();
-		widthListener = new WidthListener();
 	}
 	
 	public String getFilePath() {
@@ -104,23 +90,23 @@ public class LogicController {
      */
 	
 	public TextInputHandler getTextInputHandler() {
-		return textInputHandler;
+		return new TextInputHandler();
 	}
 	
 	public UpKeyHandler getUpKeyHandler() {
-		return upKeyHandler;
+		return new UpKeyHandler();
 	}
 	
 	public DownKeyHandler getDownKeyHandler() {
-		return downKeyHandler;
+		return new DownKeyHandler();
 	}
 	
 	public HeightListener getHeightListener() {
-		return heightListener;
+		return new HeightListener();
 	}
 	
 	public WidthListener getWidthListener() {
-		return widthListener;
+		return new WidthListener();
 	}
 	
 	/* ================================================================================
