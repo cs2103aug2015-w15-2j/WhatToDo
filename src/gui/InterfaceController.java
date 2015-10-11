@@ -27,9 +27,6 @@ public class InterfaceController {
      * ================================================================================
      */
 
-    // Used for design
-    private static LinearGradient background, backgroundSelected;
-
     // Used for initFilePathBar
     private static HBox filepathBox;
     private static VBox filepathBoxWithLine;
@@ -79,32 +76,6 @@ public class InterfaceController {
 
     private static final double DEFAULT_WIDTH = 100;
     private static final double DEFAULT_SIZE_BUTTON = 50;
-
-    /*
-    private static void initGradientBG() {
-
-        // Define the start and end colors
-        Stop stops[] = new Stop[] {
-                new Stop(0, Color.rgb(250, 250, 250)),  // End color (top half)
-                new Stop(1, Color.rgb(240, 240, 240))   // Start color (bottom half)
-        };
-
-        // Create the gradient
-        background = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
-    }
-
-    private static void initGradientBGSelect() {
-
-        // Define the start and end colors
-        Stop stops[] = new Stop[] {
-                new Stop(0, Color.rgb(220, 220, 220)),  // End color (top half)
-                new Stop(1, Color.rgb(240, 240, 240))   // Start color (bottom half)
-        };
-
-        // Create the gradient
-        backgroundSelected = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
-    }
-    */
 
     private static void initFilePathBar() {
 
@@ -359,9 +330,31 @@ public class InterfaceController {
         defScrollLine.getStyleClass().add("line");
     }
     
-    public static void updateView() {
+    public static void updateDefView() {
     	
-    	initDefView();
+    	// Clear the previous content already displayed
+        defTaskContentBox.getChildren().clear();
+        defEventContentBox.getChildren().clear();
+        
+        // Get the results of the file from logic
+        ArrayList<String> tasks = logicControl.getDefTasks();
+        ArrayList<String> events = logicControl.getDefEvents();
+        
+        // Run the loop through the entire task list
+        for (int i = 0; i < tasks.size(); i++) {
+        	// Use a temporary component for formatting
+        	tempBox = initDisplayElement(tasks.get(i));
+        	VBox.setMargin(tempBox, new Insets(0, 0, 20, 0));
+            defTaskContentBox.getChildren().add(tempBox);
+        }
+        
+        // Run the loop through the entire task list
+        for (int i = 0; i < events.size(); i++) {
+        	// Use a temporary component for formatting
+        	tempBox = initDisplayElement(events.get(i));
+        	VBox.setMargin(tempBox, new Insets(0, 0, 20, 0));
+            defEventContentBox.getChildren().add(tempBox);
+        }
     }
 
     public static void initMainInterface() {

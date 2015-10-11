@@ -55,7 +55,7 @@ public class LogicController {
 		// Traverse the split string array and ignore the empty lines
 		for (int i = 0; i < defTasksSplit.length; i++) {
 			if (!defTasksSplit[i].equals("")) {
-				// Add it to the ArrayList
+				// Add it to the ArrayList				
 				temp.add(defTasksSplit[i]);
 			}
 		}
@@ -132,12 +132,11 @@ public class LogicController {
 
             // Run the operation
             String returnMessage = logic.executeCommand(textFieldInput);
-
             // Add the returnMessage to the History pane
             InterfaceController.getFeedbackLabel().setText(returnMessage);
 
             // Update the Tasks and Events
-            InterfaceController.updateView();
+            InterfaceController.updateDefView();
         }
     }
 	
