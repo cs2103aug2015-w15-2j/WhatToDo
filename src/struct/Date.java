@@ -127,6 +127,29 @@ public class Date implements Comparable<Date>{
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
         return sdf.format(cal.getTime());
     }
+    
+    /**
+     * Returns a Date object corresponding to daysToAdd days after 
+     * this Date. Note: This Date object is not updated.
+     * 
+     * Example:
+     * Date newDate = new Date("290915");
+     * Date oneDayLater = newDate.plusDay(1);
+     * 
+     * newDate will be still at "290915" whereas oneDayLater is at "300915"
+     * 
+     * @param daysToAdd   number of days to add to this Date.
+     * @return            Date object after daysToAdd days from this Date.
+     */
+    public Date plusDay(int daysToAdd) {
+    	
+        Calendar cal = Calendar.getInstance(); 
+        cal.set(this.year, this.month-1, this.day);
+        cal.add(Calendar.DATE, daysToAdd);
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy");
+        return new Date(sdf.format(cal.getTime()));
+
+    }
 
     public String getFullDate() {
         return fullDate;
