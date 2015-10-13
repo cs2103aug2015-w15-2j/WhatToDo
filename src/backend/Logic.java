@@ -9,11 +9,12 @@ public class Logic {
 
 	private static final int INDEX_TYPE = 0; 
 	private static final int INDEX_NAME = 1; 
-	private static final int INDEX_DUEDATE = 2;
-	private static final int INDEX_STARTDATE = 2; 
-	private static final int INDEX_STARTTIME = 3; 
-	private static final int INDEX_ENDDATE = 4; 
-	private static final int INDEX_ENDTIME = 5; 
+	private static final int INDEX_ISDONE = 2;
+	private static final int INDEX_DUEDATE = 3;
+	private static final int INDEX_STARTDATE = 3; 
+	private static final int INDEX_STARTTIME = 4; 
+	private static final int INDEX_ENDDATE = 5; 
+	private static final int INDEX_ENDTIME = 6; 
 
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
