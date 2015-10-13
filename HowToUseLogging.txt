@@ -1,0 +1,31 @@
+/**
+ * Here is a simple example on how to use logging.
+ * The logged messages will display on console in Eclipse.
+ */
+
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class LogTester {
+	// Create logger.
+	private static final Logger LOGGER = Logger.getLogger(LogTester.class.getName());
+	public static void main (String[] args) {
+		LOGGER.setLevel(Level.ALL);
+		LOGGER.setUseParentHandlers(false); // prevent parent handler from log to show.
+		
+		// Configure handler to display log messages.
+		ConsoleHandler handler = new ConsoleHandler();
+    handler.setLevel(Level.ALL); // display all log messages.
+    LOGGER.addHandler(handler);
+        
+    // Tests
+		LOGGER.log(Level.INFO, "Info ");
+		LOGGER.log(Level.WARNING,"You are warned! ");
+		LOGGER.log(Level.SEVERE,"SEVERE! ");
+		LOGGER.log(Level.CONFIG, "I am a config");
+		LOGGER.log(Level.FINE, "I am fine");
+		LOGGER.log(Level.FINER, "I am finer");
+		LOGGER.log(Level.FINEST,"I am finest");
+	}
+}
