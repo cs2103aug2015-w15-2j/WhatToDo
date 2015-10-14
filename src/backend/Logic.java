@@ -4,12 +4,14 @@ import java.nio.file.FileSystemException;
 
 import struct.Command;
 import struct.Date;
+import struct.Event;
+import struct.FloatingTask;
+import struct.Task;
 
 public class Logic {
 
 	private static final int INDEX_TYPE = 0; 
 	private static final int INDEX_NAME = 1; 
-	private static final int INDEX_ISDONE = 2;
 	private static final int INDEX_DUEDATE = 3;
 	private static final int INDEX_STARTDATE = 3; 
 	private static final int INDEX_STARTTIME = 4; 
@@ -112,12 +114,14 @@ public class Logic {
     private String executeAddTask(Command command){
     	String taskName = command.getName(); 
     	Date taskDeadline = command.getDueDate();
-    	return storage.addTask(taskName, taskDeadline);
+    	Task task = new Task(taskName, false, taskDeadline);
+    	return storage.addTask(task);
     }
     
     private String executeAddFloatingTask(Command command){
     	String taskName = command.getName(); 
-    	return storage.addFloatingTask(taskName); 
+    	FloatingTask floatingTask = new FloatingTask(taskName, false);
+    	return storage.addFloatingTask(floatingTask); 
     }
     
     private String executeAddEvent(Command command){
@@ -126,6 +130,7 @@ public class Logic {
     	Date eventEndDate = command.getEndDate();
     	String eventStartTime = command.getStartTime(); 
     	String eventEndTime = command.getEndTime();
+    	Event event = new Event(eventName, false, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
     	return storage.addEvent(eventName, eventStartDate, eventStartTime, eventEndDate, eventEndTime); 
     }
    
