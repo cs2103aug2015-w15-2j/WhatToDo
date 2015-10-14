@@ -276,20 +276,6 @@ public class Logic {
 	// Stub methods for testing 
 	//============================================
 
-    public boolean isSwapCommand(String currentState, String userInput) {
-        // Create a parser object to parse
-        CommandParser parser = new CommandParser();
-        return parser.isSwapCommand(currentState, userInput);
-    }
-
-    public String readTasks() {
-        return "stub";
-    }
-
-    public String readEvents() {
-        return "stub";
-    }
-
     public String getFilepath() {
         return "C:/Users/todo.txt";
     }
