@@ -24,6 +24,8 @@ public class CommandParser {
     private static final String USER_COMMAND_EDIT = "edit";
     private static final String USER_COMMAND_SEARCH = "search";
     private static final String USER_COMMAND_EXIT = "exit";
+    private static final String USER_COMMAND_UNDO = "undo";
+    private static final String USER_COMMAND_REDO = "redo";
     
 	
 	public CommandParser() {
@@ -52,6 +54,12 @@ public class CommandParser {
             case USER_COMMAND_SEARCH :
             	command = initSearchCommand(arguments);
             	break;
+            	
+            case USER_COMMAND_UNDO :
+            	command = initUndoCommand();
+            	
+            case USER_COMMAND_REDO :
+            	command = initRedoCommand();
                 
             case USER_COMMAND_EXIT :
                 command = initExitCommand();
@@ -292,6 +300,26 @@ public class CommandParser {
 	
 	private Command initSearchCommand(ArrayList<String> arguments) {
 		return initInvalidCommand();
+	}
+	
+	
+    // ================================================================
+    // Create undo command methods
+    // ================================================================
+	
+	private Command initUndoCommand() {
+		Command command = new Command(Command.CommandType.UNDO);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create redo command methods
+    // ================================================================
+	
+	private Command initRedoCommand() {
+		Command command = new Command(Command.CommandType.REDO);
+		return command;
 	}
 	
 	

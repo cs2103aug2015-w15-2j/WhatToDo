@@ -3,7 +3,7 @@ package struct;
 public class Command {
 	
 	public enum CommandType {
-		ADD, DELETE, EDIT, SEARCH, EXIT, INVALID
+		ADD, DELETE, EDIT, SEARCH, UNDO, REDO, EXIT, INVALID
     }
 	
 	public enum DataType { 
@@ -30,19 +30,6 @@ public class Command {
 		this.commandType = commandType;
 	}
 	
-	public Command(CommandType commandType, DataType dataType, String name, int index, Date dueDate, Date startDate, 
-			Date endDate, String startTime, String endTime, boolean isStart) {
-		this.commandType = commandType;
-		this.dataType = dataType;
-		this.name = name;
-		this.index = index;
-		this.dueDate = dueDate;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.isStart = isStart; 
-	}
 
 	//============================================
 	// Getters
