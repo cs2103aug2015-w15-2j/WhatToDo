@@ -38,6 +38,10 @@ public class InterfaceController {
     private static VBox sbHomeBox;
     private static ImageView sbHomeImage;
     
+    // Used for initSideBarAllButton
+    private static VBox sbAllBox;
+    private static ImageView sbAllImage;
+    
     // Used for initSideBarHistoryButton
     private static VBox sbHistoryBox;
     private static ImageView sbHistoryImage;
@@ -95,7 +99,7 @@ public class InterfaceController {
     
     protected static final double MARGIN_TEXT_BAR = 20;
     protected static final double MARGIN_TEXT_ELEMENT = 10;
-    protected static final double MARGIN_TEXT_ELEMENT_HEIGHT = 5;
+    protected static final double MARGIN_TEXT_ELEMENT_HEIGHT = 3;
     protected static final double MARGIN_TEXT_ELEMENT_SEPARATOR = 10;
     protected static final double MARGIN_COMPONENT = 10;
     protected static final double MARGIN_SCROLL = 30;
@@ -141,6 +145,22 @@ public class InterfaceController {
         sbHomeBox.setMaxHeight(WIDTH_SIDEBAR);
         sbHomeBox.setMinHeight(WIDTH_SIDEBAR);
     }
+    
+    private static void initSideBarAllButton(String imagePath) {
+
+    	sbAllImage = new ImageView(imagePath);
+    	sbAllBox = new VBox(sbAllImage);
+
+    	// Set margins for the done button
+    	//VBox.setMargin(sbDoneImage, new Insets(MARGIN_COMPONENT));
+
+    	// Fix width and height for the button
+    	sbAllBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbAllBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+
+    	sbAllBox.setMaxHeight(WIDTH_SIDEBAR);
+    	sbAllBox.setMinHeight(WIDTH_SIDEBAR);
+    }
 
     private static void initSideBarHistoryButton(String imagePath) {
     	
@@ -177,16 +197,18 @@ public class InterfaceController {
     private static void initSideBar() {
 
         initSideBarHomeButton("gui/resources/home_selected.png");
+        initSideBarAllButton("gui/resources/all.png");
         initSideBarHistoryButton("gui/resources/history.png");
         initSideBarDoneButton("gui/resources/done.png");
 
-        sbBox = new VBox(sbHomeBox, sbHistoryBox, sbDoneBox);        
+        sbBox = new VBox(sbHomeBox, sbAllBox, sbHistoryBox, sbDoneBox);        
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
         sbBoxWithLine = new HBox(sbBox, sbLine);
 
         // Set margins for the buttons
         VBox.setMargin(sbHomeBox, new Insets(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        VBox.setMargin(sbAllBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         VBox.setMargin(sbHistoryBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         VBox.setMargin(sbDoneBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         
