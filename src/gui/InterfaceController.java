@@ -94,8 +94,9 @@ public class InterfaceController {
     protected static final double HEIGHT_HORIZ_LINE = 1;
     
     protected static final double MARGIN_TEXT_BAR = 20;
-    protected static final double MARGIN_TEXT_BODY = 10;
-    protected static final double MARGIN_TEXT_BODY_SEPARATOR = 20;
+    protected static final double MARGIN_TEXT_ELEMENT = 10;
+    protected static final double MARGIN_TEXT_ELEMENT_HEIGHT = 5;
+    protected static final double MARGIN_TEXT_ELEMENT_SEPARATOR = 10;
     protected static final double MARGIN_COMPONENT = 10;
     protected static final double MARGIN_SCROLL = 30;
 
@@ -272,14 +273,14 @@ public class InterfaceController {
     	if (isTitle(displayData)) {
     		
     		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(0, MARGIN_TEXT_BODY, 0, MARGIN_TEXT_BODY));
+        	HBox.setMargin(elementLabel, new Insets(0, MARGIN_TEXT_ELEMENT_HEIGHT, 0, MARGIN_TEXT_ELEMENT_HEIGHT));
         	
         	// Apply CSS style for titles
     		elementBox.getStyleClass().add("element-title");
     	} else {
     		
     		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(MARGIN_TEXT_BODY));
+        	HBox.setMargin(elementLabel, new Insets(MARGIN_TEXT_ELEMENT_HEIGHT, MARGIN_TEXT_ELEMENT, MARGIN_TEXT_ELEMENT_HEIGHT, MARGIN_TEXT_ELEMENT));
         	
         	// Apply CSS style for regular data field
     		elementBox.getStyleClass().add("element");
@@ -298,7 +299,7 @@ public class InterfaceController {
         for (int i = 0; i < tasks.size(); i++) {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(tasks.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_BODY_SEPARATOR, 0));
+        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defTaskContentBox.getChildren().add(tempBox);
         }
         
@@ -336,7 +337,7 @@ public class InterfaceController {
         for (int i = 0; i < events.size(); i++) {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(events.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_BODY_SEPARATOR, 0));
+        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defEventContentBox.getChildren().add(tempBox);
         }
         
@@ -397,7 +398,7 @@ public class InterfaceController {
         for (int i = 0; i < tasks.size(); i++) {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(tasks.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_BODY_SEPARATOR, 0));
+        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defTaskContentBox.getChildren().add(tempBox);
         }
         
@@ -405,7 +406,7 @@ public class InterfaceController {
         for (int i = 0; i < events.size(); i++) {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(events.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_BODY_SEPARATOR, 0));
+        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defEventContentBox.getChildren().add(tempBox);
         }
     }
