@@ -27,7 +27,8 @@
 }
 
 .root {
-    -fx-background-color: #dedede;
+    -fx-background-image: url("../resources/windowBG.jpg");
+    /* Original background color #dedede */
 }
 
 .text {
@@ -45,8 +46,13 @@
 
 .scroll-pane {
     -fx-background-color: transparent;
-    -fx-background: #dedede;
+    -fx-background-image: url("../resources/windowBG.jpg");
     -fx-font-size: 14;
+}
+
+/* JavaFX 8 issue with viewport transparency */
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
 }
 
 .gradient-regular {
@@ -66,7 +72,7 @@
 
 .element {
 	-fx-background-color: #f0f0f0;
-	-fx-effect: dropshadow(gaussian, gray, 3, 0.2, 0, 1);
+	/* -fx-effect: dropshadow(gaussian, gray, 3, 0.2, 0, 1); */
 }
 
 .element-title {
