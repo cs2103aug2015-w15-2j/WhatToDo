@@ -38,7 +38,6 @@ public class Storage {
 	private static final String MESSAGE_EDIT_EVENT_START_TIME = "Edited event \"%s\" start time from \"%s\" to \"%s\".";
 	private static final String MESSAGE_EDIT_EVENT_END_TIME = "Edited event \"%s\" end time from \"%s\" to \"%s\".";
 	private static final String MESSAGE_MARK_DONE = "The %s \"%s\" has been marked as done.";
-	private static final String MESSAGE_EMPTY_FILE = "The list is empty.";
 	private static final String MESSAGE_CHANGE_STORAGE_SUCCESS = "You are now writing to \"%s\"";
 	private static final String MESSAGE_SAME_FILE = "Your file location remains unchanged.";
 
@@ -70,7 +69,6 @@ public class Storage {
 	private static final String NEWLINE = "\n";
 	private static final String EMPTY_STRING = "";
 
-	private static final int PARAM_EMPTY_STRING_BUILDER = 0;
 	private static final int PARAM_LINE_NUMBER_ZERO = 0;
 
 	// This string stores the whole file name with directory.
@@ -722,10 +720,6 @@ public class Storage {
 		StringBuilder fileContents = new StringBuilder();
 
 		readLineByLine(fileContents);
-
-		if (fileContents.length() == PARAM_EMPTY_STRING_BUILDER) {
-			return MESSAGE_EMPTY_FILE;
-		}
 
 		return fileContents.toString();
 	}

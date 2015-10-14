@@ -12,6 +12,7 @@ public class Logic {
 
 	private static final int INDEX_TYPE = 0; 
 	private static final int INDEX_NAME = 1; 
+	private static final int INDEX_ISDONE = 2; 
 	private static final int INDEX_DUEDATE = 3;
 	private static final int INDEX_STARTDATE = 3; 
 	private static final int INDEX_STARTTIME = 4; 
@@ -31,6 +32,8 @@ public class Logic {
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
     private static final String TYPE_EVENT = "event";
+    
+    private static final String TODO = "todo"; 
     
     private static final String NEWLINE = "\n";
     private static final String SEMICOLON = ";";
@@ -167,17 +170,21 @@ public class Logic {
     
     private String[] getLinesInFile(){
     	String fileContents = storage.display();
-    	return fileContents.split(NEWLINE);
+    	if(fileContents.isEmpty()){ 
+    		return new String[0];
+    	}else{
+    		return fileContents.split(NEWLINE);
+    	}
     }
     
     private String getFloatContent(){ 
     	String[] lines = getLinesInFile(); 
     	StringBuffer floatContentBuffer = new StringBuffer();
-    			
+    	
     	for(int index = 0; index < lines.length; index++){
     		String line = lines[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
-    		if(lineComponents[INDEX_TYPE].equals(TYPE_FLOAT)){
+    		if(isUncompleted(TYPE_FLOAT, lineComponents)){
     			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
     			floatContentBuffer.append(formatted);
     		}
@@ -192,8 +199,25 @@ public class Logic {
     	for(int index = 0; index < lines.length; index++){
     		String line = lines[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
-    		if(lineComponents[INDEX_TYPE].equals(TYPE_TASK) && lineComponents[INDEX_DUEDATE].equals(date)){
+    		if(isUncompleted(TYPE_TASK, lineComponents) && lineComponents[INDEX_DUEDATE].equals(date)){
     			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[1]);
+    			contentBuffer.append(formatted);
+    		}
+    	}
+    	return addMsgIfEmpty(contentBuffer);
+    }
+    
+    private String getEventContent(String date){ 
+    	String[] lines = getLinesInFile(); 
+    	StringBuffer contentBuffer = new StringBuffer();
+    	
+    	for(int index = 0; index < lines.length; index++){
+    		String line = lines[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		if(isUncompleted(TYPE_EVENT, lineComponents) && lineComponents[INDEX_STARTDATE].equals(date)){
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
+    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
+    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
     			contentBuffer.append(formatted);
     		}
     	}
@@ -217,44 +241,35 @@ public class Logic {
     	
     	return addMsgIfEmpty(contentBuffer);
     }
-    
+     
     private boolean isOngoingEvent(String lineInFile){
     	String line = lineInFile.trim(); 
     	String[] lineComponents = line.split(SEMICOLON);
     	if(lineComponents.length < 6){
     		return false; 
     	}else{
-    		String type = lineComponents[INDEX_TYPE]; 
+    		String type = lineComponents[INDEX_TYPE];
+    		String isDone = lineComponents[INDEX_ISDONE];
         	Date startDate = new Date(lineComponents[INDEX_STARTDATE]);
         	Date endDate = new Date(lineComponents[INDEX_ENDDATE]);
-        	Date todayDate = new Date(Date.todayDateShort());
+        	Date todayDate = Date.todayDate();
         	
-        	return (type.equals(TYPE_EVENT) && startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) > 0); 
+        	return (type.equals(TYPE_EVENT) && isDone.equals(TODO) 
+        			&& startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) > 0); 
     	}
     }
     
-    private String getEventContent(String date){ 
-    	String[] lines = getLinesInFile(); 
-    	StringBuffer contentBuffer = new StringBuffer();
-    	
-    	for(int index = 0; index < lines.length; index++){
-    		String line = lines[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		if(lineComponents[INDEX_TYPE].equals(TYPE_EVENT) && lineComponents[INDEX_STARTDATE].equals(date)){
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
-    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
-    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
-    			contentBuffer.append(formatted);
-    		}
-    	}
-    	return addMsgIfEmpty(contentBuffer);
-    }
+    
     
     private String addMsgIfEmpty(StringBuffer buffer){
     	if(buffer.length() == 0){ 
     		buffer.append(DISPLAY_NO_ITEMS);
     	}
     	return buffer.toString().trim();
+    }
+    
+    private boolean isUncompleted(String type, String[] lineComponents){
+    	return lineComponents[INDEX_ISDONE].equals(TODO) && lineComponents[INDEX_TYPE].equals(type); 
     }
     
 	//============================================
