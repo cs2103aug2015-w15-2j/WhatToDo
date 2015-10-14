@@ -10,6 +10,7 @@ public class Command {
 		TASK, FLOATING_TASK, EVENT, ALL
 	}
 	
+	private String userInput; 
 	private CommandType commandType;
 	private DataType dataType;
 	//name may contain arguments for commands instead of event or task name
@@ -34,6 +35,10 @@ public class Command {
 	//============================================
 	// Getters
 	//============================================
+	
+	public String getUserInput() {
+		return userInput;
+	}
 
 	public CommandType getCommandType() {
 		return commandType;
@@ -78,6 +83,10 @@ public class Command {
 	//============================================
 	// Setters
 	//============================================
+	
+	public void setUserInput(String userInput) {
+		this.userInput = userInput;
+	}
 
 	public void setCommandType(CommandType commandType) {
 		this.commandType = commandType;
