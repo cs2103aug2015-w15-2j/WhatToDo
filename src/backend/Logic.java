@@ -131,7 +131,7 @@ public class Logic {
     	String eventStartTime = command.getStartTime(); 
     	String eventEndTime = command.getEndTime();
     	Event event = new Event(eventName, false, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
-    	return storage.addEvent(eventName, eventStartDate, eventStartTime, eventEndDate, eventEndTime); 
+    	return storage.addEvent(event); 
     }
    
     private String executeDelete(Command command){
