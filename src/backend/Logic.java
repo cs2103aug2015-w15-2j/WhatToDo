@@ -6,6 +6,7 @@ import struct.Command;
 import struct.Date;
 import struct.Event;
 import struct.FloatingTask;
+import struct.State;
 import struct.Task;
 
 public class Logic {
@@ -21,8 +22,12 @@ public class Logic {
 
 	private static final String MESSAGE_ADD_TASK = "Added \"%s\" to list. Due on %s, %s.";
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added \"%s\" to list.";
-	private static final String MESSAGE_ADD_EVENT = "Added \"%s\" to list. Event Start: %s, %s, %s Event End: %s, %s, %s";
+	private static final String MESSAGE_ADD_EVENT = "Added \"%s\" to list. Event Start: %s, %s, %s Event End: %s, %s, %s.";
 	private static final String MESSAGE_DELETE_LINE = "Deleted \"%s\" from list.";
+	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
+	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
+	private static final String MESSAGE_UNDO = "Undid command: \"%s\"."; 
+	private static final String MESSAGE_NO_UNDO = "There are no commands to undo.";
 	
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
@@ -45,6 +50,8 @@ public class Logic {
     
     private CommandParser commandParser; 
     private Storage storage;
+    private Memory memory; 
+    private Command prevCommand; 
  
 	//============================================
 	// Constructor
@@ -53,10 +60,12 @@ public class Logic {
     public Logic() throws FileSystemException {
 			commandParser = new CommandParser();
 			storage = new Storage();
+			memory = new Memory();
+			prevCommand = null; 
 	}
     
 	//============================================
-	// Public method
+	// Public methods
 	//============================================
     
     /**
@@ -125,10 +134,14 @@ public class Logic {
     
     private String executeAddTask(Command command){
     	try{
+    		State prevState = getPrevState(command);
+    		
     		String taskName = command.getName(); 
         	Date taskDeadline = command.getDueDate();
         	Task task = new Task(taskName, false, taskDeadline);
         	storage.addTask(task);
+        	
+        	memory.savePrevState(prevState);
         	return String.format(MESSAGE_ADD_TASK, taskName, 
         			taskDeadline.getDayString(),taskDeadline.getFullDate()); 
     	}
@@ -140,9 +153,13 @@ public class Logic {
     
     private String executeAddFloatingTask(Command command){
     	try{
+    		State prevState = getPrevState(command);
+    		
     		String taskName = command.getName(); 
         	FloatingTask floatingTask = new FloatingTask(taskName, false);
         	storage.addFloatingTask(floatingTask); 
+        
+        	memory.savePrevState(prevState);
         	return String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
     	}
     	//TODO exception for addFloat 
@@ -150,9 +167,18 @@ public class Logic {
     		return e.getMessage(); 
     	}
     }
+
+	private State getPrevState(Command command) {
+		String prevFileContents = storage.display(); 
+		String userCommand = command.getUserInput();
+		State prevState = new State(prevFileContents, userCommand);
+		return prevState;
+	}
     
     private String executeAddEvent(Command command){
     	try{ 
+    		State prevState = getPrevState(command);
+    		
     		String eventName = command.getName(); 
         	Date eventStartDate = command.getStartDate();
         	Date eventEndDate = command.getEndDate();
@@ -160,6 +186,8 @@ public class Logic {
         	String eventEndTime = command.getEndTime();
         	Event event = new Event(eventName, false, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
         	storage.addEvent(event); 
+        	
+        	memory.savePrevState(prevState);
         	return String.format(MESSAGE_ADD_EVENT, eventName, 
         			eventStartDate.getDayString(), eventStartDate.getFullDate(), eventStartTime, 
         			eventEndDate.getDayString(), eventEndDate.getFullDate(), eventEndTime);
@@ -172,8 +200,12 @@ public class Logic {
    
     private String executeDelete(Command command){
     	try{
+    		State prevState = getPrevState(command);
+    		
     		int lineNumber = command.getIndex(); 
         	String deletedLine = storage.deleteLine(lineNumber); 
+        	
+        	memory.savePrevState(prevState);
         	//TODO format feedback message for delete 
         	return String.format(MESSAGE_DELETE_LINE, deletedLine); 
     	}
@@ -203,14 +235,40 @@ public class Logic {
     	return "sth"; 
     }
     
-    //TODO undo 
     private String executeUndo(){ 
-    	return "undo"; 
+    	String currFileContents = storage.display();
+    	State stateAfterUndo = memory.getUndoState(currFileContents);
+    	
+    	if(stateAfterUndo == null){
+    		return MESSAGE_NO_UNDO; 
+    	}
+    	
+    	try{ 
+    		storage.overwriteFile(stateAfterUndo.getFileContents());
+        	return String.format(MESSAGE_UNDO, stateAfterUndo.getUserCommand());
+    	}
+    	//TODO exception for undo
+    	catch(Exception e){
+    		return e.getMessage();
+    	}
     }
     
     //TODO redo 
     private String executeRedo(){ 
-    	return "redo"; 
+    	String currFileContents = storage.display();
+    	State stateAfterRedo = memory.getRedoState(currFileContents);
+    	if(stateAfterRedo == null){
+    		return MESSAGE_NO_REDO; 
+    	}
+    	
+    	try{ 
+    		storage.overwriteFile(stateAfterRedo.getFileContents());
+        	return String.format(MESSAGE_REDO, stateAfterRedo.getUserCommand());
+    	}
+    	//TODO exception for redo
+    	catch(Exception e){
+    		return e.getMessage();
+    	}
     }
     
     private String executeExit(){
@@ -334,6 +392,6 @@ public class Logic {
 	//============================================
 
     public String getFilepath() {
-        return "C:/Users/todo.txt";
+        return storage.getFilePath();
     }
 }
