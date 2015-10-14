@@ -37,7 +37,14 @@ public class InterfaceController {
     // Used for initSideBarHomeButton
     private static VBox sbHomeBox;
     private static ImageView sbHomeImage;
-    private static Line sbHomeLine;
+    
+    // Used for initSideBarHistoryButton
+    private static VBox sbHistoryBox;
+    private static ImageView sbHistoryImage;
+    
+    // Used for initSideBarDoneButton
+    private static VBox sbDoneBox;
+    private static ImageView sbDoneImage;
 
     // Used for initSideBar
     private static VBox sbBox;
@@ -77,7 +84,7 @@ public class InterfaceController {
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
     protected static final double WIDTH_DEFAULT_BUTTON = 50;
-    protected static final double WIDTH_SIDEBAR = 51;
+    protected static final double WIDTH_SIDEBAR = 71;
     
     protected static final double HEIGHT_FILEPATH = 36;
     protected static final double HEIGHT_FEEDBACK = 36;
@@ -121,34 +128,67 @@ public class InterfaceController {
     private static void initSideBarHomeButton(String imagePath) {
 
         sbHomeImage = new ImageView(imagePath);
-        sbHomeLine = new Line(0, 0, WIDTH_DEFAULT_BUTTON, 0);
-
-        sbHomeBox = new VBox(sbHomeImage, sbHomeLine);
+        sbHomeBox = new VBox(sbHomeImage);
 
         // Set margins for the home button
-        VBox.setMargin(sbHomeImage, new Insets(MARGIN_COMPONENT));
+        //VBox.setMargin(sbHomeImage, new Insets(35, MARGIN_COMPONENT, MARGIN_COMPONENT, MARGIN_COMPONENT));
 
         // Fix width and height for the button
-        sbHomeBox.setMaxWidth(WIDTH_SIDEBAR - WIDTH_VERT_LINE);
-        sbHomeBox.setMinWidth(WIDTH_SIDEBAR - WIDTH_VERT_LINE);
+        sbHomeBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+        sbHomeBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
         sbHomeBox.setMaxHeight(WIDTH_SIDEBAR);
         sbHomeBox.setMinHeight(WIDTH_SIDEBAR);
+    }
 
-        // CSS
-        sbHomeLine.getStyleClass().add("line");
-        sbHomeBox.getStyleClass().add("gradient-selected");
+    private static void initSideBarHistoryButton(String imagePath) {
+    	
+    	sbHistoryImage = new ImageView(imagePath);
+    	sbHistoryBox = new VBox(sbHistoryImage);
+    	
+    	// Set margins for the history button
+    	//VBox.setMargin(sbHistoryImage, new Insets(MARGIN_COMPONENT));
+    	
+    	// Fix width and height for the button
+    	sbHistoryBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbHistoryBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+
+    	sbHistoryBox.setMaxHeight(WIDTH_SIDEBAR);
+    	sbHistoryBox.setMinHeight(WIDTH_SIDEBAR);
+    }
+    
+    private static void initSideBarDoneButton(String imagePath) {
+
+    	sbDoneImage = new ImageView(imagePath);
+    	sbDoneBox = new VBox(sbDoneImage);
+
+    	// Set margins for the done button
+    	//VBox.setMargin(sbDoneImage, new Insets(MARGIN_COMPONENT));
+
+    	// Fix width and height for the button
+    	sbDoneBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbDoneBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+
+    	sbDoneBox.setMaxHeight(WIDTH_SIDEBAR);
+    	sbDoneBox.setMinHeight(WIDTH_SIDEBAR);
     }
 
     private static void initSideBar() {
 
-        initSideBarHomeButton("gui/resources/homeButton.png");
+        initSideBarHomeButton("gui/resources/home_selected.png");
+        initSideBarHistoryButton("gui/resources/history.png");
+        initSideBarDoneButton("gui/resources/done.png");
 
-        sbBox = new VBox(sbHomeBox);
+        sbBox = new VBox(sbHomeBox, sbHistoryBox, sbDoneBox);        
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
         sbBoxWithLine = new HBox(sbBox, sbLine);
 
+        // Set margins for the buttons
+        VBox.setMargin(sbHomeBox, new Insets(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        VBox.setMargin(sbHistoryBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        VBox.setMargin(sbDoneBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        
         // Fix the width for the sidebar
         // +1 for line width
         sbBoxWithLine.setMaxWidth(WIDTH_SIDEBAR);
@@ -156,7 +196,7 @@ public class InterfaceController {
 
         // CSS
         sbLine.getStyleClass().add("line");
-        sbBoxWithLine.getStyleClass().add("gradient-sidebar");
+        sbBoxWithLine.getStyleClass().add("sidebar");
     }
 
     private static void initTextField() {
