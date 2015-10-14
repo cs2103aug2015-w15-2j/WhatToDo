@@ -74,28 +74,43 @@ public class InterfaceController {
 
     private static LogicController logicControl;
 
-    private static final double DEFAULT_WIDTH = 100;
-    private static final double DEFAULT_SIZE_BUTTON = 50;
+    // Dimension variables used for sizing JavaFX components
+    protected static final double WIDTH_DEFAULT = 100;
+    protected static final double WIDTH_DEFAULT_BUTTON = 50;
+    protected static final double WIDTH_SIDEBAR = 51;
+    
+    protected static final double HEIGHT_FILEPATH = 36;
+    protected static final double HEIGHT_FEEDBACK = 36;
+    protected static final double HEIGHT_TEXTFIELD = 45;
+    
+    protected static final double WIDTH_VERT_LINE = 1;
+    protected static final double HEIGHT_HORIZ_LINE = 1;
+    
+    protected static final double MARGIN_TEXT_BAR = 20;
+    protected static final double MARGIN_TEXT_BODY = 10;
+    protected static final double MARGIN_TEXT_BODY_SEPARATOR = 20;
+    protected static final double MARGIN_COMPONENT = 10;
+    protected static final double MARGIN_SCROLL = 30;
 
     private static void initFilePathBar() {
 
         filepathLabel = new Label(logicControl.getFilePath());
-        filepathLine = new Line(0, 0, DEFAULT_WIDTH, 0);
+        filepathLine = new Line(0, 0, WIDTH_DEFAULT, 0);
 
         filepathBox = new HBox(filepathLabel);
         filepathBoxWithLine = new VBox(filepathBox, filepathLine);
 
         // Set margins for the filepath label
-        HBox.setMargin(filepathLabel, new Insets(8, 30, 0, 30));
+        HBox.setMargin(filepathLabel, new Insets(8, MARGIN_TEXT_BAR, 0, MARGIN_TEXT_BAR));
 
         // Fix height for the filepath bar without lines
-        filepathBox.setMaxHeight(35);
-        filepathBox.setMinHeight(35);
+        filepathBox.setMaxHeight(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
+        filepathBox.setMinHeight(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
 
         // Fix height for the filepath bar
         // +1 for line widths
-        filepathBoxWithLine.setMaxHeight(36);
-        filepathBoxWithLine.setMinHeight(36);
+        filepathBoxWithLine.setMaxHeight(HEIGHT_FILEPATH);
+        filepathBoxWithLine.setMinHeight(HEIGHT_FILEPATH);
 
         // CSS
         filepathLine.getStyleClass().add("line");
@@ -106,20 +121,19 @@ public class InterfaceController {
     private static void initSideBarHomeButton(String imagePath) {
 
         sbHomeImage = new ImageView(imagePath);
-        sbHomeLine = new Line(0, 0, DEFAULT_SIZE_BUTTON, 0);
+        sbHomeLine = new Line(0, 0, WIDTH_DEFAULT_BUTTON, 0);
 
         sbHomeBox = new VBox(sbHomeImage, sbHomeLine);
 
         // Set margins for the home button
-        VBox.setMargin(sbHomeImage, new Insets(10));
+        VBox.setMargin(sbHomeImage, new Insets(MARGIN_COMPONENT));
 
         // Fix width and height for the button
-        // +1 for line width
-        sbHomeBox.setMaxWidth(50);
-        sbHomeBox.setMinWidth(50);
+        sbHomeBox.setMaxWidth(WIDTH_SIDEBAR - WIDTH_VERT_LINE);
+        sbHomeBox.setMinWidth(WIDTH_SIDEBAR - WIDTH_VERT_LINE);
 
-        sbHomeBox.setMaxHeight(51);
-        sbHomeBox.setMinHeight(51);
+        sbHomeBox.setMaxHeight(WIDTH_SIDEBAR);
+        sbHomeBox.setMinHeight(WIDTH_SIDEBAR);
 
         // CSS
         sbHomeLine.getStyleClass().add("line");
@@ -131,14 +145,14 @@ public class InterfaceController {
         initSideBarHomeButton("gui/resources/homeButton.png");
 
         sbBox = new VBox(sbHomeBox);
-        sbLine = new Line(0, 0, 0, DEFAULT_SIZE_BUTTON);
+        sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
         sbBoxWithLine = new HBox(sbBox, sbLine);
 
         // Fix the width for the sidebar
         // +1 for line width
-        sbBoxWithLine.setMaxWidth(51);
-        sbBoxWithLine.setMinWidth(51);
+        sbBoxWithLine.setMaxWidth(WIDTH_SIDEBAR);
+        sbBoxWithLine.setMinWidth(WIDTH_SIDEBAR);
 
         // CSS
         sbLine.getStyleClass().add("line");
@@ -158,11 +172,11 @@ public class InterfaceController {
         textBox = new VBox(textField);
 
         // Set the margins for the text field
-        VBox.setMargin(textField, new Insets(10));
+        VBox.setMargin(textField, new Insets(MARGIN_COMPONENT));
 
         // Fix the height of the text field
-        textBox.setMaxHeight(45);
-        textBox.setMinHeight(45);
+        textBox.setMaxHeight(HEIGHT_TEXTFIELD);
+        textBox.setMinHeight(HEIGHT_TEXTFIELD);
 
         // CSS
         textBox.getStyleClass().add("gradient-regular");
@@ -171,22 +185,22 @@ public class InterfaceController {
     private static void initFeedbackBar() {
 
         feedbackLabel = new Label("No commands entered yet.");
-        feedbackLine = new Line(0, 0, DEFAULT_WIDTH, 0);
+        feedbackLine = new Line(0, 0, WIDTH_DEFAULT, 0);
 
         feedbackBox = new VBox(feedbackLabel);
         feedbackBoxWithLine = new VBox(feedbackBox, feedbackLine);
 
         // Set margins for the feedback label
-        VBox.setMargin(feedbackLabel, new Insets(8, 20, 0, 20));
+        VBox.setMargin(feedbackLabel, new Insets(8, MARGIN_TEXT_BAR, 0, MARGIN_TEXT_BAR));
 
         // Fix the height of the feedback label
-        feedbackBox.setMaxHeight(35);
-        feedbackBox.setMinHeight(35);
+        feedbackBox.setMaxHeight(HEIGHT_FEEDBACK - HEIGHT_HORIZ_LINE);
+        feedbackBox.setMinHeight(HEIGHT_FEEDBACK - HEIGHT_HORIZ_LINE);
 
         // Fix the height of the feedback bar
         // +1 for line width
-        feedbackBoxWithLine.setMaxHeight(36);
-        feedbackBoxWithLine.setMinHeight(36);
+        feedbackBoxWithLine.setMaxHeight(HEIGHT_FEEDBACK);
+        feedbackBoxWithLine.setMinHeight(HEIGHT_FEEDBACK);
 
         // CSS
         feedbackLine.getStyleClass().add("line");
@@ -218,15 +232,14 @@ public class InterfaceController {
     	if (isTitle(displayData)) {
     		
     		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(0, 10, 0, 10));
+        	HBox.setMargin(elementLabel, new Insets(0, MARGIN_TEXT_BODY, 0, MARGIN_TEXT_BODY));
         	
         	// Apply CSS style for titles
     		elementBox.getStyleClass().add("element-title");
-    		//elementLabel.getStyleClass().add("text-title");
     	} else {
     		
     		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(10));
+        	HBox.setMargin(elementLabel, new Insets(MARGIN_TEXT_BODY));
         	
         	// Apply CSS style for regular data field
     		elementBox.getStyleClass().add("element");
@@ -245,7 +258,7 @@ public class InterfaceController {
         for (int i = 0; i < tasks.size(); i++) {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(tasks.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, 20, 0));
+        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_BODY_SEPARATOR, 0));
             defTaskContentBox.getChildren().add(tempBox);
         }
         
@@ -255,10 +268,10 @@ public class InterfaceController {
         defTaskBox = new VBox(defTaskImage, defTaskScroll);
         
         // Set margins for the image
-        VBox.setMargin(defTaskImage, new Insets(0, 0, 10, 0));
+        VBox.setMargin(defTaskImage, new Insets(0, 0, MARGIN_COMPONENT, 0));
         
         // Set margins for the scroll pane
-        VBox.setMargin(defTaskScroll, new Insets(10, 30, 0, 30));
+        VBox.setMargin(defTaskScroll, new Insets(MARGIN_COMPONENT, MARGIN_SCROLL, 0, MARGIN_SCROLL));
         
         // Set the alignment of the header image to be in the center
         defTaskBox.setAlignment(Pos.CENTER);
@@ -283,7 +296,7 @@ public class InterfaceController {
         for (int i = 0; i < events.size(); i++) {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(events.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, 20, 0));
+        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_BODY_SEPARATOR, 0));
             defEventContentBox.getChildren().add(tempBox);
         }
         
@@ -294,10 +307,10 @@ public class InterfaceController {
         defEventBox = new VBox(defEventImage, defEventScroll);
         
         // Set margins for the image
-        VBox.setMargin(defEventImage, new Insets(0, 0, 10, 0));
+        VBox.setMargin(defEventImage, new Insets(0, 0, MARGIN_COMPONENT, 0));
         
         // Set margins for the scroll pane
-        VBox.setMargin(defEventScroll, new Insets(10, 30, 0, 30));
+        VBox.setMargin(defEventScroll, new Insets(MARGIN_COMPONENT, MARGIN_SCROLL, 0, MARGIN_SCROLL));
         
         // Set the alignment of the header image to be in the center
         defEventBox.setAlignment(Pos.CENTER);
@@ -317,7 +330,7 @@ public class InterfaceController {
         initDefTaskView(logicControl.getDefTasks());
         initDefEventView(logicControl.getDefEvents());
         
-        defScrollLine = new Line(0, 0, 0, DEFAULT_SIZE_BUTTON);
+        defScrollLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
         
         defBox = new HBox(defTaskBox, defScrollLine, defEventBox);
         
@@ -344,7 +357,7 @@ public class InterfaceController {
         for (int i = 0; i < tasks.size(); i++) {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(tasks.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, 20, 0));
+        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_BODY_SEPARATOR, 0));
             defTaskContentBox.getChildren().add(tempBox);
         }
         
@@ -352,7 +365,7 @@ public class InterfaceController {
         for (int i = 0; i < events.size(); i++) {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(events.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, 20, 0));
+        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_BODY_SEPARATOR, 0));
             defEventContentBox.getChildren().add(tempBox);
         }
     }
@@ -369,10 +382,10 @@ public class InterfaceController {
         initTextField();
         
         // Create the line separator for defBox
-        defLine = new Line(0, 0, DEFAULT_WIDTH, 0);
+        defLine = new Line(0, 0, WIDTH_DEFAULT, 0);
 
         // Create the region below the filepath bar excluding the sidebar
-        VBox contentBoxNoSideBar = new VBox(defBox, defLine, feedbackBoxWithLine, textBox);
+        VBox contentBoxNoSideBar = new VBox(filepathBoxWithLine, defBox, defLine, feedbackBoxWithLine, textBox);
         
         // Set the height of defBox to grow with the window
         VBox.setVgrow(defBox, Priority.ALWAYS);
@@ -384,7 +397,7 @@ public class InterfaceController {
         HBox.setHgrow(contentBoxNoSideBar, Priority.ALWAYS);
 
         // Create the main VBox containing everything
-        mainBox = new VBox(filepathBoxWithLine, contentBoxWithSideBar);
+        mainBox = new VBox(contentBoxWithSideBar);
 
         // Set the height of contentBoxWithSideBar to grow with window
         VBox.setVgrow(contentBoxWithSideBar, Priority.ALWAYS);
@@ -396,6 +409,7 @@ public class InterfaceController {
         mainScene.widthProperty().addListener(logicControl.getWidthListener());
 
         // Set CSS styling
+        defLine.getStyleClass().add("line");
         mainScene.getStylesheets().add(InterfaceController.class.getResource(
                 "/gui/stylesheets/Interface.css").toExternalForm());
 

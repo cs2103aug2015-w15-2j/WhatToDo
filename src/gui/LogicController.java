@@ -168,13 +168,16 @@ public class LogicController {
 
     		// Set the height of the sidebar separator to
     		// window height - height of filepath bar(35) - height of line(1)
-    		InterfaceController.getSbLine().setEndY((Double)newValue - 36);
+    		InterfaceController.getSbLine().setEndY((Double)newValue);
 
     		// Set the height of the scroll pane separator to
     		// window height - height of the filepath bar(35) -
     		// height of feedback bar(35) - height of text bar(45) - 
     		// 2 * height of line(1)
-    		InterfaceController.getDefScrollLine().setEndY((Double)newValue - 117);
+    		InterfaceController.getDefScrollLine().setEndY((Double)newValue - 
+    				InterfaceController.HEIGHT_FILEPATH - 
+    				InterfaceController.HEIGHT_FEEDBACK - 
+    				InterfaceController.HEIGHT_TEXTFIELD);
     	}
     }
 
@@ -184,13 +187,14 @@ public class LogicController {
     	public void changed(ObservableValue<? extends Number> observable,
     			Number oldValue, Number newValue) {
 
-    		// Set the width of the feedback and view box separators to
+    		// Set the width of the feedback, filepath and view box separators to
     		// window width - size of sidebar(50) - width of line(1)
-    		InterfaceController.getFeedbackLine().setEndX((Double)newValue - 51);
-    		InterfaceController.getDefLine().setEndX((Double)newValue - 51);
-
-    		// Set the width of the filepath separator to window width
-    		InterfaceController.getFilepathLine().setEndX((Double)newValue);
+    		InterfaceController.getFeedbackLine().setEndX(
+    				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);
+    		InterfaceController.getDefLine().setEndX(
+    				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);
+    		InterfaceController.getFilepathLine().setEndX(
+    				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);
     	}
     }
 }
