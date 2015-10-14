@@ -57,9 +57,11 @@ public class CommandParser {
             	
             case USER_COMMAND_UNDO :
             	command = initUndoCommand();
+            	break;
             	
             case USER_COMMAND_REDO :
             	command = initRedoCommand();
+            	break; 
                 
             case USER_COMMAND_EXIT :
                 command = initExitCommand();

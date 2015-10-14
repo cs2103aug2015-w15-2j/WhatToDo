@@ -70,8 +70,12 @@ public class Logic {
     			return executeEdit(command); 
     		case SEARCH :
     			return executeSearch(command); 
+    		case UNDO : 
+    			return executeUndo(); 
+    		case REDO : 
+    			return executeRedo();
     		case EXIT :
-    			return executeExit(command); 
+    			return executeExit(); 
     		case INVALID :
             default :
             	return handleInvalid(userInput);
@@ -155,8 +159,17 @@ public class Logic {
     	return "sth"; 
     }
     
+    //TODO undo 
+    private String executeUndo(){ 
+    	return "undo"; 
+    }
     
-    private String executeExit(Command command){
+    //TODO redo 
+    private String executeRedo(){ 
+    	return "redo"; 
+    }
+    
+    private String executeExit(){
     	return MESSAGE_EXIT; 
     }
     
