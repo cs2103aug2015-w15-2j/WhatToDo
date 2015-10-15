@@ -37,7 +37,7 @@
 }
 
 .display-bar {
-	-fx-font-size: 14;
+	-fx-font-size: 12;
 }
 
 .line {
@@ -47,7 +47,7 @@
 .scroll-pane {
     -fx-background-color: transparent;
     -fx-background-image: url("../resources/windowBG.jpg");
-    -fx-font-size: 14;
+    -fx-font-size: 12;
 }
 
 /* JavaFX 8 issue with viewport transparency */
@@ -76,9 +76,9 @@
 }
 
 .element-title {
-	-fx-font-size: 20;
+	-fx-font-size: 14;
+	-fx-font-style: italic;
 	-fx-font-weight: bold;
-	-fx-text-fill: white;
 }
 
 .text-title {
