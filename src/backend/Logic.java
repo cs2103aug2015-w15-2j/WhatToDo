@@ -2,6 +2,7 @@ package backend;
 
 import java.nio.file.FileSystemException;
 
+import javafx.scene.shape.Line;
 import struct.Command;
 import struct.Date;
 import struct.Event;
@@ -29,6 +30,7 @@ public class Logic {
 	private static final String MESSAGE_UNDO = "Undid command: \"%s\"."; 
 	private static final String MESSAGE_NO_UNDO = "There are no commands to undo.";
 	
+	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_EXIT = "Exit";
@@ -93,26 +95,56 @@ public class Logic {
     		case INVALID :
             default :
             	return handleInvalid(userInput);
-    	}
-    	
+    	}	
     }
-       
+    
     public String taskDefaultView(){
-    	String floatContent = getFloatContent(); 
-    	String todayContent = getTaskContent(Date.todayDateShort()); 
-    	String tomorrowContent = getTaskContent(Date.tomorrowDateShort()); 
-   
-    	return String.format(DISPLAY_LAYOUT_TASK, floatContent, Date.todayDateLong(), todayContent, 
-    			Date.tomorrowDateLong(), tomorrowContent).trim();
+    	try{
+    		String[] linesInFile = getLinesInFile();
+        	String floatContent = getFloatContent(linesInFile); 
+            String todayContent = getTaskContent(linesInFile, Date.todayDateShort()); 
+            String tomorrowContent = getTaskContent(linesInFile, Date.tomorrowDateShort()); 
+           
+            return String.format(DISPLAY_LAYOUT_TASK, floatContent, Date.todayDateLong(), todayContent, 
+            		Date.tomorrowDateLong(), tomorrowContent).trim();
+    	}
+    	catch(FileSystemException e){
+    		return String.format(DISPLAY_LAYOUT_TASK, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
+            		Date.tomorrowDateLong(), e.getMessage()).trim();
+    	}
+    	catch(Exception e){
+    		return String.format(DISPLAY_LAYOUT_TASK, MESSAGE_ERROR_UNKNOWN, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
+            		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
+    	}
     }
     
     public String eventDefaultView(){
-    	String onGoingContent = getOngoingEventContent(); 
-    	String todayContent = getEventContent(Date.todayDateShort()); 
-    	String tomorrowContent = getEventContent(Date.tomorrowDateShort()); 
-    	
-    	return String.format(DISPLAY_LAYOUT_EVENT, onGoingContent, Date.todayDateLong(), todayContent, 
-    			Date.tomorrowDateLong(), tomorrowContent).trim();
+    	try{
+    		String[] linesInFile = getLinesInFile();
+        	String onGoingContent = getOngoingEventContent(linesInFile); 
+            String todayContent = getEventContent(linesInFile, Date.todayDateShort()); 
+            String tomorrowContent = getEventContent(linesInFile, Date.tomorrowDateShort()); 
+            	
+            return String.format(DISPLAY_LAYOUT_EVENT, onGoingContent, Date.todayDateLong(), todayContent, 
+            		Date.tomorrowDateLong(), tomorrowContent).trim();
+    	}
+    	catch(FileSystemException e){
+    		return String.format(DISPLAY_LAYOUT_EVENT, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
+            		Date.tomorrowDateLong(), e.getMessage()).trim();
+    	}
+    	catch (Exception e) {
+    		return String.format(DISPLAY_LAYOUT_EVENT, MESSAGE_ERROR_UNKNOWN, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
+            		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
+		}
+    }
+    
+    public String getFilepath() {
+    	try{
+    		return storage.getFilePath();
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_UNKNOWN;
+    	}
     }
     
 	//============================================
@@ -121,14 +153,33 @@ public class Logic {
 
     private String executeAdd(Command command){
     	switch (command.getDataType()) {
+			case FLOATING_TASK : 
+				return executeAddFloatingTask(command); 
     		case TASK :
     			return executeAddTask(command); 
-    		case FLOATING_TASK : 
-    			return executeAddFloatingTask(command); 
     		case EVENT :
     			return executeAddEvent(command); 
     		default: 
     			return MESSAGE_ERROR_ADD;
+    	}
+    }
+    
+    private String executeAddFloatingTask(Command command){
+    	try{
+    		State prevState = getPrevState(command);
+    		
+    		String taskName = command.getName(); 
+        	FloatingTask floatingTask = new FloatingTask(taskName, false);
+        	storage.addFloatingTask(floatingTask); 
+        
+        	memory.savePrevState(prevState);
+        	return String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
+    	}
+    	catch(FileSystemException e){
+    		return e.getMessage(); 
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_UNKNOWN; 
     	}
     }
     
@@ -145,35 +196,13 @@ public class Logic {
         	return String.format(MESSAGE_ADD_TASK, taskName, 
         			taskDeadline.getDayString(),taskDeadline.getFullDate()); 
     	}
-    	//TODO exception for addTask 
-    	catch(Exception e){
-    		return e.getMessage(); 
-    	}	
-    }
-    
-    private String executeAddFloatingTask(Command command){
-    	try{
-    		State prevState = getPrevState(command);
-    		
-    		String taskName = command.getName(); 
-        	FloatingTask floatingTask = new FloatingTask(taskName, false);
-        	storage.addFloatingTask(floatingTask); 
-        
-        	memory.savePrevState(prevState);
-        	return String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
-    	}
-    	//TODO exception for addFloat 
-    	catch(Exception e){
+    	catch(FileSystemException e){
     		return e.getMessage(); 
     	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_UNKNOWN; 
+    	}
     }
-
-	private State getPrevState(Command command) {
-		String prevFileContents = storage.display(); 
-		String userCommand = command.getUserInput();
-		State prevState = new State(prevFileContents, userCommand);
-		return prevState;
-	}
     
     private String executeAddEvent(Command command){
     	try{ 
@@ -271,6 +300,14 @@ public class Logic {
     	}
     }
     
+    //TODO try catch --> return null 
+   	private State getPrevState(Command command) {
+   		String prevFileContents = storage.display(); 
+   		String userCommand = command.getUserInput();
+   		State prevState = new State(prevFileContents, userCommand);
+   		return prevState;
+   	}
+    
     private String executeExit(){
     	return MESSAGE_EXIT; 
     }
@@ -282,8 +319,8 @@ public class Logic {
 	//============================================
 	// Private methods for defaultView 
 	//============================================    
-    
-    private String[] getLinesInFile(){
+      
+    private String[] getLinesInFile() throws FileSystemException{
     	String fileContents = storage.display();
     	if(fileContents.isEmpty()){ 
     		return new String[0];
@@ -292,12 +329,11 @@ public class Logic {
     	}
     }
     
-    private String getFloatContent(){ 
-    	String[] lines = getLinesInFile(); 
+    private String getFloatContent(String[] linesInFile){ 
     	StringBuffer floatContentBuffer = new StringBuffer();
     	
-    	for(int index = 0; index < lines.length; index++){
-    		String line = lines[index].trim(); 
+    	for(int index = 0; index < linesInFile.length; index++){
+    		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isUncompleted(TYPE_FLOAT, lineComponents)){
     			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
@@ -307,12 +343,11 @@ public class Logic {
     	return addMsgIfEmpty(floatContentBuffer);
     }
     
-    private String getTaskContent(String date){ 
-    	String[] lines = getLinesInFile(); 
+    private String getTaskContent(String[] linesInFile, String date){  
     	StringBuffer contentBuffer = new StringBuffer();
     			
-    	for(int index = 0; index < lines.length; index++){
-    		String line = lines[index].trim(); 
+    	for(int index = 0; index < linesInFile.length; index++){
+    		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isUncompleted(TYPE_TASK, lineComponents) && lineComponents[INDEX_DUEDATE].equals(date)){
     			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[1]);
@@ -322,12 +357,27 @@ public class Logic {
     	return addMsgIfEmpty(contentBuffer);
     }
     
-    private String getEventContent(String date){ 
-    	String[] lines = getLinesInFile(); 
+    private String getOngoingEventContent(String[] linesInFile){ 
     	StringBuffer contentBuffer = new StringBuffer();
     	
-    	for(int index = 0; index < lines.length; index++){
-    		String line = lines[index].trim(); 
+    	for(int index = 0; index < linesInFile.length; index++){
+    		String line = linesInFile[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		if(isOngoingEvent(line)){
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
+    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
+    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+    			contentBuffer.append(formatted);
+    		}
+    	}
+    	return addMsgIfEmpty(contentBuffer);
+    }
+    
+    private String getEventContent(String[] linesInFile, String date){ 
+    	StringBuffer contentBuffer = new StringBuffer();
+    	
+    	for(int index = 0; index < linesInFile.length; index++){
+    		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isUncompleted(TYPE_EVENT, lineComponents) && lineComponents[INDEX_STARTDATE].equals(date)){
     			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
@@ -338,23 +388,9 @@ public class Logic {
     	}
     	return addMsgIfEmpty(contentBuffer);
     }
-    
-    private String getOngoingEventContent(){
-    	String[] lines = getLinesInFile(); 
-    	StringBuffer contentBuffer = new StringBuffer();
-    	
-    	for(int index = 0; index < lines.length; index++){
-    		String line = lines[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		if(isOngoingEvent(line)){
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
-    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
-    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
-    			contentBuffer.append(formatted);
-    		}
-    	}
-    	
-    	return addMsgIfEmpty(contentBuffer);
+
+    private boolean isUncompleted(String type, String[] lineComponents){
+    	return lineComponents[INDEX_ISDONE].equals(TODO) && lineComponents[INDEX_TYPE].equals(type); 
     }
      
     private boolean isOngoingEvent(String lineInFile){
@@ -374,24 +410,10 @@ public class Logic {
     	}
     }
     
-    
-    
     private String addMsgIfEmpty(StringBuffer buffer){
     	if(buffer.length() == 0){ 
     		buffer.append(DISPLAY_NO_ITEMS);
     	}
     	return buffer.toString().trim();
-    }
-    
-    private boolean isUncompleted(String type, String[] lineComponents){
-    	return lineComponents[INDEX_ISDONE].equals(TODO) && lineComponents[INDEX_TYPE].equals(type); 
-    }
-    
-	//============================================
-	// Stub methods for testing 
-	//============================================
-
-    public String getFilepath() {
-        return storage.getFilePath();
     }
 }
