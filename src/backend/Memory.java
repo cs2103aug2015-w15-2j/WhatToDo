@@ -34,6 +34,10 @@ public class Memory {
 		return getState(currFileContents, redoStack, undoStack);
 	}
 	
+	public void clearUndoStack(){
+		undoStack.clear();
+	}
+	
 	public void clearRedoStack(){
 		redoStack.clear();
 	}
