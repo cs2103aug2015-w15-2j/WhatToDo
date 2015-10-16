@@ -2,7 +2,6 @@ package backend;
 
 import java.nio.file.FileSystemException;
 
-import javafx.scene.shape.Line;
 import struct.Command;
 import struct.Date;
 import struct.Event;
@@ -29,11 +28,13 @@ public class Logic {
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
 	private static final String MESSAGE_UNDO = "Undid command: \"%s\"."; 
 	private static final String MESSAGE_NO_UNDO = "There are no commands to undo.";
+	private static final String MESSAGE_EXIT = "Exit";
 	
 	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
     private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
-    private static final String MESSAGE_EXIT = "Exit";
+    private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
+    
     
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
@@ -86,10 +87,10 @@ public class Logic {
     			return executeEdit(command); 
     		case SEARCH :
     			return executeSearch(command); 
-//    		case UNDO : 
-//    			return executeUndo(); 
-//    		case REDO : 
-//    			return executeRedo();
+    		case UNDO : 
+    			return executeUndo(); 
+    		case REDO : 
+    			return executeRedo();
     		case EXIT :
     			return executeExit(); 
     		case INVALID :
@@ -150,9 +151,10 @@ public class Logic {
 	//============================================
 	// Private methods for executeCommand 
 	//============================================
-
+    
     private String executeAdd(Command command){
-    	switch (command.getDataType()) {
+    	try{
+    		switch (command.getDataType()) {
 			case FLOATING_TASK : 
 				return executeAddFloatingTask(command); 
     		case TASK :
@@ -161,89 +163,80 @@ public class Logic {
     			return executeAddEvent(command); 
     		default: 
     			return MESSAGE_ERROR_ADD;
+    		}
     	}
+    	catch(FileSystemException e){
+    		return e.getMessage();
+    	}
+    	catch (Exception e) {
+			return MESSAGE_ERROR_UNKNOWN; 
+		}
     }
     
-    private String executeAddFloatingTask(Command command){
-    	try{
-    		State prevState = getPrevState(command);
+    private String executeAddFloatingTask(Command command) throws FileSystemException{
+    	State stateBeforeExecutingCommand = getState(command);
     		
-    		String taskName = command.getName(); 
-        	FloatingTask floatingTask = new FloatingTask(taskName, false);
-        	storage.addFloatingTask(floatingTask); 
+    	String taskName = command.getName(); 
+        FloatingTask floatingTask = new FloatingTask(taskName, false);
+        storage.addFloatingTask(floatingTask); 
+        String addFeedback = String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
         
-        	memory.savePrevState(prevState);
-        	return String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
-    	}
-    	catch(FileSystemException e){
-    		return e.getMessage(); 
-    	}
-    	catch(Exception e){
-    		return MESSAGE_ERROR_UNKNOWN; 
-    	}
+        boolean isSaved = saveState(stateBeforeExecutingCommand);
+        return formFeedbackMsg(addFeedback, isSaved);
     }
     
-    private String executeAddTask(Command command){
-    	try{
-    		State prevState = getPrevState(command);
+    private String executeAddTask(Command command) throws FileSystemException{
+    	State stateBeforeExecutingCommand = getState(command);
     		
-    		String taskName = command.getName(); 
-        	Date taskDeadline = command.getDueDate();
-        	Task task = new Task(taskName, false, taskDeadline);
-        	storage.addTask(task);
-        	
-        	memory.savePrevState(prevState);
-        	return String.format(MESSAGE_ADD_TASK, taskName, 
-        			taskDeadline.getDayString(),taskDeadline.getFullDate()); 
-    	}
-    	catch(FileSystemException e){
-    		return e.getMessage(); 
-    	}
-    	catch(Exception e){
-    		return MESSAGE_ERROR_UNKNOWN; 
-    	}
+    	String taskName = command.getName(); 
+        Date taskDeadline = command.getDueDate();
+        Task task = new Task(taskName, false, taskDeadline);
+        storage.addTask(task);
+        String addFeedback = String.format(MESSAGE_ADD_TASK, taskName, 
+        		taskDeadline.getDayString(),taskDeadline.getFullDate()); 
+
+        boolean isSaved = saveState(stateBeforeExecutingCommand);
+        return formFeedbackMsg(addFeedback, isSaved);
     }
     
-    private String executeAddEvent(Command command){
-    	try{ 
-    		State prevState = getPrevState(command);
+    private String executeAddEvent(Command command) throws FileSystemException{
+    	State stateBeforeExecutingCommand = getState(command);
     		
-    		String eventName = command.getName(); 
-        	Date eventStartDate = command.getStartDate();
-        	Date eventEndDate = command.getEndDate();
-        	String eventStartTime = command.getStartTime(); 
-        	String eventEndTime = command.getEndTime();
-        	Event event = new Event(eventName, false, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
-        	storage.addEvent(event); 
-        	
-        	memory.savePrevState(prevState);
-        	return String.format(MESSAGE_ADD_EVENT, eventName, 
-        			eventStartDate.getDayString(), eventStartDate.getFullDate(), eventStartTime, 
-        			eventEndDate.getDayString(), eventEndDate.getFullDate(), eventEndTime);
-    	}
-    	//TODO exception for addEvent 
-    	catch(Exception e){
-    		return e.getMessage(); 
-    	}
+    	String eventName = command.getName(); 
+        Date eventStartDate = command.getStartDate();
+        Date eventEndDate = command.getEndDate();
+        String eventStartTime = command.getStartTime(); 
+        String eventEndTime = command.getEndTime();
+        Event event = new Event(eventName, false, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
+        storage.addEvent(event); 
+        String addFeedback = String.format(MESSAGE_ADD_EVENT, eventName, 
+        		eventStartDate.getDayString(), eventStartDate.getFullDate(), eventStartTime, 
+        		eventEndDate.getDayString(), eventEndDate.getFullDate(), eventEndTime);
+        
+        boolean isSaved = saveState(stateBeforeExecutingCommand);
+        return formFeedbackMsg(addFeedback, isSaved);
     }
    
     private String executeDelete(Command command){
     	try{
-    		State prevState = getPrevState(command);
+    		State stateBeforeExecutingCommand = getState(command);
     		
     		int lineNumber = command.getIndex(); 
         	String deletedLine = storage.deleteLine(lineNumber); 
+        	//TODO format feedback message for delete
+        	String deleteFeedback = String.format(MESSAGE_DELETE_LINE, deletedLine); 
         	
-        	memory.savePrevState(prevState);
-        	//TODO format feedback message for delete 
-        	return String.format(MESSAGE_DELETE_LINE, deletedLine); 
+        	boolean isSaved = saveState(stateBeforeExecutingCommand);
+        	return formFeedbackMsg(deleteFeedback, isSaved);
     	}
-    	//TODO exception for delete
+    	catch(FileSystemException e){
+    		return e.getMessage();
+    	}
     	catch(Exception e){
-    		return e.getMessage(); 
+    		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
-    
+        
     //TODO edit now only edit name of task - need to add code to determine 
     //whether user wants to edit date, 
     private String executeEdit(Command command){
@@ -264,44 +257,56 @@ public class Logic {
     	return "sth"; 
     }
     
-//    private String executeUndo(){ 
-//    	String currFileContents = storage.display();
-//    	State stateAfterUndo = memory.getUndoState(currFileContents);
-//    	
-//    	if(stateAfterUndo == null){
-//    		return MESSAGE_NO_UNDO; 
-//    	}
-//    	
-//    	try{ 
-//    		storage.overwriteFile(stateAfterUndo.getFileContents());
-//        	return String.format(MESSAGE_UNDO, stateAfterUndo.getUserCommand());
-//    	}
-//    	//TODO exception for undo
-//    	catch(Exception e){
-//    		return e.getMessage();
-//    	}
-//    }
+    private String executeUndo(){ 
+    	State stateAfterUndo = null;
+    	try{
+    		String currFileContents = storage.display();
+        	stateAfterUndo = memory.getUndoState(currFileContents);
+    	}
+    	catch(Exception e){
+    		
+    	}
+    	
+    	if(stateAfterUndo == null){
+    		return MESSAGE_NO_UNDO; 
+    	}
+    	
+    	try{ 
+    		storage.overwriteFile(stateAfterUndo.getFileContents());
+        	return String.format(MESSAGE_UNDO, stateAfterUndo.getUserCommand());
+    	}
+    	//TODO exception for undo
+    	catch(Exception e){
+    		return e.getMessage();
+    	}
+    }
     
     //TODO redo 
-//    private String executeRedo(){ 
-//    	String currFileContents = storage.display();
-//    	State stateAfterRedo = memory.getRedoState(currFileContents);
-//    	if(stateAfterRedo == null){
-//    		return MESSAGE_NO_REDO; 
-//    	}
-//    	
-//    	try{ 
-//    		storage.overwriteFile(stateAfterRedo.getFileContents());
-//        	return String.format(MESSAGE_REDO, stateAfterRedo.getUserCommand());
-//    	}
-//    	//TODO exception for redo
-//    	catch(Exception e){
-//    		return e.getMessage();
-//    	}
-//    }
+    private String executeRedo(){ 
+    	State stateAfterRedo = null;
+    	try{
+    		String currFileContents = storage.display();
+        	stateAfterRedo = memory.getRedoState(currFileContents);
+    	}
+    	catch(Exception e){
+    		
+    	}
+    	
+    	if(stateAfterRedo == null){
+    		return MESSAGE_NO_REDO; 
+    	}
+    	
+    	try{ 
+    		storage.overwriteFile(stateAfterRedo.getFileContents());
+        	return String.format(MESSAGE_REDO, stateAfterRedo.getUserCommand());
+    	}
+    	//TODO exception for redo
+    	catch(Exception e){
+    		return e.getMessage();
+    	}
+    }
     
-    //TODO try catch --> return null 
-   	private State getPrevState(Command command) {
+   	private State getState(Command command) {
    		try{
    			String prevFileContents = storage.display(); 
    	   		String userCommand = command.getUserInput();
@@ -313,6 +318,26 @@ public class Logic {
    		}
    	}
     
+	private boolean saveState(State prevState) {
+		if(prevState != null){
+        	memory.savePrevState(prevState);
+        	return true;
+        }
+		else{
+        	memory.clearUndoStack();
+        	return false;
+        }
+	}
+   	
+	private String formFeedbackMsg(String addFeedback, boolean isSaved) {
+		if(isSaved){
+        	return addFeedback;
+        }
+        else{
+        	return addFeedback + MESSAGE_ERROR_UNDO;
+        }
+	}
+	
     private String executeExit(){
     	return MESSAGE_EXIT; 
     }
