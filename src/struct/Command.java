@@ -3,7 +3,7 @@ package struct;
 public class Command {
 	
 	public enum CommandType {
-		ADD, DELETE, EDIT, SEARCH, UNDO, REDO, EXIT, INVALID
+		ADD, DELETE, EDIT, MARKDONE, SEARCH, UNDO, REDO, EXIT, INVALID
     }
 	
 	public enum DataType { 
@@ -31,7 +31,14 @@ public class Command {
 		this.commandType = commandType;
 	}
 	
-
+	//============================================
+	// Public Methods
+	//============================================	
+	
+	public boolean isUndo(){
+		return this.commandType == CommandType.UNDO;
+	}
+	
 	//============================================
 	// Getters
 	//============================================

@@ -24,6 +24,7 @@ public class Logic {
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added \"%s\" to list.";
 	private static final String MESSAGE_ADD_EVENT = "Added \"%s\" to list. Event Start: %s, %s, %s Event End: %s, %s, %s.";
 	private static final String MESSAGE_DELETE_LINE = "Deleted \"%s\" from list.";
+	private static final String MESSAGE_MARK_DONE = "Done \"%s\"";
 	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
 	private static final String MESSAGE_UNDO = "Undid command: \"%s\"."; 
@@ -85,6 +86,8 @@ public class Logic {
     			return executeDelete(command); 
     		case EDIT : 
     			return executeEdit(command); 
+    		case MARKDONE : 
+    			return executeMarkDone(command);
     		case SEARCH :
     			return executeSearch(command); 
     		case UNDO : 
@@ -252,6 +255,26 @@ public class Logic {
     	}
     }
     
+    private String executeMarkDone(Command command){
+    	try{
+    		State stateBeforeExecutingCommand = getState(command);
+    		
+    		int lineNumber = command.getIndex(); 
+        	String doneLine = storage.markAsDone(lineNumber); 
+        	//TODO format feedback message for mark as done
+        	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, doneLine); 
+        	
+        	boolean isSaved = saveState(stateBeforeExecutingCommand);
+        	return formFeedbackMsg(markDoneFeedback, isSaved);
+    	}
+    	catch(FileSystemException e){
+    		return e.getMessage();
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_UNKNOWN;
+    	}
+    }
+    
     //TODO search
     private String executeSearch(Command command){
     	return "sth"; 
@@ -295,6 +318,13 @@ public class Logic {
     	}
     	catch(Exception e){
     		return MESSAGE_ERROR_UNKNOWN;
+    	}
+    }
+    
+    //TODO - check if the condition is true
+    private void clearRedo(Command command){
+    	if(prevCommand.isUndo() && !command.isUndo()){
+    		memory.clearRedoStack();
     	}
     }
     
