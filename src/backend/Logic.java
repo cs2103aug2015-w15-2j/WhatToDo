@@ -86,10 +86,10 @@ public class Logic {
     			return executeEdit(command); 
     		case SEARCH :
     			return executeSearch(command); 
-    		case UNDO : 
-    			return executeUndo(); 
-    		case REDO : 
-    			return executeRedo();
+//    		case UNDO : 
+//    			return executeUndo(); 
+//    		case REDO : 
+//    			return executeRedo();
     		case EXIT :
     			return executeExit(); 
     		case INVALID :
@@ -264,48 +264,53 @@ public class Logic {
     	return "sth"; 
     }
     
-    private String executeUndo(){ 
-    	String currFileContents = storage.display();
-    	State stateAfterUndo = memory.getUndoState(currFileContents);
-    	
-    	if(stateAfterUndo == null){
-    		return MESSAGE_NO_UNDO; 
-    	}
-    	
-    	try{ 
-    		storage.overwriteFile(stateAfterUndo.getFileContents());
-        	return String.format(MESSAGE_UNDO, stateAfterUndo.getUserCommand());
-    	}
-    	//TODO exception for undo
-    	catch(Exception e){
-    		return e.getMessage();
-    	}
-    }
+//    private String executeUndo(){ 
+//    	String currFileContents = storage.display();
+//    	State stateAfterUndo = memory.getUndoState(currFileContents);
+//    	
+//    	if(stateAfterUndo == null){
+//    		return MESSAGE_NO_UNDO; 
+//    	}
+//    	
+//    	try{ 
+//    		storage.overwriteFile(stateAfterUndo.getFileContents());
+//        	return String.format(MESSAGE_UNDO, stateAfterUndo.getUserCommand());
+//    	}
+//    	//TODO exception for undo
+//    	catch(Exception e){
+//    		return e.getMessage();
+//    	}
+//    }
     
     //TODO redo 
-    private String executeRedo(){ 
-    	String currFileContents = storage.display();
-    	State stateAfterRedo = memory.getRedoState(currFileContents);
-    	if(stateAfterRedo == null){
-    		return MESSAGE_NO_REDO; 
-    	}
-    	
-    	try{ 
-    		storage.overwriteFile(stateAfterRedo.getFileContents());
-        	return String.format(MESSAGE_REDO, stateAfterRedo.getUserCommand());
-    	}
-    	//TODO exception for redo
-    	catch(Exception e){
-    		return e.getMessage();
-    	}
-    }
+//    private String executeRedo(){ 
+//    	String currFileContents = storage.display();
+//    	State stateAfterRedo = memory.getRedoState(currFileContents);
+//    	if(stateAfterRedo == null){
+//    		return MESSAGE_NO_REDO; 
+//    	}
+//    	
+//    	try{ 
+//    		storage.overwriteFile(stateAfterRedo.getFileContents());
+//        	return String.format(MESSAGE_REDO, stateAfterRedo.getUserCommand());
+//    	}
+//    	//TODO exception for redo
+//    	catch(Exception e){
+//    		return e.getMessage();
+//    	}
+//    }
     
     //TODO try catch --> return null 
    	private State getPrevState(Command command) {
-   		String prevFileContents = storage.display(); 
-   		String userCommand = command.getUserInput();
-   		State prevState = new State(prevFileContents, userCommand);
-   		return prevState;
+   		try{
+   			String prevFileContents = storage.display(); 
+   	   		String userCommand = command.getUserInput();
+   	   		State prevState = new State(prevFileContents, userCommand);
+   	   		return prevState;
+   		}
+   		catch(Exception e){
+   			return null; 
+   		}
    	}
     
     private String executeExit(){
