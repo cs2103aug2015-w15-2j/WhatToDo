@@ -258,51 +258,43 @@ public class Logic {
     }
     
     private String executeUndo(){ 
-    	State stateAfterUndo = null;
     	try{
     		String currFileContents = storage.display();
-        	stateAfterUndo = memory.getUndoState(currFileContents);
-    	}
-    	catch(Exception e){
+    		State stateAfterUndo = memory.getUndoState(currFileContents);
     		
-    	}
-    	
-    	if(stateAfterUndo == null){
-    		return MESSAGE_NO_UNDO; 
-    	}
-    	
-    	try{ 
+    		if(stateAfterUndo == null){
+        		return MESSAGE_NO_UNDO; 
+        	}
+    		
     		storage.overwriteFile(stateAfterUndo.getFileContents());
         	return String.format(MESSAGE_UNDO, stateAfterUndo.getUserCommand());
     	}
-    	//TODO exception for undo
-    	catch(Exception e){
+    	catch(FileSystemException e){
     		return e.getMessage();
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
     
     //TODO redo 
     private String executeRedo(){ 
-    	State stateAfterRedo = null;
     	try{
     		String currFileContents = storage.display();
-        	stateAfterRedo = memory.getRedoState(currFileContents);
-    	}
-    	catch(Exception e){
-    		
-    	}
-    	
-    	if(stateAfterRedo == null){
-    		return MESSAGE_NO_REDO; 
-    	}
-    	
-    	try{ 
-    		storage.overwriteFile(stateAfterRedo.getFileContents());
+        	State stateAfterRedo = memory.getRedoState(currFileContents);
+        	
+        	if(stateAfterRedo == null){
+        		return MESSAGE_NO_REDO; 
+        	}
+        	
+        	storage.overwriteFile(stateAfterRedo.getFileContents());
         	return String.format(MESSAGE_REDO, stateAfterRedo.getUserCommand());
     	}
-    	//TODO exception for redo
-    	catch(Exception e){
+    	catch(FileSystemException e){
     		return e.getMessage();
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
     
