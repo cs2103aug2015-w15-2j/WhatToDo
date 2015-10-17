@@ -153,7 +153,7 @@ public class AllViewController {
         
         // CSS
         defTaskHeader.getStyleClass().add("box-title-label");
-        allTaskHeaderBox.getStyleClass().add("box-title");
+        allTaskHeaderBox.getStyleClass().add("box-title-all-task");
     }
 
     private static void initAllEventView(ArrayList<String> events) {
@@ -207,7 +207,7 @@ public class AllViewController {
         
         // CSS
         defEventHeader.getStyleClass().add("box-title-label");
-        allEventHeaderBox.getStyleClass().add("box-title");
+        allEventHeaderBox.getStyleClass().add("box-title-all-event");
     }
 
     public static void initAllView() {

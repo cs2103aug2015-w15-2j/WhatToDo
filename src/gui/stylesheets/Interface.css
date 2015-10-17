@@ -77,6 +77,18 @@
 	-fx-background-image: url("../resources/sbBG.jpg");
 }
 
+.box-title-all-task {
+	-fx-font-size: 14;
+	-fx-font-weight: bold;
+	-fx-background-image: url("../resources/headerAllTaskBG.jpg");
+}
+
+.box-title-all-event {
+	-fx-font-size: 14;
+	-fx-font-weight: bold;
+	-fx-background-image: url("../resources/headerAllEventBG.jpg");
+}
+
 .box-title-label {
 	-fx-text-fill: #e5e5e5;
 }
