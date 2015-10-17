@@ -8,11 +8,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
 
 public class LogicController {
 
@@ -136,7 +134,7 @@ public class LogicController {
             InterfaceController.getFeedbackLabel().setText(returnMessage);
 
             // Update the Tasks and Events
-            InterfaceController.updateDefView();
+            DefaultViewController.updateDefView();
         }
     }
 	
@@ -174,7 +172,7 @@ public class LogicController {
     		// window height - height of the filepath bar(35) -
     		// height of feedback bar(35) - height of text bar(45) - 
     		// 2 * height of line(1)
-    		InterfaceController.getDefScrollLine().setEndY((Double)newValue - 
+    		DefaultViewController.getDefScrollLine().setEndY((Double)newValue - 
     				InterfaceController.HEIGHT_FILEPATH - 
     				InterfaceController.HEIGHT_FEEDBACK - 
     				InterfaceController.HEIGHT_TEXTFIELD);
