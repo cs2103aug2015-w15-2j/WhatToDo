@@ -32,12 +32,14 @@
 }
 
 .text {
-    -fx-font-smoothing-type: gray;
+    -fx-font-smoothing-type: lcd;
+    -fx-font-family: "PT Sans";
     -fx-opacity: 0.9;
 }
 
 .display-bar {
-	-fx-font-size: 13;
+	-fx-font-style: italic;
+	-fx-font-size: 14;
 }
 
 .line {

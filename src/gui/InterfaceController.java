@@ -65,11 +65,6 @@ public class InterfaceController {
     private static VBox feedbackBox, feedbackBoxWithLine;
     private static Label feedbackLabel;
     private static Line feedbackLine;
-
-    // Used for initDisplayElement
-    private static Label elementLabel;
-    private static HBox elementBox, labelBox;
-    private static Line elementLine;
     
     // Used for initDefTaskView
     private static VBox defTaskBox, defTaskContentBox;
@@ -110,6 +105,7 @@ public class InterfaceController {
     protected static final double MARGIN_TEXT_ELEMENT_SEPARATOR = 10;
     protected static final double MARGIN_COMPONENT = 10;
     protected static final double MARGIN_SCROLL = 30;
+    protected static final double MARGIN_ARBITRARY = 6;
 
     private static void initFilePathBar() {
 
@@ -121,8 +117,11 @@ public class InterfaceController {
 
         // Set margins for the filepath label
         HBox.setMargin(filepathLabel, new Insets(
-        		MARGIN_COMPONENT, MARGIN_TEXT_BAR, 
+        		0, MARGIN_TEXT_BAR, 
         		0, MARGIN_TEXT_BAR));
+        
+        // Set alignment of the filepath label
+        filepathBox.setAlignment(Pos.CENTER);
 
         // Fix height for the filepath bar without lines
         filepathBox.setMaxHeight(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
@@ -255,8 +254,11 @@ public class InterfaceController {
 
         // Set margins for the feedback label
         VBox.setMargin(feedbackLabel, new Insets(
-        		MARGIN_COMPONENT, MARGIN_TEXT_BAR, 
+        		0, MARGIN_TEXT_BAR, 
         		0, MARGIN_TEXT_BAR));
+        
+        // Set alignment of the feedback label
+        feedbackBox.setAlignment(Pos.CENTER);
 
         // Fix the height of the feedback label
         feedbackBox.setMaxHeight(HEIGHT_FEEDBACK - HEIGHT_HORIZ_LINE);
@@ -282,17 +284,32 @@ public class InterfaceController {
     
     private static HBox initDisplayElement(String displayData) {
     	
-    	elementLabel = new Label(displayData);
-    	labelBox = new HBox(elementLabel);
-    	elementBox = new HBox(labelBox);
+    	Label elementLabel = new Label(displayData);
+    	//HBox labelBox = new HBox(elementLabel);
+    	HBox elementBox = new HBox(elementLabel);
     	
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
     	if (isTitle(displayData)) {
     		
     		// Create a divider line and add it to the elementBox
-    		elementLine = new Line(0, 0, WIDTH_DEFAULT, 0);
+    		Line elementLine = new Line(0, 0, WIDTH_DEFAULT, 0);
     		elementBox.getChildren().add(elementLine);
+    		
+    		// Get the width of label and resize the line
+    		Text text = new Text(elementLabel.getText());
+    		Scene s = new Scene(new Group(text));
+    		// Override the CSS style to calculate the text width
+    		text.setStyle("-fx-font-family: \"PT Sans\"; "
+    				+ "-fx-font-size: 14; "
+    				+ "-fx-font-weight: bold;");
+    		text.applyCss();
+    		
+    		// Apply the binding to (element box width - text width - arbitrary margin)
+    		// The arbitrary margin exists because text in a container is not perfectly 
+    		// aligned to the dimensions of its container
+    		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
+    		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(textWidth + MARGIN_ARBITRARY));
     		
     		// Align the elements in the HBox
     		elementBox.setAlignment(Pos.CENTER_LEFT);
@@ -306,7 +323,9 @@ public class InterfaceController {
         	elementLine.getStyleClass().add("line");
     		elementBox.getStyleClass().add("element-title");
     	} else {
-    		
+    		// Set text wrapping for the display data
+        	elementLabel.setWrapText(true);
+        	
     		// Set the margins of the element node label within the HBox
         	HBox.setMargin(elementLabel, new Insets(
         			MARGIN_TEXT_ELEMENT_HEIGHT, MARGIN_TEXT_ELEMENT, 
@@ -330,14 +349,6 @@ public class InterfaceController {
         	// Use a temporary component for formatting
         	tempBox = initDisplayElement(tasks.get(i));
         	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-        	
-        	Text labelText = new Text(elementLabel.getText());
-        	new Scene(new Group(labelText));
-        	labelText.getStyleClass().add("element-title");
-        	labelText.applyCss();
-        	double textWidth = labelText.getLayoutBounds().getWidth();
-        	
-        	elementLine.setEndX(textWidth);
             defTaskContentBox.getChildren().add(tempBox);
         }
         
