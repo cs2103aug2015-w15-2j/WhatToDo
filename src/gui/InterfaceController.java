@@ -335,15 +335,7 @@ public class InterfaceController {
         	new Scene(new Group(labelText));
         	labelText.getStyleClass().add("element-title");
         	labelText.applyCss();
-        	labelText.layoutBoundsProperty().addListener(new ChangeListener<Object>() {
-        		@Override
-        		public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-        			System.out.println("HERE");
-        			System.out.println(labelText.getLayoutBounds().getWidth());
-        		}
-        	});
         	double textWidth = labelText.getLayoutBounds().getWidth();
-        	System.out.println(textWidth);
         	
         	elementLine.setEndX(textWidth);
             defTaskContentBox.getChildren().add(tempBox);
