@@ -34,8 +34,8 @@ public class InterfaceController {
     private static ImageView sbAllImage;
     
     // Used for initSideBarHistoryButton
-    private static VBox sbHistoryBox;
-    private static ImageView sbHistoryImage;
+    private static VBox sbHistBox;
+    private static ImageView sbHistImage;
     
     // Used for initSideBarDoneButton
     private static VBox sbDoneBox;
@@ -72,6 +72,16 @@ public class InterfaceController {
     protected static final String VIEW_ALL = "all";
     protected static final String VIEW_HIST = "hist";
     protected static final String VIEW_DONE = "done";
+    
+    // Values for button images
+    private static final String PATH_HOME = "gui/resources/home.png";
+    private static final String PATH_HOME_SELECTED = "gui/resources/home_selected.png";
+    private static final String PATH_ALL = "gui/resources/all.png";
+    private static final String PATH_ALL_SELECTED = "gui/resources/all_selected.png";
+    private static final String PATH_HIST = "gui/resources/history.png";
+    private static final String PATH_HIST_SELECTED = "gui/resources/history_selected.png";
+    private static final String PATH_DONE = "gui/resources/done.png";
+    private static final String PATH_DONE_SELECTED = "gui/resources/done_selected.png";
     
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
@@ -153,15 +163,15 @@ public class InterfaceController {
 
     private static void initSideBarHistoryButton(String imagePath) {
     	
-    	sbHistoryImage = new ImageView(imagePath);
-    	sbHistoryBox = new VBox(sbHistoryImage);
+    	sbHistImage = new ImageView(imagePath);
+    	sbHistBox = new VBox(sbHistImage);
     	
     	// Fix width and height for the button
-    	sbHistoryBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbHistoryBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+    	sbHistBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbHistBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-    	sbHistoryBox.setMaxHeight(WIDTH_SIDEBAR);
-    	sbHistoryBox.setMinHeight(WIDTH_SIDEBAR);
+    	sbHistBox.setMaxHeight(WIDTH_SIDEBAR);
+    	sbHistBox.setMinHeight(WIDTH_SIDEBAR);
     }
     
     private static void initSideBarDoneButton(String imagePath) {
@@ -176,15 +186,71 @@ public class InterfaceController {
     	sbDoneBox.setMaxHeight(WIDTH_SIDEBAR);
     	sbDoneBox.setMinHeight(WIDTH_SIDEBAR);
     }
+    
+    private static void changeButtonToSelected(String view) {
+    	switch (view) {
+    	case VIEW_DEFAULT:
+    		sbHomeImage = new ImageView(PATH_HOME_SELECTED);
+    		sbHomeBox.getChildren().clear();
+    		sbHomeBox.getChildren().add(sbHomeImage);
+    		break;
+    	case VIEW_ALL:
+    		sbAllImage = new ImageView(PATH_ALL_SELECTED);
+    		sbAllBox.getChildren().clear();
+    		sbAllBox.getChildren().add(sbAllImage);
+    		break;
+    	case VIEW_HIST:
+    		sbHistImage = new ImageView(PATH_HIST_SELECTED);
+    		sbHistBox.getChildren().clear();
+    		sbHistBox.getChildren().add(sbHistImage);
+    		break;
+    	case VIEW_DONE:
+    		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
+    		sbDoneBox.getChildren().clear();
+    		sbDoneBox.getChildren().add(sbDoneImage);
+    		break;
+    	default:
+    		// Do nothing
+    		break;
+    	}
+    }
+    
+    private static void changeButtonToUnselected(String view) {
+    	switch (view) {
+    	case VIEW_DEFAULT:
+    		sbHomeImage = new ImageView(PATH_HOME);
+    		sbHomeBox.getChildren().clear();
+    		sbHomeBox.getChildren().add(sbHomeImage);
+    		break;
+    	case VIEW_ALL:
+    		sbAllImage = new ImageView(PATH_ALL);
+    		sbAllBox.getChildren().clear();
+    		sbAllBox.getChildren().add(sbAllImage);
+    		break;
+    	case VIEW_HIST:
+    		sbHistImage = new ImageView(PATH_HIST);
+    		sbHistBox.getChildren().clear();
+    		sbHistBox.getChildren().add(sbHistImage);
+    		break;
+    	case VIEW_DONE:
+    		sbDoneImage = new ImageView(PATH_DONE);
+    		sbDoneBox.getChildren().clear();
+    		sbDoneBox.getChildren().add(sbDoneImage);
+    		break;
+    	default:
+    		// Do nothing
+    		break;
+    	}
+    }
 
     private static void initSideBar() {
 
-        initSideBarHomeButton("gui/resources/home_selected.png");
-        initSideBarAllButton("gui/resources/all.png");
-        initSideBarHistoryButton("gui/resources/history.png");
-        initSideBarDoneButton("gui/resources/done.png");
+        initSideBarHomeButton(PATH_HOME_SELECTED);
+        initSideBarAllButton(PATH_ALL);
+        initSideBarHistoryButton(PATH_HIST);
+        initSideBarDoneButton(PATH_DONE);
 
-        sbBox = new VBox(sbHomeBox, sbAllBox, sbHistoryBox, sbDoneBox);        
+        sbBox = new VBox(sbHomeBox, sbAllBox, sbHistBox, sbDoneBox);        
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
         sbBoxWithLine = new HBox(sbBox, sbLine);
@@ -195,7 +261,7 @@ public class InterfaceController {
         		MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         
         VBox.setMargin(sbAllBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
-        VBox.setMargin(sbHistoryBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        VBox.setMargin(sbHistBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         VBox.setMargin(sbDoneBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         
         // Fix the width for the sidebar
@@ -334,30 +400,67 @@ public class InterfaceController {
     	viewBox.getChildren().clear();
     	
     	switch (view) {
+    	
     	case VIEW_DEFAULT:
     		DefaultViewController.updateDefView();
     		viewBox.getChildren().add(defBox);
+    		
     		// Set default box to grow with view box
             HBox.setHgrow(defBox, Priority.ALWAYS);
+            
+            // Change buttons
+            changeButtonToSelected(VIEW_DEFAULT);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_DEFAULT;
     		break;
+    		
     	case VIEW_ALL:
     		AllViewController.updateAllView();
     		viewBox.getChildren().add(allBox);
+    		
     		// Set all box to grow with view box
             HBox.setHgrow(allBox, Priority.ALWAYS);
+            
+            // Change buttons
+            changeButtonToSelected(VIEW_ALL);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_ALL;
     		break;
+    		
     	case VIEW_HIST:
     		//HistoryViewController.updateHistoryView();
     		viewBox.getChildren().add(histBox);
+    		
     		// Set history box to grow with view box
             //HBox.setHgrow(histBox, Priority.ALWAYS);
+    		
+            // Change buttons
+            changeButtonToSelected(VIEW_HIST);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_HIST;
     		break;
+    		
     	case VIEW_DONE:
     		//DoneViewController.updateDoneView();
     		viewBox.getChildren().add(doneBox);
+    		
     		// Set done box to grow with view box
             //HBox.setHgrow(doneBox, Priority.ALWAYS);
+    		
+            // Change buttons
+            changeButtonToSelected(VIEW_DONE);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_DONE;
     		break;
+    		
     	default: //ignore
     		break;
     	}

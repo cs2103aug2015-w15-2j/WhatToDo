@@ -138,17 +138,14 @@ public class LogicController {
             case InterfaceController.VIEW_DEFAULT:
             	switch (textFieldInput) {
             	case "all":
-            		InterfaceController.currentView = InterfaceController.VIEW_ALL;
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
             		break;
             	case "hist":
             		// TODO
-            		//InterfaceController.currentView = InterfaceController.VIEW_HISTORY;
             		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
             		break;
             	case "done":
             		// TODO
-            		//InterfaceController.currentView = InterfaceController.VIEW_COMPLETED;
             		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
             		break;
             	default:
@@ -166,17 +163,14 @@ public class LogicController {
             case InterfaceController.VIEW_ALL:
             	switch (textFieldInput) {
             	case "def":
-            		InterfaceController.currentView = InterfaceController.VIEW_DEFAULT;
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
             		break;
             	case "hist":
             		// TODO
-            		//InterfaceController.currentView = InterfaceController.VIEW_HISTORY;
             		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
             		break;
             	case "done":
             		// TODO
-            		//InterfaceController.currentView = InterfaceController.VIEW_COMPLETED;
             		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
             		break;
             	default:
@@ -194,16 +188,13 @@ public class LogicController {
             case InterfaceController.VIEW_HIST:
             	switch (textFieldInput) {
             	case "def":
-            		InterfaceController.currentView = InterfaceController.VIEW_DEFAULT;
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
             		break;
             	case "all":
-            		InterfaceController.currentView = InterfaceController.VIEW_ALL;
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
             		break;
             	case "done":
             		// TODO
-            		//InterfaceController.currentView = InterfaceController.VIEW_COMPLETED;
             		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
             		break;
             	default:
@@ -221,16 +212,13 @@ public class LogicController {
             case InterfaceController.VIEW_DONE:
             	switch (textFieldInput) {
             	case "def":
-            		InterfaceController.currentView = InterfaceController.VIEW_DEFAULT;
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
             		break;
             	case "all":
-            		InterfaceController.currentView = InterfaceController.VIEW_ALL;
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
             		break;
             	case "hist":
             		// TODO
-            		//InterfaceController.currentView = InterfaceController.VIEW_HISTORY;
             		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
             		break;
             	default:
