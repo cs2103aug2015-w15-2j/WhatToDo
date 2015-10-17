@@ -1,16 +1,4 @@
 @font-face {
-	src: url("../resources/HelveticaNeueCE55.ttf");
-}
-
-@font-face {
-	src: url("../resources/HelveticaNeueCE55Bold.ttf");
-}
-
-@font-face {
-	src: url("../resources/HelveticaNeueCE55Italic.ttf");
-}
-
-@font-face {
 	src: url('../resources/PTS75F.ttf');
 }
 
@@ -74,6 +62,7 @@
 
 .element {
 	-fx-background-color: #f0f0f0;
+	-fx-background-image: url("../resources/elementBG.jpg");
 	/* -fx-effect: dropshadow(gaussian, gray, 3, 0.2, 0, 1); */
 }
 

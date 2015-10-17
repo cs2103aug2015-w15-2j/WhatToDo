@@ -92,9 +92,9 @@ public class InterfaceController {
     protected static final double WIDTH_DEFAULT_BUTTON = 50;
     protected static final double WIDTH_SIDEBAR = 71;
     
-    protected static final double HEIGHT_FILEPATH = 36;
-    protected static final double HEIGHT_FEEDBACK = 36;
-    protected static final double HEIGHT_TEXTFIELD = 45;
+    protected static final double HEIGHT_FILEPATH = 31;
+    protected static final double HEIGHT_FEEDBACK = 31;
+    protected static final double HEIGHT_TEXTFIELD = 40;
     
     protected static final double WIDTH_VERT_LINE = 1;
     protected static final double HEIGHT_HORIZ_LINE = 1;
@@ -103,6 +103,7 @@ public class InterfaceController {
     protected static final double MARGIN_TEXT_ELEMENT = 10;
     protected static final double MARGIN_TEXT_ELEMENT_HEIGHT = 3;
     protected static final double MARGIN_TEXT_ELEMENT_SEPARATOR = 10;
+    protected static final double MARGIN_TEXT_FIELD = 7;
     protected static final double MARGIN_COMPONENT = 10;
     protected static final double MARGIN_SCROLL = 30;
     protected static final double MARGIN_ARBITRARY = 6;
@@ -234,7 +235,7 @@ public class InterfaceController {
         textBox = new VBox(textField);
 
         // Set the margins for the text field
-        VBox.setMargin(textField, new Insets(MARGIN_COMPONENT));
+        VBox.setMargin(textField, new Insets(MARGIN_TEXT_FIELD));
 
         // Fix the height of the text field
         textBox.setMaxHeight(HEIGHT_TEXTFIELD);
