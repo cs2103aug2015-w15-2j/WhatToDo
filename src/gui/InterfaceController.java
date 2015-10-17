@@ -68,13 +68,13 @@ public class InterfaceController {
     
     // Used for initDefTaskView
     private static VBox defTaskBox, defTaskContentBox;
+    private static HBox defTaskHeaderBox;
     private static ScrollPane defTaskScroll;
-    private static ImageView defTaskImage;
 
     // Used for initDefEventView
     private static VBox defEventBox, defEventContentBox;
+    private static HBox defEventHeaderBox;
     private static ScrollPane defEventScroll;
-    private static ImageView defEventImage;
 
     // Used for initDefView
     private static HBox defBox, tempBox;
@@ -340,7 +340,9 @@ public class InterfaceController {
 
     private static void initDefTaskView(ArrayList<String> tasks) {
 
-        defTaskImage = new ImageView("gui/resources/taskHeader.png");
+    	Label defTaskHeader = new Label("UPCOMING TASKS");
+        defTaskHeaderBox = new HBox(defTaskHeader);
+        defTaskHeaderBox.setAlignment(Pos.CENTER_LEFT);
 
         defTaskContentBox = new VBox();
         
@@ -355,10 +357,15 @@ public class InterfaceController {
         defTaskScroll = new ScrollPane(defTaskContentBox);
         defTaskScroll.setFitToWidth(true);
         
-        defTaskBox = new VBox(defTaskImage, defTaskScroll);
+        defTaskBox = new VBox(defTaskHeaderBox, defTaskScroll);
         
-        // Set margins for the image
-        VBox.setMargin(defTaskImage, new Insets(0, 0, MARGIN_COMPONENT, 0));
+        // Set margins for the header label
+        HBox.setMargin(defTaskHeader, new Insets(
+        		MARGIN_TEXT_ELEMENT_HEIGHT, 0, MARGIN_TEXT_ELEMENT_HEIGHT, 0));
+        defTaskHeaderBox.setAlignment(Pos.CENTER);
+        
+        // Set margins for the header
+        VBox.setMargin(defTaskHeaderBox, new Insets(0, MARGIN_SCROLL, 0, MARGIN_SCROLL));
         
         // Set margins for the scroll pane
         VBox.setMargin(defTaskScroll, new Insets(
@@ -375,12 +382,14 @@ public class InterfaceController {
         defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        defTaskImage.getStyleClass().add("image");
+        defTaskHeader.getStyleClass().add("box-title-label");
+        defTaskHeaderBox.getStyleClass().add("box-title");
     }
 
     private static void initDefEventView(ArrayList<String> events) {
 
-        defEventImage = new ImageView("gui/resources/eventHeader.png");
+    	Label defEventHeader = new Label("UPCOMING EVENTS");
+        defEventHeaderBox = new HBox(defEventHeader);
 
         defEventContentBox = new VBox();
         
@@ -396,10 +405,15 @@ public class InterfaceController {
         defEventScroll = new ScrollPane(defEventContentBox);
         defEventScroll.setFitToWidth(true);
         
-        defEventBox = new VBox(defEventImage, defEventScroll);
+        defEventBox = new VBox(defEventHeaderBox, defEventScroll);
         
-        // Set margins for the image
-        VBox.setMargin(defEventImage, new Insets(0, 0, MARGIN_COMPONENT, 0));
+        // Set margins for the header label
+        HBox.setMargin(defEventHeader, new Insets(
+        		MARGIN_TEXT_ELEMENT_HEIGHT, 0, MARGIN_TEXT_ELEMENT_HEIGHT, 0));
+        defEventHeaderBox.setAlignment(Pos.CENTER);
+        
+        // Set margins for the header
+        VBox.setMargin(defEventHeaderBox, new Insets(0, MARGIN_SCROLL, 0, MARGIN_SCROLL));
         
         // Set margins for the scroll pane
         VBox.setMargin(defEventScroll, new Insets(
@@ -416,7 +430,8 @@ public class InterfaceController {
         defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        defEventImage.getStyleClass().add("image");
+        defEventHeader.getStyleClass().add("box-title-label");
+        defEventHeaderBox.getStyleClass().add("box-title");
     }
 
     private static void initDefView() {

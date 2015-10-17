@@ -82,12 +82,14 @@
 	-fx-font-weight: bold;
 }
 
-.text-title {
-	-fx-text-fill: red;
+.box-title {
+	-fx-font-size: 14;
+	-fx-font-weight: bold;
+	-fx-background-image: url("../resources/sbBG.jpg");
 }
 
-.image {
-	-fx-effect: dropshadow(gaussian, gray, 3, 0.2, 0, 1);
+.box-title-label {
+	-fx-text-fill: #e5e5e5;
 }
 
 .sidebar {
