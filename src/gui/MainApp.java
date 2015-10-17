@@ -52,6 +52,7 @@ public class MainApp extends Application {
      * dimensions, and the minimum and maximum window sizes
      */
     public static void initPrimaryStage() {
+    	
         // Set the scene to be displayed
         stage.setScene(defaultView);
 
@@ -63,5 +64,6 @@ public class MainApp extends Application {
         stage.setHeight(MIN_WINDOW_HEIGHT);
         stage.setMinHeight(MIN_WINDOW_HEIGHT);
         stage.setMinWidth(MIN_WINDOW_WIDTH);
+        
     }
 }

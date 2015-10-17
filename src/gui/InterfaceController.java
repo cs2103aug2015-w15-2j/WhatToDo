@@ -284,6 +284,9 @@ public class InterfaceController {
         initFeedbackBar();
         initTextField();
         
+        // Set default box to grow with view box
+        HBox.setHgrow(defBox, Priority.ALWAYS);
+        
         // Create the line separator for defBox
         defLine = new Line(0, 0, WIDTH_DEFAULT, 0);
 
@@ -311,7 +314,7 @@ public class InterfaceController {
         VBox.setVgrow(contentBoxWithSideBar, Priority.ALWAYS);
 
         mainScene = new Scene(mainBox);
-
+        
         // Set resize listeners for the main scene
         mainScene.heightProperty().addListener(logicControl.getHeightListener());
         mainScene.widthProperty().addListener(logicControl.getWidthListener());
@@ -334,18 +337,26 @@ public class InterfaceController {
     	case VIEW_DEFAULT:
     		DefaultViewController.updateDefView();
     		viewBox.getChildren().add(defBox);
+    		// Set default box to grow with view box
+            HBox.setHgrow(defBox, Priority.ALWAYS);
     		break;
     	case VIEW_ALL:
     		AllViewController.updateAllView();
     		viewBox.getChildren().add(allBox);
+    		// Set all box to grow with view box
+            HBox.setHgrow(allBox, Priority.ALWAYS);
     		break;
     	case VIEW_HIST:
     		//HistoryViewController.updateHistoryView();
     		viewBox.getChildren().add(histBox);
+    		// Set history box to grow with view box
+            //HBox.setHgrow(histBox, Priority.ALWAYS);
     		break;
     	case VIEW_DONE:
     		//DoneViewController.updateDoneView();
     		viewBox.getChildren().add(doneBox);
+    		// Set done box to grow with view box
+            //HBox.setHgrow(doneBox, Priority.ALWAYS);
     		break;
     	default: //ignore
     		break;
