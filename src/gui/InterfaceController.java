@@ -23,7 +23,6 @@ public class InterfaceController {
     private static HBox filepathBox;
     private static VBox filepathBoxWithLine;
     private static Label filepathLabel;
-    private static Region leftSpace, rightSpace;
     private static Line filepathLine;
 
     // Used for initSideBarHomeButton
@@ -58,11 +57,22 @@ public class InterfaceController {
 
     // Used for initMainInterface
     private static Scene mainScene;
-    private static VBox mainBox;
+    private static VBox contentBoxNoSideBar, mainBox;
+    private static HBox contentBoxWithSideBar, viewBox;
     private static Line defLine;
+    
+    // Used for updateMainInterface
+    protected static HBox defBox, allBox, histBox, doneBox;
 
+    protected static String currentView;
     protected static LogicController logicControl;
-
+    
+    // Values for currentView
+    protected static final String VIEW_DEFAULT = "def";
+    protected static final String VIEW_ALL = "all";
+    protected static final String VIEW_HIST = "hist";
+    protected static final String VIEW_DONE = "done";
+    
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
     protected static final double WIDTH_DEFAULT_BUTTON = 50;
@@ -254,12 +264,23 @@ public class InterfaceController {
 
     public static void initMainInterface() {
     	
+    	// Initial view is defined to be default
+    	currentView = VIEW_DEFAULT;
+    	
     	// Initialize a LogicController
         logicControl = new LogicController();
 
         initFilePathBar();
         initSideBar();
-        HBox defBox = DefaultViewController.initDefView();
+        
+        // Initialize all the views
+        DefaultViewController.initDefView();
+        AllViewController.initAllView();
+        //HistoryViewController.initHistoryView();
+        //DoneViewController.initDoneView();
+        
+        // Initial view will be default
+        viewBox = new HBox(defBox);
         initFeedbackBar();
         initTextField();
         
@@ -267,18 +288,18 @@ public class InterfaceController {
         defLine = new Line(0, 0, WIDTH_DEFAULT, 0);
 
         // Create the region excluding the sidebar
-        VBox contentBoxNoSideBar = new VBox(
+        contentBoxNoSideBar = new VBox(
         		filepathBoxWithLine, 
-        		defBox, 
+        		viewBox, 
         		defLine, 
         		feedbackBoxWithLine, 
         		textBox);
         
         // Set the height of defBox to grow with the window
-        VBox.setVgrow(defBox, Priority.ALWAYS);
+        VBox.setVgrow(viewBox, Priority.ALWAYS);
 
         // Create the region including the sidebar
-        HBox contentBoxWithSideBar = new HBox(sbBoxWithLine, contentBoxNoSideBar);
+        contentBoxWithSideBar = new HBox(sbBoxWithLine, contentBoxNoSideBar);
 
         // Set the width of contentBoxNoSideBar to grow with window
         HBox.setHgrow(contentBoxNoSideBar, Priority.ALWAYS);
@@ -303,6 +324,33 @@ public class InterfaceController {
         // Set the scene in MainApp
         MainApp.defaultView = mainScene;
     }
+    
+    public static void updateMainInterface(String view) {
+    	
+    	// Clear the old content
+    	viewBox.getChildren().clear();
+    	
+    	switch (view) {
+    	case VIEW_DEFAULT:
+    		DefaultViewController.updateDefView();
+    		viewBox.getChildren().add(defBox);
+    		break;
+    	case VIEW_ALL:
+    		AllViewController.updateAllView();
+    		viewBox.getChildren().add(allBox);
+    		break;
+    	case VIEW_HIST:
+    		//HistoryViewController.updateHistoryView();
+    		viewBox.getChildren().add(histBox);
+    		break;
+    	case VIEW_DONE:
+    		//DoneViewController.updateDoneView();
+    		viewBox.getChildren().add(doneBox);
+    		break;
+    	default: //ignore
+    		break;
+    	}
+    }
 
     /* ================================================================================
      * Getters for LogicController to access required JavaFX components
@@ -317,8 +365,7 @@ public class InterfaceController {
     	return feedbackLabel;
     }
     
-    // Return lines so as to dynamically adjust line height and width within the
-    // ChangeListener
+    // Return lines so as to dynamically adjust line height and width
     public static Line getSbLine() {
     	return sbLine;
     }

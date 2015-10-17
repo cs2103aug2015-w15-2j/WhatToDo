@@ -128,13 +128,125 @@ public class LogicController {
             // Clear the textField
             textField.setText("");
 
-            // Run the operation
-            String returnMessage = logic.executeCommand(textFieldInput);
-            // Add the returnMessage to the History pane
-            InterfaceController.getFeedbackLabel().setText(returnMessage);
+            /*
+             * Perform different operations depending on the currentView and the command
+             * ================================================================================
+             */
+            
+            switch(InterfaceController.currentView) {
+            // Default view
+            case InterfaceController.VIEW_DEFAULT:
+            	switch (textFieldInput) {
+            	case "all":
+            		InterfaceController.currentView = InterfaceController.VIEW_ALL;
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+            		break;
+            	case "hist":
+            		// TODO
+            		//InterfaceController.currentView = InterfaceController.VIEW_HISTORY;
+            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		break;
+            	case "done":
+            		// TODO
+            		//InterfaceController.currentView = InterfaceController.VIEW_COMPLETED;
+            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+            		break;
+            	default:
+            		// Run the operation
+                	String returnMessage = logic.executeCommand(textFieldInput);
+                	// Add the returnMessage to the History pane
+                	InterfaceController.getFeedbackLabel().setText(returnMessage);
 
-            // Update the Tasks and Events
-            DefaultViewController.updateDefView();
+                	// Update the Tasks and Events
+                	DefaultViewController.updateDefView();
+                	break;
+            	}
+            	break;
+            // All view
+            case InterfaceController.VIEW_ALL:
+            	switch (textFieldInput) {
+            	case "def":
+            		InterfaceController.currentView = InterfaceController.VIEW_DEFAULT;
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+            		break;
+            	case "hist":
+            		// TODO
+            		//InterfaceController.currentView = InterfaceController.VIEW_HISTORY;
+            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		break;
+            	case "done":
+            		// TODO
+            		//InterfaceController.currentView = InterfaceController.VIEW_COMPLETED;
+            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+            		break;
+            	default:
+            		// Run the operation
+                	String returnMessage = logic.executeCommand(textFieldInput);
+                	// Add the returnMessage to the History pane
+                	InterfaceController.getFeedbackLabel().setText(returnMessage);
+
+                	// Update the Tasks and Events
+                	AllViewController.updateAllView();
+                	break;
+            	}
+            	break;
+            // History view
+            case InterfaceController.VIEW_HIST:
+            	switch (textFieldInput) {
+            	case "def":
+            		InterfaceController.currentView = InterfaceController.VIEW_DEFAULT;
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+            		break;
+            	case "all":
+            		InterfaceController.currentView = InterfaceController.VIEW_ALL;
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+            		break;
+            	case "done":
+            		// TODO
+            		//InterfaceController.currentView = InterfaceController.VIEW_COMPLETED;
+            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+            		break;
+            	default:
+            		// Run the operation
+                	String returnMessage = logic.executeCommand(textFieldInput);
+                	// Add the returnMessage to the History pane
+                	InterfaceController.getFeedbackLabel().setText(returnMessage);
+
+                	// Update the Tasks and Events
+                	DefaultViewController.updateDefView();
+                	break;
+            	}
+            	break;
+            // Completed view
+            case InterfaceController.VIEW_DONE:
+            	switch (textFieldInput) {
+            	case "def":
+            		InterfaceController.currentView = InterfaceController.VIEW_DEFAULT;
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+            		break;
+            	case "all":
+            		InterfaceController.currentView = InterfaceController.VIEW_ALL;
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+            		break;
+            	case "hist":
+            		// TODO
+            		//InterfaceController.currentView = InterfaceController.VIEW_HISTORY;
+            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		break;
+            	default:
+            		// Run the operation
+                	String returnMessage = logic.executeCommand(textFieldInput);
+                	// Add the returnMessage to the History pane
+                	InterfaceController.getFeedbackLabel().setText(returnMessage);
+
+                	// Update the Tasks and Events
+                	DefaultViewController.updateDefView();
+                	break;
+            	}
+            	break;
+            default: // do nothing, should not enter
+            }
+            
         }
     }
 	
