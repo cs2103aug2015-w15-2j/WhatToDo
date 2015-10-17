@@ -21,12 +21,12 @@ public class AllViewController {
      * ================================================================================
      */
 	
-	// Used for initDefTaskView
+	// Used for initAllTaskView
     private static VBox allTaskBox, allTaskContentBox;
     private static HBox allTaskHeaderBox;
     private static ScrollPane allTaskScroll;
 
-    // Used for initDefEventView
+    // Used for initAllEventView
     private static VBox allEventBox, allEventContentBox;
     private static HBox allEventHeaderBox;
     private static ScrollPane allEventScroll;
@@ -225,6 +225,9 @@ public class AllViewController {
         		InterfaceController.allBox.widthProperty().divide(2));
         allEventScroll.prefViewportWidthProperty().bind(
         		InterfaceController.allBox.widthProperty().divide(2));
+        
+        // Set the scroll separator to bind with the same line in DefaultViewController
+        allScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());
         
         // CSS
         allScrollLine.getStyleClass().add("line");
