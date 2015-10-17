@@ -19,3 +19,13 @@ task;taskName;done;251215
 event;eventName;todo;081015;2359;091015;0001
 
 event;eventName;done;071015;1000;071015;1315
+
+Switching views:
+For now the commands are: 
+"def" (default),
+"all" (all),
+"hist" (history),
+"done" (done)
+
+20151018 Update: Only "def" and "all" currently work. 
+All view is incorrect, it still uses default view until getAll methods are done.
