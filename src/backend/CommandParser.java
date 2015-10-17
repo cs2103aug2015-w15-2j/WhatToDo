@@ -101,7 +101,9 @@ public class CommandParser {
 	private Command initAddCommand(ArrayList<String> arguments) {
 		Command command;
 		int size = arguments.size();
-		if (KEYWORD_DEADLINE.equals(arguments.get(size - 2))) {
+		if (size < 3) {
+			command = addFloatingTask(arguments);
+		} else if (KEYWORD_DEADLINE.equals(arguments.get(size - 2))) {
 			command = addTask(arguments);
 		} else if (KEYWORD_EVENT_1.equals(arguments.get(size - 2)) && KEYWORD_EVENT_2.equals(arguments.get(size - 4)) && KEYWORD_EVENT_3.equals(arguments.get(size - 6))) {
 			command = addEvent(arguments, 1);
