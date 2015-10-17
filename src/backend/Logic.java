@@ -23,8 +23,8 @@ public class Logic {
 	private static final String MESSAGE_ADD_TASK = "Added \"%s\" to list. Due on %s, %s.";
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added \"%s\" to list.";
 	private static final String MESSAGE_ADD_EVENT = "Added \"%s\" to list. Event Start: %s, %s, %s Event End: %s, %s, %s.";
-	private static final String MESSAGE_DELETE_LINE = "Deleted \"%s\" from list.";
-	private static final String MESSAGE_MARK_DONE = "Done \"%s\"";
+	private static final String MESSAGE_DELETE_LINE = "Deleted %s from list.";
+	private static final String MESSAGE_MARK_DONE = "Done %s";
 	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
 	private static final String MESSAGE_UNDO = "Undid command: \"%s\"."; 
@@ -40,6 +40,7 @@ public class Logic {
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s]\t%s\n"; 
+    private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_TASK = "FLOAT\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
     private static final String DISPLAY_LAYOUT_EVENT = "ONGOING\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
     
@@ -226,8 +227,7 @@ public class Logic {
     		
     		int lineNumber = command.getIndex(); 
         	String deletedLine = storage.deleteLine(lineNumber); 
-        	//TODO format feedback message for delete
-        	String deleteFeedback = String.format(MESSAGE_DELETE_LINE, deletedLine); 
+        	String deleteFeedback = String.format(MESSAGE_DELETE_LINE, formatLine(deletedLine)); 
         	
         	boolean isSaved = saveState(stateBeforeExecutingCommand);
         	return formFeedbackMsg(deleteFeedback, isSaved);
@@ -261,8 +261,7 @@ public class Logic {
     		
     		int lineNumber = command.getIndex(); 
         	String doneLine = storage.markAsDone(lineNumber); 
-        	//TODO format feedback message for mark as done
-        	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, doneLine); 
+        	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, formatLine(doneLine)); 
         	
         	boolean isSaved = saveState(stateBeforeExecutingCommand);
         	return formFeedbackMsg(markDoneFeedback, isSaved);
@@ -358,6 +357,14 @@ public class Logic {
         else{
         	return addFeedback + MESSAGE_ERROR_UNDO;
         }
+	}
+	
+	//TODO 
+	private String formatLine(String line){
+		String[] lineComponents = line.split(SEMICOLON);
+		String type = lineComponents[INDEX_TYPE]; 
+		String name = lineComponents[INDEX_NAME];
+		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
 	}
 	
     private String executeExit(){
