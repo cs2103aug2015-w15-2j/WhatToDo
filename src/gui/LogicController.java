@@ -8,11 +8,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
 
 public class LogicController {
 
@@ -130,13 +128,113 @@ public class LogicController {
             // Clear the textField
             textField.setText("");
 
-            // Run the operation
-            String returnMessage = logic.executeCommand(textFieldInput);
-            // Add the returnMessage to the History pane
-            InterfaceController.getFeedbackLabel().setText(returnMessage);
+            /*
+             * Perform different operations depending on the currentView and the command
+             * ================================================================================
+             */
+            
+            switch(InterfaceController.currentView) {
+            // Default view
+            case InterfaceController.VIEW_DEFAULT:
+            	switch (textFieldInput) {
+            	case "all":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+            		break;
+            	case "hist":
+            		// TODO
+            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		break;
+            	case "done":
+            		// TODO
+            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+            		break;
+            	default:
+            		// Run the operation
+                	String returnMessage = logic.executeCommand(textFieldInput);
+                	// Add the returnMessage to the History pane
+                	InterfaceController.getFeedbackLabel().setText(returnMessage);
 
-            // Update the Tasks and Events
-            InterfaceController.updateDefView();
+                	// Update the Tasks and Events
+                	DefaultViewController.updateDefView();
+                	break;
+            	}
+            	break;
+            // All view
+            case InterfaceController.VIEW_ALL:
+            	switch (textFieldInput) {
+            	case "def":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+            		break;
+            	case "hist":
+            		// TODO
+            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		break;
+            	case "done":
+            		// TODO
+            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+            		break;
+            	default:
+            		// Run the operation
+                	String returnMessage = logic.executeCommand(textFieldInput);
+                	// Add the returnMessage to the History pane
+                	InterfaceController.getFeedbackLabel().setText(returnMessage);
+
+                	// Update the Tasks and Events
+                	AllViewController.updateAllView();
+                	break;
+            	}
+            	break;
+            // History view
+            case InterfaceController.VIEW_HIST:
+            	switch (textFieldInput) {
+            	case "def":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+            		break;
+            	case "all":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+            		break;
+            	case "done":
+            		// TODO
+            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+            		break;
+            	default:
+            		// Run the operation
+                	String returnMessage = logic.executeCommand(textFieldInput);
+                	// Add the returnMessage to the History pane
+                	InterfaceController.getFeedbackLabel().setText(returnMessage);
+
+                	// Update the Tasks and Events
+                	DefaultViewController.updateDefView();
+                	break;
+            	}
+            	break;
+            // Completed view
+            case InterfaceController.VIEW_DONE:
+            	switch (textFieldInput) {
+            	case "def":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+            		break;
+            	case "all":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+            		break;
+            	case "hist":
+            		// TODO
+            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		break;
+            	default:
+            		// Run the operation
+                	String returnMessage = logic.executeCommand(textFieldInput);
+                	// Add the returnMessage to the History pane
+                	InterfaceController.getFeedbackLabel().setText(returnMessage);
+
+                	// Update the Tasks and Events
+                	DefaultViewController.updateDefView();
+                	break;
+            	}
+            	break;
+            default: // do nothing, should not enter
+            }
+            
         }
     }
 	
@@ -174,7 +272,7 @@ public class LogicController {
     		// window height - height of the filepath bar(35) -
     		// height of feedback bar(35) - height of text bar(45) - 
     		// 2 * height of line(1)
-    		InterfaceController.getDefScrollLine().setEndY((Double)newValue - 
+    		DefaultViewController.getDefScrollLine().setEndY((Double)newValue - 
     				InterfaceController.HEIGHT_FILEPATH - 
     				InterfaceController.HEIGHT_FEEDBACK - 
     				InterfaceController.HEIGHT_TEXTFIELD);

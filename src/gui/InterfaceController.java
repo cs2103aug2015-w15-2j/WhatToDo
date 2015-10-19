@@ -1,26 +1,16 @@
 package gui;
 
-import backend.Logic;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.LinearGradient;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 import java.nio.file.FileSystemException;
-import java.util.ArrayList;
 
 public class InterfaceController {
 
@@ -33,7 +23,6 @@ public class InterfaceController {
     private static HBox filepathBox;
     private static VBox filepathBoxWithLine;
     private static Label filepathLabel;
-    private static Region leftSpace, rightSpace;
     private static Line filepathLine;
 
     // Used for initSideBarHomeButton
@@ -45,8 +34,8 @@ public class InterfaceController {
     private static ImageView sbAllImage;
     
     // Used for initSideBarHistoryButton
-    private static VBox sbHistoryBox;
-    private static ImageView sbHistoryImage;
+    private static VBox sbHistBox;
+    private static ImageView sbHistImage;
     
     // Used for initSideBarDoneButton
     private static VBox sbDoneBox;
@@ -65,36 +54,43 @@ public class InterfaceController {
     private static VBox feedbackBox, feedbackBoxWithLine;
     private static Label feedbackLabel;
     private static Line feedbackLine;
-    
-    // Used for initDefTaskView
-    private static VBox defTaskBox, defTaskContentBox;
-    private static HBox defTaskHeaderBox;
-    private static ScrollPane defTaskScroll;
-
-    // Used for initDefEventView
-    private static VBox defEventBox, defEventContentBox;
-    private static HBox defEventHeaderBox;
-    private static ScrollPane defEventScroll;
-
-    // Used for initDefView
-    private static HBox defBox, tempBox;
-    private static Line defScrollLine;
 
     // Used for initMainInterface
     private static Scene mainScene;
-    private static VBox mainBox;
+    private static VBox contentBoxNoSideBar, mainBox;
+    private static HBox contentBoxWithSideBar, viewBox;
     private static Line defLine;
+    
+    // Used for updateMainInterface
+    protected static HBox defBox, allBox, histBox, doneBox;
 
-    private static LogicController logicControl;
-
+    protected static String currentView;
+    protected static LogicController logicControl;
+    
+    // Values for currentView
+    protected static final String VIEW_DEFAULT = "def";
+    protected static final String VIEW_ALL = "all";
+    protected static final String VIEW_HIST = "hist";
+    protected static final String VIEW_DONE = "done";
+    
+    // Values for button images
+    private static final String PATH_HOME = "gui/resources/home.png";
+    private static final String PATH_HOME_SELECTED = "gui/resources/home_selected.png";
+    private static final String PATH_ALL = "gui/resources/all.png";
+    private static final String PATH_ALL_SELECTED = "gui/resources/all_selected.png";
+    private static final String PATH_HIST = "gui/resources/history.png";
+    private static final String PATH_HIST_SELECTED = "gui/resources/history_selected.png";
+    private static final String PATH_DONE = "gui/resources/done.png";
+    private static final String PATH_DONE_SELECTED = "gui/resources/done_selected.png";
+    
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
     protected static final double WIDTH_DEFAULT_BUTTON = 50;
     protected static final double WIDTH_SIDEBAR = 71;
     
-    protected static final double HEIGHT_FILEPATH = 36;
-    protected static final double HEIGHT_FEEDBACK = 36;
-    protected static final double HEIGHT_TEXTFIELD = 45;
+    protected static final double HEIGHT_FILEPATH = 31;
+    protected static final double HEIGHT_FEEDBACK = 31;
+    protected static final double HEIGHT_TEXTFIELD = 40;
     
     protected static final double WIDTH_VERT_LINE = 1;
     protected static final double HEIGHT_HORIZ_LINE = 1;
@@ -103,6 +99,7 @@ public class InterfaceController {
     protected static final double MARGIN_TEXT_ELEMENT = 10;
     protected static final double MARGIN_TEXT_ELEMENT_HEIGHT = 3;
     protected static final double MARGIN_TEXT_ELEMENT_SEPARATOR = 10;
+    protected static final double MARGIN_TEXT_FIELD = 7;
     protected static final double MARGIN_COMPONENT = 10;
     protected static final double MARGIN_SCROLL = 30;
     protected static final double MARGIN_ARBITRARY = 6;
@@ -166,15 +163,15 @@ public class InterfaceController {
 
     private static void initSideBarHistoryButton(String imagePath) {
     	
-    	sbHistoryImage = new ImageView(imagePath);
-    	sbHistoryBox = new VBox(sbHistoryImage);
+    	sbHistImage = new ImageView(imagePath);
+    	sbHistBox = new VBox(sbHistImage);
     	
     	// Fix width and height for the button
-    	sbHistoryBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbHistoryBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+    	sbHistBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbHistBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-    	sbHistoryBox.setMaxHeight(WIDTH_SIDEBAR);
-    	sbHistoryBox.setMinHeight(WIDTH_SIDEBAR);
+    	sbHistBox.setMaxHeight(WIDTH_SIDEBAR);
+    	sbHistBox.setMinHeight(WIDTH_SIDEBAR);
     }
     
     private static void initSideBarDoneButton(String imagePath) {
@@ -189,15 +186,71 @@ public class InterfaceController {
     	sbDoneBox.setMaxHeight(WIDTH_SIDEBAR);
     	sbDoneBox.setMinHeight(WIDTH_SIDEBAR);
     }
+    
+    private static void changeButtonToSelected(String view) {
+    	switch (view) {
+    	case VIEW_DEFAULT:
+    		sbHomeImage = new ImageView(PATH_HOME_SELECTED);
+    		sbHomeBox.getChildren().clear();
+    		sbHomeBox.getChildren().add(sbHomeImage);
+    		break;
+    	case VIEW_ALL:
+    		sbAllImage = new ImageView(PATH_ALL_SELECTED);
+    		sbAllBox.getChildren().clear();
+    		sbAllBox.getChildren().add(sbAllImage);
+    		break;
+    	case VIEW_HIST:
+    		sbHistImage = new ImageView(PATH_HIST_SELECTED);
+    		sbHistBox.getChildren().clear();
+    		sbHistBox.getChildren().add(sbHistImage);
+    		break;
+    	case VIEW_DONE:
+    		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
+    		sbDoneBox.getChildren().clear();
+    		sbDoneBox.getChildren().add(sbDoneImage);
+    		break;
+    	default:
+    		// Do nothing
+    		break;
+    	}
+    }
+    
+    private static void changeButtonToUnselected(String view) {
+    	switch (view) {
+    	case VIEW_DEFAULT:
+    		sbHomeImage = new ImageView(PATH_HOME);
+    		sbHomeBox.getChildren().clear();
+    		sbHomeBox.getChildren().add(sbHomeImage);
+    		break;
+    	case VIEW_ALL:
+    		sbAllImage = new ImageView(PATH_ALL);
+    		sbAllBox.getChildren().clear();
+    		sbAllBox.getChildren().add(sbAllImage);
+    		break;
+    	case VIEW_HIST:
+    		sbHistImage = new ImageView(PATH_HIST);
+    		sbHistBox.getChildren().clear();
+    		sbHistBox.getChildren().add(sbHistImage);
+    		break;
+    	case VIEW_DONE:
+    		sbDoneImage = new ImageView(PATH_DONE);
+    		sbDoneBox.getChildren().clear();
+    		sbDoneBox.getChildren().add(sbDoneImage);
+    		break;
+    	default:
+    		// Do nothing
+    		break;
+    	}
+    }
 
     private static void initSideBar() {
 
-        initSideBarHomeButton("gui/resources/home_selected.png");
-        initSideBarAllButton("gui/resources/all.png");
-        initSideBarHistoryButton("gui/resources/history.png");
-        initSideBarDoneButton("gui/resources/done.png");
+        initSideBarHomeButton(PATH_HOME_SELECTED);
+        initSideBarAllButton(PATH_ALL);
+        initSideBarHistoryButton(PATH_HIST);
+        initSideBarDoneButton(PATH_DONE);
 
-        sbBox = new VBox(sbHomeBox, sbAllBox, sbHistoryBox, sbDoneBox);        
+        sbBox = new VBox(sbHomeBox, sbAllBox, sbHistBox, sbDoneBox);        
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
         sbBoxWithLine = new HBox(sbBox, sbLine);
@@ -208,7 +261,7 @@ public class InterfaceController {
         		MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         
         VBox.setMargin(sbAllBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
-        VBox.setMargin(sbHistoryBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        VBox.setMargin(sbHistBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         VBox.setMargin(sbDoneBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         
         // Fix the width for the sidebar
@@ -234,7 +287,7 @@ public class InterfaceController {
         textBox = new VBox(textField);
 
         // Set the margins for the text field
-        VBox.setMargin(textField, new Insets(MARGIN_COMPONENT));
+        VBox.setMargin(textField, new Insets(MARGIN_TEXT_FIELD));
 
         // Fix the height of the text field
         textBox.setMaxHeight(HEIGHT_TEXTFIELD);
@@ -274,238 +327,48 @@ public class InterfaceController {
         feedbackBox.getStyleClass().add("display-bar");
         feedbackBox.getStyleClass().add("gradient-regular");
     }
-    
-    private static boolean isTitle(String displayData) {
-    	
-    	String firstWord = displayData.split(" ")[0];
-    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
-    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
-    }
-    
-    private static HBox initDisplayElement(String displayData) {
-    	
-    	Label elementLabel = new Label(displayData);
-    	//HBox labelBox = new HBox(elementLabel);
-    	HBox elementBox = new HBox(elementLabel);
-    	
-    	// Apply different CSS styles and formatting depending on whether it 
-    	// contains a data field or a title field
-    	if (isTitle(displayData)) {
-    		
-    		// Create a divider line and add it to the elementBox
-    		Line elementLine = new Line(0, 0, WIDTH_DEFAULT, 0);
-    		elementBox.getChildren().add(elementLine);
-    		
-    		// Get the width of label and resize the line
-    		Text text = new Text(elementLabel.getText());
-    		Scene s = new Scene(new Group(text));
-    		// Override the CSS style to calculate the text width
-    		text.setStyle("-fx-font-family: \"PT Sans\"; "
-    				+ "-fx-font-size: 14; "
-    				+ "-fx-font-weight: bold;");
-    		text.applyCss();
-    		
-    		// Apply the binding to (element box width - text width - arbitrary margin)
-    		// The arbitrary margin exists because text in a container is not perfectly 
-    		// aligned to the dimensions of its container
-    		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-    		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(textWidth + MARGIN_ARBITRARY));
-    		
-    		// Align the elements in the HBox
-    		elementBox.setAlignment(Pos.CENTER_LEFT);
-    		
-    		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(
-        			0, MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			0, MARGIN_TEXT_ELEMENT_HEIGHT));
-        	
-        	// Apply CSS style for titles
-        	elementLine.getStyleClass().add("line");
-    		elementBox.getStyleClass().add("element-title");
-    	} else {
-    		// Set text wrapping for the display data
-        	elementLabel.setWrapText(true);
-        	
-    		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(
-        			MARGIN_TEXT_ELEMENT_HEIGHT, MARGIN_TEXT_ELEMENT, 
-        			MARGIN_TEXT_ELEMENT_HEIGHT, MARGIN_TEXT_ELEMENT));
-        	
-        	// Apply CSS style for regular data field
-    		elementBox.getStyleClass().add("element");
-    	}
-
-    	return elementBox;
-    }
-
-    private static void initDefTaskView(ArrayList<String> tasks) {
-
-    	Label defTaskHeader = new Label("UPCOMING TASKS");
-        defTaskHeaderBox = new HBox(defTaskHeader);
-        defTaskHeaderBox.setAlignment(Pos.CENTER_LEFT);
-
-        defTaskContentBox = new VBox();
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < tasks.size(); i++) {
-        	// Use a temporary component for formatting
-        	tempBox = initDisplayElement(tasks.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defTaskContentBox.getChildren().add(tempBox);
-        }
-        
-        defTaskScroll = new ScrollPane(defTaskContentBox);
-        defTaskScroll.setFitToWidth(true);
-        
-        defTaskBox = new VBox(defTaskHeaderBox, defTaskScroll);
-        
-        // Set margins for the header label
-        HBox.setMargin(defTaskHeader, new Insets(
-        		MARGIN_TEXT_ELEMENT_HEIGHT, 0, MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        defTaskHeaderBox.setAlignment(Pos.CENTER);
-        
-        // Set margins for the header
-        VBox.setMargin(defTaskHeaderBox, new Insets(0, MARGIN_SCROLL, 0, MARGIN_SCROLL));
-        
-        // Set margins for the scroll pane
-        VBox.setMargin(defTaskScroll, new Insets(
-        		MARGIN_COMPONENT, MARGIN_SCROLL, 
-        		0, MARGIN_SCROLL));
-        
-        // Set the alignment of the header image to be in the center
-        defTaskBox.setAlignment(Pos.CENTER);
-        
-        // Set the height of the scroll pane to grow with window height
-        VBox.setVgrow(defTaskScroll, Priority.ALWAYS);
-        
-        // Set the scrollbar policy of the scroll pane
-        defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        
-        // CSS
-        defTaskHeader.getStyleClass().add("box-title-label");
-        defTaskHeaderBox.getStyleClass().add("box-title");
-    }
-
-    private static void initDefEventView(ArrayList<String> events) {
-
-    	Label defEventHeader = new Label("UPCOMING EVENTS");
-        defEventHeaderBox = new HBox(defEventHeader);
-
-        defEventContentBox = new VBox();
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < events.size(); i++) {
-        	// Use a temporary component for formatting
-        	tempBox = initDisplayElement(events.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defEventContentBox.getChildren().add(tempBox);
-        }
-        
-        
-        defEventScroll = new ScrollPane(defEventContentBox);
-        defEventScroll.setFitToWidth(true);
-        
-        defEventBox = new VBox(defEventHeaderBox, defEventScroll);
-        
-        // Set margins for the header label
-        HBox.setMargin(defEventHeader, new Insets(
-        		MARGIN_TEXT_ELEMENT_HEIGHT, 0, MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        defEventHeaderBox.setAlignment(Pos.CENTER);
-        
-        // Set margins for the header
-        VBox.setMargin(defEventHeaderBox, new Insets(0, MARGIN_SCROLL, 0, MARGIN_SCROLL));
-        
-        // Set margins for the scroll pane
-        VBox.setMargin(defEventScroll, new Insets(
-        		MARGIN_COMPONENT, MARGIN_SCROLL, 
-        		0, MARGIN_SCROLL));
-        
-        // Set the alignment of the header image to be in the center
-        defEventBox.setAlignment(Pos.CENTER);
-
-        // Set the height of the scroll pane to grow with the window height
-        VBox.setVgrow(defEventScroll, Priority.ALWAYS);
-        
-        // Set the scrollbar policy of the scroll pane
-        defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        
-        // CSS
-        defEventHeader.getStyleClass().add("box-title-label");
-        defEventHeaderBox.getStyleClass().add("box-title");
-    }
-
-    private static void initDefView() {
-
-        initDefTaskView(logicControl.getDefTasks());
-        initDefEventView(logicControl.getDefEvents());
-        
-        defScrollLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
-        
-        defBox = new HBox(defTaskBox, defScrollLine, defEventBox);
-        
-        // Set the preferred viewport width of the two scroll panes to be half
-        // of the entire view pane
-        defTaskScroll.prefViewportWidthProperty().bind(defBox.widthProperty().divide(2));
-        defEventScroll.prefViewportWidthProperty().bind(defBox.widthProperty().divide(2));
-        
-        // CSS
-        defScrollLine.getStyleClass().add("line");
-    }
-    
-    public static void updateDefView() {
-    	
-    	// Clear the previous content already displayed
-        defTaskContentBox.getChildren().clear();
-        defEventContentBox.getChildren().clear();
-        
-        // Get the results of the file from logic
-        ArrayList<String> tasks = logicControl.getDefTasks();
-        ArrayList<String> events = logicControl.getDefEvents();
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < tasks.size(); i++) {
-        	// Use a temporary component for formatting
-        	tempBox = initDisplayElement(tasks.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defTaskContentBox.getChildren().add(tempBox);
-        }
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < events.size(); i++) {
-        	// Use a temporary component for formatting
-        	tempBox = initDisplayElement(events.get(i));
-        	VBox.setMargin(tempBox, new Insets(0, 0, MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defEventContentBox.getChildren().add(tempBox);
-        }
-    }
 
     public static void initMainInterface() {
+    	
+    	// Initial view is defined to be default
+    	currentView = VIEW_DEFAULT;
     	
     	// Initialize a LogicController
         logicControl = new LogicController();
 
         initFilePathBar();
         initSideBar();
-        initDefView();
+        
+        // Initialize all the views
+        DefaultViewController.initDefView();
+        AllViewController.initAllView();
+        //HistoryViewController.initHistoryView();
+        //DoneViewController.initDoneView();
+        
+        // Initial view will be default
+        viewBox = new HBox(defBox);
         initFeedbackBar();
         initTextField();
+        
+        // Set default box to grow with view box
+        HBox.setHgrow(defBox, Priority.ALWAYS);
         
         // Create the line separator for defBox
         defLine = new Line(0, 0, WIDTH_DEFAULT, 0);
 
-        // Create the region below the filepath bar excluding the sidebar
-        VBox contentBoxNoSideBar = new VBox(
+        // Create the region excluding the sidebar
+        contentBoxNoSideBar = new VBox(
         		filepathBoxWithLine, 
-        		defBox, 
+        		viewBox, 
         		defLine, 
         		feedbackBoxWithLine, 
         		textBox);
         
         // Set the height of defBox to grow with the window
-        VBox.setVgrow(defBox, Priority.ALWAYS);
+        VBox.setVgrow(viewBox, Priority.ALWAYS);
 
-        // Create the region below the filepath bar including the sidebar
-        HBox contentBoxWithSideBar = new HBox(sbBoxWithLine, contentBoxNoSideBar);
+        // Create the region including the sidebar
+        contentBoxWithSideBar = new HBox(sbBoxWithLine, contentBoxNoSideBar);
 
         // Set the width of contentBoxNoSideBar to grow with window
         HBox.setHgrow(contentBoxNoSideBar, Priority.ALWAYS);
@@ -517,7 +380,7 @@ public class InterfaceController {
         VBox.setVgrow(contentBoxWithSideBar, Priority.ALWAYS);
 
         mainScene = new Scene(mainBox);
-
+        
         // Set resize listeners for the main scene
         mainScene.heightProperty().addListener(logicControl.getHeightListener());
         mainScene.widthProperty().addListener(logicControl.getWidthListener());
@@ -529,6 +392,78 @@ public class InterfaceController {
 
         // Set the scene in MainApp
         MainApp.defaultView = mainScene;
+    }
+    
+    public static void updateMainInterface(String view) {
+    	
+    	// Clear the old content
+    	viewBox.getChildren().clear();
+    	
+    	switch (view) {
+    	
+    	case VIEW_DEFAULT:
+    		DefaultViewController.updateDefView();
+    		viewBox.getChildren().add(defBox);
+    		
+    		// Set default box to grow with view box
+            HBox.setHgrow(defBox, Priority.ALWAYS);
+            
+            // Change buttons
+            changeButtonToSelected(VIEW_DEFAULT);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_DEFAULT;
+    		break;
+    		
+    	case VIEW_ALL:
+    		AllViewController.updateAllView();
+    		viewBox.getChildren().add(allBox);
+    		
+    		// Set all box to grow with view box
+            HBox.setHgrow(allBox, Priority.ALWAYS);
+            
+            // Change buttons
+            changeButtonToSelected(VIEW_ALL);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_ALL;
+    		break;
+    		
+    	case VIEW_HIST:
+    		//HistoryViewController.updateHistoryView();
+    		viewBox.getChildren().add(histBox);
+    		
+    		// Set history box to grow with view box
+            //HBox.setHgrow(histBox, Priority.ALWAYS);
+    		
+            // Change buttons
+            changeButtonToSelected(VIEW_HIST);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_HIST;
+    		break;
+    		
+    	case VIEW_DONE:
+    		//DoneViewController.updateDoneView();
+    		viewBox.getChildren().add(doneBox);
+    		
+    		// Set done box to grow with view box
+            //HBox.setHgrow(doneBox, Priority.ALWAYS);
+    		
+            // Change buttons
+            changeButtonToSelected(VIEW_DONE);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_DONE;
+    		break;
+    		
+    	default: //ignore
+    		break;
+    	}
     }
 
     /* ================================================================================
@@ -544,14 +479,9 @@ public class InterfaceController {
     	return feedbackLabel;
     }
     
-    // Return lines so as to dynamically adjust line height and width within the
-    // ChangeListener
+    // Return lines so as to dynamically adjust line height and width
     public static Line getSbLine() {
     	return sbLine;
-    }
-    
-    public static Line getDefScrollLine() {
-    	return defScrollLine;
     }
     
     public static Line getFeedbackLine() {
