@@ -40,6 +40,10 @@ public class InterfaceController {
     // Used for initSideBarDoneButton
     private static VBox sbDoneBox;
     private static ImageView sbDoneImage;
+    
+    // Used for initSideBarSearchButton
+    private static VBox sbSearchBox;
+    private static ImageView sbSearchImage;
 
     // Used for initSideBar
     private static VBox sbBox;
@@ -62,7 +66,7 @@ public class InterfaceController {
     private static Line viewLine;
     
     // Used for updateMainInterface
-    protected static HBox defBox, allBox, histBox, doneBox;
+    protected static HBox defBox, allBox, histBox, doneBox, searchBox;
 
     protected static String currentView;
     protected static LogicController logicControl;
@@ -72,6 +76,7 @@ public class InterfaceController {
     protected static final String VIEW_ALL = "all";
     protected static final String VIEW_HIST = "hist";
     protected static final String VIEW_DONE = "done";
+    protected static final String VIEW_SEARCH = "search";
     
     // Values for button images
     private static final String PATH_HOME = "gui/resources/home.png";
@@ -82,6 +87,8 @@ public class InterfaceController {
     private static final String PATH_HIST_SELECTED = "gui/resources/history_selected.png";
     private static final String PATH_DONE = "gui/resources/done.png";
     private static final String PATH_DONE_SELECTED = "gui/resources/done_selected.png";
+    private static final String PATH_SEARCH = "gui/resources/search.png";
+    private static final String PATH_SEARCH_SELECTED = "gui/resources/search_selected.png";
     
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
@@ -135,9 +142,9 @@ public class InterfaceController {
         filepathBox.getStyleClass().add("gradient-regular");
     }
 
-    private static void initSideBarHomeButton(String imagePath) {
+    private static void initSideBarHomeButton() {
 
-        sbHomeImage = new ImageView(imagePath);
+        sbHomeImage = new ImageView(PATH_HOME);
         sbHomeBox = new VBox(sbHomeImage);
 
         // Fix width and height for the button
@@ -148,9 +155,9 @@ public class InterfaceController {
         sbHomeBox.setMinHeight(WIDTH_SIDEBAR);
     }
     
-    private static void initSideBarAllButton(String imagePath) {
+    private static void initSideBarAllButton() {
 
-    	sbAllImage = new ImageView(imagePath);
+    	sbAllImage = new ImageView(PATH_ALL);
     	sbAllBox = new VBox(sbAllImage);
 
     	// Fix width and height for the button
@@ -161,9 +168,9 @@ public class InterfaceController {
     	sbAllBox.setMinHeight(WIDTH_SIDEBAR);
     }
 
-    private static void initSideBarHistoryButton(String imagePath) {
+    private static void initSideBarHistoryButton() {
     	
-    	sbHistImage = new ImageView(imagePath);
+    	sbHistImage = new ImageView(PATH_HIST);
     	sbHistBox = new VBox(sbHistImage);
     	
     	// Fix width and height for the button
@@ -174,9 +181,9 @@ public class InterfaceController {
     	sbHistBox.setMinHeight(WIDTH_SIDEBAR);
     }
     
-    private static void initSideBarDoneButton(String imagePath) {
+    private static void initSideBarDoneButton() {
 
-    	sbDoneImage = new ImageView(imagePath);
+    	sbDoneImage = new ImageView(PATH_DONE);
     	sbDoneBox = new VBox(sbDoneImage);
 
     	// Fix width and height for the button
@@ -185,6 +192,19 @@ public class InterfaceController {
 
     	sbDoneBox.setMaxHeight(WIDTH_SIDEBAR);
     	sbDoneBox.setMinHeight(WIDTH_SIDEBAR);
+    }
+    
+    private static void initSideBarSearchButton() {
+    	
+    	sbSearchImage = new ImageView(PATH_SEARCH);
+    	sbSearchBox = new VBox(sbSearchImage);
+
+    	// Fix width and height for the button
+    	sbSearchBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbSearchBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+
+    	sbSearchBox.setMaxHeight(WIDTH_SIDEBAR);
+    	sbSearchBox.setMinHeight(WIDTH_SIDEBAR);
     }
     
     private static void changeButtonToSelected(String view) {
@@ -209,6 +229,10 @@ public class InterfaceController {
     		sbDoneBox.getChildren().clear();
     		sbDoneBox.getChildren().add(sbDoneImage);
     		break;
+    	case VIEW_SEARCH:
+    		sbSearchImage = new ImageView(PATH_SEARCH_SELECTED);
+    		sbSearchBox.getChildren().clear();
+    		sbSearchBox.getChildren().add(sbSearchImage);
     	default:
     		// Do nothing
     		break;
@@ -237,6 +261,10 @@ public class InterfaceController {
     		sbDoneBox.getChildren().clear();
     		sbDoneBox.getChildren().add(sbDoneImage);
     		break;
+    	case VIEW_SEARCH:
+    		sbSearchImage = new ImageView(PATH_SEARCH);
+    		sbSearchBox.getChildren().clear();
+    		sbSearchBox.getChildren().add(sbSearchImage);
     	default:
     		// Do nothing
     		break;
@@ -245,12 +273,13 @@ public class InterfaceController {
 
     private static void initSideBar() {
 
-        initSideBarHomeButton(PATH_HOME_SELECTED);
-        initSideBarAllButton(PATH_ALL);
-        initSideBarHistoryButton(PATH_HIST);
-        initSideBarDoneButton(PATH_DONE);
+        initSideBarHomeButton();
+        initSideBarAllButton();
+        initSideBarHistoryButton();
+        initSideBarDoneButton();
+        initSideBarSearchButton();
 
-        sbBox = new VBox(sbHomeBox, sbAllBox, sbHistBox, sbDoneBox);        
+        sbBox = new VBox(sbHomeBox, sbAllBox, sbHistBox, sbDoneBox, sbSearchBox);        
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
         sbBoxWithLine = new HBox(sbBox, sbLine);
@@ -263,6 +292,7 @@ public class InterfaceController {
         VBox.setMargin(sbAllBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         VBox.setMargin(sbHistBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         VBox.setMargin(sbDoneBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        VBox.setMargin(sbSearchBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         
         // Fix the width for the sidebar
         // +1 for line width
@@ -344,6 +374,7 @@ public class InterfaceController {
         AllViewController.initAllView();
         HistoryViewController.initHistView();
         //DoneViewController.initDoneView();
+        //SearchViewController.initSearchView();
         
         // Initial view will be default
         viewBox = new HBox(defBox);
@@ -432,7 +463,6 @@ public class InterfaceController {
     		break;
     		
     	case VIEW_HIST:
-    		//HistoryViewController.updateHistoryView();
     		viewBox.getChildren().add(histBox);
     		
     		// Set history box to grow with view box
@@ -459,6 +489,21 @@ public class InterfaceController {
             
             // Update currentView
             currentView = InterfaceController.VIEW_DONE;
+    		break;
+    		
+    	case VIEW_SEARCH:
+    		//DoneViewController.updateDoneView();
+    		viewBox.getChildren().add(searchBox);
+    		
+    		// Set done box to grow with view box
+            //HBox.setHgrow(doneBox, Priority.ALWAYS);
+    		
+            // Change buttons
+            changeButtonToSelected(VIEW_SEARCH);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = InterfaceController.VIEW_SEARCH;
     		break;
     		
     	default: //ignore

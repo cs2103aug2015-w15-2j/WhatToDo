@@ -150,6 +150,10 @@ public class LogicController {
             		// TODO
             		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
             		break;
+            	case "search":
+            		// TODO
+            		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+            		break;
             	default:
             		// Run the operation
                 	String returnMessage = logic.executeCommand(textFieldInput);
@@ -177,6 +181,10 @@ public class LogicController {
             	case "done":
             		// TODO
             		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+            		break;
+            	case "search":
+            		// TODO
+            		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
             		break;
             	default:
             		// Run the operation
@@ -206,6 +214,10 @@ public class LogicController {
             		// TODO
             		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
             		break;
+            	case "search":
+            		// TODO
+            		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+            		break;
             	default:
             		// Run the operation
                 	String returnMessage = logic.executeCommand(textFieldInput);
@@ -230,6 +242,10 @@ public class LogicController {
             	case "hist":
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
             		break;
+            	case "search":
+            		// TODO
+            		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+            		break;
             	default:
             		// Run the operation
                 	String returnMessage = logic.executeCommand(textFieldInput);
@@ -242,7 +258,36 @@ public class LogicController {
                 	break;
             	}
             	break;
+            /* ================================================================================
+             * Search view
+             * ================================================================================
+             */
+            case InterfaceController.VIEW_SEARCH:
+            	switch (textFieldInput) {
+            	case "def":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+            	case "all":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+            		break;
+            	case "hist":
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+            		break;
+            	case "done":
+            		// TODO
+            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+            		break;
+            	default:
+            		// Run the operation
+            		String returnMessage = logic.executeCommand(textFieldInput);
+            		// Add the returnMessage to the feedback bar and history view
+            		InterfaceController.getFeedbackLabel().setText(returnMessage);
+            		HistoryViewController.updateHistView(returnMessage);
+            		break;
+            	}
+            	break;
+            	
             default: // do nothing, should not enter
+            	break;
             }
         }
     }
