@@ -27,6 +27,10 @@ public class Command {
 	// Constructors
 	//============================================
 	
+	public Command(){
+		
+	}
+	
 	public Command(CommandType commandType) {
 		this.commandType = commandType;
 	}
@@ -35,8 +39,8 @@ public class Command {
 	// Public Methods
 	//============================================	
 	
-	public boolean isUndo(){
-		return this.commandType == CommandType.UNDO;
+	public boolean isUndoOrRedo(){
+		return this.commandType == CommandType.UNDO || this.commandType == CommandType.REDO;
 	}
 	
 	//============================================

@@ -36,13 +36,14 @@ public class Logic {
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
-    
+//    private static final String DISPLAY_NO_SEARCH_RESULTS = "There are no search results to display.\n";
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s]\t%s\n"; 
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_TASK = "FLOAT\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
     private static final String DISPLAY_LAYOUT_EVENT = "ONGOING\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "SEARCH\nFLOAT\n\n TASK\n\n EVENT %s"; 
     
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
@@ -56,6 +57,7 @@ public class Logic {
     private CommandParser commandParser; 
     private Storage storage;
     private Memory memory; 
+    //prevCommand refer to the last command that made changes to the file 
     private Command prevCommand; 
  
 	//============================================
@@ -66,7 +68,7 @@ public class Logic {
 			commandParser = new CommandParser();
 			storage = new Storage();
 			memory = new Memory();
-			prevCommand = null; 
+			prevCommand = new Command(); 
 	}
     
 	//============================================
@@ -92,9 +94,9 @@ public class Logic {
     		case SEARCH :
     			return executeSearch(command); 
     		case UNDO : 
-    			return executeUndo(); 
+    			return executeUndo(command); 
     		case REDO : 
-    			return executeRedo();
+    			return executeRedo(command);
     		case EXIT :
     			return executeExit(); 
     		case INVALID :
@@ -186,6 +188,7 @@ public class Logic {
         String addFeedback = String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
         
         boolean isSaved = saveState(stateBeforeExecutingCommand);
+        clearRedo(command);
         return formFeedbackMsg(addFeedback, isSaved);
     }
     
@@ -200,6 +203,7 @@ public class Logic {
         		taskDeadline.getDayString(),taskDeadline.getFullDate()); 
 
         boolean isSaved = saveState(stateBeforeExecutingCommand);
+        clearRedo(command);
         return formFeedbackMsg(addFeedback, isSaved);
     }
     
@@ -218,6 +222,7 @@ public class Logic {
         		eventEndDate.getDayString(), eventEndDate.getFullDate(), eventEndTime);
         
         boolean isSaved = saveState(stateBeforeExecutingCommand);
+        clearRedo(command);
         return formFeedbackMsg(addFeedback, isSaved);
     }
    
@@ -230,6 +235,7 @@ public class Logic {
         	String deleteFeedback = String.format(MESSAGE_DELETE_LINE, formatLine(deletedLine)); 
         	
         	boolean isSaved = saveState(stateBeforeExecutingCommand);
+        	clearRedo(command);
         	return formFeedbackMsg(deleteFeedback, isSaved);
     	}
     	catch(FileSystemException e){
@@ -264,6 +270,7 @@ public class Logic {
         	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, formatLine(doneLine)); 
         	
         	boolean isSaved = saveState(stateBeforeExecutingCommand);
+        	clearRedo(command);
         	return formFeedbackMsg(markDoneFeedback, isSaved);
     	}
     	catch(FileSystemException e){
@@ -276,10 +283,26 @@ public class Logic {
     
     //TODO search
     private String executeSearch(Command command){
-    	return "sth"; 
+    	try{
+    		String query = command.getName();
+    		String[] linesInFile = getLinesInFile();
+  
+    		StringBuffer results = new StringBuffer(); 
+    		
+    		for(int index = 0; index < linesInFile.length; index++){
+    			String line = linesInFile[index].trim(); 
+    			if(line.contains(query)){
+    				
+    			}
+    		}
+    	}
+    	catch(FileSystemException e){
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, "STH");
+    	}
+    	return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, "STH"); 
     }
     
-    private String executeUndo(){ 
+    private String executeUndo(Command command){ 
     	try{
     		String currFileContents = storage.display();
     		State stateAfterUndo = memory.getUndoState(currFileContents);
@@ -289,6 +312,7 @@ public class Logic {
         	}
     		
     		storage.overwriteFile(stateAfterUndo.getFileContents());
+    		prevCommand = command; 
         	return String.format(MESSAGE_UNDO, stateAfterUndo.getUserCommand());
     	}
     	catch(FileSystemException e){
@@ -299,8 +323,7 @@ public class Logic {
     	}
     }
     
-    //TODO redo 
-    private String executeRedo(){ 
+    private String executeRedo(Command command){ 
     	try{
     		String currFileContents = storage.display();
         	State stateAfterRedo = memory.getRedoState(currFileContents);
@@ -310,6 +333,7 @@ public class Logic {
         	}
         	
         	storage.overwriteFile(stateAfterRedo.getFileContents());
+        	prevCommand = command;
         	return String.format(MESSAGE_REDO, stateAfterRedo.getUserCommand());
     	}
     	catch(FileSystemException e){
@@ -317,13 +341,6 @@ public class Logic {
     	}
     	catch(Exception e){
     		return MESSAGE_ERROR_UNKNOWN;
-    	}
-    }
-    
-    //TODO - check if the condition is true
-    private void clearRedo(Command command){
-    	if(prevCommand.isUndo() && !command.isUndo()){
-    		memory.clearRedoStack();
     	}
     }
     
@@ -338,7 +355,7 @@ public class Logic {
    			return null; 
    		}
    	}
-    
+   	
 	private boolean saveState(State prevState) {
 		if(prevState != null){
         	memory.savePrevState(prevState);
@@ -349,6 +366,13 @@ public class Logic {
         	return false;
         }
 	}
+    
+    private void clearRedo(Command command){
+    	if(prevCommand.isUndoOrRedo() && !command.isUndoOrRedo()){
+    		memory.clearRedoStack();
+    	}
+    	prevCommand = command; 
+    }
    	
 	private String formFeedbackMsg(String addFeedback, boolean isSaved) {
 		if(isSaved){
@@ -359,7 +383,6 @@ public class Logic {
         }
 	}
 	
-	//TODO 
 	private String formatLine(String line){
 		String[] lineComponents = line.split(SEMICOLON);
 		String type = lineComponents[INDEX_TYPE]; 

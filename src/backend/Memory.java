@@ -42,6 +42,10 @@ public class Memory {
 		redoStack.clear();
 	}
 	
+	//============================================
+	// Private method
+	//============================================
+	
 	private State getState(String currFileContents, Stack<State> stackPop, Stack<State> stackPush){ 
 		if(stackPop.isEmpty()){
 			return null; 
@@ -52,26 +56,5 @@ public class Memory {
 			return prevState;
 		}
 	}
-		
-//	public State getUndoState(String currFileContents){ 
-//		if(undoStack.isEmpty()){
-//			return null; 
-//		}else{ 
-//			State prevState = undoStack.pop(); 
-//			State currState = new State(currFileContents, prevState.getUserCommand()); 
-//			redoStack.push(currState);
-//			return prevState;
-//		}
-//	}
-//	
-//	public State getRedoState(){ 
-//		if(redoStack.isEmpty()){
-//			return null; 
-//		}else{ 
-//			State redoState = redoStack.pop(); 
-//			return redoState; 
-//		}
-//	}
 	
-
 }
