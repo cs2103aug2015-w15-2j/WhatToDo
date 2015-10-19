@@ -29,3 +29,5 @@ For now the commands are:
 
 20151018 Update: Only "def" and "all" currently work. 
 All view is incorrect, it still uses default view until getAll methods are done.
+
+20151020 Update: "hist" now works correctly as well.

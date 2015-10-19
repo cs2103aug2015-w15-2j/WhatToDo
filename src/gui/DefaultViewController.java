@@ -104,7 +104,7 @@ public class DefaultViewController {
 
     	Label defTaskHeader = new Label(HEADER_DEF_TASKS);
         defTaskHeaderBox = new HBox(defTaskHeader);
-        defTaskHeaderBox.setAlignment(Pos.CENTER_LEFT);
+        defTaskHeaderBox.setAlignment(Pos.CENTER);
 
         defTaskContentBox = new VBox();
         
@@ -126,7 +126,6 @@ public class DefaultViewController {
         HBox.setMargin(defTaskHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        defTaskHeaderBox.setAlignment(Pos.CENTER);
         
         // Set margins for the header
         VBox.setMargin(defTaskHeaderBox, new Insets(
@@ -158,6 +157,7 @@ public class DefaultViewController {
 
     	Label defEventHeader = new Label(HEADER_DEF_EVENTS);
         defEventHeaderBox = new HBox(defEventHeader);
+        defEventHeaderBox.setAlignment(Pos.CENTER);
 
         defEventContentBox = new VBox();
         
@@ -180,7 +180,6 @@ public class DefaultViewController {
         HBox.setMargin(defEventHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        defEventHeaderBox.setAlignment(Pos.CENTER);
         
         // Set margins for the header
         VBox.setMargin(defEventHeaderBox, new Insets(

@@ -134,15 +134,17 @@ public class LogicController {
              */
             
             switch(InterfaceController.currentView) {
-            // Default view
+            /* ================================================================================
+             * Default view
+             * ================================================================================
+             */
             case InterfaceController.VIEW_DEFAULT:
             	switch (textFieldInput) {
             	case "all":
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
             		break;
             	case "hist":
-            		// TODO
-            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
             		break;
             	case "done":
             		// TODO
@@ -151,23 +153,26 @@ public class LogicController {
             	default:
             		// Run the operation
                 	String returnMessage = logic.executeCommand(textFieldInput);
-                	// Add the returnMessage to the History pane
+                	// Add the returnMessage to the feedback bar and history view
                 	InterfaceController.getFeedbackLabel().setText(returnMessage);
+                	HistoryViewController.updateHistView(returnMessage);
 
                 	// Update the Tasks and Events
                 	DefaultViewController.updateDefView();
                 	break;
             	}
             	break;
-            // All view
+            /* ================================================================================
+             * All view
+             * ================================================================================
+             */
             case InterfaceController.VIEW_ALL:
             	switch (textFieldInput) {
             	case "def":
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
             		break;
             	case "hist":
-            		// TODO
-            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
             		break;
             	case "done":
             		// TODO
@@ -176,15 +181,19 @@ public class LogicController {
             	default:
             		// Run the operation
                 	String returnMessage = logic.executeCommand(textFieldInput);
-                	// Add the returnMessage to the History pane
+                	// Add the returnMessage to the feedback bar and history view
                 	InterfaceController.getFeedbackLabel().setText(returnMessage);
+                	HistoryViewController.updateHistView(returnMessage);
 
                 	// Update the Tasks and Events
                 	AllViewController.updateAllView();
                 	break;
             	}
             	break;
-            // History view
+            /* ================================================================================
+             * History view
+             * ================================================================================
+             */
             case InterfaceController.VIEW_HIST:
             	switch (textFieldInput) {
             	case "def":
@@ -200,15 +209,16 @@ public class LogicController {
             	default:
             		// Run the operation
                 	String returnMessage = logic.executeCommand(textFieldInput);
-                	// Add the returnMessage to the History pane
+                	// Add the returnMessage to the feedback bar and history view
                 	InterfaceController.getFeedbackLabel().setText(returnMessage);
-
-                	// Update the Tasks and Events
-                	DefaultViewController.updateDefView();
+                	HistoryViewController.updateHistView(returnMessage);
                 	break;
             	}
             	break;
-            // Completed view
+            /* ================================================================================
+             * Done view
+             * ================================================================================
+             */
             case InterfaceController.VIEW_DONE:
             	switch (textFieldInput) {
             	case "def":
@@ -218,23 +228,22 @@ public class LogicController {
             		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
             		break;
             	case "hist":
-            		// TODO
-            		//InterfaceController.updateMainInterface(HistoryViewController.initHistoryView());
+            		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
             		break;
             	default:
             		// Run the operation
                 	String returnMessage = logic.executeCommand(textFieldInput);
-                	// Add the returnMessage to the History pane
+                	// Add the returnMessage to the feedback bar and history view
                 	InterfaceController.getFeedbackLabel().setText(returnMessage);
+                	HistoryViewController.updateHistView(returnMessage);
 
-                	// Update the Tasks and Events
-                	DefaultViewController.updateDefView();
+                	// TODO: Update the completed tasks view
+                	//DoneViewController.updateDoneView();
                 	break;
             	}
             	break;
             default: // do nothing, should not enter
             }
-            
         }
     }
 	
@@ -264,18 +273,18 @@ public class LogicController {
     	public void changed(ObservableValue<? extends Number> observable,
     			Number oldValue, Number newValue) {
 
-    		// Set the height of the sidebar separator to
-    		// window height - height of filepath bar(35) - height of line(1)
+    		// Set the height of the sidebar separator to window height
     		InterfaceController.getSbLine().setEndY((Double)newValue);
 
     		// Set the height of the scroll pane separator to
-    		// window height - height of the filepath bar(35) -
-    		// height of feedback bar(35) - height of text bar(45) - 
-    		// 2 * height of line(1)
+    		// window height - height of the filepath bar(31) -
+    		// height of feedback bar(31) - height of text bar(40) - 
+    		// height of viewLine(1)
     		DefaultViewController.getDefScrollLine().setEndY((Double)newValue - 
     				InterfaceController.HEIGHT_FILEPATH - 
     				InterfaceController.HEIGHT_FEEDBACK - 
-    				InterfaceController.HEIGHT_TEXTFIELD);
+    				InterfaceController.HEIGHT_TEXTFIELD - 
+    				InterfaceController.HEIGHT_HORIZ_LINE);
     	}
     }
 
@@ -289,7 +298,7 @@ public class LogicController {
     		// window width - size of sidebar(50) - width of line(1)
     		InterfaceController.getFeedbackLine().setEndX(
     				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);
-    		InterfaceController.getDefLine().setEndX(
+    		InterfaceController.getViewLine().setEndX(
     				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);
     		InterfaceController.getFilepathLine().setEndX(
     				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);

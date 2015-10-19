@@ -59,7 +59,7 @@ public class InterfaceController {
     private static Scene mainScene;
     private static VBox contentBoxNoSideBar, mainBox;
     private static HBox contentBoxWithSideBar, viewBox;
-    private static Line defLine;
+    private static Line viewLine;
     
     // Used for updateMainInterface
     protected static HBox defBox, allBox, histBox, doneBox;
@@ -342,7 +342,7 @@ public class InterfaceController {
         // Initialize all the views
         DefaultViewController.initDefView();
         AllViewController.initAllView();
-        //HistoryViewController.initHistoryView();
+        HistoryViewController.initHistView();
         //DoneViewController.initDoneView();
         
         // Initial view will be default
@@ -354,13 +354,13 @@ public class InterfaceController {
         HBox.setHgrow(defBox, Priority.ALWAYS);
         
         // Create the line separator for defBox
-        defLine = new Line(0, 0, WIDTH_DEFAULT, 0);
+        viewLine = new Line(0, 0, WIDTH_DEFAULT, 0);
 
         // Create the region excluding the sidebar
         contentBoxNoSideBar = new VBox(
         		filepathBoxWithLine, 
         		viewBox, 
-        		defLine, 
+        		viewLine, 
         		feedbackBoxWithLine, 
         		textBox);
         
@@ -386,7 +386,7 @@ public class InterfaceController {
         mainScene.widthProperty().addListener(logicControl.getWidthListener());
 
         // Set CSS styling
-        defLine.getStyleClass().add("line");
+        viewLine.getStyleClass().add("line");
         mainScene.getStylesheets().add(InterfaceController.class.getResource(
                 "/gui/stylesheets/Interface.css").toExternalForm());
 
@@ -436,7 +436,7 @@ public class InterfaceController {
     		viewBox.getChildren().add(histBox);
     		
     		// Set history box to grow with view box
-            //HBox.setHgrow(histBox, Priority.ALWAYS);
+            HBox.setHgrow(histBox, Priority.ALWAYS);
     		
             // Change buttons
             changeButtonToSelected(VIEW_HIST);
@@ -488,8 +488,8 @@ public class InterfaceController {
     	return feedbackLine;
     }
     
-    public static Line getDefLine() {
-    	return defLine;
+    public static Line getViewLine() {
+    	return viewLine;
     }
     
     public static Line getFilepathLine() {

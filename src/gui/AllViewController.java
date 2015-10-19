@@ -106,7 +106,7 @@ public class AllViewController {
 
     	Label defTaskHeader = new Label(HEADER_ALL_TASKS);
         allTaskHeaderBox = new HBox(defTaskHeader);
-        allTaskHeaderBox.setAlignment(Pos.CENTER_LEFT);
+        allTaskHeaderBox.setAlignment(Pos.CENTER);
 
         allTaskContentBox = new VBox();
         
@@ -128,7 +128,6 @@ public class AllViewController {
         HBox.setMargin(defTaskHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        allTaskHeaderBox.setAlignment(Pos.CENTER);
         
         // Set margins for the header
         VBox.setMargin(allTaskHeaderBox, new Insets(
@@ -160,6 +159,7 @@ public class AllViewController {
 
     	Label defEventHeader = new Label(HEADER_ALL_EVENTS);
         allEventHeaderBox = new HBox(defEventHeader);
+        allEventHeaderBox.setAlignment(Pos.CENTER);
 
         allEventContentBox = new VBox();
         
@@ -182,7 +182,6 @@ public class AllViewController {
         HBox.setMargin(defEventHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        allEventHeaderBox.setAlignment(Pos.CENTER);
         
         // Set margins for the header
         VBox.setMargin(allEventHeaderBox, new Insets(
@@ -260,14 +259,5 @@ public class AllViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
         }
-    }
-    
-    /* ================================================================================
-     * Getters for LogicController to access required JavaFX components
-     * ================================================================================
-     */
-    
-    public static Line getAllScrollLine() {
-    	return allScrollLine;
     }
 }

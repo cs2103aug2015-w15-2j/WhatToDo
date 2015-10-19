@@ -17,7 +17,7 @@ public class MainApp extends Application {
      * Variables used in scene construction
      * ================================================================================
      */
-    protected static final double MIN_WINDOW_HEIGHT = 576;
+    protected static final double MIN_WINDOW_HEIGHT = 600;
     protected static final double MIN_WINDOW_WIDTH = 1024;
     protected static final String TITLE_STAGE = "WhatToDo";
 
