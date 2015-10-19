@@ -89,7 +89,13 @@
 	-fx-background-image: url("../resources/headerAllEventBG.jpg");
 }
 
+.box-title-history {
+	-fx-background-image: url("../resources/headerHistoryBG.jpg");
+}
+
 .box-title-label {
+	-fx-font-size: 14;
+	-fx-font-weight: bold;
 	-fx-text-fill: #e5e5e5;
 }
 

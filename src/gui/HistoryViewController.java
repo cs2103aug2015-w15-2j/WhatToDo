@@ -105,7 +105,7 @@ public class HistoryViewController {
         
         // CSS
         histHeader.getStyleClass().add("box-title-label");
-        histHeaderBox.getStyleClass().add("box-title");
+        histHeaderBox.getStyleClass().add("box-title-history");
     }
     
     public static void updateHistView(String feedbackMessage) {
