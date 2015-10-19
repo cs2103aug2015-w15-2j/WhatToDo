@@ -6,6 +6,7 @@ import struct.Command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CommandParser {
 	
@@ -13,8 +14,10 @@ public class CommandParser {
     private static final int POSITION_FIRST_PARAM_ARGUMENT = 1;
 	
 	private static final String REGEX_WHITESPACES = "[\\s,]+";
+	private static final String REGEX_POSITIVE_INTEGER = "^\\d+$";
 	
     private static final String STRING_ONE_SPACE = " ";
+    private static final String ESCAPE_CHARACTER = "\\";
 	
     private static final String USER_COMMAND_ADD = "add";
     private static final String USER_COMMAND_DELETE = "delete";
@@ -31,6 +34,7 @@ public class CommandParser {
     private static final String KEYWORD_EVENT_3 = KEYWORDS[3];
     
     private static final ArrayList<String> nameOfDays = new ArrayList<String>();
+    private static final ArrayList<String> fullNameOfDays = new ArrayList<String>();
     
 	public CommandParser() {
     }
@@ -41,6 +45,7 @@ public class CommandParser {
         String userCommand = getUserCommand(parameters);
         ArrayList<String> arguments = getUserArguments(parameters);
         initNameOfDays();
+        initFullNameOfDays();
 
         switch (userCommand.toLowerCase()) {
 
@@ -101,13 +106,11 @@ public class CommandParser {
 	private Command initAddCommand(ArrayList<String> arguments) {
 		Command command;
 		int size = arguments.size();
-		if (size < 3) {
-			command = addFloatingTask(arguments);
-		} else if (KEYWORD_DEADLINE.equals(arguments.get(size - 2))) {
+		if (size > 2 && arguments.contains(KEYWORD_DEADLINE)) {
 			command = addTask(arguments);
-		} else if (KEYWORD_EVENT_1.equals(arguments.get(size - 2)) && KEYWORD_EVENT_2.equals(arguments.get(size - 4)) && KEYWORD_EVENT_3.equals(arguments.get(size - 6))) {
+		} else if (size > 6 && KEYWORD_EVENT_1.equals(arguments.get(size - 2)) && KEYWORD_EVENT_2.equals(arguments.get(size - 4)) && KEYWORD_EVENT_3.equals(arguments.get(size - 6))) {
 			command = addEvent(arguments, 1);
-		} else if (KEYWORD_EVENT_1.equals(arguments.get(size - 3)) && KEYWORD_EVENT_3.equals(arguments.get(size - 6))) {
+		} else if (size > 6 && KEYWORD_EVENT_1.equals(arguments.get(size - 3)) && KEYWORD_EVENT_3.equals(arguments.get(size - 6))) {
 			command = addEvent(arguments, 2);
 		} else {
 			command = addFloatingTask(arguments);
@@ -116,19 +119,25 @@ public class CommandParser {
 	}
 	
 	private Command addTask(ArrayList<String> arguments) {
-		String dateString = arguments.get(arguments.size() - 1);
+		int keywordIndex = arguments.indexOf(KEYWORD_DEADLINE);
+		int index = keywordIndex + 1;
+		String dateString = "";
+		while (index < arguments.size()) {
+			dateString += arguments.get(index);
+			index++;
+		}
 		Date date = getValidDate(dateString);
 		if (date != null) {
 			Command command = new Command(Command.CommandType.ADD);
 			command.setDataType(Command.DataType.TASK);
-			arguments.remove(arguments.size() - 1);
-			arguments.remove(arguments.size() - 1);
-			String name = getName(arguments);
+			List<String> nameList = arguments.subList(0, keywordIndex);
+			String name = getName(nameList);
 			command.setName(name);
 			command.setDueDate(date);
 			return command;
 		} else {
-			return initInvalidCommand();
+			String errorMsg = "Invalid Date";
+			return initInvalidCommand(errorMsg);
 		}
 	}
 	
@@ -201,8 +210,23 @@ public class CommandParser {
 	private String getName(ArrayList<String> arguments) {
 		String name = "";
 		for (int i = 0; i < arguments.size(); i++) {
-			String currentArgument = arguments.get(i);
-			name += currentArgument + STRING_ONE_SPACE;
+			String currArgument = arguments.get(i);
+			if (currArgument.startsWith(ESCAPE_CHARACTER)) {
+				currArgument = currArgument.substring(1);
+			}
+			name += currArgument + STRING_ONE_SPACE;
+		}
+		return name.trim();
+	}
+	
+	private String getName(List<String> arguments) {
+		String name = "";
+		for (int i = 0; i < arguments.size(); i++) {
+			String currArgument = arguments.get(i);
+			if (currArgument.startsWith(ESCAPE_CHARACTER)) {
+				currArgument = currArgument.substring(1);
+			}
+			name += currArgument + STRING_ONE_SPACE;
 		}
 		return name.trim();
 	}
@@ -213,7 +237,7 @@ public class CommandParser {
 			return todayDate;
 		} else if (date.equals("tomorrow")) {
 			return Date.tomorrowDate();
-		} else if (nameOfDays.contains(date.substring(0,3).toLowerCase())) {
+		} else if (fullNameOfDays.contains(date.toLowerCase())) {
 			int day = nameOfDays.indexOf(date.substring(0,3).toLowerCase());
 			int today = nameOfDays.indexOf(todayDate.getDayString().substring(0,3).toLowerCase());
 			int difference = day - today;
@@ -222,8 +246,7 @@ public class CommandParser {
 			} else {
 				return todayDate.plusDay(difference + 7);
 			}
-		} else if (date.substring(0,1).equals("n") && nameOfDays.contains(date.substring(1,4).toLowerCase())) {
-			System.out.println("here");
+		} else if (date.substring(0,1).equals("n") && fullNameOfDays.contains(date.substring(1).toLowerCase())) {
 			int day = nameOfDays.indexOf(date.substring(1,4).toLowerCase());
 			int today = nameOfDays.indexOf(todayDate.getDayString().substring(0,3).toLowerCase());
 			int difference = day - today;
@@ -232,14 +255,14 @@ public class CommandParser {
 			} else {
 				return todayDate.plusDay(difference + 14);
 			}
-		} else if (String.valueOf(date).length() == 4) {
+		} else if (String.valueOf(date).length() == 4 && date.matches(REGEX_POSITIVE_INTEGER)) {
 			String year = todayDate.getFullDate().substring(4);
 			date = date + year;
 			Date currDate = new Date(date);
-			if (todayDate.compareTo(currDate) <= 0 && isValidDate(date)) {
+			if (isValidDate(date) && todayDate.compareTo(currDate) <= 0) {
 				return currDate;
 			}
-		} else if (String.valueOf(date).length() == 6 && isValidDate(date)) {
+		} else if (String.valueOf(date).length() == 6 && isValidDate(date) && date.matches(REGEX_POSITIVE_INTEGER)) {
 			Date currDate = new Date(date);
 			if (todayDate.compareTo(currDate) <= 0) {
 				return currDate;
@@ -271,6 +294,23 @@ public class CommandParser {
 		nameOfDays.add("fri");
 		nameOfDays.add("sat");
 		nameOfDays.add("sun");
+	}
+	
+	private void initFullNameOfDays() {
+		fullNameOfDays.add("mon");
+		fullNameOfDays.add("tue");
+		fullNameOfDays.add("wed");
+		fullNameOfDays.add("thu");
+		fullNameOfDays.add("fri");
+		fullNameOfDays.add("sat");
+		fullNameOfDays.add("sun");
+		fullNameOfDays.add("monday");
+		fullNameOfDays.add("tuesday");
+		fullNameOfDays.add("wednesday");
+		fullNameOfDays.add("thursday");
+		fullNameOfDays.add("friday");
+		fullNameOfDays.add("saturday");
+		fullNameOfDays.add("sunday");
 	}
 	
 	private boolean isValidTime(String time) {
@@ -388,6 +428,11 @@ public class CommandParser {
 		return new Command(Command.CommandType.INVALID);
 	}
 	
+	private Command initInvalidCommand(String errorMsg) {
+		Command command = new Command(Command.CommandType.INVALID);
+		command.setName(errorMsg);
+		return command;
+	}
 	
 	
 	
