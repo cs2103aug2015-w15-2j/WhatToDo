@@ -333,29 +333,39 @@ public class LogicController {
     			ImageView hover;
     			switch(buttonType) {
     			case InterfaceController.VIEW_DEFAULT:
-    				hover = new ImageView(InterfaceController.PATH_HOME_HOVER);
-    				InterfaceController.getHomeButton().getChildren().clear();
-    				InterfaceController.getHomeButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_DEFAULT) {
+    					hover = new ImageView(InterfaceController.PATH_DEFAULT_HOVER);
+    					InterfaceController.getHomeButton().getChildren().clear();
+    					InterfaceController.getHomeButton().getChildren().add(hover);
+    				}
     				break;
     			case InterfaceController.VIEW_ALL:
-    				hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
-    				InterfaceController.getAllButton().getChildren().clear();
-    				InterfaceController.getAllButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_ALL) {
+    					hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
+    					InterfaceController.getAllButton().getChildren().clear();
+    					InterfaceController.getAllButton().getChildren().add(hover);
+    				}
     				break;
     			case InterfaceController.VIEW_HIST:
-    				hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
-    				InterfaceController.getHistButton().getChildren().clear();
-    				InterfaceController.getHistButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_HIST) {
+    					hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
+    					InterfaceController.getHistButton().getChildren().clear();
+    					InterfaceController.getHistButton().getChildren().add(hover);
+    				}
     				break;
     			case InterfaceController.VIEW_DONE:
-    				hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
-    				InterfaceController.getDoneButton().getChildren().clear();
-    				InterfaceController.getDoneButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_DONE) {
+    					hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
+    					InterfaceController.getDoneButton().getChildren().clear();
+    					InterfaceController.getDoneButton().getChildren().add(hover);
+    				}
     				break;
     			case InterfaceController.VIEW_SEARCH:
-    				hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
-    				InterfaceController.getSearchButton().getChildren().clear();
-    				InterfaceController.getSearchButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_SEARCH) {
+    					hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
+    					InterfaceController.getSearchButton().getChildren().clear();
+    					InterfaceController.getSearchButton().getChildren().add(hover);
+    				}
     				break;
     			default:
     				break;
@@ -366,29 +376,39 @@ public class LogicController {
     			ImageView hover;
     			switch(buttonType) {
     			case InterfaceController.VIEW_DEFAULT:
-    				hover = new ImageView(InterfaceController.PATH_HOME);
-    				InterfaceController.getHomeButton().getChildren().clear();
-    				InterfaceController.getHomeButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_DEFAULT) {
+    					hover = new ImageView(InterfaceController.PATH_DEFAULT);
+    					InterfaceController.getHomeButton().getChildren().clear();
+    					InterfaceController.getHomeButton().getChildren().add(hover);
+    				}
     				break;
     			case InterfaceController.VIEW_ALL:
-    				hover = new ImageView(InterfaceController.PATH_ALL);
-    				InterfaceController.getAllButton().getChildren().clear();
-    				InterfaceController.getAllButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_ALL) {
+    					hover = new ImageView(InterfaceController.PATH_ALL);
+    					InterfaceController.getAllButton().getChildren().clear();
+    					InterfaceController.getAllButton().getChildren().add(hover);
+    				}
     				break;
     			case InterfaceController.VIEW_HIST:
-    				hover = new ImageView(InterfaceController.PATH_HIST);
-    				InterfaceController.getHistButton().getChildren().clear();
-    				InterfaceController.getHistButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_HIST) {
+    					hover = new ImageView(InterfaceController.PATH_HIST);
+    					InterfaceController.getHistButton().getChildren().clear();
+    					InterfaceController.getHistButton().getChildren().add(hover);
+    				}
     				break;
     			case InterfaceController.VIEW_DONE:
-    				hover = new ImageView(InterfaceController.PATH_DONE);
-    				InterfaceController.getDoneButton().getChildren().clear();
-    				InterfaceController.getDoneButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_DONE) {
+    					hover = new ImageView(InterfaceController.PATH_DONE);
+    					InterfaceController.getDoneButton().getChildren().clear();
+    					InterfaceController.getDoneButton().getChildren().add(hover);
+    				}
     				break;
     			case InterfaceController.VIEW_SEARCH:
-    				hover = new ImageView(InterfaceController.PATH_SEARCH);
-    				InterfaceController.getSearchButton().getChildren().clear();
-    				InterfaceController.getSearchButton().getChildren().add(hover);
+    				if (InterfaceController.currentView != InterfaceController.VIEW_SEARCH) {
+    					hover = new ImageView(InterfaceController.PATH_SEARCH);
+    					InterfaceController.getSearchButton().getChildren().clear();
+    					InterfaceController.getSearchButton().getChildren().add(hover);
+    				}
     				break;
     			default:
     				break;

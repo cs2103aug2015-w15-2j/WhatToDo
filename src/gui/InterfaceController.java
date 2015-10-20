@@ -26,9 +26,9 @@ public class InterfaceController {
     private static Label filepathLabel;
     private static Line filepathLine;
 
-    // Used for initSideBarHomeButton
-    private static VBox sbHomeBox;
-    private static ImageView sbHomeImage;
+    // Used for initSideBarDefButton
+    private static VBox sbDefBox;
+    private static ImageView sbDefImage;
     
     // Used for initSideBarAllButton
     private static VBox sbAllBox;
@@ -80,9 +80,9 @@ public class InterfaceController {
     protected static final String VIEW_SEARCH = "search";
     
     // Values for button images
-    protected static final String PATH_HOME = "gui/resources/home.png";
-    protected static final String PATH_HOME_SELECTED = "gui/resources/home_selected.png";
-    protected static final String PATH_HOME_HOVER = "gui/resources/home_hover.png";
+    protected static final String PATH_DEFAULT = "gui/resources/home.png";
+    protected static final String PATH_DEFAULT_SELECTED = "gui/resources/home_selected.png";
+    protected static final String PATH_DEFAULT_HOVER = "gui/resources/home_hover.png";
     protected static final String PATH_ALL = "gui/resources/all.png";
     protected static final String PATH_ALL_SELECTED = "gui/resources/all_selected.png";
     protected static final String PATH_ALL_HOVER = "gui/resources/all_hover.png";
@@ -148,23 +148,23 @@ public class InterfaceController {
         filepathBox.getStyleClass().add("gradient-regular");
     }
 
-    private static void initSideBarHomeButton() {
+    private static void initSideBarDefButton() {
 
-        sbHomeImage = new ImageView(PATH_HOME);
-        sbHomeBox = new VBox(sbHomeImage);
+        sbDefImage = new ImageView(PATH_DEFAULT);
+        sbDefBox = new VBox(sbDefImage);
 
         // Fix width and height for the button
-        sbHomeBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-        sbHomeBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+        sbDefBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+        sbDefBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-        sbHomeBox.setMaxHeight(WIDTH_SIDEBAR);
-        sbHomeBox.setMinHeight(WIDTH_SIDEBAR);
+        sbDefBox.setMaxHeight(WIDTH_SIDEBAR);
+        sbDefBox.setMinHeight(WIDTH_SIDEBAR);
         
         // Set listener for mouse interactions
-        sbHomeBox.addEventHandler(
+        sbDefBox.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
         		logicControl.getButtonHoverHandler(VIEW_DEFAULT));
-        sbHomeBox.addEventHandler(
+        sbDefBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
         		logicControl.getButtonHoverHandler(VIEW_DEFAULT));
     }
@@ -256,9 +256,9 @@ public class InterfaceController {
     private static void changeButtonToSelected(String view) {
     	switch (view) {
     	case VIEW_DEFAULT:
-    		sbHomeImage = new ImageView(PATH_HOME_SELECTED);
-    		sbHomeBox.getChildren().clear();
-    		sbHomeBox.getChildren().add(sbHomeImage);
+    		sbDefImage = new ImageView(PATH_DEFAULT_SELECTED);
+    		sbDefBox.getChildren().clear();
+    		sbDefBox.getChildren().add(sbDefImage);
     		break;
     	case VIEW_ALL:
     		sbAllImage = new ImageView(PATH_ALL_SELECTED);
@@ -288,9 +288,9 @@ public class InterfaceController {
     private static void changeButtonToUnselected(String view) {
     	switch (view) {
     	case VIEW_DEFAULT:
-    		sbHomeImage = new ImageView(PATH_HOME);
-    		sbHomeBox.getChildren().clear();
-    		sbHomeBox.getChildren().add(sbHomeImage);
+    		sbDefImage = new ImageView(PATH_DEFAULT);
+    		sbDefBox.getChildren().clear();
+    		sbDefBox.getChildren().add(sbDefImage);
     		break;
     	case VIEW_ALL:
     		sbAllImage = new ImageView(PATH_ALL);
@@ -319,19 +319,21 @@ public class InterfaceController {
 
     private static void initSideBar() {
 
-        initSideBarHomeButton();
+        initSideBarDefButton();
         initSideBarAllButton();
         initSideBarHistoryButton();
         initSideBarDoneButton();
         initSideBarSearchButton();
+        
+        changeButtonToSelected(VIEW_DEFAULT);
 
-        sbBox = new VBox(sbHomeBox, sbAllBox, sbHistBox, sbDoneBox, sbSearchBox);        
+        sbBox = new VBox(sbDefBox, sbAllBox, sbHistBox, sbDoneBox, sbSearchBox);        
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
         sbBoxWithLine = new HBox(sbBox, sbLine);
 
         // Set margins for the buttons
-        VBox.setMargin(sbHomeBox, new Insets(
+        VBox.setMargin(sbDefBox, new Insets(
         		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
         		MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
         
@@ -589,7 +591,7 @@ public class InterfaceController {
     
     // Return buttons for mouse event handlers
     public static VBox getHomeButton() {
-    	return sbHomeBox;
+    	return sbDefBox;
     }
     
     public static VBox getAllButton() {
