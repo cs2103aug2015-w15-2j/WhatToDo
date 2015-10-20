@@ -113,6 +113,7 @@ public class InterfaceController {
     protected static final double MARGIN_TEXT_ELEMENT_HEIGHT = 3;
     protected static final double MARGIN_TEXT_ELEMENT_SEPARATOR = 10;
     protected static final double MARGIN_TEXT_FIELD = 7;
+    protected static final double MARGIN_BUTTON = 20;
     protected static final double MARGIN_COMPONENT = 10;
     protected static final double MARGIN_SCROLL = 30;
     protected static final double MARGIN_ARBITRARY = 6;
@@ -157,8 +158,8 @@ public class InterfaceController {
         sbDefBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
         sbDefBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-        sbDefBox.setMaxHeight(WIDTH_SIDEBAR);
-        sbDefBox.setMinHeight(WIDTH_SIDEBAR);
+        sbDefBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+        sbDefBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
         
         // Set listener for mouse interactions
         sbDefBox.addEventHandler(
@@ -178,8 +179,8 @@ public class InterfaceController {
     	sbAllBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
     	sbAllBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-    	sbAllBox.setMaxHeight(WIDTH_SIDEBAR);
-    	sbAllBox.setMinHeight(WIDTH_SIDEBAR);
+    	sbAllBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+    	sbAllBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
     	
         // Set listener for mouse interactions
         sbAllBox.addEventHandler(
@@ -199,8 +200,8 @@ public class InterfaceController {
     	sbHistBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
     	sbHistBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-    	sbHistBox.setMaxHeight(WIDTH_SIDEBAR);
-    	sbHistBox.setMinHeight(WIDTH_SIDEBAR);
+    	sbHistBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+    	sbHistBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
     	
         // Set listener for mouse interactions
     	sbHistBox.addEventHandler(
@@ -220,8 +221,8 @@ public class InterfaceController {
     	sbDoneBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
     	sbDoneBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-    	sbDoneBox.setMaxHeight(WIDTH_SIDEBAR);
-    	sbDoneBox.setMinHeight(WIDTH_SIDEBAR);
+    	sbDoneBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+    	sbDoneBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
     	
         // Set listener for mouse interactions
     	sbDoneBox.addEventHandler(
@@ -241,8 +242,8 @@ public class InterfaceController {
     	sbSearchBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
     	sbSearchBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-    	sbSearchBox.setMaxHeight(WIDTH_SIDEBAR);
-    	sbSearchBox.setMinHeight(WIDTH_SIDEBAR);
+    	sbSearchBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+    	sbSearchBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
     	
         // Set listener for mouse interactions
     	sbSearchBox.addEventHandler(
@@ -327,7 +328,12 @@ public class InterfaceController {
         
         changeButtonToSelected(VIEW_DEFAULT);
 
-        sbBox = new VBox(sbDefBox, sbAllBox, sbHistBox, sbDoneBox, sbSearchBox);        
+        sbBox = new VBox(sbDefBox, 
+        		sbAllBox, 
+        		sbHistBox, 
+        		sbDoneBox, 
+        		sbSearchBox);
+        
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
         sbBoxWithLine = new HBox(sbBox, sbLine);
@@ -335,12 +341,18 @@ public class InterfaceController {
         // Set margins for the buttons
         VBox.setMargin(sbDefBox, new Insets(
         		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
-        		MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        		MARGIN_COMPONENT, 
+        		MARGIN_BUTTON, 
+        		MARGIN_COMPONENT));
         
-        VBox.setMargin(sbAllBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
-        VBox.setMargin(sbHistBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
-        VBox.setMargin(sbDoneBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
-        VBox.setMargin(sbSearchBox, new Insets(0, MARGIN_COMPONENT, 0, MARGIN_COMPONENT));
+        VBox.setMargin(sbAllBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+        VBox.setMargin(sbHistBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+        VBox.setMargin(sbDoneBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+        VBox.setMargin(sbSearchBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
         
         // Fix the width for the sidebar
         // +1 for line width
