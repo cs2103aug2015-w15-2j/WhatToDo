@@ -32,7 +32,7 @@ public class Logic {
 	private static final String MESSAGE_EXIT = "Exit";
 	
 	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
-    private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command."; 
+    private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command. %s"; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
@@ -101,7 +101,7 @@ public class Logic {
     			return executeExit(); 
     		case INVALID :
             default :
-            	return handleInvalid(userInput);
+            	return handleInvalid(command);
     	}	
     }
     
@@ -144,6 +144,27 @@ public class Logic {
             		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
 		}
     }
+    
+    //TODO display all uncompleted tasks and floats 
+    public String taskAllView(){ 
+    	try{ 
+    		String[] linesInFile = getLinesInFile();
+        	//String floatContent = getFloatContent(linesInFile); 
+        	return "boo"; 
+    	}
+    	catch(FileSystemException e){
+    		return "sth"; 
+    	}
+    	catch (Exception e) {
+    		return "sth"; 
+    	}
+    }
+    
+    //TODO display all uncompleted events
+    public String eventAllView(){ 
+    	return "foo"; 
+    }
+    
     
     public String getFilepath() {
     	try{
@@ -394,8 +415,10 @@ public class Logic {
     	return MESSAGE_EXIT; 
     }
     
-    private String handleInvalid(String userInput){ 
-    	return String.format(MESSAGE_ERROR_INVALID_COMMAND, userInput); 
+    private String handleInvalid(Command command){ 
+    	String userInput = command.getUserInput(); 
+    	String reason = (command.getName() != null)? command.getName() : "";
+    	return String.format(MESSAGE_ERROR_INVALID_COMMAND, userInput, reason); 
     }
     
 	//============================================
