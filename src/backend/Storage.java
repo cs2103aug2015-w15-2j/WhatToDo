@@ -52,6 +52,7 @@ public class Storage {
 	private static final int PARAM_LINE_NUMBER_ZERO = 0;
 	private static final int PARAM_START_LOOP_ZERO = 0;
 	private static final int PARAM_LESS_ONE = 1;
+	private static final int PARAM_DOES_NOT_EXIST = -1;
 
 	// This string stores the whole file name with directory.
 	private String filePath;
@@ -824,6 +825,10 @@ public class Storage {
 		initialiseWriter();
 		
 		int lastLine = fileContents.size() - PARAM_LESS_ONE;
+		
+		if (lastLine == PARAM_DOES_NOT_EXIST) {
+			return;
+		}
 
 		for (int i = PARAM_START_LOOP_ZERO; i < lastLine; i++) {
 			fileWriter.println(fileContents.get(i));
@@ -840,6 +845,10 @@ public class Storage {
 		String[] linesToWrite = textToWrite.split(NEWLINE);
 		
 		int lastLine = linesToWrite.length - PARAM_LESS_ONE;
+		
+		if (lastLine == PARAM_DOES_NOT_EXIST) {
+			return;
+		}
 		
 		for (int i = PARAM_START_LOOP_ZERO; i < lastLine; i++) {
 			fileWriter.println(linesToWrite[i]);
