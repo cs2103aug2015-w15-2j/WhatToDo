@@ -15,6 +15,10 @@ public class CommandParser {
 	
 	private static final String REGEX_WHITESPACES = "[\\s,]+";
 	private static final String REGEX_POSITIVE_INTEGER = "^\\d+$";
+	private static final String REGEX_12_HOUR_SIMPLE_TIME = "(1[012]|[1-9]|0[1-9])(\\s)?(?i)(am|pm)";
+	private static final String REGEX_12_HOUR_TIME = "(1[012]|[1-9]|0[1-9])(:|.)[0-5][0-9](\\s)?(?i)(am|pm)";
+	private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
+	private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
 	
     private static final String STRING_ONE_SPACE = " ";
     private static final String ESCAPE_CHARACTER = "\\";
@@ -106,12 +110,17 @@ public class CommandParser {
 	private Command initAddCommand(ArrayList<String> arguments) {
 		Command command;
 		int size = arguments.size();
-		if (size > 2 && arguments.contains(KEYWORD_DEADLINE)) {
+		if (size == 0) {
+			String errorMsg = "Please input the task name!";
+			return initInvalidCommand(errorMsg);
+		} else if (arguments.contains(KEYWORD_DEADLINE)) {
 			command = addTask(arguments);
-		} else if (size > 6 && KEYWORD_EVENT_1.equals(arguments.get(size - 2)) && KEYWORD_EVENT_2.equals(arguments.get(size - 4)) && KEYWORD_EVENT_3.equals(arguments.get(size - 6))) {
-			command = addEvent(arguments, 1);
-		} else if (size > 6 && KEYWORD_EVENT_1.equals(arguments.get(size - 3)) && KEYWORD_EVENT_3.equals(arguments.get(size - 6))) {
-			command = addEvent(arguments, 2);
+		} else if (arguments.contains(KEYWORD_EVENT_1) && arguments.contains(KEYWORD_EVENT_2)) {
+			if (arguments.contains(KEYWORD_EVENT_3)) {
+				command = addDayEvent(arguments);
+			} else {
+				command = addEvent(arguments);
+			} 
 		} else {
 			command = addFloatingTask(arguments);
 		}
@@ -126,101 +135,103 @@ public class CommandParser {
 			dateString += arguments.get(index);
 			index++;
 		}
-		Date date = getValidDate(dateString);
-		if (date != null) {
-			Command command = new Command(Command.CommandType.ADD);
-			command.setDataType(Command.DataType.TASK);
-			List<String> nameList = arguments.subList(0, keywordIndex);
-			String name = getName(nameList);
-			command.setName(name);
-			command.setDueDate(date);
-			return command;
-		} else {
+		Date date = getDate(dateString);
+		List<String> nameList = arguments.subList(0, keywordIndex);
+		String name = getName(nameList);
+		if (date == null) {
 			String errorMsg = "Invalid Date";
 			return initInvalidCommand(errorMsg);
 		}
+		if (name == null) {
+			String errorMsg = "Invalid Task Name!";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.ADD);
+		command.setDataType(Command.DataType.TASK);
+		command.setName(name);
+		command.setDueDate(date);
+		return command;
 	}
 	
-	private Command addEvent(ArrayList<String> arguments, int typeNum) {
-		boolean hasEndDate = true;
-		String endTime = arguments.get(arguments.size() - 1);
-		Date endDate = getValidDate(arguments.get(arguments.size() - 2));
-		String startTime;
-		Date startDate;
-		if (endDate != null) {
-			startTime = arguments.get(arguments.size() - 3);
-			startDate = getValidDate(arguments.get(arguments.size() - 4));
-		} else {
-			hasEndDate = false;
-			startTime = arguments.get(arguments.size() - 2);
-			startDate = getValidDate(arguments.get(arguments.size() - 3));
+	private Command addEvent(ArrayList<String> arguments) {
+		
+		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_1);
+		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_2);
+		
+		if (Math.abs(keywordToIndex - keywordFromIndex) != 3 || (arguments.size() - keywordToIndex != 3 && arguments.size() - keywordFromIndex != 3)) {
+			String errorMsg = "Invalid format for adding Event";
+			return initInvalidCommand(errorMsg);
 		}
-		if (isValidTime(endTime) && isValidTime(startTime) && startDate != null) {
-			if (hasEndDate) {
-				if (startDate.compareTo(endDate) == -1) {
-					Command command = new Command(Command.CommandType.ADD);
-					command.setDataType(Command.DataType.EVENT);
-					arguments.remove(0);
-					arguments.remove(arguments.size() - 1);
-					arguments.remove(arguments.size() - 1);
-					arguments.remove(arguments.size() - 1);
-					arguments.remove(arguments.size() - 1);
-					String name = getName(arguments);
-					command.setName(name);
-					command.setEndDate(endDate);
-					command.setEndTime(endTime);
-					command.setStartDate(startDate);
-					command.setStartTime(startTime);
-					return command;
-				} else {
-					return initInvalidCommand();
-				}
-			} else {
-				if (areValidTimes(startTime, endTime)) {
-					Command command = new Command(Command.CommandType.ADD);
-					command.setDataType(Command.DataType.EVENT);
-					arguments.remove(0);
-					arguments.remove(arguments.size() - 1);
-					arguments.remove(arguments.size() - 1);
-					arguments.remove(arguments.size() - 1);
-					String name = getName(arguments);
-					command.setName(name);
-					command.setEndDate(endDate);
-					command.setEndTime(endTime);
-					command.setStartTime(startTime);
-					System.out.println("i got here");
-					return command;
-				} else {
-					return initInvalidCommand();
-				}
-			}
-		} else {
-			return initInvalidCommand();
+		
+		Date startDate = getDate(arguments.get(keywordFromIndex + 1));
+		String startTime = getTime(arguments.get(keywordFromIndex + 2));
+		Date endDate = getDate(arguments.get(keywordToIndex + 1));
+		String endTime = getTime(arguments.get(keywordToIndex + 2));
+		String name = null;
+		
+		if (startDate == null) {
+			String errorMsg = "Invalid Start Date";
+			return initInvalidCommand(errorMsg);
 		}
+		if (startTime == null) {
+			String errorMsg = "Invalid Start Time";
+			return initInvalidCommand(errorMsg);
+		}
+		if (endDate == null) {
+			String errorMsg = "Invalid End Date";
+			return initInvalidCommand(errorMsg);
+		}
+		if (endTime == null) {
+			String errorMsg = "Invalid End Time";
+			return initInvalidCommand(errorMsg);
+		}
+		if (startDate.compareTo(endDate) != -1) {
+			String errorMsg = "Start Date cannot be later than End Date";
+			return initInvalidCommand(errorMsg);
+		}
+		if (keywordToIndex > keywordFromIndex) {
+			List<String> nameList = arguments.subList(0, keywordFromIndex);
+			name = getName(nameList);
+		} else {
+			List<String> nameList = arguments.subList(0, keywordToIndex);
+			name = getName(nameList);
+		}
+		if (name == null) {
+			String errorMsg = "Invalid Event name";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.ADD);
+		command.setDataType(Command.DataType.EVENT);
+		command.setName(name);
+		command.setStartDate(startDate);
+		command.setStartTime(startTime);
+		command.setEndDate(endDate);
+		command.setEndTime(endTime);
+		return command;
+	}
+	
+	private Command addDayEvent(ArrayList<String> arguments) {
+		
+		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_1);
+		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_2);
+		int keywordOnIndex = arguments.indexOf(KEYWORD_EVENT_3);
+		return initInvalidCommand();
 	}
 	
 	private Command addFloatingTask(ArrayList<String> arguments) {
 		Command command = new Command(Command.CommandType.ADD);
 		command.setDataType(Command.DataType.FLOATING_TASK);
-		String name = getName(arguments);
+		List<String> nameList = arguments.subList(0, arguments.size());
+		String name = getName(nameList);
 		command.setName(name);
 		return command;
 	}
 	
-	private String getName(ArrayList<String> arguments) {
-		String name = "";
-		for (int i = 0; i < arguments.size(); i++) {
-			String currArgument = arguments.get(i);
-			if (currArgument.startsWith(ESCAPE_CHARACTER)) {
-				currArgument = currArgument.substring(1);
-			}
-			name += currArgument + STRING_ONE_SPACE;
-		}
-		return name.trim();
-	}
-	
 	private String getName(List<String> arguments) {
 		String name = "";
+		if (arguments.size() == 0) {
+			return null;
+		}
 		for (int i = 0; i < arguments.size(); i++) {
 			String currArgument = arguments.get(i);
 			if (currArgument.startsWith(ESCAPE_CHARACTER)) {
@@ -231,7 +242,7 @@ public class CommandParser {
 		return name.trim();
 	}
 	
-	private Date getValidDate(String date) {
+	private Date getDate(String date) {
 		Date todayDate = Date.todayDate();
 		if (date.equals("today")){
 			return todayDate;
@@ -255,14 +266,14 @@ public class CommandParser {
 			} else {
 				return todayDate.plusDay(difference + 14);
 			}
-		} else if (String.valueOf(date).length() == 4 && date.matches(REGEX_POSITIVE_INTEGER)) {
+		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == 4) {
 			String year = todayDate.getFullDate().substring(4);
 			date = date + year;
 			Date currDate = new Date(date);
 			if (isValidDate(date) && todayDate.compareTo(currDate) <= 0) {
 				return currDate;
 			}
-		} else if (String.valueOf(date).length() == 6 && isValidDate(date) && date.matches(REGEX_POSITIVE_INTEGER)) {
+		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == 6 && isValidDate(date)) {
 			Date currDate = new Date(date);
 			if (todayDate.compareTo(currDate) <= 0) {
 				return currDate;
@@ -275,9 +286,15 @@ public class CommandParser {
 		int[] daysInEachMonth = {0,31,28,31,30,31,30,31,31,30,31,30,31};
 		int day = Integer.parseInt(date.substring(0,2));
 		int month = Integer.parseInt(date.substring(2,4));
-		int year = Integer.parseInt(date.substring(4));
+		int year = 2000 + Integer.parseInt(date.substring(4));
 		if (year % 4 == 0) {
-			daysInEachMonth[2] = 29;
+			if (year % 100 != 0) {
+				daysInEachMonth[2] = 29;
+			} else {
+				if (year % 400 == 0) {
+					daysInEachMonth[2] = 29;
+				}
+			}
 		}
 		if (month < 13 && day <= daysInEachMonth[month]) {
 			return true;
@@ -313,14 +330,56 @@ public class CommandParser {
 		fullNameOfDays.add("sunday");
 	}
 	
-	private boolean isValidTime(String time) {
-		if (String.valueOf(time).length() == 4) {
-			int intTime = Integer.parseInt(time);
-			if (intTime >= 0 && intTime < 2400) {
-				return true;
+	private String getTime(String time) {
+		if (time.matches(REGEX_12_HOUR_SIMPLE_TIME)) {
+			String period = time.substring(time.length() - 2).toLowerCase();
+			String hourString = time.substring(0, time.length() - 2).trim();
+			int hourInt = Integer.parseInt(hourString);
+			if (period.equals("pm") && hourInt != 12) {
+				hourInt += 12;
 			}
+			hourString = Integer.toString(hourInt);
+			if (hourString.length() == 1) {
+				hourString = "0" + hourString + "00";
+			} else {
+				hourString += "00";
+			}
+			return hourString;
+		} else if (time.matches(REGEX_12_HOUR_TIME)) {
+			String period = time.substring(time.length() - 2).toLowerCase();
+			String timeString = time.substring(0, time.length() - 2).trim();
+			timeString = timeString.replace(".","");
+			timeString = timeString.replace(":","");
+			String minuteString = timeString.substring(timeString.length() - 2);
+			String hourString = timeString.substring(0, timeString.length() - 2);
+			int hourInt = Integer.parseInt(hourString);
+			if (period.equals("pm") && hourInt != 12) {
+				hourInt += 12;
+			}
+			hourString = Integer.toString(hourInt);
+			if (hourString.length() == 1) {
+				timeString = "0" + hourString + minuteString;
+			} else {
+				timeString = hourString + minuteString;
+			}
+			return timeString;
+		} else if (time.matches(REGEX_24_HOUR_SIMPLE_TIME)){
+			if (time.length() == 1) {
+				time = "0" + time + "00";
+			} else if (time.length() == 2) {
+				time = time + "00";
+			}
+			return time;
+		} else if (time.matches(REGEX_24_HOUR_TIME)) {
+			time = time.replace(".","");
+			time = time.replace(":","");
+			if (time.length() == 3) {
+				time = "0" + time;
+			}
+			return time;
+		} else {
+			return null;
 		}
-		return false;
 	}
 	
 	private boolean areValidTimes(String startTime, String endTime) {
