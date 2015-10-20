@@ -93,12 +93,8 @@ public class LogicController {
 		return new TextInputHandler();
 	}
 	
-	public UpKeyHandler getUpKeyHandler() {
-		return new UpKeyHandler();
-	}
-	
-	public DownKeyHandler getDownKeyHandler() {
-		return new DownKeyHandler();
+	public KeyPressHandler getKeyPressHandler() {
+		return new KeyPressHandler();
 	}
 	
 	public ButtonHoverHandler getButtonHoverHandler(String buttonType) {
@@ -298,22 +294,16 @@ public class LogicController {
         }
     }
 	
-	private static class UpKeyHandler implements EventHandler<KeyEvent> {
-
+	private static class KeyPressHandler implements EventHandler<KeyEvent> {
         @Override
         public void handle(KeyEvent event) {
+        	// If up key pressed
             if (event.getCode() == KeyCode.UP) {
-                InterfaceController.getTextField().setText(commandHistory.getPrevious());
+            	InterfaceController.getTextField().setText(commandHistory.getPrevious());
             }
-        }
-    }
-
-    private static class DownKeyHandler implements EventHandler<KeyEvent> {
-
-        @Override
-        public void handle(KeyEvent event) {
+            // If down key pressed
             if (event.getCode() == KeyCode.DOWN) {
-                InterfaceController.getTextField().setText(commandHistory.getNext());
+            	InterfaceController.getTextField().setText(commandHistory.getNext());
             }
         }
     }
