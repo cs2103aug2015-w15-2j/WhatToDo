@@ -64,7 +64,13 @@ public class HistoryViewController {
         HBox initialBox = initDisplayElement(MESSAGE_EMPTY_HIST);
         VBox.setMargin(initialBox, new Insets(
         		0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+        
         histContentBox = new VBox(initialBox);
+        
+        // Set the scroll pane to automatically scroll to the end
+        histContentBox.heightProperty().addListener(
+        		InterfaceController.logicControl.
+        		getScrollListener(InterfaceController.VIEW_HIST));
         
         histScroll = new ScrollPane(histContentBox);
         histScroll.setFitToWidth(true);
@@ -124,5 +130,14 @@ public class HistoryViewController {
         }
         
         histContentBox.getChildren().add(tempBox);
+    }
+    
+    /* ================================================================================
+     * Getters for LogicController to access required JavaFX components
+     * ================================================================================
+     */
+    
+    public static ScrollPane getHistScroll() {
+    	return histScroll;
     }
 }

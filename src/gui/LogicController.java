@@ -101,6 +101,10 @@ public class LogicController {
 		return new ButtonHoverHandler(buttonType);
 	}
 	
+	public ScrollListener getScrollListener(String scrollpane) {
+		return new ScrollListener(scrollpane);
+	}
+	
 	public HeightListener getHeightListener() {
 		return new HeightListener();
 	}
@@ -403,6 +407,34 @@ public class LogicController {
     			default:
     				break;
     			}
+    		}
+    	}
+    }
+    
+    private static class ScrollListener implements ChangeListener<Number> {
+    	
+    	String scrollpane;
+    	
+    	ScrollListener(String scrollpane) {
+    		this.scrollpane = scrollpane;
+    	}
+    	
+    	@Override
+    	public void changed(ObservableValue<? extends Number> observable, 
+    			Number oldValue, Number newValue) {
+    		
+    		// Set the v-value of the scroll pane to the height of the content box
+    		switch (scrollpane) {
+    		case InterfaceController.VIEW_HIST:
+    			HistoryViewController.getHistScroll().setVvalue((Double)newValue);
+    			break;
+    		case InterfaceController.VIEW_DONE:
+    			// TODO
+    			//DoneViewController.getDoneScroll().setVvalue((Double)newValue);
+    			break;
+    		default:
+    			// Ignore, should not enter
+    			break;
     		}
     	}
     }
