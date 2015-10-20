@@ -20,9 +20,9 @@ public class Logic {
 	private static final int INDEX_ENDDATE = 5; 
 	private static final int INDEX_ENDTIME = 6; 
 
-	private static final String MESSAGE_ADD_TASK = "Added \"%s\" to list. Due on %s, %s.";
-	private static final String MESSAGE_ADD_FLOAT_TASK = "Added \"%s\" to list.";
-	private static final String MESSAGE_ADD_EVENT = "Added \"%s\" to list. Event Start: %s, %s, %s Event End: %s, %s, %s.";
+	private static final String MESSAGE_ADD_TASK = "Added task \"%s\" to list. Due on %s.";
+	private static final String MESSAGE_ADD_FLOAT_TASK = "Added float \"%s\" to list.";
+	private static final String MESSAGE_ADD_EVENT = "Added event \"%s\" to list. Start: %s at %s End: %s at %s.";
 	private static final String MESSAGE_DELETE_LINE = "Deleted %s from list.";
 	private static final String MESSAGE_MARK_DONE = "Done %s";
 	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
@@ -41,8 +41,9 @@ public class Logic {
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s]\t%s\n"; 
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
-    private static final String DISPLAY_LAYOUT_TASK = "FLOAT\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
-    private static final String DISPLAY_LAYOUT_EVENT = "ONGOING\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "FLOAT\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_ALL_TASK = "FLOAT\n%s\n\n%s";
     private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "SEARCH\nFLOAT\n\n TASK\n\n EVENT %s"; 
     
     private static final String TYPE_FLOAT = "float";
@@ -108,19 +109,19 @@ public class Logic {
     public String taskDefaultView(){
     	try{
     		String[] linesInFile = getLinesInFile();
-        	String floatContent = getFloatContent(linesInFile); 
+        	String floatContent = getAllUncompletedFloat(linesInFile); 
             String todayContent = getTaskContent(linesInFile, Date.todayDateShort()); 
             String tomorrowContent = getTaskContent(linesInFile, Date.tomorrowDateShort()); 
            
-            return String.format(DISPLAY_LAYOUT_TASK, floatContent, Date.todayDateLong(), todayContent, 
+            return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, floatContent, Date.todayDateLong(), todayContent, 
             		Date.tomorrowDateLong(), tomorrowContent).trim();
     	}
     	catch(FileSystemException e){
-    		return String.format(DISPLAY_LAYOUT_TASK, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
+    		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
             		Date.tomorrowDateLong(), e.getMessage()).trim();
     	}
     	catch(Exception e){
-    		return String.format(DISPLAY_LAYOUT_TASK, MESSAGE_ERROR_UNKNOWN, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
+    		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, MESSAGE_ERROR_UNKNOWN, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
             		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
     	}
     }
@@ -132,15 +133,15 @@ public class Logic {
             String todayContent = getEventContent(linesInFile, Date.todayDateShort()); 
             String tomorrowContent = getEventContent(linesInFile, Date.tomorrowDateShort()); 
             	
-            return String.format(DISPLAY_LAYOUT_EVENT, onGoingContent, Date.todayDateLong(), todayContent, 
+            return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, onGoingContent, Date.todayDateLong(), todayContent, 
             		Date.tomorrowDateLong(), tomorrowContent).trim();
     	}
     	catch(FileSystemException e){
-    		return String.format(DISPLAY_LAYOUT_EVENT, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
+    		return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
             		Date.tomorrowDateLong(), e.getMessage()).trim();
     	}
     	catch (Exception e) {
-    		return String.format(DISPLAY_LAYOUT_EVENT, MESSAGE_ERROR_UNKNOWN, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
+    		return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, MESSAGE_ERROR_UNKNOWN, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
             		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
 		}
     }
@@ -149,8 +150,11 @@ public class Logic {
     public String taskAllView(){ 
     	try{ 
     		String[] linesInFile = getLinesInFile();
-        	//String floatContent = getFloatContent(linesInFile); 
-        	return "boo"; 
+        	String floatContent = getAllUncompletedFloat(linesInFile); 
+        	//TODO get uncompleted tasks and format it with date headers 
+        	String taskContent = getAllUncompletedTask(linesInFile); 
+        	
+        	return String.format(DISPLAY_LAYOUT_ALL_TASK, floatContent, taskContent); 
     	}
     	catch(FileSystemException e){
     		return "sth"; 
@@ -158,6 +162,22 @@ public class Logic {
     	catch (Exception e) {
     		return "sth"; 
     	}
+    }
+    
+    private String getAllUncompletedTask(String[] linesInFile){
+    	StringBuffer uncompletedTaskBuffer = new StringBuffer(); 
+    	
+    	for(int index = 0; index < linesInFile.length; index++){
+    		String line = linesInFile[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		
+    		if(isUncompleted(TYPE_TASK, lineComponents)){
+    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
+    			//TODO incomplete 
+    		}
+    	}
+    	
+    	return uncompletedTaskBuffer.toString().trim();
     }
     
     //TODO display all uncompleted events
@@ -221,7 +241,7 @@ public class Logic {
         Task task = new Task(taskName, false, taskDeadline);
         storage.addTask(task);
         String addFeedback = String.format(MESSAGE_ADD_TASK, taskName, 
-        		taskDeadline.getDayString(),taskDeadline.getFullDate()); 
+        		taskDeadline.formatDateLong()); 
 
         boolean isSaved = saveState(stateBeforeExecutingCommand);
         clearRedo(command);
@@ -239,8 +259,8 @@ public class Logic {
         Event event = new Event(eventName, false, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
         storage.addEvent(event); 
         String addFeedback = String.format(MESSAGE_ADD_EVENT, eventName, 
-        		eventStartDate.getDayString(), eventStartDate.getFullDate(), eventStartTime, 
-        		eventEndDate.getDayString(), eventEndDate.getFullDate(), eventEndTime);
+        		eventStartDate.formatDateLong(), eventStartTime, 
+        		eventEndDate.formatDateLong(), eventEndTime);
         
         boolean isSaved = saveState(stateBeforeExecutingCommand);
         clearRedo(command);
@@ -434,7 +454,7 @@ public class Logic {
     	}
     }
     
-    private String getFloatContent(String[] linesInFile){ 
+    private String getAllUncompletedFloat(String[] linesInFile){ 
     	StringBuffer floatContentBuffer = new StringBuffer();
     	
     	for(int index = 0; index < linesInFile.length; index++){

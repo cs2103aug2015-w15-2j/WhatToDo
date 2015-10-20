@@ -9,13 +9,11 @@ package struct;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 public class Date implements Comparable<Date>{
 	
     // fullDate is in the format ddMMyy
     private String fullDate;
-    public int day, month, year;
+    private int day, month, year;
     
 	//============================================
 	// Constructors
@@ -155,9 +153,17 @@ public class Date implements Comparable<Date>{
         return fullDate;
     }
 
+    //TODO to be removed
     // For display purposes
     public String getFormatDate() {
         return "" + day + "/" + month + "/" + year;
+    }
+    
+    public String formatDateLong(){ 
+    	Calendar cal = Calendar.getInstance(); 
+    	cal.set(this.year, this.month-1, this.day);
+    	SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd MMM yyyy"); 
+    	return sdf.format(cal.getTime());
     }
 
     
