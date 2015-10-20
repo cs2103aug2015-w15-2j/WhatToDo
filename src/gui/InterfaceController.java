@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 
@@ -79,16 +80,21 @@ public class InterfaceController {
     protected static final String VIEW_SEARCH = "search";
     
     // Values for button images
-    private static final String PATH_HOME = "gui/resources/home.png";
-    private static final String PATH_HOME_SELECTED = "gui/resources/home_selected.png";
-    private static final String PATH_ALL = "gui/resources/all.png";
-    private static final String PATH_ALL_SELECTED = "gui/resources/all_selected.png";
-    private static final String PATH_HIST = "gui/resources/history.png";
-    private static final String PATH_HIST_SELECTED = "gui/resources/history_selected.png";
-    private static final String PATH_DONE = "gui/resources/done.png";
-    private static final String PATH_DONE_SELECTED = "gui/resources/done_selected.png";
-    private static final String PATH_SEARCH = "gui/resources/search.png";
-    private static final String PATH_SEARCH_SELECTED = "gui/resources/search_selected.png";
+    protected static final String PATH_HOME = "gui/resources/home.png";
+    protected static final String PATH_HOME_SELECTED = "gui/resources/home_selected.png";
+    protected static final String PATH_HOME_HOVER = "gui/resources/home_hover.png";
+    protected static final String PATH_ALL = "gui/resources/all.png";
+    protected static final String PATH_ALL_SELECTED = "gui/resources/all_selected.png";
+    protected static final String PATH_ALL_HOVER = "gui/resources/all_hover.png";
+    protected static final String PATH_HIST = "gui/resources/history.png";
+    protected static final String PATH_HIST_SELECTED = "gui/resources/history_selected.png";
+    protected static final String PATH_HIST_HOVER = "gui/resources/history_hover.png";
+    protected static final String PATH_DONE = "gui/resources/done.png";
+    protected static final String PATH_DONE_SELECTED = "gui/resources/done_selected.png";
+    protected static final String PATH_DONE_HOVER = "gui/resources/done_hover.png";
+    protected static final String PATH_SEARCH = "gui/resources/search.png";
+    protected static final String PATH_SEARCH_SELECTED = "gui/resources/search_selected.png";
+    protected static final String PATH_SEARCH_HOVER = "gui/resources/search_hover.png";
     
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
@@ -153,6 +159,14 @@ public class InterfaceController {
 
         sbHomeBox.setMaxHeight(WIDTH_SIDEBAR);
         sbHomeBox.setMinHeight(WIDTH_SIDEBAR);
+        
+        // Set listener for mouse interactions
+        sbHomeBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(VIEW_DEFAULT));
+        sbHomeBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(VIEW_DEFAULT));
     }
     
     private static void initSideBarAllButton() {
@@ -166,6 +180,14 @@ public class InterfaceController {
 
     	sbAllBox.setMaxHeight(WIDTH_SIDEBAR);
     	sbAllBox.setMinHeight(WIDTH_SIDEBAR);
+    	
+        // Set listener for mouse interactions
+        sbAllBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(VIEW_ALL));
+        sbAllBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(VIEW_ALL));
     }
 
     private static void initSideBarHistoryButton() {
@@ -179,6 +201,14 @@ public class InterfaceController {
 
     	sbHistBox.setMaxHeight(WIDTH_SIDEBAR);
     	sbHistBox.setMinHeight(WIDTH_SIDEBAR);
+    	
+        // Set listener for mouse interactions
+    	sbHistBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(VIEW_HIST));
+    	sbHistBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(VIEW_HIST));
     }
     
     private static void initSideBarDoneButton() {
@@ -192,6 +222,14 @@ public class InterfaceController {
 
     	sbDoneBox.setMaxHeight(WIDTH_SIDEBAR);
     	sbDoneBox.setMinHeight(WIDTH_SIDEBAR);
+    	
+        // Set listener for mouse interactions
+    	sbDoneBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(VIEW_DONE));
+    	sbDoneBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(VIEW_DONE));
     }
     
     private static void initSideBarSearchButton() {
@@ -205,6 +243,14 @@ public class InterfaceController {
 
     	sbSearchBox.setMaxHeight(WIDTH_SIDEBAR);
     	sbSearchBox.setMinHeight(WIDTH_SIDEBAR);
+    	
+        // Set listener for mouse interactions
+    	sbSearchBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(VIEW_SEARCH));
+    	sbSearchBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(VIEW_SEARCH));
     }
     
     private static void changeButtonToSelected(String view) {
@@ -539,5 +585,26 @@ public class InterfaceController {
     
     public static Line getFilepathLine() {
     	return filepathLine;
+    }
+    
+    // Return buttons for mouse event handlers
+    public static VBox getHomeButton() {
+    	return sbHomeBox;
+    }
+    
+    public static VBox getAllButton() {
+    	return sbAllBox;
+    }
+    
+    public static VBox getHistButton() {
+    	return sbHistBox;
+    }
+    
+    public static VBox getDoneButton() {
+    	return sbDoneBox;
+    }
+    
+    public static VBox getSearchButton() {
+    	return sbSearchBox;
     }
 }

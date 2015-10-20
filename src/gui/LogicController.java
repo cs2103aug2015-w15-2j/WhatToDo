@@ -9,8 +9,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 public class LogicController {
 
@@ -97,6 +99,10 @@ public class LogicController {
 	
 	public DownKeyHandler getDownKeyHandler() {
 		return new DownKeyHandler();
+	}
+	
+	public ButtonHoverHandler getButtonHoverHandler(String buttonType) {
+		return new ButtonHoverHandler(buttonType);
 	}
 	
 	public HeightListener getHeightListener() {
@@ -310,6 +316,85 @@ public class LogicController {
                 InterfaceController.getTextField().setText(commandHistory.getNext());
             }
         }
+    }
+    
+    private class ButtonHoverHandler implements EventHandler<MouseEvent> {
+    	
+    	private String buttonType;
+    	
+    	ButtonHoverHandler(String buttonType) {
+    		this.buttonType = buttonType;
+    	}
+    	
+    	@Override
+    	public void handle(MouseEvent event) {
+    		// For handling mouse hovers
+    		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
+    			ImageView hover;
+    			switch(buttonType) {
+    			case InterfaceController.VIEW_DEFAULT:
+    				hover = new ImageView(InterfaceController.PATH_HOME_HOVER);
+    				InterfaceController.getHomeButton().getChildren().clear();
+    				InterfaceController.getHomeButton().getChildren().add(hover);
+    				break;
+    			case InterfaceController.VIEW_ALL:
+    				hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
+    				InterfaceController.getAllButton().getChildren().clear();
+    				InterfaceController.getAllButton().getChildren().add(hover);
+    				break;
+    			case InterfaceController.VIEW_HIST:
+    				hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
+    				InterfaceController.getHistButton().getChildren().clear();
+    				InterfaceController.getHistButton().getChildren().add(hover);
+    				break;
+    			case InterfaceController.VIEW_DONE:
+    				hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
+    				InterfaceController.getDoneButton().getChildren().clear();
+    				InterfaceController.getDoneButton().getChildren().add(hover);
+    				break;
+    			case InterfaceController.VIEW_SEARCH:
+    				hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
+    				InterfaceController.getSearchButton().getChildren().clear();
+    				InterfaceController.getSearchButton().getChildren().add(hover);
+    				break;
+    			default:
+    				break;
+    			}
+    		}
+    		// For handling mouse not hovering
+    		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
+    			ImageView hover;
+    			switch(buttonType) {
+    			case InterfaceController.VIEW_DEFAULT:
+    				hover = new ImageView(InterfaceController.PATH_HOME);
+    				InterfaceController.getHomeButton().getChildren().clear();
+    				InterfaceController.getHomeButton().getChildren().add(hover);
+    				break;
+    			case InterfaceController.VIEW_ALL:
+    				hover = new ImageView(InterfaceController.PATH_ALL);
+    				InterfaceController.getAllButton().getChildren().clear();
+    				InterfaceController.getAllButton().getChildren().add(hover);
+    				break;
+    			case InterfaceController.VIEW_HIST:
+    				hover = new ImageView(InterfaceController.PATH_HIST);
+    				InterfaceController.getHistButton().getChildren().clear();
+    				InterfaceController.getHistButton().getChildren().add(hover);
+    				break;
+    			case InterfaceController.VIEW_DONE:
+    				hover = new ImageView(InterfaceController.PATH_DONE);
+    				InterfaceController.getDoneButton().getChildren().clear();
+    				InterfaceController.getDoneButton().getChildren().add(hover);
+    				break;
+    			case InterfaceController.VIEW_SEARCH:
+    				hover = new ImageView(InterfaceController.PATH_SEARCH);
+    				InterfaceController.getSearchButton().getChildren().clear();
+    				InterfaceController.getSearchButton().getChildren().add(hover);
+    				break;
+    			default:
+    				break;
+    			}
+    		}
+    	}
     }
     
     private static class HeightListener implements ChangeListener<Number> {
