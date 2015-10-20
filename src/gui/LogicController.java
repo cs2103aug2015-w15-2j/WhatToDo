@@ -84,6 +84,176 @@ public class LogicController {
 		return temp;
 	}
 	
+	private static void changeToView(String view, boolean runOperation) {
+		
+		switch(InterfaceController.currentView) {
+        /* ================================================================================
+         * Default view
+         * ================================================================================
+         */
+        case InterfaceController.VIEW_DEFAULT:
+        	switch (view) {
+        	case "all":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+        		break;
+        	case "hist":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+        		break;
+        	case "done":
+        		// TODO
+        		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		break;
+        	case "search":
+        		// TODO
+        		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+        		break;
+        	default:
+        		// Run the operation only if method is not called from button click
+        		if (runOperation) {
+        			String returnMessage = logic.executeCommand(view);
+        			// Add the returnMessage to the feedback bar and history view
+        			InterfaceController.getFeedbackLabel().setText(returnMessage);
+        			HistoryViewController.updateHistView(returnMessage);
+
+        			// Update the Tasks and Events
+        			DefaultViewController.updateDefView();
+        		}
+            	break;
+        	}
+        	break;
+        /* ================================================================================
+         * All view
+         * ================================================================================
+         */
+        case InterfaceController.VIEW_ALL:
+        	switch (view) {
+        	case "def":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+        		break;
+        	case "hist":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+        		break;
+        	case "done":
+        		// TODO
+        		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		break;
+        	case "search":
+        		// TODO
+        		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+        		break;
+        	default:
+        		// Run the operation only if method is not called from button click
+        		if (runOperation) {
+        			String returnMessage = logic.executeCommand(view);
+        			// Add the returnMessage to the feedback bar and history view
+        			InterfaceController.getFeedbackLabel().setText(returnMessage);
+        			HistoryViewController.updateHistView(returnMessage);
+
+        			// Update the Tasks and Events
+        			AllViewController.updateAllView();
+        			break;
+        		}
+        	}
+        	break;
+        /* ================================================================================
+         * History view
+         * ================================================================================
+         */
+        case InterfaceController.VIEW_HIST:
+        	switch (view) {
+        	case "def":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+        		break;
+        	case "all":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+        		break;
+        	case "done":
+        		// TODO
+        		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		break;
+        	case "search":
+        		// TODO
+        		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+        		break;
+        	default:
+        		// Run the operation only if method is not called from button click
+        		if (runOperation) {
+        			String returnMessage = logic.executeCommand(view);
+        			// Add the returnMessage to the feedback bar and history view
+        			InterfaceController.getFeedbackLabel().setText(returnMessage);
+        			HistoryViewController.updateHistView(returnMessage);
+        			break;
+        		}
+        	}
+        	break;
+        /* ================================================================================
+         * Done view
+         * ================================================================================
+         */
+        case InterfaceController.VIEW_DONE:
+        	switch (view) {
+        	case "def":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+        		break;
+        	case "all":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+        		break;
+        	case "hist":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+        		break;
+        	case "search":
+        		// TODO
+        		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+        		break;
+        	default:
+        		// Run the operation only if method is not called from button click
+        		if (runOperation) {
+        			String returnMessage = logic.executeCommand(view);
+        			// Add the returnMessage to the feedback bar and history view
+        			InterfaceController.getFeedbackLabel().setText(returnMessage);
+        			HistoryViewController.updateHistView(returnMessage);
+
+        			// TODO: Update the completed tasks view
+        			//DoneViewController.updateDoneView();
+        		}
+        		break;
+        	}
+        	break;
+        	/* ================================================================================
+        	 * Search view
+        	 * ================================================================================
+        	 */
+        case InterfaceController.VIEW_SEARCH:
+        	switch (view) {
+        	case "def":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+        	case "all":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+        		break;
+        	case "hist":
+        		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+        		break;
+        	case "done":
+        		// TODO
+        		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		break;
+        	default:
+        		// Run the operation only if method is not called from button click
+        		if (runOperation) {
+        			String returnMessage = logic.executeCommand(view);
+        			// Add the returnMessage to the feedback bar and history view
+        			InterfaceController.getFeedbackLabel().setText(returnMessage);
+        			HistoryViewController.updateHistView(returnMessage);
+        			break;
+        		}
+        	}
+        	break;
+        	
+        default: // do nothing, should not enter
+        	break;
+        }
+	}
+	
 	/* ================================================================================
      * Getters to allow InterfaceController to access the private handling classes
      * ================================================================================
@@ -99,6 +269,10 @@ public class LogicController {
 	
 	public ButtonHoverHandler getButtonHoverHandler(String buttonType) {
 		return new ButtonHoverHandler(buttonType);
+	}
+	
+	public ButtonClickHandler getButtonClickHandler(String buttonType) {
+		return new ButtonClickHandler(buttonType);
 	}
 	
 	public ScrollListener getScrollListener(String scrollpane) {
@@ -134,167 +308,8 @@ public class LogicController {
             // Clear the textField
             textField.setText("");
 
-            /*
-             * Perform different operations depending on the currentView and the command
-             * ================================================================================
-             */
-            
-            switch(InterfaceController.currentView) {
-            /* ================================================================================
-             * Default view
-             * ================================================================================
-             */
-            case InterfaceController.VIEW_DEFAULT:
-            	switch (textFieldInput) {
-            	case "all":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
-            		break;
-            	case "hist":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
-            		break;
-            	case "done":
-            		// TODO
-            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
-            		break;
-            	case "search":
-            		// TODO
-            		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
-            		break;
-            	default:
-            		// Run the operation
-                	String returnMessage = logic.executeCommand(textFieldInput);
-                	// Add the returnMessage to the feedback bar and history view
-                	InterfaceController.getFeedbackLabel().setText(returnMessage);
-                	HistoryViewController.updateHistView(returnMessage);
-
-                	// Update the Tasks and Events
-                	DefaultViewController.updateDefView();
-                	break;
-            	}
-            	break;
-            /* ================================================================================
-             * All view
-             * ================================================================================
-             */
-            case InterfaceController.VIEW_ALL:
-            	switch (textFieldInput) {
-            	case "def":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
-            		break;
-            	case "hist":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
-            		break;
-            	case "done":
-            		// TODO
-            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
-            		break;
-            	case "search":
-            		// TODO
-            		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
-            		break;
-            	default:
-            		// Run the operation
-                	String returnMessage = logic.executeCommand(textFieldInput);
-                	// Add the returnMessage to the feedback bar and history view
-                	InterfaceController.getFeedbackLabel().setText(returnMessage);
-                	HistoryViewController.updateHistView(returnMessage);
-
-                	// Update the Tasks and Events
-                	AllViewController.updateAllView();
-                	break;
-            	}
-            	break;
-            /* ================================================================================
-             * History view
-             * ================================================================================
-             */
-            case InterfaceController.VIEW_HIST:
-            	switch (textFieldInput) {
-            	case "def":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
-            		break;
-            	case "all":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
-            		break;
-            	case "done":
-            		// TODO
-            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
-            		break;
-            	case "search":
-            		// TODO
-            		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
-            		break;
-            	default:
-            		// Run the operation
-                	String returnMessage = logic.executeCommand(textFieldInput);
-                	// Add the returnMessage to the feedback bar and history view
-                	InterfaceController.getFeedbackLabel().setText(returnMessage);
-                	HistoryViewController.updateHistView(returnMessage);
-                	break;
-            	}
-            	break;
-            /* ================================================================================
-             * Done view
-             * ================================================================================
-             */
-            case InterfaceController.VIEW_DONE:
-            	switch (textFieldInput) {
-            	case "def":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
-            		break;
-            	case "all":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
-            		break;
-            	case "hist":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
-            		break;
-            	case "search":
-            		// TODO
-            		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
-            		break;
-            	default:
-            		// Run the operation
-                	String returnMessage = logic.executeCommand(textFieldInput);
-                	// Add the returnMessage to the feedback bar and history view
-                	InterfaceController.getFeedbackLabel().setText(returnMessage);
-                	HistoryViewController.updateHistView(returnMessage);
-
-                	// TODO: Update the completed tasks view
-                	//DoneViewController.updateDoneView();
-                	break;
-            	}
-            	break;
-            /* ================================================================================
-             * Search view
-             * ================================================================================
-             */
-            case InterfaceController.VIEW_SEARCH:
-            	switch (textFieldInput) {
-            	case "def":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
-            	case "all":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
-            		break;
-            	case "hist":
-            		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
-            		break;
-            	case "done":
-            		// TODO
-            		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
-            		break;
-            	default:
-            		// Run the operation
-            		String returnMessage = logic.executeCommand(textFieldInput);
-            		// Add the returnMessage to the feedback bar and history view
-            		InterfaceController.getFeedbackLabel().setText(returnMessage);
-            		HistoryViewController.updateHistView(returnMessage);
-            		break;
-            	}
-            	break;
-            	
-            default: // do nothing, should not enter
-            	break;
-            }
+            // Perform different operations depending on the currentView and the command
+            changeToView(textFieldInput, true);
         }
     }
 	
@@ -408,6 +423,20 @@ public class LogicController {
     				break;
     			}
     		}
+    	}
+    }
+    
+    private static class ButtonClickHandler implements EventHandler<MouseEvent> {
+    	
+    	String buttonType;
+    	
+    	ButtonClickHandler(String buttonType) {
+    		this.buttonType = buttonType;
+    	}
+    	
+    	@Override
+    	public void handle(MouseEvent event) {
+    		changeToView(buttonType, false);
     	}
     }
     

@@ -168,6 +168,9 @@ public class InterfaceController {
         sbDefBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
         		logicControl.getButtonHoverHandler(VIEW_DEFAULT));
+        sbDefBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(VIEW_DEFAULT));
     }
     
     private static void initSideBarAllButton() {
@@ -189,6 +192,9 @@ public class InterfaceController {
         sbAllBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
         		logicControl.getButtonHoverHandler(VIEW_ALL));
+        sbAllBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(VIEW_ALL));
     }
 
     private static void initSideBarHistoryButton() {
@@ -210,6 +216,9 @@ public class InterfaceController {
     	sbHistBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
         		logicControl.getButtonHoverHandler(VIEW_HIST));
+    	sbHistBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(VIEW_HIST));
     }
     
     private static void initSideBarDoneButton() {
@@ -231,6 +240,9 @@ public class InterfaceController {
     	sbDoneBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
         		logicControl.getButtonHoverHandler(VIEW_DONE));
+    	sbDoneBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(VIEW_DONE));
     }
     
     private static void initSideBarSearchButton() {
@@ -252,6 +264,9 @@ public class InterfaceController {
     	sbSearchBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
         		logicControl.getButtonHoverHandler(VIEW_SEARCH));
+    	sbSearchBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(VIEW_SEARCH));
     }
     
     private static void changeButtonToSelected(String view) {
