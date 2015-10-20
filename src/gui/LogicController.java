@@ -4,6 +4,7 @@ import java.nio.file.FileSystemException;
 import java.util.ArrayList;
 
 import backend.Logic;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -318,11 +319,27 @@ public class LogicController {
         public void handle(KeyEvent event) {
         	// If up key pressed
             if (event.getCode() == KeyCode.UP) {
-            	InterfaceController.getTextField().setText(commandHistory.getPrevious());
+            	String prevCommand = commandHistory.getPrevious();
+            	InterfaceController.getTextField().setText(prevCommand);
+            	// Required for positionCaret to work correctly
+            	Platform.runLater(new Runnable() {
+            		@Override
+            		public void run() {
+            			InterfaceController.getTextField().positionCaret(prevCommand.length());
+            		}
+            	});
             }
             // If down key pressed
             if (event.getCode() == KeyCode.DOWN) {
-            	InterfaceController.getTextField().setText(commandHistory.getNext());
+            	String nextCommand = commandHistory.getNext();
+            	InterfaceController.getTextField().setText(nextCommand);
+            	// Required for positionCaret to work correctly
+            	Platform.runLater(new Runnable() {
+            		@Override
+            		public void run() {
+            			InterfaceController.getTextField().positionCaret(nextCommand.length());
+            		}
+            	});
             }
         }
     }
