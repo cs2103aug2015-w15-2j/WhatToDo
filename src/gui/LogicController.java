@@ -14,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import struct.View;
 
 public class LogicController {
 
@@ -85,40 +86,31 @@ public class LogicController {
 		return temp;
 	}
 	
-	private static void changeToView(String view, boolean runOperation) {
+	private static void changeToView(View view) {
 		
-		switch(InterfaceController.currentView) {
+		switch(InterfaceController.getCurrentView()) {
         /* ================================================================================
          * Default view
          * ================================================================================
          */
-        case InterfaceController.VIEW_DEFAULT:
+        case DEFAULT:
         	switch (view) {
-        	case "all":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
         		break;
-        	case "hist":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
-        	case "done":
+        	case UNRESOLVED:
         		// TODO
-        		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		//InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
-        	case "search":
+        	case SEARCH:
         		// TODO
-        		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+        		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	default:
-        		// Run the operation only if method is not called from button click
-        		if (runOperation) {
-        			String returnMessage = logic.executeCommand(view);
-        			// Add the returnMessage to the feedback bar and history view
-        			InterfaceController.getFeedbackLabel().setText(returnMessage);
-        			HistoryViewController.updateHistView(returnMessage);
-
-        			// Update the Tasks and Events
-        			DefaultViewController.updateDefView();
-        		}
+        		// Do nothing if already in this view
             	break;
         	}
         	break;
@@ -126,97 +118,73 @@ public class LogicController {
          * All view
          * ================================================================================
          */
-        case InterfaceController.VIEW_ALL:
+        case ALL:
         	switch (view) {
-        	case "def":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
         		break;
-        	case "hist":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
-        	case "done":
+        	case UNRESOLVED:
         		// TODO
-        		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		//InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
-        	case "search":
+        	case SEARCH:
         		// TODO
-        		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+        		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	default:
-        		// Run the operation only if method is not called from button click
-        		if (runOperation) {
-        			String returnMessage = logic.executeCommand(view);
-        			// Add the returnMessage to the feedback bar and history view
-        			InterfaceController.getFeedbackLabel().setText(returnMessage);
-        			HistoryViewController.updateHistView(returnMessage);
-
-        			// Update the Tasks and Events
-        			AllViewController.updateAllView();
-        			break;
-        		}
+        		// Do nothing if already in this view
+        		break;
         	}
         	break;
         /* ================================================================================
          * History view
          * ================================================================================
          */
-        case InterfaceController.VIEW_HIST:
+        case HISTORY:
         	switch (view) {
-        	case "def":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
         		break;
-        	case "all":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
         		break;
-        	case "done":
+        	case UNRESOLVED:
         		// TODO
-        		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		//InterfaceController.updateMainInterface(View.HISTORY);
         		break;
-        	case "search":
+        	case SEARCH:
         		// TODO
-        		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+        		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	default:
-        		// Run the operation only if method is not called from button click
-        		if (runOperation) {
-        			String returnMessage = logic.executeCommand(view);
-        			// Add the returnMessage to the feedback bar and history view
-        			InterfaceController.getFeedbackLabel().setText(returnMessage);
-        			HistoryViewController.updateHistView(returnMessage);
-        			break;
-        		}
+        		// Do nothing if already in this view
+        		break;
         	}
         	break;
         /* ================================================================================
          * Done view
          * ================================================================================
          */
-        case InterfaceController.VIEW_DONE:
+        case UNRESOLVED:
         	switch (view) {
-        	case "def":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
         		break;
-        	case "all":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
         		break;
-        	case "hist":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
-        	case "search":
+        	case SEARCH:
         		// TODO
-        		//InterfaceController.updateMainInterface(InterfaceController.VIEW_SEARCH);
+        		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	default:
-        		// Run the operation only if method is not called from button click
-        		if (runOperation) {
-        			String returnMessage = logic.executeCommand(view);
-        			// Add the returnMessage to the feedback bar and history view
-        			InterfaceController.getFeedbackLabel().setText(returnMessage);
-        			HistoryViewController.updateHistView(returnMessage);
-
-        			// TODO: Update the completed tasks view
-        			//DoneViewController.updateDoneView();
-        		}
+        		// Do nothing if already in this view
         		break;
         	}
         	break;
@@ -224,35 +192,43 @@ public class LogicController {
         	 * Search view
         	 * ================================================================================
         	 */
-        case InterfaceController.VIEW_SEARCH:
+        case SEARCH:
         	switch (view) {
-        	case "def":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_DEFAULT);
-        	case "all":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_ALL);
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
         		break;
-        	case "hist":
-        		InterfaceController.updateMainInterface(InterfaceController.VIEW_HIST);
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
-        	case "done":
+        	case UNRESOLVED:
         		// TODO
         		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
         		break;
         	default:
-        		// Run the operation only if method is not called from button click
-        		if (runOperation) {
-        			String returnMessage = logic.executeCommand(view);
-        			// Add the returnMessage to the feedback bar and history view
-        			InterfaceController.getFeedbackLabel().setText(returnMessage);
-        			HistoryViewController.updateHistView(returnMessage);
-        			break;
-        		}
+        		// Do nothing if already in this view
+        		break;
         	}
         	break;
         	
         default: // do nothing, should not enter
         	break;
         }
+	}
+
+	private static void runCommand(String textFieldInput) {
+		
+		// Execute the command
+		String returnMessage = logic.executeCommand(textFieldInput);
+		
+		// Add the returnMessage to the feedback bar and history view
+		InterfaceController.getFeedbackLabel().setText(returnMessage);
+		HistoryViewController.updateHistView(returnMessage);
+
+		// Update the necessary views
+		DefaultViewController.updateDefView();
+		AllViewController.updateAllView();
 	}
 	
 	/* ================================================================================
@@ -268,15 +244,15 @@ public class LogicController {
 		return new KeyPressHandler();
 	}
 	
-	public ButtonHoverHandler getButtonHoverHandler(String buttonType) {
+	public ButtonHoverHandler getButtonHoverHandler(View buttonType) {
 		return new ButtonHoverHandler(buttonType);
 	}
 	
-	public ButtonClickHandler getButtonClickHandler(String buttonType) {
+	public ButtonClickHandler getButtonClickHandler(View buttonType) {
 		return new ButtonClickHandler(buttonType);
 	}
 	
-	public ScrollListener getScrollListener(String scrollpane) {
+	public ScrollListener getScrollListener(View scrollpane) {
 		return new ScrollListener(scrollpane);
 	}
 	
@@ -309,8 +285,28 @@ public class LogicController {
             // Clear the textField
             textField.setText("");
 
-            // Perform different operations depending on the currentView and the command
-            changeToView(textFieldInput, true);
+            // Switch view depending on the input
+            switch (textFieldInput) {
+            case "def":
+            	changeToView(View.DEFAULT);
+            	break;
+            case "all":
+            	changeToView(View.ALL);
+            	break;
+            case "hist":
+            	changeToView(View.HISTORY);
+            	break;
+            case "unres":
+            	changeToView(View.UNRESOLVED);
+            	break;
+            case "search":
+            	changeToView(View.SEARCH);
+            	break;
+            default:
+                // Run the command
+                runCommand(textFieldInput);
+                break;
+            }
         }
     }
 	
@@ -346,9 +342,9 @@ public class LogicController {
     
     private class ButtonHoverHandler implements EventHandler<MouseEvent> {
     	
-    	private String buttonType;
+    	private View buttonType;
     	
-    	ButtonHoverHandler(String buttonType) {
+    	ButtonHoverHandler(View buttonType) {
     		this.buttonType = buttonType;
     	}
     	
@@ -358,36 +354,36 @@ public class LogicController {
     		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
     			ImageView hover;
     			switch(buttonType) {
-    			case InterfaceController.VIEW_DEFAULT:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_DEFAULT) {
+    			case DEFAULT:
+    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
     					hover = new ImageView(InterfaceController.PATH_DEFAULT_HOVER);
     					InterfaceController.getHomeButton().getChildren().clear();
     					InterfaceController.getHomeButton().getChildren().add(hover);
     				}
     				break;
-    			case InterfaceController.VIEW_ALL:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_ALL) {
+    			case ALL:
+    				if (InterfaceController.getCurrentView() != View.ALL) {
     					hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
     					InterfaceController.getAllButton().getChildren().clear();
     					InterfaceController.getAllButton().getChildren().add(hover);
     				}
     				break;
-    			case InterfaceController.VIEW_HIST:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_HIST) {
+    			case HISTORY:
+    				if (InterfaceController.getCurrentView() != View.HISTORY) {
     					hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
     					InterfaceController.getHistButton().getChildren().clear();
     					InterfaceController.getHistButton().getChildren().add(hover);
     				}
     				break;
-    			case InterfaceController.VIEW_DONE:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_DONE) {
+    			case UNRESOLVED:
+    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
     					hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
     				break;
-    			case InterfaceController.VIEW_SEARCH:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_SEARCH) {
+    			case SEARCH:
+    				if (InterfaceController.getCurrentView() != View.SEARCH) {
     					hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
     					InterfaceController.getSearchButton().getChildren().clear();
     					InterfaceController.getSearchButton().getChildren().add(hover);
@@ -401,36 +397,36 @@ public class LogicController {
     		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
     			ImageView hover;
     			switch(buttonType) {
-    			case InterfaceController.VIEW_DEFAULT:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_DEFAULT) {
+    			case DEFAULT:
+    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
     					hover = new ImageView(InterfaceController.PATH_DEFAULT);
     					InterfaceController.getHomeButton().getChildren().clear();
     					InterfaceController.getHomeButton().getChildren().add(hover);
     				}
     				break;
-    			case InterfaceController.VIEW_ALL:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_ALL) {
+    			case ALL:
+    				if (InterfaceController.getCurrentView() != View.ALL) {
     					hover = new ImageView(InterfaceController.PATH_ALL);
     					InterfaceController.getAllButton().getChildren().clear();
     					InterfaceController.getAllButton().getChildren().add(hover);
     				}
     				break;
-    			case InterfaceController.VIEW_HIST:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_HIST) {
+    			case HISTORY:
+    				if (InterfaceController.getCurrentView() != View.HISTORY) {
     					hover = new ImageView(InterfaceController.PATH_HIST);
     					InterfaceController.getHistButton().getChildren().clear();
     					InterfaceController.getHistButton().getChildren().add(hover);
     				}
     				break;
-    			case InterfaceController.VIEW_DONE:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_DONE) {
+    			case UNRESOLVED:
+    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
     					hover = new ImageView(InterfaceController.PATH_DONE);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
     				break;
-    			case InterfaceController.VIEW_SEARCH:
-    				if (InterfaceController.currentView != InterfaceController.VIEW_SEARCH) {
+    			case SEARCH:
+    				if (InterfaceController.getCurrentView() != View.SEARCH) {
     					hover = new ImageView(InterfaceController.PATH_SEARCH);
     					InterfaceController.getSearchButton().getChildren().clear();
     					InterfaceController.getSearchButton().getChildren().add(hover);
@@ -445,23 +441,23 @@ public class LogicController {
     
     private static class ButtonClickHandler implements EventHandler<MouseEvent> {
     	
-    	String buttonType;
+    	View buttonType;
     	
-    	ButtonClickHandler(String buttonType) {
+    	ButtonClickHandler(View buttonType) {
     		this.buttonType = buttonType;
     	}
     	
     	@Override
     	public void handle(MouseEvent event) {
-    		changeToView(buttonType, false);
+    		changeToView(buttonType);
     	}
     }
     
     private static class ScrollListener implements ChangeListener<Number> {
     	
-    	String scrollpane;
+    	View scrollpane;
     	
-    	ScrollListener(String scrollpane) {
+    	ScrollListener(View scrollpane) {
     		this.scrollpane = scrollpane;
     	}
     	
@@ -471,10 +467,10 @@ public class LogicController {
     		
     		// Set the v-value of the scroll pane to the height of the content box
     		switch (scrollpane) {
-    		case InterfaceController.VIEW_HIST:
+    		case HISTORY:
     			HistoryViewController.getHistScroll().setVvalue((Double)newValue);
     			break;
-    		case InterfaceController.VIEW_DONE:
+    		case UNRESOLVED:
     			// TODO
     			//DoneViewController.getDoneScroll().setVvalue((Double)newValue);
     			break;

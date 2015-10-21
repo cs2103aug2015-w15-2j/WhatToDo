@@ -25,7 +25,7 @@ public class MainApp extends Application {
       * Scenes and stage used by the program
       * ================================================================================
       */
-    protected static Scene defaultView;
+    protected static Scene scene;
     protected static Stage stage;
 
     @Override
@@ -54,7 +54,7 @@ public class MainApp extends Application {
     public static void initPrimaryStage() {
     	
         // Set the scene to be displayed
-        stage.setScene(defaultView);
+        stage.setScene(scene);
 
         // Customize the stage
         stage.setTitle(TITLE_STAGE);

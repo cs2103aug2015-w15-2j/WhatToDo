@@ -13,6 +13,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import struct.View;
 
 public class HistoryViewController {
 
@@ -70,12 +71,14 @@ public class HistoryViewController {
         // Set the scroll pane to automatically scroll to the end
         histContentBox.heightProperty().addListener(
         		InterfaceController.logicControl.
-        		getScrollListener(InterfaceController.VIEW_HIST));
+        		getScrollListener(View.HISTORY));
         
         histScroll = new ScrollPane(histContentBox);
         histScroll.setFitToWidth(true);
         
         histBox = new VBox(histHeaderBox, histScroll);
+        
+        histBox.setAlignment(Pos.CENTER);
         
         // Set margins for the header label
         HBox.setMargin(histHeader, new Insets(
@@ -83,14 +86,16 @@ public class HistoryViewController {
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
         // Set margins for the header
+        // Reducing the margin by line width to compensate for the added vertical
+        // separator in the default and all views
         VBox.setMargin(histHeaderBox, new Insets(
-        		0, InterfaceController.MARGIN_SCROLL, 
+        		0, InterfaceController.MARGIN_SCROLL - InterfaceController.WIDTH_VERT_LINE, 
         		0, InterfaceController.MARGIN_SCROLL));
         
         // Set margins for the scroll pane
         VBox.setMargin(histScroll, new Insets(
         		InterfaceController.MARGIN_COMPONENT, 
-        		InterfaceController.MARGIN_SCROLL, 
+        		InterfaceController.MARGIN_SCROLL - InterfaceController.WIDTH_VERT_LINE, 
         		0, 
         		InterfaceController.MARGIN_SCROLL));
         

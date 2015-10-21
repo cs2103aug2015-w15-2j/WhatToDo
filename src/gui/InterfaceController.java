@@ -11,6 +11,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 
+import struct.View;
+
 import java.nio.file.FileSystemException;
 
 public class InterfaceController {
@@ -69,15 +71,9 @@ public class InterfaceController {
     // Used for updateMainInterface
     protected static HBox defBox, allBox, histBox, doneBox, searchBox;
 
-    protected static String currentView;
     protected static LogicController logicControl;
     
-    // Values for currentView
-    protected static final String VIEW_DEFAULT = "def";
-    protected static final String VIEW_ALL = "all";
-    protected static final String VIEW_HIST = "hist";
-    protected static final String VIEW_DONE = "done";
-    protected static final String VIEW_SEARCH = "search";
+    private static View currentView;
     
     // Values for button images
     protected static final String PATH_DEFAULT = "gui/resources/home.png";
@@ -165,13 +161,13 @@ public class InterfaceController {
         // Set listener for mouse interactions
         sbDefBox.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(VIEW_DEFAULT));
+        		logicControl.getButtonHoverHandler(View.DEFAULT));
         sbDefBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(VIEW_DEFAULT));
+        		logicControl.getButtonHoverHandler(View.DEFAULT));
         sbDefBox.addEventHandler(
         		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(VIEW_DEFAULT));
+        		logicControl.getButtonClickHandler(View.DEFAULT));
     }
     
     private static void initSideBarAllButton() {
@@ -189,13 +185,13 @@ public class InterfaceController {
         // Set listener for mouse interactions
         sbAllBox.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(VIEW_ALL));
+        		logicControl.getButtonHoverHandler(View.ALL));
         sbAllBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(VIEW_ALL));
+        		logicControl.getButtonHoverHandler(View.ALL));
         sbAllBox.addEventHandler(
         		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(VIEW_ALL));
+        		logicControl.getButtonClickHandler(View.ALL));
     }
 
     private static void initSideBarHistoryButton() {
@@ -213,13 +209,13 @@ public class InterfaceController {
         // Set listener for mouse interactions
     	sbHistBox.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(VIEW_HIST));
+        		logicControl.getButtonHoverHandler(View.HISTORY));
     	sbHistBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(VIEW_HIST));
+        		logicControl.getButtonHoverHandler(View.HISTORY));
     	sbHistBox.addEventHandler(
         		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(VIEW_HIST));
+        		logicControl.getButtonClickHandler(View.HISTORY));
     }
     
     private static void initSideBarDoneButton() {
@@ -237,13 +233,13 @@ public class InterfaceController {
         // Set listener for mouse interactions
     	sbDoneBox.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(VIEW_DONE));
+        		logicControl.getButtonHoverHandler(View.UNRESOLVED));
     	sbDoneBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(VIEW_DONE));
+        		logicControl.getButtonHoverHandler(View.UNRESOLVED));
     	sbDoneBox.addEventHandler(
         		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(VIEW_DONE));
+        		logicControl.getButtonClickHandler(View.UNRESOLVED));
     }
     
     private static void initSideBarSearchButton() {
@@ -261,38 +257,38 @@ public class InterfaceController {
         // Set listener for mouse interactions
     	sbSearchBox.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(VIEW_SEARCH));
+        		logicControl.getButtonHoverHandler(View.SEARCH));
     	sbSearchBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(VIEW_SEARCH));
+        		logicControl.getButtonHoverHandler(View.SEARCH));
     	sbSearchBox.addEventHandler(
         		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(VIEW_SEARCH));
+        		logicControl.getButtonClickHandler(View.SEARCH));
     }
     
-    private static void changeButtonToSelected(String view) {
+    private static void changeButtonToSelected(View view) {
     	switch (view) {
-    	case VIEW_DEFAULT:
+    	case DEFAULT:
     		sbDefImage = new ImageView(PATH_DEFAULT_SELECTED);
     		sbDefBox.getChildren().clear();
     		sbDefBox.getChildren().add(sbDefImage);
     		break;
-    	case VIEW_ALL:
+    	case ALL:
     		sbAllImage = new ImageView(PATH_ALL_SELECTED);
     		sbAllBox.getChildren().clear();
     		sbAllBox.getChildren().add(sbAllImage);
     		break;
-    	case VIEW_HIST:
+    	case HISTORY:
     		sbHistImage = new ImageView(PATH_HIST_SELECTED);
     		sbHistBox.getChildren().clear();
     		sbHistBox.getChildren().add(sbHistImage);
     		break;
-    	case VIEW_DONE:
+    	case UNRESOLVED:
     		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
     		sbDoneBox.getChildren().clear();
     		sbDoneBox.getChildren().add(sbDoneImage);
     		break;
-    	case VIEW_SEARCH:
+    	case SEARCH:
     		sbSearchImage = new ImageView(PATH_SEARCH_SELECTED);
     		sbSearchBox.getChildren().clear();
     		sbSearchBox.getChildren().add(sbSearchImage);
@@ -302,29 +298,29 @@ public class InterfaceController {
     	}
     }
     
-    private static void changeButtonToUnselected(String view) {
+    private static void changeButtonToUnselected(View view) {
     	switch (view) {
-    	case VIEW_DEFAULT:
+    	case DEFAULT:
     		sbDefImage = new ImageView(PATH_DEFAULT);
     		sbDefBox.getChildren().clear();
     		sbDefBox.getChildren().add(sbDefImage);
     		break;
-    	case VIEW_ALL:
+    	case ALL:
     		sbAllImage = new ImageView(PATH_ALL);
     		sbAllBox.getChildren().clear();
     		sbAllBox.getChildren().add(sbAllImage);
     		break;
-    	case VIEW_HIST:
+    	case HISTORY:
     		sbHistImage = new ImageView(PATH_HIST);
     		sbHistBox.getChildren().clear();
     		sbHistBox.getChildren().add(sbHistImage);
     		break;
-    	case VIEW_DONE:
+    	case UNRESOLVED:
     		sbDoneImage = new ImageView(PATH_DONE);
     		sbDoneBox.getChildren().clear();
     		sbDoneBox.getChildren().add(sbDoneImage);
     		break;
-    	case VIEW_SEARCH:
+    	case SEARCH:
     		sbSearchImage = new ImageView(PATH_SEARCH);
     		sbSearchBox.getChildren().clear();
     		sbSearchBox.getChildren().add(sbSearchImage);
@@ -342,7 +338,7 @@ public class InterfaceController {
         initSideBarDoneButton();
         initSideBarSearchButton();
         
-        changeButtonToSelected(VIEW_DEFAULT);
+        changeButtonToSelected(View.DEFAULT);
 
         sbBox = new VBox(sbDefBox, 
         		sbAllBox, 
@@ -401,7 +397,7 @@ public class InterfaceController {
         
         // Set the height of the text field
         textField.setMinHeight(HEIGHT_TEXT_FIELD);
-        textField.setPrefHeight(HEIGHT_TEXT_FIELD);
+        textField.setMaxHeight(HEIGHT_TEXT_FIELD);
 
         // CSS
         textBox.getStyleClass().add("gradient-regular");
@@ -441,7 +437,7 @@ public class InterfaceController {
     public static void initMainInterface() {
     	
     	// Initial view is defined to be default
-    	currentView = VIEW_DEFAULT;
+    	currentView = View.DEFAULT;
     	
     	// Initialize a LogicController
         logicControl = new LogicController();
@@ -502,17 +498,17 @@ public class InterfaceController {
                 "/gui/stylesheets/Interface.css").toExternalForm());
 
         // Set the scene in MainApp
-        MainApp.defaultView = mainScene;
+        MainApp.scene = mainScene;
     }
     
-    public static void updateMainInterface(String view) {
+    public static void updateMainInterface(View view) {
     	
     	// Clear the old content
     	viewBox.getChildren().clear();
     	
     	switch (view) {
     	
-    	case VIEW_DEFAULT:
+    	case DEFAULT:
     		DefaultViewController.updateDefView();
     		viewBox.getChildren().add(defBox);
     		
@@ -520,14 +516,14 @@ public class InterfaceController {
             HBox.setHgrow(defBox, Priority.ALWAYS);
             
             // Change buttons
-            changeButtonToSelected(VIEW_DEFAULT);
+            changeButtonToSelected(View.DEFAULT);
             changeButtonToUnselected(currentView);
             
             // Update currentView
-            currentView = InterfaceController.VIEW_DEFAULT;
+            currentView = View.DEFAULT;
     		break;
     		
-    	case VIEW_ALL:
+    	case ALL:
     		AllViewController.updateAllView();
     		viewBox.getChildren().add(allBox);
     		
@@ -535,28 +531,29 @@ public class InterfaceController {
             HBox.setHgrow(allBox, Priority.ALWAYS);
             
             // Change buttons
-            changeButtonToSelected(VIEW_ALL);
+            changeButtonToSelected(View.ALL);
             changeButtonToUnselected(currentView);
             
             // Update currentView
-            currentView = InterfaceController.VIEW_ALL;
+            currentView = View.ALL;
     		break;
     		
-    	case VIEW_HIST:
+    	case HISTORY:
     		viewBox.getChildren().add(histBox);
     		
     		// Set history box to grow with view box
             HBox.setHgrow(histBox, Priority.ALWAYS);
     		
             // Change buttons
-            changeButtonToSelected(VIEW_HIST);
+            changeButtonToSelected(View.HISTORY);
             changeButtonToUnselected(currentView);
             
             // Update currentView
-            currentView = InterfaceController.VIEW_HIST;
+            currentView = View.HISTORY;
     		break;
     		
-    	case VIEW_DONE:
+    	case UNRESOLVED:
+    		// TODO:
     		//DoneViewController.updateDoneView();
     		viewBox.getChildren().add(doneBox);
     		
@@ -564,14 +561,15 @@ public class InterfaceController {
             //HBox.setHgrow(doneBox, Priority.ALWAYS);
     		
             // Change buttons
-            changeButtonToSelected(VIEW_DONE);
+            changeButtonToSelected(View.UNRESOLVED);
             changeButtonToUnselected(currentView);
             
             // Update currentView
-            currentView = InterfaceController.VIEW_DONE;
+            currentView = View.UNRESOLVED;
     		break;
     		
-    	case VIEW_SEARCH:
+    	case SEARCH:
+    		// TODO:
     		//DoneViewController.updateDoneView();
     		viewBox.getChildren().add(searchBox);
     		
@@ -579,11 +577,11 @@ public class InterfaceController {
             //HBox.setHgrow(doneBox, Priority.ALWAYS);
     		
             // Change buttons
-            changeButtonToSelected(VIEW_SEARCH);
+            changeButtonToSelected(View.SEARCH);
             changeButtonToUnselected(currentView);
             
             // Update currentView
-            currentView = InterfaceController.VIEW_SEARCH;
+            currentView = View.SEARCH;
     		break;
     		
     	default: //ignore
@@ -640,5 +638,18 @@ public class InterfaceController {
     
     public static VBox getSearchButton() {
     	return sbSearchBox;
+    }
+    
+    /* ================================================================================
+     * Getters for other components to access and modify the current view
+     * ================================================================================
+     */
+    
+    public static View getCurrentView() {
+    	return currentView;
+    }
+    
+    public static void setCurrentView(View newView) {
+    	currentView = newView;
     }
 }
