@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import gui.CommandHistory;
 
-public class TestCommandHistory {
+public class CommandHistoryTest {
 
 	// Create an instance of command history
 	CommandHistory ch = new CommandHistory();
