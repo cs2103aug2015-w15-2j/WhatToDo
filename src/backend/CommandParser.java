@@ -16,7 +16,7 @@ public class CommandParser {
 	private static final String REGEX_WHITESPACES = "[\\s,]+";
 	private static final String REGEX_POSITIVE_INTEGER = "^\\d+$";
 	private static final String REGEX_12_HOUR_SIMPLE_TIME = "(1[012]|[1-9]|0[1-9])(\\s)?(?i)(am|pm)";
-	private static final String REGEX_12_HOUR_TIME = "(1[012]|[1-9]|0[1-9])(:|.)[0-5][0-9](\\s)?(?i)(am|pm)";
+	private static final String REGEX_12_HOUR_TIME = "(1[012]|[1-9]|0[1-9])(:|.)?[0-5][0-9](\\s)?(?i)(am|pm)";
 	private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
 	private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
 	
@@ -338,6 +338,9 @@ public class CommandParser {
 			if (period.equals("pm") && hourInt != 12) {
 				hourInt += 12;
 			}
+			if (period.equals("am") && hourInt == 12) {
+				return "0000";
+			}
 			hourString = Integer.toString(hourInt);
 			if (hourString.length() == 1) {
 				hourString = "0" + hourString + "00";
@@ -355,6 +358,9 @@ public class CommandParser {
 			int hourInt = Integer.parseInt(hourString);
 			if (period.equals("pm") && hourInt != 12) {
 				hourInt += 12;
+			}
+			if (period.equals("am") && hourInt == 12) {
+				return "00" + minuteString;
 			}
 			hourString = Integer.toString(hourInt);
 			if (hourString.length() == 1) {
