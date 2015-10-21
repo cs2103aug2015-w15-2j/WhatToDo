@@ -3,8 +3,12 @@ package gui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -40,14 +44,18 @@ public class InterfaceController {
     private static VBox sbHistBox;
     private static ImageView sbHistImage;
     
-    // Used for initSideBarDoneButton
-    private static VBox sbDoneBox;
-    private static ImageView sbDoneImage;
+    // Used for initSideBarUnresButton
+    private static VBox sbUnresBox;
+    private static ImageView sbUnresImage;
     
     // Used for initSideBarSearchButton
     private static VBox sbSearchBox;
     private static ImageView sbSearchImage;
-
+    
+    // Used for initSideBarHelpButton
+    private static VBox sbHelpBox;
+    private static ImageView sbHelpImage;
+    
     // Used for initSideBar
     private static VBox sbBox;
     private static HBox sbBoxWithLine;
@@ -61,6 +69,10 @@ public class InterfaceController {
     private static VBox feedbackBox, feedbackBoxWithLine;
     private static Label feedbackLabel;
     private static Line feedbackLine;
+    
+    // Used for initHelpDialog
+    private static ImageView helpImage;
+    private static ScrollPane helpScroll;
 
     // Used for initMainInterface
     private static Scene mainScene;
@@ -74,6 +86,7 @@ public class InterfaceController {
     protected static LogicController logicControl;
     
     private static View currentView;
+    private static boolean isHelpOpen;
     
     // Values for button images
     protected static final String PATH_DEFAULT = "gui/resources/home.png";
@@ -85,12 +98,16 @@ public class InterfaceController {
     protected static final String PATH_HIST = "gui/resources/history.png";
     protected static final String PATH_HIST_SELECTED = "gui/resources/history_selected.png";
     protected static final String PATH_HIST_HOVER = "gui/resources/history_hover.png";
-    protected static final String PATH_DONE = "gui/resources/done.png";
-    protected static final String PATH_DONE_SELECTED = "gui/resources/done_selected.png";
-    protected static final String PATH_DONE_HOVER = "gui/resources/done_hover.png";
+    protected static final String PATH_UNRESOLVED = "gui/resources/unresolved.png";
+    protected static final String PATH_UNRESOLVED_SELECTED = "gui/resources/unresolved_selected.png";
+    protected static final String PATH_UNRESOLVED_HOVER = "gui/resources/unresolved_hover.png";
     protected static final String PATH_SEARCH = "gui/resources/search.png";
     protected static final String PATH_SEARCH_SELECTED = "gui/resources/search_selected.png";
     protected static final String PATH_SEARCH_HOVER = "gui/resources/search_hover.png";
+    protected static final String PATH_HELP = "gui/resources/help.png";
+    protected static final String PATH_HELP_SELECTED = "gui/resources/help_selected.png";
+    protected static final String PATH_HELP_HOVER = "gui/resources/help_hover.png";
+    protected static final String PATH_HELP_DIALOG = "gui/resources/help_dialog.jpg";
     
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
@@ -220,24 +237,24 @@ public class InterfaceController {
     
     private static void initSideBarDoneButton() {
 
-    	sbDoneImage = new ImageView(PATH_DONE);
-    	sbDoneBox = new VBox(sbDoneImage);
+    	sbUnresImage = new ImageView(PATH_UNRESOLVED);
+    	sbUnresBox = new VBox(sbUnresImage);
 
     	// Fix width and height for the button
-    	sbDoneBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbDoneBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+    	sbUnresBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbUnresBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
 
-    	sbDoneBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-    	sbDoneBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
+    	sbUnresBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+    	sbUnresBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
     	
         // Set listener for mouse interactions
-    	sbDoneBox.addEventHandler(
+    	sbUnresBox.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
         		logicControl.getButtonHoverHandler(View.UNRESOLVED));
-    	sbDoneBox.addEventHandler(
+    	sbUnresBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
         		logicControl.getButtonHoverHandler(View.UNRESOLVED));
-    	sbDoneBox.addEventHandler(
+    	sbUnresBox.addEventHandler(
         		MouseEvent.MOUSE_PRESSED, 
         		logicControl.getButtonClickHandler(View.UNRESOLVED));
     }
@@ -266,7 +283,31 @@ public class InterfaceController {
         		logicControl.getButtonClickHandler(View.SEARCH));
     }
     
-    private static void changeButtonToSelected(View view) {
+    private static void initSideBarHelpButton() {
+    	
+    	sbHelpImage = new ImageView(PATH_HELP);
+    	sbHelpBox = new VBox(sbHelpImage);
+
+    	// Fix width and height for the button
+    	sbHelpBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbHelpBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+
+    	sbHelpBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+    	sbHelpBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
+    	
+        // Set listener for mouse interactions
+    	sbHelpBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(View.HELP));
+    	sbHelpBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(View.HELP));
+    	sbHelpBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(View.HELP));
+    }
+    
+    protected static void changeButtonToSelected(View view) {
     	switch (view) {
     	case DEFAULT:
     		sbDefImage = new ImageView(PATH_DEFAULT_SELECTED);
@@ -284,21 +325,27 @@ public class InterfaceController {
     		sbHistBox.getChildren().add(sbHistImage);
     		break;
     	case UNRESOLVED:
-    		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
-    		sbDoneBox.getChildren().clear();
-    		sbDoneBox.getChildren().add(sbDoneImage);
+    		sbUnresImage = new ImageView(PATH_UNRESOLVED_SELECTED);
+    		sbUnresBox.getChildren().clear();
+    		sbUnresBox.getChildren().add(sbUnresImage);
     		break;
     	case SEARCH:
     		sbSearchImage = new ImageView(PATH_SEARCH_SELECTED);
     		sbSearchBox.getChildren().clear();
     		sbSearchBox.getChildren().add(sbSearchImage);
+    		break;
+    	case HELP:
+    		sbHelpImage = new ImageView(PATH_HELP_SELECTED);
+    		sbHelpBox.getChildren().clear();
+    		sbHelpBox.getChildren().add(sbHelpImage);
+    		break;
     	default:
     		// Do nothing
     		break;
     	}
     }
     
-    private static void changeButtonToUnselected(View view) {
+    protected static void changeButtonToUnselected(View view) {
     	switch (view) {
     	case DEFAULT:
     		sbDefImage = new ImageView(PATH_DEFAULT);
@@ -316,14 +363,20 @@ public class InterfaceController {
     		sbHistBox.getChildren().add(sbHistImage);
     		break;
     	case UNRESOLVED:
-    		sbDoneImage = new ImageView(PATH_DONE);
-    		sbDoneBox.getChildren().clear();
-    		sbDoneBox.getChildren().add(sbDoneImage);
+    		sbUnresImage = new ImageView(PATH_UNRESOLVED);
+    		sbUnresBox.getChildren().clear();
+    		sbUnresBox.getChildren().add(sbUnresImage);
     		break;
     	case SEARCH:
     		sbSearchImage = new ImageView(PATH_SEARCH);
     		sbSearchBox.getChildren().clear();
     		sbSearchBox.getChildren().add(sbSearchImage);
+    		break;
+    	case HELP:
+    		sbHelpImage = new ImageView(PATH_HELP);
+    		sbHelpBox.getChildren().clear();
+    		sbHelpBox.getChildren().add(sbHelpImage);
+    		break;
     	default:
     		// Do nothing
     		break;
@@ -337,14 +390,16 @@ public class InterfaceController {
         initSideBarHistoryButton();
         initSideBarDoneButton();
         initSideBarSearchButton();
+        initSideBarHelpButton();
         
         changeButtonToSelected(View.DEFAULT);
 
         sbBox = new VBox(sbDefBox, 
         		sbAllBox, 
         		sbHistBox, 
-        		sbDoneBox, 
-        		sbSearchBox);
+        		sbUnresBox, 
+        		sbSearchBox, 
+        		sbHelpBox);
         
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
@@ -361,9 +416,11 @@ public class InterfaceController {
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
         VBox.setMargin(sbHistBox, new Insets(
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
-        VBox.setMargin(sbDoneBox, new Insets(
+        VBox.setMargin(sbUnresBox, new Insets(
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
         VBox.setMargin(sbSearchBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+        VBox.setMargin(sbHelpBox, new Insets(
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
         
         // Fix the width for the sidebar
@@ -432,6 +489,22 @@ public class InterfaceController {
         feedbackLine.getStyleClass().add("line");
         feedbackBox.getStyleClass().add("display-bar");
         feedbackBox.getStyleClass().add("gradient-regular");
+    }
+    
+    public static void initHelpScene() {
+    	
+    	isHelpOpen = false;
+    	
+    	helpImage = new ImageView(PATH_HELP_DIALOG);
+    	helpImage.setFitWidth(MainApp.WIDTH_HELP_DIALOG);
+    	helpImage.setPreserveRatio(true);
+
+    	helpScroll = new ScrollPane(helpImage);
+    	helpScroll.setFitToWidth(true);
+    	helpScroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+    	helpScroll.setHbarPolicy(ScrollBarPolicy.NEVER);
+    	
+    	MainApp.helpScene = new Scene(helpScroll);
     }
 
     public static void initMainInterface() {
@@ -588,6 +661,36 @@ public class InterfaceController {
     		break;
     	}
     }
+    
+    /* ================================================================================
+     * Public methods to control the help dialog window
+     * ================================================================================
+     */
+    
+    public static void toggleHelpDialog() {
+    	
+    	if (!isHelpOpen) {
+    		openHelpDialog();
+    	} else {
+    		closeHelpDialog();
+    	}
+    }
+    
+    public static void openHelpDialog() {
+		// Set help button to selected
+		changeButtonToSelected(View.HELP);
+		
+		isHelpOpen = true;
+		MainApp.help.show();
+    }
+    
+    public static void closeHelpDialog() {
+		// Set help button to unselected
+		changeButtonToUnselected(View.HELP);
+		
+		isHelpOpen = false;
+		MainApp.help.close();
+    }
 
     /* ================================================================================
      * Getters for LogicController to access required JavaFX components
@@ -633,11 +736,15 @@ public class InterfaceController {
     }
     
     public static VBox getDoneButton() {
-    	return sbDoneBox;
+    	return sbUnresBox;
     }
     
     public static VBox getSearchButton() {
     	return sbSearchBox;
+    }
+    
+    public static VBox getHelpButton() {
+    	return sbHelpBox;
     }
     
     /* ================================================================================

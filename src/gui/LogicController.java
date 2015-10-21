@@ -86,7 +86,7 @@ public class LogicController {
 		return temp;
 	}
 	
-	private static void changeToView(View view) {
+	private static void changeView(View view) {
 		
 		switch(InterfaceController.getCurrentView()) {
         /* ================================================================================
@@ -108,6 +108,9 @@ public class LogicController {
         	case SEARCH:
         		// TODO
         		//InterfaceController.updateMainInterface(View.SEARCH);
+        		break;
+        	case HELP:
+        		InterfaceController.toggleHelpDialog();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -134,6 +137,9 @@ public class LogicController {
         		// TODO
         		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
+        	case HELP:
+        		InterfaceController.toggleHelpDialog();
+        		break;
         	default:
         		// Do nothing if already in this view
         		break;
@@ -159,6 +165,9 @@ public class LogicController {
         		// TODO
         		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
+        	case HELP:
+        		InterfaceController.toggleHelpDialog();
+        		break;
         	default:
         		// Do nothing if already in this view
         		break;
@@ -183,6 +192,9 @@ public class LogicController {
         		// TODO
         		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
+        	case HELP:
+        		InterfaceController.toggleHelpDialog();
+        		break;
         	default:
         		// Do nothing if already in this view
         		break;
@@ -205,6 +217,9 @@ public class LogicController {
         	case UNRESOLVED:
         		// TODO
         		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		break;
+        	case HELP:
+        		InterfaceController.toggleHelpDialog();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -252,6 +267,10 @@ public class LogicController {
 		return new ButtonClickHandler(buttonType);
 	}
 	
+	public CloseHelpHandler getCloseHelpHandler() {
+		return new CloseHelpHandler();
+	}
+	
 	public ScrollListener getScrollListener(View scrollpane) {
 		return new ScrollListener(scrollpane);
 	}
@@ -288,19 +307,22 @@ public class LogicController {
             // Switch view depending on the input
             switch (textFieldInput) {
             case "def":
-            	changeToView(View.DEFAULT);
+            	changeView(View.DEFAULT);
             	break;
             case "all":
-            	changeToView(View.ALL);
+            	changeView(View.ALL);
             	break;
             case "hist":
-            	changeToView(View.HISTORY);
+            	changeView(View.HISTORY);
             	break;
             case "unres":
-            	changeToView(View.UNRESOLVED);
+            	changeView(View.UNRESOLVED);
             	break;
             case "search":
-            	changeToView(View.SEARCH);
+            	changeView(View.SEARCH);
+            	break;
+            case "help":
+            	changeView(View.HELP);
             	break;
             default:
                 // Run the command
@@ -377,7 +399,7 @@ public class LogicController {
     				break;
     			case UNRESOLVED:
     				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
-    					hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
+    					hover = new ImageView(InterfaceController.PATH_UNRESOLVED_HOVER);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
@@ -387,6 +409,14 @@ public class LogicController {
     					hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
     					InterfaceController.getSearchButton().getChildren().clear();
     					InterfaceController.getSearchButton().getChildren().add(hover);
+    				}
+    				break;
+    			case HELP:
+    				// Do not change the button if help dialog is showing
+    				if (!MainApp.help.isShowing()) {
+    					hover = new ImageView(InterfaceController.PATH_HELP_HOVER);
+    					InterfaceController.getHelpButton().getChildren().clear();
+    					InterfaceController.getHelpButton().getChildren().add(hover);
     				}
     				break;
     			default:
@@ -420,7 +450,7 @@ public class LogicController {
     				break;
     			case UNRESOLVED:
     				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
-    					hover = new ImageView(InterfaceController.PATH_DONE);
+    					hover = new ImageView(InterfaceController.PATH_UNRESOLVED);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
@@ -430,6 +460,14 @@ public class LogicController {
     					hover = new ImageView(InterfaceController.PATH_SEARCH);
     					InterfaceController.getSearchButton().getChildren().clear();
     					InterfaceController.getSearchButton().getChildren().add(hover);
+    				}
+    				break;
+    			case HELP:
+    				// Do not change the button if help dialog is showing
+    				if (!MainApp.help.isShowing()) {
+    					hover = new ImageView(InterfaceController.PATH_HELP);
+    					InterfaceController.getHelpButton().getChildren().clear();
+    					InterfaceController.getHelpButton().getChildren().add(hover);
     				}
     				break;
     			default:
@@ -449,7 +487,19 @@ public class LogicController {
     	
     	@Override
     	public void handle(MouseEvent event) {
-    		changeToView(buttonType);
+    		changeView(buttonType);
+    	}
+    }
+    
+    private static class CloseHelpHandler implements ChangeListener<Boolean> {
+    	
+    	@Override
+    	public void changed(ObservableValue<? extends Boolean> observable, 
+    			Boolean oldValue, Boolean newValue) {
+    		// If the help window was closed by user's mouse click
+    		if (newValue == false) {
+    			InterfaceController.closeHelpDialog();
+    		}
     	}
     }
     

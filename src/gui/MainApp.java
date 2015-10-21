@@ -19,14 +19,19 @@ public class MainApp extends Application {
      */
     protected static final double MIN_WINDOW_HEIGHT = 600;
     protected static final double MIN_WINDOW_WIDTH = 1024;
-    protected static final String TITLE_STAGE = "WhatToDo";
+    
+    protected static final double WIDTH_HELP_DIALOG = 600;
+    protected static final double HEIGHT_HELP_DIALOG = 800;
+    
+    private static final String TITLE_STAGE = "WhatToDo";
+    private static final String TITLE_HELP = "Help Dialog";
 
     /* ================================================================================
       * Scenes and stage used by the program
       * ================================================================================
       */
-    protected static Scene scene;
-    protected static Stage stage;
+    protected static Scene scene, helpScene;
+    protected static Stage stage, help;
 
     @Override
     public void start(Stage primaryStage) {
@@ -35,9 +40,11 @@ public class MainApp extends Application {
 
         // Initialize both scenes
         InterfaceController.initMainInterface();
+        InterfaceController.initHelpScene();
 
-        // Initialize the default stage to be displayed
+        // Initialize the different stages
         initPrimaryStage();
+        initHelpStage();
 
         // Run
         stage.show();
@@ -64,6 +71,19 @@ public class MainApp extends Application {
         stage.setHeight(MIN_WINDOW_HEIGHT);
         stage.setMinHeight(MIN_WINDOW_HEIGHT);
         stage.setMinWidth(MIN_WINDOW_WIDTH);
+    }
+    
+    public static void initHelpStage() {
+    	
+    	help = new Stage();
+    	help.setScene(helpScene);
+    	
+    	help.setTitle(TITLE_HELP);
+        help.setWidth(WIDTH_HELP_DIALOG);
+        help.setHeight(HEIGHT_HELP_DIALOG);
+        help.setResizable(false);
         
+        help.showingProperty().addListener(
+        		InterfaceController.logicControl.getCloseHelpHandler());
     }
 }
