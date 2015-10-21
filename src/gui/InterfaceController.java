@@ -396,6 +396,10 @@ public class InterfaceController {
         // Fix the height of the text field
         textBox.setMaxHeight(HEIGHT_TEXTFIELD);
         textBox.setMinHeight(HEIGHT_TEXTFIELD);
+        
+        // Bind the height of the textField to a proportion of the textBox
+        textField.prefHeightProperty().bind(
+        		textBox.heightProperty().subtract(2 * MARGIN_TEXT_FIELD));
 
         // CSS
         textBox.getStyleClass().add("gradient-regular");
