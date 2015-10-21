@@ -32,14 +32,14 @@ public class Logic {
 	private static final String MESSAGE_EXIT = "Exit";
 	
 	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
-    private static final String MESSAGE_ERROR_INVALID_COMMAND = " \"%s\" is an invalid command. %s"; 
+    private static final String MESSAGE_ERROR_INVALID_COMMAND = "\"%s\" is an invalid command. %s"; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
 //    private static final String DISPLAY_NO_SEARCH_RESULTS = "There are no search results to display.\n";
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s]\t%s\n"; 
+    private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "FLOAT\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
@@ -166,17 +166,27 @@ public class Logic {
     
     private String getAllUncompletedTask(String[] linesInFile){
     	StringBuffer uncompletedTaskBuffer = new StringBuffer(); 
+    	String prevLineDate = null; 
     	
     	for(int index = 0; index < linesInFile.length; index++){
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		
     		if(isUncompleted(TYPE_TASK, lineComponents)){
+    			//TODO incomplete - format date headers 
+    			//if the currline's date is different from previous line's date 
+    			//add a new date header 
+    			if(!lineComponents[INDEX_DUEDATE].equals(prevLineDate)){
+    				String dateHeader = new Date(lineComponents[INDEX_DUEDATE]).formatDateLong();
+    				uncompletedTaskBuffer.append(dateHeader + "\n");
+    				prevLineDate = lineComponents[INDEX_DUEDATE]; 
+    			}
     			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
-    			//TODO incomplete 
+    			uncompletedTaskBuffer.append(formatted);
     		}
     	}
     	
+    	//TODO addmsgifempty
     	return uncompletedTaskBuffer.toString().trim();
     }
     
