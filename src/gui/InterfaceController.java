@@ -103,7 +103,8 @@ public class InterfaceController {
     
     protected static final double HEIGHT_FILEPATH = 31;
     protected static final double HEIGHT_FEEDBACK = 31;
-    protected static final double HEIGHT_TEXTFIELD = 40;
+    protected static final double HEIGHT_TEXT_BOX = 40;
+    protected static final double HEIGHT_TEXT_FIELD = 26;
     
     protected static final double WIDTH_VERT_LINE = 1;
     protected static final double HEIGHT_HORIZ_LINE = 1;
@@ -112,7 +113,7 @@ public class InterfaceController {
     protected static final double MARGIN_TEXT_ELEMENT = 10;
     protected static final double MARGIN_TEXT_ELEMENT_HEIGHT = 3;
     protected static final double MARGIN_TEXT_ELEMENT_SEPARATOR = 10;
-    protected static final double MARGIN_TEXT_FIELD = 7;
+    protected static final double MARGIN_TEXT_FIELD = (HEIGHT_TEXT_BOX - HEIGHT_TEXT_FIELD) / 2;
     protected static final double MARGIN_BUTTON = 20;
     protected static final double MARGIN_COMPONENT = 10;
     protected static final double MARGIN_SCROLL = 30;
@@ -390,16 +391,17 @@ public class InterfaceController {
         
         textBox = new VBox(textField);
 
-        // Set the margins for the text field
-        VBox.setMargin(textField, new Insets(MARGIN_TEXT_FIELD));
+        // Set the text field to always center in the area
+        textBox.setAlignment(Pos.CENTER);
+        VBox.setMargin(textField, new Insets(0, MARGIN_TEXT_FIELD, 0, MARGIN_TEXT_FIELD));
 
         // Fix the height of the text field
-        textBox.setMaxHeight(HEIGHT_TEXTFIELD);
-        textBox.setMinHeight(HEIGHT_TEXTFIELD);
+        textBox.setMaxHeight(HEIGHT_TEXT_BOX);
+        textBox.setMinHeight(HEIGHT_TEXT_BOX);
         
-        // Bind the height of the textField to a proportion of the textBox
-        textField.prefHeightProperty().bind(
-        		textBox.heightProperty().subtract(2 * MARGIN_TEXT_FIELD));
+        // Set the height of the text field
+        textField.setMinHeight(HEIGHT_TEXT_FIELD);
+        textField.setPrefHeight(HEIGHT_TEXT_FIELD);
 
         // CSS
         textBox.getStyleClass().add("gradient-regular");

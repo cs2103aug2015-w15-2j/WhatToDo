@@ -501,7 +501,7 @@ public class LogicController {
     		DefaultViewController.getDefScrollLine().setEndY((Double)newValue - 
     				InterfaceController.HEIGHT_FILEPATH - 
     				InterfaceController.HEIGHT_FEEDBACK - 
-    				InterfaceController.HEIGHT_TEXTFIELD - 
+    				InterfaceController.HEIGHT_TEXT_BOX - 
     				InterfaceController.HEIGHT_HORIZ_LINE);
     	}
     }
