@@ -17,6 +17,9 @@ import javafx.scene.shape.Line;
 
 import struct.View;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystemException;
 
 public class InterfaceController {
@@ -150,6 +153,13 @@ public class InterfaceController {
         // +1 for line widths
         filepathBoxWithLine.setMaxHeight(HEIGHT_FILEPATH);
         filepathBoxWithLine.setMinHeight(HEIGHT_FILEPATH);
+        
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, logicControl.getPathHoverHandler(filepathLabel));
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
 
         // CSS
         filepathLine.getStyleClass().add("line");
@@ -641,15 +651,26 @@ public class InterfaceController {
     }
 
     /* ================================================================================
-     * Public method to close the main interface
+     * Public methods to perform changes to the interface
      * ================================================================================
      */
+    
+    public static void openFileLocation() {
+		try {
+			Desktop.getDesktop().open(
+					new File(InterfaceController.logicControl.getFilePath()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     
     public static void closeMainInterface() {
     	
     	currentView = View.EXIT;
     	MainApp.stage.close();
     }
+    
     
     /* ================================================================================
      * Getters for LogicController to access required JavaFX components

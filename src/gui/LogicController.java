@@ -1,5 +1,8 @@
 package gui;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
 
@@ -9,6 +12,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -19,6 +23,8 @@ import struct.View;
 public class LogicController {
 
 	private static final String MESSAGE_ERROR_FILESYSTEM = "Failed to create the file.";
+	private static final String CSS_UNDERLINE = "-fx-underline: true";
+	private static final String CSS_NO_UNDERLINE = "-fx-underline: false";
 	
 	private static Logic logic;
 	private static CommandHistory commandHistory;
@@ -282,6 +288,14 @@ public class LogicController {
 		return new ButtonClickHandler(buttonType);
 	}
 	
+	public PathHoverHandler getPathHoverHandler(Label filepathLabel) {
+		return new PathHoverHandler(filepathLabel);
+	}
+	
+	public PathClickHandler getPathClickHandler() {
+		return new PathClickHandler();
+	}
+	
 	public CloseHelpHandler getCloseHelpHandler() {
 		return new CloseHelpHandler();
 	}
@@ -506,6 +520,35 @@ public class LogicController {
     	@Override
     	public void handle(MouseEvent event) {
     		changeView(buttonType);
+    	}
+    }
+    
+    private static class PathHoverHandler implements EventHandler<MouseEvent> {
+    	
+    	Label filepathLabel;
+    	
+    	PathHoverHandler(Label filepathLabel) {
+    		this.filepathLabel = filepathLabel;
+    	}
+    	
+    	@Override
+    	public void handle(MouseEvent event) {
+    		
+    		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
+    			filepathLabel.setStyle(CSS_UNDERLINE);
+    		}
+    		
+    		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
+    			filepathLabel.setStyle(CSS_NO_UNDERLINE);
+    		}
+    	}
+    }
+    
+    private static class PathClickHandler implements EventHandler<MouseEvent> {
+    	
+    	@Override
+    	public void handle(MouseEvent event) {
+    		InterfaceController.openFileLocation();
     	}
     }
     
