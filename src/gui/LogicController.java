@@ -112,6 +112,9 @@ public class LogicController {
         	case HELP:
         		HelpController.toggleHelpDialog();
         		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
         	default:
         		// Do nothing if already in this view
             	break;
@@ -139,6 +142,9 @@ public class LogicController {
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -168,6 +174,9 @@ public class LogicController {
         	case HELP:
         		HelpController.toggleHelpDialog();
         		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
         	default:
         		// Do nothing if already in this view
         		break;
@@ -194,6 +203,9 @@ public class LogicController {
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -223,6 +235,9 @@ public class LogicController {
         		break;
         	default:
         		// Do nothing if already in this view
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
         		break;
         	}
         	break;
@@ -323,6 +338,9 @@ public class LogicController {
             	break;
             case "help":
             	changeView(View.HELP);
+            	break;
+            case "exit":
+            	changeView(View.EXIT);
             	break;
             default:
                 // Run the command

@@ -641,6 +641,17 @@ public class InterfaceController {
     }
 
     /* ================================================================================
+     * Public method to close the main interface
+     * ================================================================================
+     */
+    
+    public static void closeMainInterface() {
+    	
+    	currentView = View.EXIT;
+    	MainApp.stage.close();
+    }
+    
+    /* ================================================================================
      * Getters for LogicController to access required JavaFX components
      * ================================================================================
      */
