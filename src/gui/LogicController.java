@@ -110,7 +110,7 @@ public class LogicController {
         		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	case HELP:
-        		InterfaceController.toggleHelpDialog();
+        		HelpController.toggleHelpDialog();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -138,7 +138,7 @@ public class LogicController {
         		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	case HELP:
-        		InterfaceController.toggleHelpDialog();
+        		HelpController.toggleHelpDialog();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -166,7 +166,7 @@ public class LogicController {
         		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	case HELP:
-        		InterfaceController.toggleHelpDialog();
+        		HelpController.toggleHelpDialog();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -193,7 +193,7 @@ public class LogicController {
         		//InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	case HELP:
-        		InterfaceController.toggleHelpDialog();
+        		HelpController.toggleHelpDialog();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -219,7 +219,7 @@ public class LogicController {
         		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
         		break;
         	case HELP:
-        		InterfaceController.toggleHelpDialog();
+        		HelpController.toggleHelpDialog();
         		break;
         	default:
         		// Do nothing if already in this view
@@ -498,7 +498,8 @@ public class LogicController {
     			Boolean oldValue, Boolean newValue) {
     		// If the help window was closed by user's mouse click
     		if (newValue == false) {
-    			InterfaceController.closeHelpDialog();
+    			// Do not toggle to avoid resetting the help open/close state
+    			HelpController.closeHelpDialog();
     		}
     	}
     }

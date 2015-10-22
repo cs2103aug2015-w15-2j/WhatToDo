@@ -40,7 +40,7 @@ public class MainApp extends Application {
 
         // Initialize both scenes
         InterfaceController.initMainInterface();
-        InterfaceController.initHelpScene();
+        HelpController.initHelpScene();
 
         // Initialize the different stages
         initPrimaryStage();

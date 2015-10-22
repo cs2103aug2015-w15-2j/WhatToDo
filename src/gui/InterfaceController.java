@@ -69,10 +69,6 @@ public class InterfaceController {
     private static VBox feedbackBox, feedbackBoxWithLine;
     private static Label feedbackLabel;
     private static Line feedbackLine;
-    
-    // Used for initHelpDialog
-    private static ImageView helpImage;
-    private static ScrollPane helpScroll;
 
     // Used for initMainInterface
     private static Scene mainScene;
@@ -86,7 +82,6 @@ public class InterfaceController {
     protected static LogicController logicControl;
     
     private static View currentView;
-    private static boolean isHelpOpen;
     
     // Values for button images
     protected static final String PATH_DEFAULT = "gui/resources/home.png";
@@ -107,7 +102,6 @@ public class InterfaceController {
     protected static final String PATH_HELP = "gui/resources/help.png";
     protected static final String PATH_HELP_SELECTED = "gui/resources/help_selected.png";
     protected static final String PATH_HELP_HOVER = "gui/resources/help_hover.png";
-    protected static final String PATH_HELP_DIALOG = "gui/resources/help_dialog.jpg";
     
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
@@ -490,22 +484,6 @@ public class InterfaceController {
         feedbackBox.getStyleClass().add("display-bar");
         feedbackBox.getStyleClass().add("gradient-regular");
     }
-    
-    public static void initHelpScene() {
-    	
-    	isHelpOpen = false;
-    	
-    	helpImage = new ImageView(PATH_HELP_DIALOG);
-    	helpImage.setFitWidth(MainApp.WIDTH_HELP_DIALOG);
-    	helpImage.setPreserveRatio(true);
-
-    	helpScroll = new ScrollPane(helpImage);
-    	helpScroll.setFitToWidth(true);
-    	helpScroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-    	helpScroll.setHbarPolicy(ScrollBarPolicy.NEVER);
-    	
-    	MainApp.helpScene = new Scene(helpScroll);
-    }
 
     public static void initMainInterface() {
     	
@@ -660,36 +638,6 @@ public class InterfaceController {
     	default: //ignore
     		break;
     	}
-    }
-    
-    /* ================================================================================
-     * Public methods to control the help dialog window
-     * ================================================================================
-     */
-    
-    public static void toggleHelpDialog() {
-    	
-    	if (!isHelpOpen) {
-    		openHelpDialog();
-    	} else {
-    		closeHelpDialog();
-    	}
-    }
-    
-    public static void openHelpDialog() {
-		// Set help button to selected
-		changeButtonToSelected(View.HELP);
-		
-		isHelpOpen = true;
-		MainApp.help.show();
-    }
-    
-    public static void closeHelpDialog() {
-		// Set help button to unselected
-		changeButtonToUnselected(View.HELP);
-		
-		isHelpOpen = false;
-		MainApp.help.close();
     }
 
     /* ================================================================================
