@@ -35,8 +35,8 @@ public class LogicTest {
 	@Test
 	public void testAddTask() throws FileSystemException{ 
 		Logic logic = new Logic();
-		String feedback = logic.executeCommand("add deadline by 221015");
-		assertEquals("Added task \"deadline\" to list. Due on Thursday, 22 Oct 2015.", feedback);
+		String feedback = logic.executeCommand("add deadline by 111115");
+		assertEquals("Added task \"deadline\" to list. Due on Wednesday, 11 Nov 2015.", feedback);
 	}
 	
 	@Test
