@@ -508,8 +508,8 @@ public class InterfaceController {
         
         // Initialize all the views
         DefaultViewController.initDefView();
-        AllViewController.initAllView();
-        HistoryViewController.initHistView();
+        //AllViewController.initAllView();
+        //HistoryViewController.initHistView();
         //DoneViewController.initDoneView();
         //SearchViewController.initSearchView();
         

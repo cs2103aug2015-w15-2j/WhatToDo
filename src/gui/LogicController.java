@@ -601,16 +601,6 @@ public class LogicController {
 
     		// Set the height of the sidebar separator to window height
     		InterfaceController.getSbLine().setEndY((Double)newValue);
-
-    		// Set the height of the scroll pane separator to
-    		// window height - height of the filepath bar(31) -
-    		// height of feedback bar(31) - height of text bar(40) - 
-    		// height of viewLine(1)
-    		DefaultViewController.getDefScrollLine().setEndY((Double)newValue - 
-    				InterfaceController.HEIGHT_FILEPATH - 
-    				InterfaceController.HEIGHT_FEEDBACK - 
-    				InterfaceController.HEIGHT_TEXT_BOX - 
-    				InterfaceController.HEIGHT_HORIZ_LINE);
     	}
     }
 

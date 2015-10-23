@@ -6,12 +6,14 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class DefaultViewController {
 
@@ -19,23 +21,66 @@ public class DefaultViewController {
      * JavaFX controls used in the general interface
      * ================================================================================
      */
+
+	// Used for initSummaryHeader
+	private static VBox summaryHeaderBox;
+	private static Label summaryHeaderLabel, summaryYouLabel;
 	
-	// Used for initDefTaskView
-    private static VBox defTaskBox, defTaskContentBox;
-    private static HBox defTaskHeaderBox;
-    private static ScrollPane defTaskScroll;
-
-    // Used for initDefEventView
-    private static VBox defEventBox, defEventContentBox;
-    private static HBox defEventHeaderBox;
-    private static ScrollPane defEventScroll;
-
-    // Used for initDefView
-    private static Line defScrollLine;
-    
-    protected static final String HEADER_DEF_TASKS = "UPCOMING TASKS: SOON";
-    protected static final String HEADER_DEF_EVENTS = "UPCOMING EVENTS: SOON";
-    
+	// Used for initSummaryContent
+	private static VBox summaryContentBox;
+	private static Label soonTasksLabel, floatTasksLabel, soonEventsLabel, ongoingEventsLabel;
+	
+	// Used for initContent
+	private static ScrollPane contentScroll;
+	private static VBox contentBox;
+	
+	// Used for initDefaultView
+	private static VBox defView;
+	
+	private static void initSummaryHeader() {
+		
+		summaryHeaderLabel = new Label("A summary of your upcoming tasks and events");
+		summaryHeaderLabel.setStyle("-fx-font-family: \"Roboto LT\";");
+		summaryYouLabel = new Label("You have:");
+		
+		summaryHeaderBox = new VBox(summaryHeaderLabel, summaryYouLabel);
+		summaryHeaderBox.setAlignment(Pos.CENTER);
+		
+		VBox.setMargin(summaryHeaderLabel, new Insets(10, 0, 0, 0));
+		VBox.setMargin(summaryYouLabel, new Insets(10, 0, 10, 0));
+		
+		// CSS
+		summaryHeaderLabel.getStyleClass().add("def-summary-header");
+		summaryYouLabel.getStyleClass().add("def-summary-you");
+	}
+	
+	private static void initSummaryContent() {
+		
+		int soonTasks = 3;
+		int floatTasks = 3;
+		int soonEvents = 3;
+		int ongoingEvents = 3;
+		
+		floatTasksLabel = new Label(floatTasks + " tasks without deadlines.");
+		soonTasksLabel = new Label(soonTasks + " tasks due within the next two days.");
+		ongoingEventsLabel = new Label(ongoingEvents + " ongoing events.");
+		soonEventsLabel = new Label(soonEvents + " events starting within the next two days.");
+		
+		summaryContentBox = new VBox(floatTasksLabel, soonTasksLabel, ongoingEventsLabel, soonEventsLabel);
+		summaryContentBox.setAlignment(Pos.CENTER);
+		
+		VBox.setMargin(floatTasksLabel, new Insets(5, 0, 0, 0));
+		VBox.setMargin(soonEventsLabel, new Insets(0, 0, 5, 0));
+		
+		// CSS
+		floatTasksLabel.getStyleClass().add("def-summary-content-label");
+		soonTasksLabel.getStyleClass().add("def-summary-content-label");
+		ongoingEventsLabel.getStyleClass().add("def-summary-content-label");
+		soonEventsLabel.getStyleClass().add("def-summary-content-label");
+		
+		summaryContentBox.getStyleClass().add("def-summary-content");
+	}
+	
     private static boolean isTitle(String displayData) {
     	
     	String firstWord = displayData.split(" ")[0];
@@ -43,225 +88,112 @@ public class DefaultViewController {
     			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
     }
     
-    private static HBox initDisplayElement(String displayData) {
+    private static String formatDeadline(String deadline) {
     	
-    	Label elementLabel = new Label(displayData);
-    	HBox elementBox = new HBox(elementLabel);
+    	String[] splitDeadline = deadline.split(" ");
     	
-    	// Apply different CSS styles and formatting depending on whether it 
-    	// contains a data field or a title field
-    	if (isTitle(displayData)) {
-    		
-    		// Create a divider line and add it to the elementBox
-    		Line elementLine = new Line(0, 0, InterfaceController.WIDTH_DEFAULT, 0);
-    		elementBox.getChildren().add(elementLine);
-    		
-    		// Get the width of label and resize the line
-    		Text text = new Text(elementLabel.getText());
-    		Scene s = new Scene(new Group(text));
-    		// Override the CSS style to calculate the text width
-    		text.setStyle("-fx-font-family: \"PT Sans\"; "
-    				+ "-fx-font-size: 14; "
-    				+ "-fx-font-weight: bold;");
-    		text.applyCss();
-    		
-    		// Apply the binding to (element box width - text width - arbitrary margin)
-    		// The arbitrary margin exists because text in a container is not perfectly 
-    		// aligned to the dimensions of its container
-    		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-    		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(textWidth + InterfaceController.MARGIN_ARBITRARY));
-    		
-    		// Align the elements in the HBox
-    		elementBox.setAlignment(Pos.CENTER_LEFT);
-    		
-    		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(
-        			0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT));
-        	
-        	// Apply CSS style for titles
-        	elementLine.getStyleClass().add("line");
-    		elementBox.getStyleClass().add("element-title");
-    	} else {
-    		// Set text wrapping for the display data
-        	elementLabel.setWrapText(true);
-        	
-    		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(
-        			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT));
-        	
-        	// Apply CSS style for regular data field
-    		elementBox.getStyleClass().add("element");
+    	switch(splitDeadline[0]) {
+    	case "FLOAT":
+    		return "No deadline set.";
+    	case "TODAY":
+    		return "Due today, " + deadline.replaceFirst("TODAY - ", "");
+    	case "TOMORROW":
+    		return "Due tomorrow, " + deadline.replaceFirst("TOMORROW - ", "");
+    	case "ONGOING":
+    		return "Currently ongoing";
+    	default:
+    		// Do nothing
+    		return "";
     	}
-
+    }
+    
+    private static HBox initContentElement(String displayData, String deadline) {
+    	
+    	String[] splitDisplayData = displayData.split(Pattern.quote("."));
+    	
+    	// Extract the element index
+    	String elementIndex = splitDisplayData[0];
+    	
+    	Label elementIndexLabel = new Label(elementIndex);
+    	HBox elementIndexBox = new HBox(elementIndexLabel);
+    	elementIndexBox.setAlignment(Pos.CENTER);
+    	elementIndexBox.setMinWidth(75);
+    	elementIndexBox.setMaxWidth(75);
+    	
+    	Label elementLabel = new Label(splitDisplayData[1].trim());
+    	elementLabel.setWrapText(true);
+    	
+    	Label elementDeadline = new Label(formatDeadline(deadline));
+    	
+    	HBox elementBox = new HBox(elementIndexBox, elementLabel, elementDeadline);
+    	elementBox.setAlignment(Pos.CENTER_LEFT);
+    	
+    	elementLabel.prefWidthProperty().bind(elementBox.widthProperty().divide(2));
+    	HBox.setHgrow(elementDeadline, Priority.ALWAYS);
+    	HBox.setMargin(elementDeadline, new Insets(0, 0, 0, 20));
+    	HBox.setMargin(elementLabel, new Insets(5, 0, 5, 0));
+    	
+    	// CSS
+    	elementIndexLabel.getStyleClass().add("def-content");
+    	elementLabel.getStyleClass().add("def-content");
+    	elementDeadline.getStyleClass().add("def-content");
+    	
     	return elementBox;
     }
-
-    private static void initDefTaskView(ArrayList<String> tasks) {
-
-    	Label defTaskHeader = new Label(HEADER_DEF_TASKS);
-        defTaskHeaderBox = new HBox(defTaskHeader);
-        defTaskHeaderBox.setAlignment(Pos.CENTER);
-
-        defTaskContentBox = new VBox();
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < tasks.size(); i++) {
-        	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks.get(i));
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defTaskContentBox.getChildren().add(tempBox);
-        }
-        
-        defTaskScroll = new ScrollPane(defTaskContentBox);
-        defTaskScroll.setFitToWidth(true);
-        
-        defTaskBox = new VBox(defTaskHeaderBox, defTaskScroll);
-        
-        // Set margins for the header label
-        HBox.setMargin(defTaskHeader, new Insets(
-        		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
-        		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        
-        // Set margins for the header
-        VBox.setMargin(defTaskHeaderBox, new Insets(
-        		0, InterfaceController.MARGIN_SCROLL, 
-        		0, InterfaceController.MARGIN_SCROLL));
-        
-        // Set margins for the scroll pane
-        VBox.setMargin(defTaskScroll, new Insets(
-        		InterfaceController.MARGIN_COMPONENT, 
-        		InterfaceController.MARGIN_SCROLL, 
-        		0, 
-        		InterfaceController.MARGIN_SCROLL));
-        
-        // Set the alignment of the header image to be in the center
-        defTaskBox.setAlignment(Pos.CENTER);
-        
-        // Set the height of the scroll pane to grow with window height
-        VBox.setVgrow(defTaskScroll, Priority.ALWAYS);
-        
-        // Set the scrollbar policy of the scroll pane
-        defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        
-        // CSS
-        defTaskHeader.getStyleClass().add("box-title-label");
-        defTaskHeaderBox.getStyleClass().add("box-title");
-    }
-
-    private static void initDefEventView(ArrayList<String> events) {
-
-    	Label defEventHeader = new Label(HEADER_DEF_EVENTS);
-        defEventHeaderBox = new HBox(defEventHeader);
-        defEventHeaderBox.setAlignment(Pos.CENTER);
-
-        defEventContentBox = new VBox();
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < events.size(); i++) {
-        	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events.get(i));
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defEventContentBox.getChildren().add(tempBox);
-        }
-        
-        
-        defEventScroll = new ScrollPane(defEventContentBox);
-        defEventScroll.setFitToWidth(true);
-        
-        defEventBox = new VBox(defEventHeaderBox, defEventScroll);
-        
-        // Set margins for the header label
-        HBox.setMargin(defEventHeader, new Insets(
-        		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
-        		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        
-        // Set margins for the header
-        VBox.setMargin(defEventHeaderBox, new Insets(
-        		0, InterfaceController.MARGIN_SCROLL, 
-        		0, InterfaceController.MARGIN_SCROLL));
-        
-        // Set margins for the scroll pane
-        VBox.setMargin(defEventScroll, new Insets(
-        		InterfaceController.MARGIN_COMPONENT, 
-        		InterfaceController.MARGIN_SCROLL, 
-        		0, 
-        		InterfaceController.MARGIN_SCROLL));
-        
-        // Set the alignment of the header image to be in the center
-        defEventBox.setAlignment(Pos.CENTER);
-
-        // Set the height of the scroll pane to grow with the window height
-        VBox.setVgrow(defEventScroll, Priority.ALWAYS);
-        
-        // Set the scrollbar policy of the scroll pane
-        defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        
-        // CSS
-        defEventHeader.getStyleClass().add("box-title-label");
-        defEventHeaderBox.getStyleClass().add("box-title");
-    }
-
-    public static void initDefView() {
-
-        initDefTaskView(InterfaceController.logicControl.getDefTasks());
-        initDefEventView(InterfaceController.logicControl.getDefEvents());
-        
-        defScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
-        
-        InterfaceController.defBox = new HBox(defTaskBox, defScrollLine, defEventBox);
-        
-        // Set the preferred viewport width of the two scroll panes to be half
-        // of the entire view pane
-        defTaskScroll.prefViewportWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
-        defEventScroll.prefViewportWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
-        
-        // CSS
-        defScrollLine.getStyleClass().add("line");
-    }
     
-    public static void updateDefView() {
-    	
-    	// Clear the previous content already displayed
-        defTaskContentBox.getChildren().clear();
-        defEventContentBox.getChildren().clear();
-        
-        // Get the results of the file from logic
-        ArrayList<String> tasks = InterfaceController.logicControl.getDefTasks();
-        ArrayList<String> events = InterfaceController.logicControl.getDefEvents();
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < tasks.size(); i++) {
-        	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks.get(i));
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defTaskContentBox.getChildren().add(tempBox);
-        }
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < events.size(); i++) {
-        	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events.get(i));
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defEventContentBox.getChildren().add(tempBox);
-        }
-    }
-    
-    /* ================================================================================
-     * Getters for LogicController to access required JavaFX components
-     * ================================================================================
-     */
-    
-    public static Line getDefScrollLine() {
-    	return defScrollLine;
-    }
+	private static void initContent() {
+		
+		ArrayList<String> defTasks = InterfaceController.logicControl.getDefTasks();
+		ArrayList<String> defEvents = InterfaceController.logicControl.getDefEvents();
+		
+		contentBox = new VBox();
+		
+		String deadline = null;
+		int altCount = 0;
+		for (int i = 0; i < defTasks.size(); i++) {
+			if (isTitle(defTasks.get(i))) {
+				deadline = defTasks.get(i);
+			} else {
+				if (defTasks.get(i).split(Pattern.quote(".")).length > 1) {
+					HBox temp = initContentElement(defTasks.get(i), deadline);
+					if (altCount % 2 == 0) {
+						temp.getStyleClass().add("def-content-alt");
+					}
+					altCount++;
+					contentBox.getChildren().add(temp);
+				}
+			}
+		}
+		
+		deadline = null;
+		for (int i = 0; i < defEvents.size(); i++) {
+			if (isTitle(defEvents.get(i))) {
+				deadline = defEvents.get(i);
+			} else {
+				if (defEvents.get(i).split(Pattern.quote(".")).length > 1) {
+					HBox temp = initContentElement(defEvents.get(i), deadline);
+					contentBox.getChildren().add(temp);
+				}
+			}
+		}
+		
+		contentScroll = new ScrollPane(contentBox);
+		contentScroll.setVbarPolicy(ScrollBarPolicy.NEVER);
+		contentScroll.setFitToWidth(true);
+	}
+	
+	public static void initDefView() {
+		
+		initSummaryHeader();
+		initSummaryContent();
+		initContent();
+		
+		defView = new VBox(summaryHeaderBox, summaryContentBox, contentScroll);
+		defView.setAlignment(Pos.TOP_CENTER);
+		HBox.setHgrow(defView, Priority.ALWAYS);
+		VBox.setMargin(summaryContentBox, new Insets(0, 0, 20, 0));
+		
+		InterfaceController.defBox = new HBox(defView);
+		summaryContentBox.maxWidthProperty().bind(defView.widthProperty().multiply(0.7));
+	}
 }

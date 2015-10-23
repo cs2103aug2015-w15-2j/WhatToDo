@@ -14,14 +14,26 @@
 	src: url('../resources/PTS76F.ttf');
 }
 
+@font-face {
+	src: url('../resources/Roboto-Light.ttf');
+}
+
+@font-face {
+	src: url('../resources/Roboto-Regular.ttf');
+}
+
+@font-face {
+	src: url('../resources/Roboto-Italic.ttf');
+}
+
 .root {
-    -fx-background-image: url("../resources/windowBG.jpg");
+    -fx-background-image: url("../resources/windowBG2.jpg");
     /* Original background color #dedede */
 }
 
 .text {
-    -fx-font-smoothing-type: lcd;
-    -fx-font-family: "PT Sans";
+    -fx-font-smoothing-type: gray;
+    -fx-font-family: "Roboto";
     -fx-opacity: 0.9;
 }
 
@@ -36,8 +48,10 @@
 
 .scroll-pane {
     -fx-background-color: transparent;
-    -fx-background-image: url("../resources/windowBG.jpg");
     -fx-font-size: 13;
+    /* To remove the border of the scroll pane */
+    -fx-background-insets: 0;
+    -fx-padding: 0;
 }
 
 /* JavaFX 8 issue with viewport transparency */
@@ -69,6 +83,31 @@
 .element-title {
 	-fx-font-size: 14;
 	-fx-font-weight: bold;
+}
+
+.def-summary-header {
+	-fx-font-size: 24;
+}
+
+.def-summary-you {
+	-fx-font-size: 16;
+}
+
+.def-summary-content {
+	-fx-background-image: url("../resources/summaryBG.jpg");
+}
+
+.def-summary-content-label {
+	-fx-font-size: 14;
+	-fx-text-fill: #e5e5e5;
+}
+
+.def-content {
+	-fx-font-size: 14;
+}
+
+.def-content-alt {
+	-fx-background-image: url("../resources/elementBG.jpg");
 }
 
 .box-title {
