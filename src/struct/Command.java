@@ -3,7 +3,7 @@ package struct;
 public class Command {
 	
 	public enum CommandType {
-		ADD, DELETE, EDIT, MARKDONE, SEARCH, UNDO, REDO, EXIT, INVALID
+		ADD, DELETE, EDIT, MARKDONE, SEARCH, UNDO, REDO, SET, EXIT, INVALID
     }
 	
 	public enum DataType { 
