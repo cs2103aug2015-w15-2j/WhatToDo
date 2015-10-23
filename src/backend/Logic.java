@@ -41,10 +41,10 @@ public class Logic {
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
-    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "FLOAT\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
-    private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\n\nTODAY - %s \n%s\n\nTOMORROW - %s \n%s";
-    private static final String DISPLAY_LAYOUT_ALL_TASK = "FLOAT\n%s\n\n%s";
-    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "SEARCH\nFLOAT\n\n TASK\n\n EVENT %s"; 
+    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "FLOAT\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_ALL_TASK = "FLOAT\n%s\n%s";
+    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "SEARCH\nFLOAT\n TASK\n EVENT %s"; 
     
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
@@ -147,54 +147,44 @@ public class Logic {
             		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
 		}
     }
-    
-    //TODO display all uncompleted tasks and floats 
-    public String taskAllView(){ 
+     
+    public String taskAllUncompletedView(){ 
     	try{ 
     		String[] linesInFile = getLinesInFile();
         	String floatContent = getAllUncompletedFloat(linesInFile); 
-        	//TODO get uncompleted tasks and format it with date headers 
         	String taskContent = getAllUncompletedTask(linesInFile); 
         	
         	return String.format(DISPLAY_LAYOUT_ALL_TASK, floatContent, taskContent); 
     	}
     	catch(FileSystemException e){
-    		return "sth"; 
+    		return e.getMessage(); 
     	}
     	catch (Exception e) {
-    		return "sth"; 
+    		return MESSAGE_ERROR_UNKNOWN; 
+    	}
+    }
+      
+    public String eventAllUncompletedView(){ 
+    	try{
+    		String[] linesInFile = getLinesInFile(); 
+    		return getAllUncompletedEvent(linesInFile);
+    	}
+    	catch(FileSystemException e){
+    		return e.getMessage(); 
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
     
-    private String getAllUncompletedTask(String[] linesInFile){
-    	StringBuffer uncompletedTaskBuffer = new StringBuffer(); 
-    	String prevLineDate = null; 
-    	
-    	for(int index = 0; index < linesInFile.length; index++){
-    		String line = linesInFile[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
+    public static void main(String[] args){ 
+    	try{ 
+    		Logic logic = new Logic(); 
+    		System.out.println(logic.eventAllUncompletedView());
+    	}
+    	catch(Exception e){ 
     		
-    		if(isUncompleted(TYPE_TASK, lineComponents)){
-    			//TODO incomplete - format date headers 
-    			//if the currline's date is different from previous line's date 
-    			//add a new date header 
-    			if(!lineComponents[INDEX_DUEDATE].equals(prevLineDate)){
-    				String dateHeader = new Date(lineComponents[INDEX_DUEDATE]).formatDateLong();
-    				uncompletedTaskBuffer.append(dateHeader + "\n");
-    				prevLineDate = lineComponents[INDEX_DUEDATE]; 
-    			}
-    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
-    			uncompletedTaskBuffer.append(formatted);
-    		}
     	}
-    	
-    	//TODO addmsgifempty
-    	return uncompletedTaskBuffer.toString().trim();
-    }
-    
-    //TODO display all uncompleted events
-    public String eventAllView(){ 
-    	return "foo"; 
     }
     
     public String getFilepath() {
@@ -556,5 +546,62 @@ public class Logic {
     		buffer.append(DISPLAY_NO_ITEMS);
     	}
     	return buffer.toString().trim();
+    }
+    
+    //============================================
+  	// Private methods for allUncompletedView
+  	//============================================
+    
+    private String getAllUncompletedTask(String[] linesInFile){
+    	StringBuffer uncompletedTaskBuffer = new StringBuffer(); 
+    	String prevLineDate = null; 
+    	
+    	for(int index = 0; index < linesInFile.length; index++){
+    		String line = linesInFile[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		
+    		if(isUncompleted(TYPE_TASK, lineComponents)){
+    			
+    			//if the currline's date is different from previous line's date,  
+    			//add a new date header 
+    			if(!lineComponents[INDEX_DUEDATE].equals(prevLineDate)){
+    				String dateHeader = new Date(lineComponents[INDEX_DUEDATE]).formatDateLong();
+    				uncompletedTaskBuffer.append(dateHeader + "\n");
+    				prevLineDate = lineComponents[INDEX_DUEDATE]; 
+    			}
+    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
+    			uncompletedTaskBuffer.append(formatted);
+    		}
+    	}
+    	
+    	//TODO refactor
+    	return (uncompletedTaskBuffer.length() == 0)? "TASK\n" + DISPLAY_NO_ITEMS : uncompletedTaskBuffer.toString().trim();
+    }
+    
+    private String getAllUncompletedEvent(String[] linesInFile){
+    	StringBuffer uncompletedEventBuffer = new StringBuffer(); 
+    	String prevLineDate = null; 
+    	
+    	for(int index = 0; index < linesInFile.length; index++){
+    		String line = linesInFile[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		
+    		if(isUncompleted(TYPE_EVENT, lineComponents)){
+    			
+    			//if the currline's date is different from previous line's date,  
+    			//add a new date header 
+    			if(!lineComponents[INDEX_DUEDATE].equals(prevLineDate)){
+    				String dateHeader = new Date(lineComponents[INDEX_DUEDATE]).formatDateLong();
+    				uncompletedEventBuffer.append(dateHeader + "\n");
+    				prevLineDate = lineComponents[INDEX_DUEDATE]; 
+    			}
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
+    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
+    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+    			uncompletedEventBuffer.append(formatted);
+    		}
+    	}
+
+    	return addMsgIfEmpty(uncompletedEventBuffer);
     }
 }
