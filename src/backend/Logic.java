@@ -178,21 +178,19 @@ public class Logic {
     }
     
     public String taskPastUncompletedView(){
-    	return "foo"; 
+    	try{
+    		String[] linesInFile = getLinesInFile(); 
+    		return getPastUncompletedTask(linesInFile);
+    	}
+    	catch(FileSystemException e){ 
+    		return e.getMessage();
+    	}catch (Exception e) {
+			return e.getMessage();
+		} 
     }
-    
+
     public String eventPastUncompletedView(){
     	return "bar"; 
-    }
-    
-    public static void main(String[] args){ 
-    	try{ 
-    		Logic logic = new Logic(); 
-    		System.out.println(logic.taskAllUncompletedView());
-    	}
-    	catch(Exception e){ 
-    		
-    	}
     }
     
     public String getFilepath() {
@@ -489,7 +487,7 @@ public class Logic {
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isUncompleted(TYPE_TASK, lineComponents) && lineComponents[INDEX_DUEDATE].equals(date)){
-    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[1]);
+    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
     			contentBuffer.append(formatted);
     		}
     	}
@@ -562,21 +560,16 @@ public class Logic {
     
     private String getAllUncompletedTask(String[] linesInFile){
     	StringBuffer uncompletedTaskBuffer = new StringBuffer(); 
-    	String prevLineDate = null; 
+    	Date prevDeadline = null; 
     	
     	for(int index = 0; index < linesInFile.length; index++){
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
+    		Date currDeadLine = (lineComponents[INDEX_TYPE].equals(TYPE_TASK)) ? 
+    				new Date(lineComponents[INDEX_DUEDATE]) : null;
     		
     		if(isUncompleted(TYPE_TASK, lineComponents)){
-    			
-    			//if the currline's date is different from previous line's date,  
-    			//add a new date header 
-    			if(!lineComponents[INDEX_DUEDATE].equals(prevLineDate)){
-    				String dateHeader = new Date(lineComponents[INDEX_DUEDATE]).formatDateLong();
-    				uncompletedTaskBuffer.append(dateHeader + "\n");
-    				prevLineDate = lineComponents[INDEX_DUEDATE]; 
-    			}
+    			prevDeadline = addDateHeader(uncompletedTaskBuffer, currDeadLine, prevDeadline);
     			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
     			uncompletedTaskBuffer.append(formatted);
     		}
@@ -588,21 +581,16 @@ public class Logic {
     
     private String getAllUncompletedEvent(String[] linesInFile){
     	StringBuffer uncompletedEventBuffer = new StringBuffer(); 
-    	String prevLineDate = null; 
+    	Date prevStartDate = null;
     	
     	for(int index = 0; index < linesInFile.length; index++){
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
+    		Date currStartDate = (lineComponents[INDEX_TYPE].equals(TYPE_EVENT)) ?
+    				new Date(lineComponents[INDEX_STARTDATE]) : null; 
     		
     		if(isUncompleted(TYPE_EVENT, lineComponents)){
-    			
-    			//if the currline's date is different from previous line's date,  
-    			//add a new date header 
-    			if(!lineComponents[INDEX_DUEDATE].equals(prevLineDate)){
-    				String dateHeader = new Date(lineComponents[INDEX_DUEDATE]).formatDateLong();
-    				uncompletedEventBuffer.append(dateHeader + "\n");
-    				prevLineDate = lineComponents[INDEX_DUEDATE]; 
-    			}
+    			prevStartDate = addDateHeader(uncompletedEventBuffer, currStartDate, prevStartDate); 
     			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
     					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
     					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
@@ -612,4 +600,34 @@ public class Logic {
 
     	return addMsgIfEmpty(uncompletedEventBuffer);
     }
+    
+    private String getPastUncompletedTask(String[] linesInFile) {
+    	StringBuffer pastTaskBuffer = new StringBuffer(); 
+    	Date prevDate = null; 
+    	
+    	for(int index = 0; index < linesInFile.length; index++){
+    		String line = linesInFile[index].trim(); 
+    		String[] lineComponents = line.split(SEMICOLON);
+    		Date today = Date.todayDate(); 
+    		Date deadline = (lineComponents[INDEX_TYPE].equals(TYPE_TASK)) ? 
+    				new Date(lineComponents[INDEX_DUEDATE]) : null;
+    	
+    		if(isUncompleted(TYPE_TASK, lineComponents) && deadline.compareTo(today) < 0){
+    			prevDate = addDateHeader(pastTaskBuffer, deadline, prevDate); 
+    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
+    			pastTaskBuffer.append(formatted);
+    		}
+    	}
+		return addMsgIfEmpty(pastTaskBuffer); 
+	}
+    
+    private Date addDateHeader(StringBuffer sb, Date currDate, Date prevDate){
+    	//add date header only if the currDate is different from the prevDate
+    	if(prevDate == null || currDate.compareTo(prevDate)!= 0){
+    		String dateHeader = currDate.formatDateLong(); 
+    		sb.append(dateHeader + NEWLINE); 
+    	}
+    	return currDate;
+    }
+   
 }
