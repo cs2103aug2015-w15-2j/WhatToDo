@@ -41,9 +41,9 @@ public class Logic {
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
-    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "FLOAT\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
-    private static final String DISPLAY_LAYOUT_ALL_TASK = "FLOAT\n%s\n%s";
+    private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "SEARCH\nFLOAT\n TASK\n EVENT %s"; 
     
     private static final String TYPE_FLOAT = "float";
@@ -115,8 +115,8 @@ public class Logic {
             String todayContent = getTaskContent(linesInFile, Date.todayDateShort()); 
             String tomorrowContent = getTaskContent(linesInFile, Date.tomorrowDateShort()); 
            
-            return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, floatContent, Date.todayDateLong(), todayContent, 
-            		Date.tomorrowDateLong(), tomorrowContent).trim();
+            return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, Date.todayDateLong(), todayContent, 
+            		Date.tomorrowDateLong(), tomorrowContent, floatContent).trim();
     	}
     	catch(FileSystemException e){
     		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
@@ -154,7 +154,7 @@ public class Logic {
         	String floatContent = getAllUncompletedFloat(linesInFile); 
         	String taskContent = getAllUncompletedTask(linesInFile); 
         	
-        	return String.format(DISPLAY_LAYOUT_ALL_TASK, floatContent, taskContent); 
+        	return String.format(DISPLAY_LAYOUT_ALL_TASK, taskContent, floatContent); 
     	}
     	catch(FileSystemException e){
     		return e.getMessage(); 
@@ -177,10 +177,18 @@ public class Logic {
     	}
     }
     
+    public String taskPastUncompletedView(){
+    	return "foo"; 
+    }
+    
+    public String eventPastUncompletedView(){
+    	return "bar"; 
+    }
+    
     public static void main(String[] args){ 
     	try{ 
     		Logic logic = new Logic(); 
-    		System.out.println(logic.eventAllUncompletedView());
+    		System.out.println(logic.taskAllUncompletedView());
     	}
     	catch(Exception e){ 
     		
