@@ -34,6 +34,7 @@ public class CommandParser {
     private static final String USER_COMMAND_EDIT = "edit";
     private static final String USER_COMMAND_SEARCH = "search";
     private static final String USER_COMMAND_DONE = "done";
+    private static final String USER_COMMAND_SET = "set";
     private static final String USER_COMMAND_EXIT = "exit";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_REDO = "redo";
@@ -74,6 +75,10 @@ public class CommandParser {
                 
             case USER_COMMAND_SEARCH :
             	command = initSearchCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_SET :
+            	command = initSetCommand(arguments);
             	break;
             	
             case USER_COMMAND_DONE :
@@ -486,6 +491,22 @@ public class CommandParser {
 		
 		Command command = new Command(Command.CommandType.DONE);
 		command.setIndex(index);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create set command methods
+    // ================================================================
+	
+	private Command initSetCommand(ArrayList<String> arguments) {
+		if (arguments.size() != 1) {
+			return initInvalidCommand("Invalid directory");
+		}
+		
+		Command command = new Command(Command.CommandType.SET);
+		String directory = arguments.get(0);
+		command.setName(directory);
 		return command;
 	}
 	
