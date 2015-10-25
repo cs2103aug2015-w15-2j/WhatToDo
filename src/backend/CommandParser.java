@@ -20,6 +20,12 @@ public class CommandParser {
 	private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
 	private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
 	
+	public static void main (String[] args) {
+		String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
+		String test = "2401";
+		System.out.println(test.matches(REGEX_24_HOUR_TIME));
+	}
+	
     private static final String STRING_ONE_SPACE = " ";
     private static final String ESCAPE_CHARACTER = "\\";
 	
@@ -27,6 +33,7 @@ public class CommandParser {
     private static final String USER_COMMAND_DELETE = "delete";
     private static final String USER_COMMAND_EDIT = "edit";
     private static final String USER_COMMAND_SEARCH = "search";
+    private static final String USER_COMMAND_DONE = "done";
     private static final String USER_COMMAND_EXIT = "exit";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_REDO = "redo";
@@ -67,6 +74,10 @@ public class CommandParser {
                 
             case USER_COMMAND_SEARCH :
             	command = initSearchCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_DONE :
+            	command = initDoneCommand(arguments);
             	break;
             	
             case USER_COMMAND_UNDO :
@@ -331,6 +342,7 @@ public class CommandParser {
 	}
 	
 	private String getTime(String time) {
+		String timeString;
 		if (time.matches(REGEX_12_HOUR_SIMPLE_TIME)) {
 			String period = time.substring(time.length() - 2).toLowerCase();
 			String hourString = time.substring(0, time.length() - 2).trim();
@@ -339,18 +351,18 @@ public class CommandParser {
 				hourInt += 12;
 			}
 			if (period.equals("am") && hourInt == 12) {
-				return "0000";
+				timeString = "0000";
 			}
 			hourString = Integer.toString(hourInt);
 			if (hourString.length() == 1) {
-				hourString = "0" + hourString + "00";
+				timeString = "0" + hourString + "00";
 			} else {
-				hourString += "00";
+				timeString = hourString + "00";
 			}
-			return hourString;
+			return timeString;
 		} else if (time.matches(REGEX_12_HOUR_TIME)) {
 			String period = time.substring(time.length() - 2).toLowerCase();
-			String timeString = time.substring(0, time.length() - 2).trim();
+			timeString = time.substring(0, time.length() - 2).trim();
 			timeString = timeString.replace(".","");
 			timeString = timeString.replace(":","");
 			String minuteString = timeString.substring(timeString.length() - 2);
@@ -368,24 +380,29 @@ public class CommandParser {
 			} else {
 				timeString = hourString + minuteString;
 			}
-			return timeString;
+			if (Integer.parseInt(timeString) < 2400) {
+				return timeString;
+			}
 		} else if (time.matches(REGEX_24_HOUR_SIMPLE_TIME)){
+			timeString = time;
 			if (time.length() == 1) {
-				time = "0" + time + "00";
+				timeString = "0" + time + "00";
 			} else if (time.length() == 2) {
-				time = time + "00";
+				timeString = time + "00";
 			}
-			return time;
+			return timeString;
 		} else if (time.matches(REGEX_24_HOUR_TIME)) {
-			time = time.replace(".","");
-			time = time.replace(":","");
-			if (time.length() == 3) {
-				time = "0" + time;
+			timeString = time;
+			timeString = timeString.replace(".","");
+			timeString = timeString.replace(":","");
+			if (timeString.length() == 3) {
+				timeString = "0" + timeString;
 			}
-			return time;
-		} else {
-			return null;
+			if (Integer.parseInt(timeString) < 2400) {
+				return timeString;
+			}
 		}
+		return null;
 	}
 	
 	private boolean areValidTimes(String startTime, String endTime) {
@@ -406,13 +423,13 @@ public class CommandParser {
 	private Command initDeleteCommand(ArrayList<String> arguments) {
 		int index = getIndex(arguments);
 		
-		if (index > 0) {
-			Command command = new Command(Command.CommandType.DELETE);
-			command.setIndex(index);
-			return command;
-		} else {
-			return initInvalidCommand();
+		if (arguments.size() > 1 && index <= 0) {
+			return initInvalidCommand("Invalid index input");
 		}
+		
+		Command command = new Command(Command.CommandType.DELETE);
+		command.setIndex(index);
+		return command;
 	}
 	
 	private int getIndex(ArrayList<String> arguments) {
@@ -453,6 +470,23 @@ public class CommandParser {
 	
 	private Command initSearchCommand(ArrayList<String> arguments) {
 		return initInvalidCommand();
+	}
+	
+	
+    // ================================================================
+    // Create done command methods
+    // ================================================================
+	
+	private Command initDoneCommand(ArrayList<String> arguments) {
+		int index = getIndex(arguments);
+		
+		if (arguments.size() > 1 && index <= 0) {
+			return initInvalidCommand("Invalid input of index");
+		}
+		
+		Command command = new Command(Command.CommandType.DONE);
+		command.setIndex(index);
+		return command;
 	}
 	
 	
