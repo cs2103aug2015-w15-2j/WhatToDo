@@ -42,6 +42,7 @@ public class DefaultViewController {
 		summaryHeaderLabel = new Label("A summary of your upcoming tasks and events");
 		summaryHeaderLabel.setStyle("-fx-font-family: \"Roboto LT\";");
 		summaryYouLabel = new Label("You have:");
+		summaryYouLabel.setStyle("-fx-font-family: \"Roboto LT\";");
 		
 		summaryHeaderBox = new VBox(summaryHeaderLabel, summaryYouLabel);
 		summaryHeaderBox.setAlignment(Pos.CENTER);
@@ -194,6 +195,6 @@ public class DefaultViewController {
 		VBox.setMargin(summaryContentBox, new Insets(0, 0, 20, 0));
 		
 		InterfaceController.defBox = new HBox(defView);
-		summaryContentBox.maxWidthProperty().bind(defView.widthProperty().multiply(0.7));
+		//summaryContentBox.maxWidthProperty().bind(defView.widthProperty().multiply(0.7));
 	}
 }

@@ -94,11 +94,12 @@
 }
 
 .def-summary-content {
-	-fx-background-image: url("../resources/summaryBG.jpg");
+	-fx-background-image: url("../resources/sbBG.jpg");
 }
 
 .def-summary-content-label {
 	-fx-font-size: 14;
+	-fx-font-style: italic;
 	-fx-text-fill: #e5e5e5;
 }
 
