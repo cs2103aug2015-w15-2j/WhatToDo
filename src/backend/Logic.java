@@ -90,8 +90,8 @@ public class Logic {
     			return executeDelete(command); 
     		case EDIT : 
     			return executeEdit(command); 
-    		case MARKDONE : 
-    			return executeMarkDone(command);
+    		case DONE : 
+    			return executeDone(command);
     		case SEARCH :
     			return executeSearch(command); 
     		case UNDO : 
@@ -309,7 +309,7 @@ public class Logic {
     	}
     }
     
-    private String executeMarkDone(Command command){
+    private String executeDone(Command command){
     	try{
     		State stateBeforeExecutingCommand = getState(command);
     		

@@ -202,8 +202,15 @@ public class CommandParser {
 			return initInvalidCommand(errorMsg);
 		}
 		if (startDate.compareTo(endDate) != -1) {
-			String errorMsg = "Start Date cannot be later than End Date";
-			return initInvalidCommand(errorMsg);
+			if (startDate.compareTo(endDate) == 0) {
+				if (!areValidTimes(startTime, endTime)) {
+					String errorMsg = "Start Time cannot be later than End Time for single day Events";
+					return initInvalidCommand(errorMsg);
+				}
+			} else {
+				String errorMsg = "Start Date cannot be later than End Date";
+				return initInvalidCommand(errorMsg);
+			}
 		}
 		if (keywordToIndex > keywordFromIndex) {
 			List<String> nameList = arguments.subList(0, keywordFromIndex);
@@ -231,7 +238,49 @@ public class CommandParser {
 		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_1);
 		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_2);
 		int keywordOnIndex = arguments.indexOf(KEYWORD_EVENT_3);
-		return initInvalidCommand();
+		
+		int minIndex = Math.min(keywordToIndex, Math.min(keywordFromIndex, keywordOnIndex));
+		int maxIndex = Math.max(keywordToIndex, Math.max(keywordFromIndex, keywordOnIndex));
+		
+		if ((maxIndex - minIndex) != 4 || (arguments.size() - 2) != maxIndex) {
+			String errorMsg = "Invalid format for adding Event";
+			return initInvalidCommand(errorMsg);
+		}
+		
+		Date date = getDate(arguments.get(keywordOnIndex + 1));
+		String startTime = getTime(arguments.get(keywordFromIndex + 1));
+		String endTime = getTime(arguments.get(keywordToIndex + 1));
+		List<String> nameList = arguments.subList(0, minIndex);
+		String name = getName(nameList);
+		
+		if (date == null) {
+			String errorMsg = "Invalid Date";
+			return initInvalidCommand(errorMsg);
+		}
+		if (startTime == null) {
+			String errorMsg = "Invalid Start Time";
+			return initInvalidCommand(errorMsg);
+		}
+		if (endTime == null) {
+			String errorMsg = "Invalid End Time";
+			return initInvalidCommand(errorMsg);
+		}
+		if (!areValidTimes(startTime, endTime)) {
+			String errorMsg = "Start Time cannot be later than End Time";
+			return initInvalidCommand(errorMsg);
+		}
+		if (name == null) {
+			String errorMsg = "Invalid Event Name";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.ADD);
+		command.setDataType(Command.DataType.EVENT);
+		command.setName(name);
+		command.setStartDate(date);
+		command.setStartTime(startTime);
+		command.setEndDate(date);
+		command.setEndTime(endTime);
+		return command;
 	}
 	
 	private Command addFloatingTask(ArrayList<String> arguments) {
@@ -262,7 +311,7 @@ public class CommandParser {
 		Date todayDate = Date.todayDate();
 		if (date.equals("today")){
 			return todayDate;
-		} else if (date.equals("tomorrow")) {
+		} else if (date.equals("tomorrow") || date.equals("tmr") || date.equals("tomo")) {
 			return Date.tomorrowDate();
 		} else if (fullNameOfDays.contains(date.toLowerCase())) {
 			int day = nameOfDays.indexOf(date.substring(0,3).toLowerCase());
