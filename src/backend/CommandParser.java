@@ -429,7 +429,8 @@ public class CommandParser {
 		int index = getIndex(arguments);
 		
 		if (arguments.size() > 1 && index <= 0) {
-			return initInvalidCommand("Invalid index input");
+			String errorMsg = "Invalid index input";
+			return initInvalidCommand(errorMsg);
 		}
 		
 		Command command = new Command(Command.CommandType.DELETE);
@@ -474,7 +475,15 @@ public class CommandParser {
     // ================================================================
 	
 	private Command initSearchCommand(ArrayList<String> arguments) {
-		return initInvalidCommand();
+		if (arguments.isEmpty()) {
+			String errorMsg = "Please input your search terms!";
+			return initInvalidCommand(errorMsg);
+		}
+		List<String> searchList = arguments.subList(0, arguments.size());
+		String searchWords = getName(searchList);
+		Command command = new Command(Command.CommandType.SEARCH);
+		command.setName(searchWords);
+		return command;
 	}
 	
 	
@@ -486,7 +495,8 @@ public class CommandParser {
 		int index = getIndex(arguments);
 		
 		if (arguments.size() > 1 && index <= 0) {
-			return initInvalidCommand("Invalid input of index");
+			String errorMsg = "Invalid input of index";
+			return initInvalidCommand(errorMsg);
 		}
 		
 		Command command = new Command(Command.CommandType.DONE);
@@ -501,7 +511,8 @@ public class CommandParser {
 	
 	private Command initSetCommand(ArrayList<String> arguments) {
 		if (arguments.size() != 1) {
-			return initInvalidCommand("Invalid directory");
+			String errorMsg = "Directory cannot be empty!";
+			return initInvalidCommand(errorMsg);
 		}
 		
 		Command command = new Command(Command.CommandType.SET);
