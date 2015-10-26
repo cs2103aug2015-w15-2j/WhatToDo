@@ -10,6 +10,10 @@
 	src: url('../resources/MyriadPro-Bold.otf');
 }
 
+@font-face {
+	src: url('../resources/MyriadPro-Semibold.otf');
+}
+
 .root {
     -fx-background-image: url("../resources/windowBG.jpg");
     /* Original background color #dedede */
@@ -91,6 +95,24 @@
 	-fx-text-fill: #e5e5e5;
 }
 
+.summary-header {
+	-fx-font-size: 30;
+}
+
+.summary-box {
+	-fx-background-image: url("../resources/sbBG.jpg");
+}
+
+.summary-box-label {
+	-fx-font-size: 18;
+	-fx-text-fill: #e5e5e5;
+}
+
+.summary-box-label-count {
+	-fx-font-size: 90;
+	-fx-text-fill: #e5e5e5;	
+}
+
 .box-title {
 	-fx-font-size: 14;
 	-fx-font-weight: bold;
@@ -98,14 +120,10 @@
 }
 
 .box-title-all-task {
-	-fx-font-size: 14;
-	-fx-font-weight: bold;
 	-fx-background-image: url("../resources/headerAllTaskBG.jpg");
 }
 
 .box-title-all-event {
-	-fx-font-size: 14;
-	-fx-font-weight: bold;
 	-fx-background-image: url("../resources/headerAllEventBG.jpg");
 }
 

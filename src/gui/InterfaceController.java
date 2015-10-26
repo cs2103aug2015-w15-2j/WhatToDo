@@ -81,6 +81,7 @@ public class InterfaceController {
     
     // Used for updateMainInterface
     protected static HBox defBox, allBox, histBox, doneBox, searchBox;
+    protected static VBox summaryBox;
 
     protected static LogicController logicControl;
     
@@ -525,6 +526,7 @@ public class InterfaceController {
         
         // Initialize all the views
         DefaultViewController.initDefView();
+        SummaryViewController.initSummaryView();
         AllViewController.initAllView();
         HistoryViewController.initHistView();
         //DoneViewController.initDoneView();
