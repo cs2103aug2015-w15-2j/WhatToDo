@@ -1,17 +1,13 @@
 @font-face {
-	src: url('../resources/PTS75F.ttf');
+	src: url('../resources/MyriadPro-Regular.otf');
 }
 
 @font-face {
-	src: url('../resources/PTS56F.ttf');
+	src: url('../resources/MyriadPro-It.otf');
 }
 
 @font-face {
-	src: url('../resources/PTS55F_0.ttf');
-}
-
-@font-face {
-	src: url('../resources/PTS76F.ttf');
+	src: url('../resources/MyriadPro-Bold.otf');
 }
 
 .root {
@@ -21,7 +17,7 @@
 
 .text {
     -fx-font-smoothing-type: lcd;
-    -fx-font-family: "PT Sans";
+    -fx-font-family: "Myriad Pro";
     -fx-opacity: 0.9;
 }
 
@@ -41,7 +37,7 @@
 .scroll-pane {
     -fx-background-color: transparent;
     -fx-background-image: url("../resources/windowBG.jpg");
-    -fx-font-size: 13;
+    -fx-font-size: 14;
 }
 
 /* JavaFX 8 issue with viewport transparency */
@@ -73,6 +69,26 @@
 .element-title {
 	-fx-font-size: 14;
 	-fx-font-weight: bold;
+}
+
+.element-index {
+	-fx-background-image: url("../resources/sbBG.jpg");
+}
+
+.element-index-task {
+	-fx-background-image: url("../resources/headerAllTaskBG.jpg");
+}
+
+.element-index-event {
+	-fx-background-image: url("../resources/headerAllEventBG.jpg");
+}
+
+.element-index-history {
+	-fx-background-image: url("../resources/headerHistoryBG.jpg");
+}
+
+.element-index-label {
+	-fx-text-fill: #e5e5e5;
 }
 
 .box-title {

@@ -166,6 +166,22 @@ public class InterfaceController {
         filepathBox.getStyleClass().add("display-bar");
         filepathBox.getStyleClass().add("gradient-regular");
     }
+    
+    protected static void updateFilePathBar() {
+    	
+    	filepathLabel = new Label(logicControl.getFilePath());
+    	
+    	// Clear the old file path label
+    	filepathBox.getChildren().clear();
+    	filepathBox.getChildren().add(filepathLabel);
+    	
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, logicControl.getPathHoverHandler(filepathLabel));
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
+    }
 
     private static void initSideBarDefButton() {
 

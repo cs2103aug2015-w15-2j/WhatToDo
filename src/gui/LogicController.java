@@ -265,6 +265,7 @@ public class LogicController {
 		// Update the necessary views
 		DefaultViewController.updateDefView();
 		AllViewController.updateAllView();
+		InterfaceController.updateFilePathBar();
 	}
 	
 	/* ================================================================================

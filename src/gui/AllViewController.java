@@ -1,6 +1,7 @@
 package gui;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -45,14 +46,13 @@ public class AllViewController {
     			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
     }
     
-    private static HBox initDisplayElement(String displayData) {
-    	
-    	Label elementLabel = new Label(displayData);
-    	HBox elementBox = new HBox(elementLabel);
-    	
+    private static HBox initDisplayElement(String displayData, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
     	if (isTitle(displayData)) {
+    		
+    		Label elementLabel = new Label(displayData);
+        	HBox elementBox = new HBox(elementLabel);
     		
     		// Create a divider line and add it to the elementBox
     		Line elementLine = new Line(0, 0, InterfaceController.WIDTH_DEFAULT, 0);
@@ -62,7 +62,7 @@ public class AllViewController {
     		Text text = new Text(elementLabel.getText());
     		Scene s = new Scene(new Group(text));
     		// Override the CSS style to calculate the text width
-    		text.setStyle("-fx-font-family: \"PT Sans\"; "
+    		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
     				+ "-fx-font-size: 14; "
     				+ "-fx-font-weight: bold;");
     		text.applyCss();
@@ -71,7 +71,8 @@ public class AllViewController {
     		// The arbitrary margin exists because text in a container is not perfectly 
     		// aligned to the dimensions of its container
     		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-    		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(textWidth + InterfaceController.MARGIN_ARBITRARY));
+    		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(
+    				textWidth + InterfaceController.MARGIN_ARBITRARY));
     		
     		// Align the elements in the HBox
     		elementBox.setAlignment(Pos.CENTER_LEFT);
@@ -84,22 +85,74 @@ public class AllViewController {
         	// Apply CSS style for titles
         	elementLine.getStyleClass().add("line");
     		elementBox.getStyleClass().add("element-title");
+    		
+    		return elementBox;
+    		
     	} else {
-    		// Set text wrapping for the display data
-        	elementLabel.setWrapText(true);
-        	
-    		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(
-        			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT));
-        	
-        	// Apply CSS style for regular data field
-    		elementBox.getStyleClass().add("element");
-    	}
+    		// Determine whether the element data is an element or a null response
+    		String[] splitDisplayData = displayData.split(Pattern.quote("."));
+    		
+    		Label elementLabel, elementIndex;
+    		HBox elementBox;
 
-    	return elementBox;
+    		// For a null response (There are no items to display)
+    		if (splitDisplayData.length == 1) {
+    			
+    			elementLabel = new Label(displayData);
+    			elementBox = new HBox(elementLabel);
+    			
+    			// Set text wrapping for the display data
+    			elementLabel.setWrapText(true);
+
+    			// Set the margins of the element node label within the HBox
+    			HBox.setMargin(elementLabel, new Insets(
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT));
+
+    			// Apply CSS style for regular data field
+    			elementBox.getStyleClass().add("element");
+
+    			return elementBox;
+    		} else {
+    			
+    			elementIndex = new Label(splitDisplayData[0]);
+    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", ""));
+    			HBox indexBox = new HBox(elementIndex);
+    			indexBox.setAlignment(Pos.CENTER);
+    			elementBox = new HBox(indexBox, elementLabel);
+    			
+    			// Set text wrapping for the display data
+    			elementLabel.setWrapText(true);
+
+    			// Set the margins of the element index label within the HBox
+    			HBox.setMargin(elementIndex, new Insets(
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT));
+    			
+    			// Set the margins of the element node label within the HBox
+    			HBox.setMargin(elementLabel, new Insets(
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT));
+    			
+    			// Apply CSS style for regular data field
+    			elementBox.getStyleClass().add("element");
+    			elementIndex.getStyleClass().add("element-index-label");
+    			
+    			if (isTask) {
+        			indexBox.getStyleClass().add("element-index-task");
+    			} else {
+        			indexBox.getStyleClass().add("element-index-event");
+    			}
+    			
+    			return elementBox;
+    		}
+    	}
     }
 
     private static void initAllTaskView(ArrayList<String> tasks) {
@@ -113,7 +166,7 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.size(); i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks.get(i));
+        	HBox tempBox = initDisplayElement(tasks.get(i), true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
@@ -166,7 +219,7 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.size(); i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events.get(i));
+        	HBox tempBox = initDisplayElement(events.get(i), false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
@@ -245,7 +298,7 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.size(); i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks.get(i));
+        	HBox tempBox = initDisplayElement(tasks.get(i), true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
@@ -254,7 +307,7 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.size(); i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events.get(i));
+        	HBox tempBox = initDisplayElement(events.get(i), false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
