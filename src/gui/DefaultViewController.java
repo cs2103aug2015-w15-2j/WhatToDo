@@ -60,7 +60,7 @@ public class DefaultViewController {
     		Text text = new Text(elementLabel.getText());
     		Scene s = new Scene(new Group(text));
     		// Override the CSS style to calculate the text width
-    		text.setStyle("-fx-font-family: \"PT Sans\"; "
+    		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
     				+ "-fx-font-size: 14; "
     				+ "-fx-font-weight: bold;");
     		text.applyCss();
