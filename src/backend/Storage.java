@@ -33,7 +33,7 @@ public class Storage {
 	private static final String MESSAGE_ERROR_CREATE_FILE = "Error encountered when creating file.";
 	private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
 	private static final String MESSAGE_ERROR_WRITE_FILE = "Error encountered when writing to file.";
-	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH = "Error encountered when changing file location.";
+	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH = "File location specified is invalid.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS = "Cannot find line %d in text file.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK = "Line %d is not a task!";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT = "Line %d is not an event!";
@@ -53,6 +53,11 @@ public class Storage {
 	private static final int PARAM_START_LOOP_ZERO = 0;
 	private static final int PARAM_LESS_ONE = 1;
 	private static final int PARAM_DOES_NOT_EXIST = -1;
+	private static final int PARAM_FIRST_WORD = 0;
+	private static final int PARAM_COMPARE_TO = 0;
+	
+	// Used to offset difference in 1-based and 0-based counting.
+	private static final int PARAM_OFFSET = 1;
 
 	// This string stores the whole file name with directory.
 	private String filePath;
@@ -374,7 +379,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		String lineToBeEdited = fileContents.get(lineNumber - 1);
+		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
 
 		if (typeToBeEdited.equals(STRING_EVENT)) {
@@ -411,7 +416,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		String lineToBeEdited = fileContents.get(lineNumber - 1);
+		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
 
 		if (typeToBeEdited.equals(STRING_EVENT)) {
@@ -449,7 +454,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		String lineToBeEdited = fileContents.get(lineNumber - 1);
+		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
 
 		if (typeToBeEdited.equals(STRING_EVENT)) {
@@ -486,7 +491,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		String lineToBeEdited = fileContents.get(lineNumber - 1);
+		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
 
 		if (typeToBeEdited.equals(STRING_EVENT)) {
@@ -523,7 +528,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		String lineToBeEdited = fileContents.get(lineNumber - 1);
+		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
 
 		if (typeToBeEdited.equals(STRING_TASK)) {
@@ -545,9 +550,9 @@ public class Storage {
 	// Refactor
 	private boolean isValidStartAndEnd(Date startDate, String startTime,
 			Date endDate, String endTime) {
-		if (startDate.compareTo(endDate) > 0) {
+		if (startDate.compareTo(endDate) > PARAM_COMPARE_TO) {
 			return false;
-		} else if (startDate.compareTo(endDate) == 0) {
+		} else if (startDate.compareTo(endDate) == PARAM_COMPARE_TO) {
 			return (Integer.parseInt(endTime) > Integer.parseInt(startTime));
 		} else {
 			return true;
@@ -561,7 +566,7 @@ public class Storage {
 		while (true) {
 			String lineRead = fileReader.readLine();
 
-			if (lineRead == null) {
+			if (isEndOfFile(lineRead)) {
 				break;
 			} else {
 				fileContents.add(lineRead);
@@ -582,7 +587,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		String lineToDelete = fileContents.remove(lineNumber - 1);
+		String lineToDelete = fileContents.remove(lineNumber - PARAM_OFFSET);
 
 		writeContentsToFile(fileContents);
 
@@ -601,7 +606,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		String lineToBeEdited = fileContents.get(lineNumber - 1);
+		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
 
 		if (typeToBeEdited.equals(STRING_TASK)) {
@@ -668,7 +673,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		String lineToMarkDone = fileContents.get(lineNumber - 1);
+		String lineToMarkDone = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToMarkDone = getFirstWord(lineToMarkDone);
 
 		if (typeToMarkDone.equals(STRING_TASK)) {
@@ -727,7 +732,7 @@ public class Storage {
 		while (true) {
 			String lineRead = fileReader.readLine();
 
-			if (lineRead == null) {
+			if (isEndOfFile(lineRead)) {
 				break;
 			} else {
 				fileContents.append(lineRead);
@@ -740,16 +745,23 @@ public class Storage {
 
 	private void addEventToFile(Event newEvent) throws IOException {
 		ArrayList<String> fileContents = new ArrayList<String>();
+		initialiseReader();
 
+		addEventToCorrectPlace(newEvent, fileContents);
+
+		writeContentsToFile(fileContents);
+		fileReader.close();
+	}
+
+	private void addEventToCorrectPlace(Event newEvent,
+			ArrayList<String> fileContents) throws IOException {
 		boolean hasAddedLine = false;
 
 		String lineToAdd = newEvent.toString();
-
-		initialiseReader();
-
+		
 		while (true) {
 			String lineRead = fileReader.readLine();
-			if (lineRead == null) {
+			if (isEndOfFile(lineRead)) {
 				if (!hasAddedLine) {
 					fileContents.add(lineToAdd);
 				}
@@ -762,7 +774,7 @@ public class Storage {
 					fileContents.add(lineRead);
 				} else {
 					Event currentReadEvent = new Event(lineRead);
-					if (newEvent.compareTo(currentReadEvent) > 0) {
+					if (newEvent.compareTo(currentReadEvent) > PARAM_COMPARE_TO) {
 						fileContents.add(lineRead);
 					} else {
 						fileContents.add(lineToAdd);
@@ -772,23 +784,28 @@ public class Storage {
 				}
 			}
 		}
-
-		writeContentsToFile(fileContents);
-		fileReader.close();
 	}
 
 	private void addTaskToFile(Task newTask) throws IOException {
 		ArrayList<String> fileContents = new ArrayList<String>();
 
-		boolean hasAddedLine = false;
-
-		String lineToAdd = newTask.toString();
-
 		initialiseReader();
 
+		addTaskToCorrectPlace(newTask, fileContents);
+
+		writeContentsToFile(fileContents);
+		fileReader.close();
+	}
+
+	private void addTaskToCorrectPlace(Task newTask,
+			ArrayList<String> fileContents) throws IOException {
+		boolean hasAddedLine = false;
+		
+		String lineToAdd = newTask.toString();
+		
 		while (true) {
 			String lineRead = fileReader.readLine();
-			if (lineRead == null) {
+			if (isEndOfFile(lineRead)) {
 				if (!hasAddedLine) {
 					fileContents.add(lineToAdd);
 				}
@@ -801,7 +818,7 @@ public class Storage {
 					fileContents.add(lineRead);
 				} else if (typeOfLineRead.equals(STRING_TASK)) {
 					Task currentReadTask = new Task(lineRead);
-					if (newTask.compareTo(currentReadTask) > 0) {
+					if (newTask.compareTo(currentReadTask) > PARAM_COMPARE_TO) {
 						fileContents.add(lineRead);
 					} else {
 						fileContents.add(lineToAdd);
@@ -815,9 +832,6 @@ public class Storage {
 				}
 			}
 		}
-
-		writeContentsToFile(fileContents);
-		fileReader.close();
 	}
 
 	private void writeContentsToFile(ArrayList<String> fileContents)
@@ -861,15 +875,22 @@ public class Storage {
 	private void addFloatTaskToFile(FloatingTask newFloatTask) throws IOException {
 		ArrayList<String> fileContents = new ArrayList<String>();
 
-		boolean hasAddedLine = false;
-
-		String lineToAdd = newFloatTask.toString();
-
 		initialiseReader();
 
+		addFloatToCorrectPlace(newFloatTask, fileContents);
+
+		writeContentsToFile(fileContents);
+		fileReader.close();
+	}
+
+	private void addFloatToCorrectPlace(FloatingTask newFloatTask,
+			ArrayList<String> fileContents) throws IOException {
+		boolean hasAddedLine = false;
+		String lineToAdd = newFloatTask.toString();
+		
 		while (true) {
 			String lineRead = fileReader.readLine();
-			if (lineRead == null) {
+			if (isEndOfFile(lineRead)) {
 				if (!hasAddedLine) {
 					fileContents.add(lineToAdd);
 				}
@@ -885,7 +906,7 @@ public class Storage {
 					hasAddedLine = true;
 				} else {
 					FloatingTask currentReadTask = new FloatingTask(lineRead);
-					if (currentReadTask.compareTo(newFloatTask) < 0) {
+					if (currentReadTask.compareTo(newFloatTask) < PARAM_COMPARE_TO) {
 						fileContents.add(lineRead);
 					} else {
 						fileContents.add(lineToAdd);
@@ -895,14 +916,14 @@ public class Storage {
 				}
 			}
 		}
+	}
 
-		writeContentsToFile(fileContents);
-		fileReader.close();
-
+	private boolean isEndOfFile(String lineRead) {
+		return lineRead == null;
 	}
 	
 	private String changeFilePath(String newLocation) {
-		File toBeReplaced = new File(filePath);
+		File oldFilePath = new File(filePath);
 		ArrayList<String> fileContents = new ArrayList<String>();
 		
 		try {
@@ -910,21 +931,26 @@ public class Storage {
 			
 			updateFilePath(newLocation);
 			
-			if (filePath.equals(toBeReplaced.getPath())) {
+			if (filePath.equals(oldFilePath.getPath())) {
 				return MESSAGE_SAME_FILE;
 			}
 
-			createFile();		
-			writeContentsToFile(fileContents);
-			updateConfigFile(newLocation);
+			copyContentsToNewFile(newLocation, fileContents);
 		} catch (IOException exception) {
-			filePath = toBeReplaced.getPath();
+			filePath = oldFilePath.getPath();
 			return MESSAGE_ERROR_CHANGING_FILE_PATH;
 		}
 		
-		toBeReplaced.delete();
+		oldFilePath.delete();
 		
 		return String.format(MESSAGE_CHANGE_STORAGE_SUCCESS, getFilePath());
+	}
+
+	private void copyContentsToNewFile(String newLocation,
+			ArrayList<String> fileContents) throws IOException {
+		createFile();		
+		writeContentsToFile(fileContents);
+		updateConfigFile(newLocation);
 	}
 
 	private void updateFilePath(String newLocation) {
@@ -938,7 +964,7 @@ public class Storage {
 	private String getFirstWord(String text) {
 		String parameters[] = text.split(TEXT_FILE_DIVIDER);
 
-		return parameters[0];
+		return parameters[PARAM_FIRST_WORD];
 	}
 	
 	private String getPathFromConfig() throws FileSystemException {
@@ -963,7 +989,7 @@ public class Storage {
 	}
 
 	private boolean hasDirectorySpecifiedInPath(String readFilePath) {
-		if (readFilePath == null) {
+		if (isEndOfFile(readFilePath)) {
 			return false;
 		} else if (readFilePath.trim().equals(EMPTY_STRING)) {
 			return false;
