@@ -559,13 +559,14 @@ public class CommandParser {
     // ================================================================
 	
 	private Command initSetCommand(ArrayList<String> arguments) {
-		if (arguments.size() != 1) {
+		if (arguments.isEmpty()) {
 			String errorMsg = "Directory cannot be empty!";
 			return initInvalidCommand(errorMsg);
 		}
 		
 		Command command = new Command(Command.CommandType.SET);
-		String directory = arguments.get(0);
+		List<String> directoryList = arguments.subList(0, arguments.size());
+		String directory = getName(directoryList);
 		command.setName(directory);
 		return command;
 	}
