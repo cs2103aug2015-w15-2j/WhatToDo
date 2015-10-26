@@ -462,6 +462,7 @@ public class InterfaceController {
 
         // CSS
         textBox.getStyleClass().add("gradient-regular");
+        textField.getStyleClass().add("text-field");
     }
 
     private static void initFeedbackBar() {

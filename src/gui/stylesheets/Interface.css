@@ -25,6 +25,10 @@
     -fx-opacity: 0.9;
 }
 
+.text-field {
+	-fx-font-size: 12;
+}
+
 .display-bar {
 	-fx-font-style: italic;
 	-fx-font-size: 14;
