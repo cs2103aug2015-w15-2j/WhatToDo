@@ -12,6 +12,7 @@ import javafx.scene.text.Text;
 
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class DefaultViewController {
 
@@ -44,13 +45,12 @@ public class DefaultViewController {
     }
     
     private static HBox initDisplayElement(String displayData) {
-    	
-    	Label elementLabel = new Label(displayData);
-    	HBox elementBox = new HBox(elementLabel);
-    	
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
     	if (isTitle(displayData)) {
+    		
+    		Label elementLabel = new Label(displayData);
+        	HBox elementBox = new HBox(elementLabel);
     		
     		// Create a divider line and add it to the elementBox
     		Line elementLine = new Line(0, 0, InterfaceController.WIDTH_DEFAULT, 0);
@@ -69,7 +69,8 @@ public class DefaultViewController {
     		// The arbitrary margin exists because text in a container is not perfectly 
     		// aligned to the dimensions of its container
     		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-    		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(textWidth + InterfaceController.MARGIN_ARBITRARY));
+    		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(
+    				textWidth + InterfaceController.MARGIN_ARBITRARY));
     		
     		// Align the elements in the HBox
     		elementBox.setAlignment(Pos.CENTER_LEFT);
@@ -82,22 +83,69 @@ public class DefaultViewController {
         	// Apply CSS style for titles
         	elementLine.getStyleClass().add("line");
     		elementBox.getStyleClass().add("element-title");
+    		
+    		return elementBox;
+    		
     	} else {
-    		// Set text wrapping for the display data
-        	elementLabel.setWrapText(true);
-        	
-    		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(
-        			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			InterfaceController.MARGIN_TEXT_ELEMENT));
-        	
-        	// Apply CSS style for regular data field
-    		elementBox.getStyleClass().add("element");
-    	}
+    		// Determine whether the element data is an element or a null response
+    		String[] splitDisplayData = displayData.split(Pattern.quote("."));
+    		
+    		Label elementLabel, elementIndex;
+    		HBox elementBox;
 
-    	return elementBox;
+    		// For a null response (There are no items to display)
+    		if (splitDisplayData.length == 1) {
+    			
+    			elementLabel = new Label(displayData);
+    			elementBox = new HBox(elementLabel);
+    			
+    			// Set text wrapping for the display data
+    			elementLabel.setWrapText(true);
+
+    			// Set the margins of the element node label within the HBox
+    			HBox.setMargin(elementLabel, new Insets(
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT));
+
+    			// Apply CSS style for regular data field
+    			elementBox.getStyleClass().add("element");
+
+    			return elementBox;
+    		} else {
+    			
+    			elementIndex = new Label(splitDisplayData[0]);
+    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", ""));
+    			HBox indexBox = new HBox(elementIndex);
+    			indexBox.setAlignment(Pos.CENTER);
+    			elementBox = new HBox(indexBox, elementLabel);
+    			
+    			// Set text wrapping for the display data
+    			elementLabel.setWrapText(true);
+
+    			// Set the margins of the element index label within the HBox
+    			HBox.setMargin(elementIndex, new Insets(
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT));
+    			
+    			// Set the margins of the element node label within the HBox
+    			HBox.setMargin(elementLabel, new Insets(
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    					InterfaceController.MARGIN_TEXT_ELEMENT));
+    			
+    			// Apply CSS style for regular data field
+    			elementBox.getStyleClass().add("element");
+    			indexBox.getStyleClass().add("element-index");
+    			elementIndex.getStyleClass().add("element-index-label");
+    			
+    			return elementBox;
+    		}
+    	}
     }
 
     private static void initDefTaskView(ArrayList<String> tasks) {

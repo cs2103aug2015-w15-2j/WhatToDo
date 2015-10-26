@@ -29,18 +29,30 @@ public class HistoryViewController {
     
     private static final String HEADER_HISTORY = "OPERATION HISTORY";
     private static final String MESSAGE_EMPTY_HIST = "No operations performed yet.";
-    private static final String MESSAGE_PERIOD = ". ";
     
     private static int messageIndex = 0;
     
-    private static HBox initDisplayElement(String feedbackMessage) {
+    private static HBox initDisplayElement(String index, String feedbackMessage) {
 
+    	Label feedbackIndex = new Label(index);
+    	HBox indexBox = new HBox(feedbackIndex);
+    	
     	Label feedbackLabel = new Label(feedbackMessage);
-    	HBox feedbackBox = new HBox(feedbackLabel);
+    	HBox feedbackBox = new HBox(indexBox, feedbackLabel);
 
     	// Set text wrapping for the feedback message
     	feedbackLabel.setWrapText(true);
 
+    	// If is default and no commands entered, do not display background
+    	if (index != "") {
+    		// Set the margins of the index label within the HBox
+    		HBox.setMargin(feedbackIndex, new Insets(
+    				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    				InterfaceController.MARGIN_TEXT_ELEMENT, 
+    				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    				InterfaceController.MARGIN_TEXT_ELEMENT));
+    	}
+    	
     	// Set the margins of the feedback label within the HBox
     	HBox.setMargin(feedbackLabel, new Insets(
     			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
@@ -50,7 +62,9 @@ public class HistoryViewController {
 
     	// Apply CSS style for regular data field
     	feedbackBox.getStyleClass().add("element");
-
+    	indexBox.getStyleClass().add("element-index-history");
+    	feedbackIndex.getStyleClass().add("element-index-label");
+    	
     	return feedbackBox;
     }
 
@@ -62,7 +76,7 @@ public class HistoryViewController {
         
         // History view is empty when first initialized,
         // add one message for no operations performed yet
-        HBox initialBox = initDisplayElement(MESSAGE_EMPTY_HIST);
+        HBox initialBox = initDisplayElement("", MESSAGE_EMPTY_HIST);
         VBox.setMargin(initialBox, new Insets(
         		0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
         
@@ -125,7 +139,7 @@ public class HistoryViewController {
         messageIndex++;
         
         // Use a temporary component for formatting
-        HBox tempBox = initDisplayElement(messageIndex + MESSAGE_PERIOD + feedbackMessage);
+        HBox tempBox = initDisplayElement(String.valueOf(messageIndex), feedbackMessage);
         VBox.setMargin(tempBox, new Insets(
         		0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
         
