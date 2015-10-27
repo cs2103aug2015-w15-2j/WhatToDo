@@ -101,7 +101,7 @@ public class CommandParser {
             	break; 
                 
             case USER_COMMAND_EXIT :
-                command = initExitCommand();
+                command = initExitCommand(arguments);
                 break;
 
             default :
@@ -609,7 +609,11 @@ public class CommandParser {
     // Create exit command methods
     // ================================================================
 	
-	private Command initExitCommand() {
+	private Command initExitCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
 		return new Command(Command.CommandType.EXIT);
 	}
 	
