@@ -44,7 +44,7 @@ public class Logic {
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s";
-    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "SEARCH\nFLOAT\n TASK\n EVENT %s"; 
+    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "SEARCH\nFLOAT\n%sTASK\n%sEVENT\n%s"; 
     
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
@@ -303,9 +303,11 @@ public class Logic {
         	//TODO format feedback msg for edit 
         	return storage.editName(lineNumber, newName); 
     	}
-    	//TODO exception for edit
+    	catch(FileSystemException e){
+    		return e.getMessage();
+    	}
     	catch(Exception e){
-    		return e.getMessage(); 
+    		return MESSAGE_ERROR_UNKNOWN; 
     	}
     }
     
@@ -335,12 +337,13 @@ public class Logic {
     		String query = command.getName();
     		String[] linesInFile = getLinesInFile();
   
-    		StringBuffer results = new StringBuffer(); 
+    		StringBuffer floatResults = new StringBuffer(); 
     		
     		for(int index = 0; index < linesInFile.length; index++){
     			String line = linesInFile[index].trim(); 
-    			if(line.contains(query)){
-    				
+    			String[] lineComponents = line.split(SEMICOLON);
+    			if(lineComponents[INDEX_NAME].contains(query)){
+
     			}
     		}
     	}
