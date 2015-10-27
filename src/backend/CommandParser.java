@@ -93,11 +93,11 @@ public class CommandParser {
             	break;
             	
             case USER_COMMAND_UNDO :
-            	command = initUndoCommand();
+            	command = initUndoCommand(arguments);
             	break;
             	
             case USER_COMMAND_REDO :
-            	command = initRedoCommand();
+            	command = initRedoCommand(arguments);
             	break; 
                 
             case USER_COMMAND_EXIT :
@@ -581,7 +581,11 @@ public class CommandParser {
     // Create undo command methods
     // ================================================================
 	
-	private Command initUndoCommand() {
+	private Command initUndoCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
 		Command command = new Command(Command.CommandType.UNDO);
 		return command;
 	}
@@ -591,7 +595,11 @@ public class CommandParser {
     // Create redo command methods
     // ================================================================
 	
-	private Command initRedoCommand() {
+	private Command initRedoCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
 		Command command = new Command(Command.CommandType.REDO);
 		return command;
 	}
