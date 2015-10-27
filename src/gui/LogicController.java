@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import backend.Logic;
 import javafx.application.Platform;
@@ -90,6 +91,77 @@ public class LogicController {
 		}
 		
 		return temp;
+	}
+	
+    public static boolean isTitle(String displayData) {
+    	
+    	String firstWord = displayData.split(" ")[0];
+    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
+    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
+    }
+    
+	public int[] getSummaryCount() {
+		
+		ArrayList<String> defTasks = InterfaceController.logicControl.getDefTasks();
+		ArrayList<String> defEvents = InterfaceController.logicControl.getDefEvents();
+		int[] summary = {0, 0, 0, 0};
+		int currentIndex = 0;
+		
+		// First count for tasks and update the count array
+		for (int i = 0; i < defTasks.size(); i++) {
+			String temp = defTasks.get(i);
+			if (isTitle(temp)) {
+				// Switch array index to increment the right counter
+				temp = temp.split(" ")[0];
+				switch(temp) {
+				case "TODAY":
+					currentIndex = 0;
+					break;
+				case "TOMORROW":
+					currentIndex = 0;
+					break;
+				case "FLOAT":
+					currentIndex = 2;
+					break;
+				default:
+					break;
+				}
+			} else {
+				// Increment the counter in the currentIndex
+				if (temp.split(Pattern.quote(".")).length > 1) {
+					summary[currentIndex]++;
+				}
+			}
+		}
+		
+		// Count for events and update the count array
+		for (int i = 0; i < defEvents.size(); i++) {
+			String temp = defEvents.get(i);
+			if (isTitle(temp)) {
+				// Switch array index to increment the right counter
+				temp = temp.split(" ")[0];
+				switch(temp) {
+				case "TODAY":
+					currentIndex = 1;
+					break;
+				case "TOMORROW":
+					currentIndex = 1;
+					break;
+				case "ONGOING":
+					currentIndex = 3;
+					break;
+				default:
+					break;
+				}
+			} else {
+				// Increment the counter in the currentIndex
+				if (temp.split(Pattern.quote(".")).length > 1) {
+					summary[currentIndex]++;
+				}
+			}
+		}
+		
+		return summary;
 	}
 	
 	private static void changeView(View view) {
@@ -281,6 +353,10 @@ public class LogicController {
 		return new KeyPressHandler();
 	}
 	
+	public TabPressHandler getTabPressHandler() {
+		return new TabPressHandler();
+	}
+	
 	public ButtonHoverHandler getButtonHoverHandler(View buttonType) {
 		return new ButtonHoverHandler(buttonType);
 	}
@@ -394,6 +470,31 @@ public class LogicController {
             }
         }
     }
+	
+	private static class TabPressHandler implements EventHandler<KeyEvent> {
+		
+		private static View previous;
+		
+		@Override
+		public void handle(KeyEvent event) {
+			// Display the summary view
+			if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+				if (event.getCode() == KeyCode.TAB) {
+					// Prevent infinite looping when user keeps the TAB key pressed
+					if (InterfaceController.getCurrentView() != View.SUMMARY) {
+						previous = InterfaceController.getCurrentView();
+					}
+					InterfaceController.updateMainInterface(View.SUMMARY);
+				}
+			}
+			// Revert back to the previous view
+			if (event.getEventType() == KeyEvent.KEY_RELEASED) {					
+				if (event.getCode() == KeyCode.TAB) {
+					InterfaceController.updateMainInterface(previous);
+				}
+			}
+		}
+	}
     
     private class ButtonHoverHandler implements EventHandler<MouseEvent> {
     	
@@ -410,35 +511,40 @@ public class LogicController {
     			ImageView hover;
     			switch(buttonType) {
     			case DEFAULT:
-    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
+    				if (InterfaceController.getCurrentView() != View.DEFAULT && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_DEFAULT_HOVER);
     					InterfaceController.getHomeButton().getChildren().clear();
     					InterfaceController.getHomeButton().getChildren().add(hover);
     				}
     				break;
     			case ALL:
-    				if (InterfaceController.getCurrentView() != View.ALL) {
+    				if (InterfaceController.getCurrentView() != View.ALL && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
     					InterfaceController.getAllButton().getChildren().clear();
     					InterfaceController.getAllButton().getChildren().add(hover);
     				}
     				break;
     			case HISTORY:
-    				if (InterfaceController.getCurrentView() != View.HISTORY) {
+    				if (InterfaceController.getCurrentView() != View.HISTORY && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
     					InterfaceController.getHistButton().getChildren().clear();
     					InterfaceController.getHistButton().getChildren().add(hover);
     				}
     				break;
     			case UNRESOLVED:
-    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
+    				if (InterfaceController.getCurrentView() != View.UNRESOLVED && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_UNRESOLVED_HOVER);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
     				break;
     			case SEARCH:
-    				if (InterfaceController.getCurrentView() != View.SEARCH) {
+    				if (InterfaceController.getCurrentView() != View.SEARCH && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
     					InterfaceController.getSearchButton().getChildren().clear();
     					InterfaceController.getSearchButton().getChildren().add(hover);
@@ -446,7 +552,8 @@ public class LogicController {
     				break;
     			case HELP:
     				// Do not change the button if help dialog is showing
-    				if (!MainApp.help.isShowing()) {
+    				if (!MainApp.help.isShowing() && 
+    						InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_HELP_HOVER);
     					InterfaceController.getHelpButton().getChildren().clear();
     					InterfaceController.getHelpButton().getChildren().add(hover);
@@ -461,35 +568,40 @@ public class LogicController {
     			ImageView hover;
     			switch(buttonType) {
     			case DEFAULT:
-    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
+    				if (InterfaceController.getCurrentView() != View.DEFAULT && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_DEFAULT);
     					InterfaceController.getHomeButton().getChildren().clear();
     					InterfaceController.getHomeButton().getChildren().add(hover);
     				}
     				break;
     			case ALL:
-    				if (InterfaceController.getCurrentView() != View.ALL) {
+    				if (InterfaceController.getCurrentView() != View.ALL && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_ALL);
     					InterfaceController.getAllButton().getChildren().clear();
     					InterfaceController.getAllButton().getChildren().add(hover);
     				}
     				break;
     			case HISTORY:
-    				if (InterfaceController.getCurrentView() != View.HISTORY) {
+    				if (InterfaceController.getCurrentView() != View.HISTORY && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_HIST);
     					InterfaceController.getHistButton().getChildren().clear();
     					InterfaceController.getHistButton().getChildren().add(hover);
     				}
     				break;
     			case UNRESOLVED:
-    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
+    				if (InterfaceController.getCurrentView() != View.UNRESOLVED && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_UNRESOLVED);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
     				break;
     			case SEARCH:
-    				if (InterfaceController.getCurrentView() != View.SEARCH) {
+    				if (InterfaceController.getCurrentView() != View.SEARCH && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_SEARCH);
     					InterfaceController.getSearchButton().getChildren().clear();
     					InterfaceController.getSearchButton().getChildren().add(hover);
@@ -497,7 +609,8 @@ public class LogicController {
     				break;
     			case HELP:
     				// Do not change the button if help dialog is showing
-    				if (!MainApp.help.isShowing()) {
+    				if (!MainApp.help.isShowing() && 
+    						InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_HELP);
     					InterfaceController.getHelpButton().getChildren().clear();
     					InterfaceController.getHelpButton().getChildren().add(hover);

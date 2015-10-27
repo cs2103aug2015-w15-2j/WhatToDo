@@ -664,6 +664,17 @@ public class InterfaceController {
             currentView = View.SEARCH;
     		break;
     		
+    	case SUMMARY:
+    		SummaryViewController.updateSummaryView();
+    		viewBox.getChildren().add(summaryBox);
+    		
+    		// Set summary box to grow with view box
+            HBox.setHgrow(summaryBox, Priority.ALWAYS);
+            
+            // Update currentView
+            currentView = View.SUMMARY;
+    		break;
+    		
     	default: //ignore
     		break;
     	}

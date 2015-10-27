@@ -56,9 +56,9 @@ public class SummaryViewController {
 		summaryHeaderLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
 	}
 	
-	private static void initTaskTwoDays() {
+	private static void initTaskTwoDays(String count) {
 		
-		taskTwoDaysCount = new Label("3");
+		taskTwoDaysCount = new Label(count);
 		taskTwoDaysLabel = new Label(HEADER_TASK_TWO_DAYS);
 		taskTwoDaysBox = new VBox(taskTwoDaysCount, taskTwoDaysLabel);
 		taskTwoDaysBox.setAlignment(Pos.BOTTOM_CENTER);
@@ -78,9 +78,9 @@ public class SummaryViewController {
 		taskTwoDaysLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
 	}
 	
-	private static void initEventTwoDays() {
+	private static void initEventTwoDays(String count) {
 		
-		eventTwoDaysCount = new Label("3");
+		eventTwoDaysCount = new Label(count);
 		eventTwoDaysLabel = new Label(HEADER_EVENT_TWO_DAYS);
 		eventTwoDaysBox = new VBox(eventTwoDaysCount, eventTwoDaysLabel);
 		eventTwoDaysBox.setAlignment(Pos.BOTTOM_CENTER);
@@ -100,9 +100,9 @@ public class SummaryViewController {
 		eventTwoDaysLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
 	}
 	
-	private static void initTaskFloat() {
+	private static void initTaskFloat(String count) {
 		
-		taskFloatCount = new Label("3");
+		taskFloatCount = new Label(count);
 		taskFloatLabel = new Label(HEADER_TASK_FLOAT);
 		taskFloatBox = new VBox(taskFloatCount, taskFloatLabel);
 		taskFloatBox.setAlignment(Pos.BOTTOM_CENTER);
@@ -122,9 +122,9 @@ public class SummaryViewController {
 		taskFloatLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
 	}
 	
-	private static void initEventOngoing() {
+	private static void initEventOngoing(String count) {
 		
-		eventOngoingCount = new Label("3");
+		eventOngoingCount = new Label(count);
 		eventOngoingLabel = new Label(HEADER_EVENT_ONGOING);
 		eventOngoingBox = new VBox(eventOngoingCount, eventOngoingLabel);
 		eventOngoingBox.setAlignment(Pos.BOTTOM_CENTER);
@@ -144,10 +144,10 @@ public class SummaryViewController {
 		eventOngoingLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
 	}
 	
-	private static void initRowOne() {
+	private static void initRowOne(String taskCount, String eventCount) {
 		
-		initTaskTwoDays();
-		initEventTwoDays();
+		initTaskTwoDays(taskCount);
+		initEventTwoDays(eventCount);
 		
 		Region spaceLeft = new Region();
 		Region spaceCenter = new Region();
@@ -161,10 +161,10 @@ public class SummaryViewController {
 		HBox.setHgrow(spaceRight, Priority.ALWAYS);
 	}
 	
-	private static void initRowTwo() {
+	private static void initRowTwo(String taskCount, String eventCount) {
 		
-		initTaskFloat();
-		initEventOngoing();
+		initTaskFloat(taskCount);
+		initEventOngoing(eventCount);
 		
 		Region spaceLeft = new Region();
 		Region spaceCenter = new Region();
@@ -180,11 +180,13 @@ public class SummaryViewController {
 	
 	public static void initSummaryView() {
 		
-		initSummaryHeader();
-		initRowOne();
-		initRowTwo();
+		int[] summary = InterfaceController.logicControl.getSummaryCount();
 		
-		Region spaceHeader = new Region();
+		//initSummaryHeader();
+		initRowOne(String.valueOf(summary[0]), String.valueOf(summary[1]));
+		initRowTwo(String.valueOf(summary[2]), String.valueOf(summary[3]));
+		
+		//Region spaceHeader = new Region();
 		Region spaceTop = new Region();
 		Region spaceMid = new Region();
 		Region spaceBot = new Region();
@@ -192,9 +194,69 @@ public class SummaryViewController {
 		summaryBox = new VBox(spaceTop, rowOneBox, spaceMid, rowTwoBox, spaceBot);
 		InterfaceController.summaryBox = summaryBox;
 		
-		VBox.setVgrow(spaceHeader, Priority.ALWAYS);
+		//VBox.setVgrow(spaceHeader, Priority.ALWAYS);
 		VBox.setVgrow(spaceTop, Priority.ALWAYS);
 		VBox.setVgrow(spaceMid, Priority.ALWAYS);
 		VBox.setVgrow(spaceBot, Priority.ALWAYS);
+	}
+	
+	public static void updateSummaryView() {
+		
+		// Clear the old data
+		taskTwoDaysBox.getChildren().clear();
+		eventTwoDaysBox.getChildren().clear();
+		taskFloatBox.getChildren().clear();
+		eventOngoingBox.getChildren().clear();
+		
+		// Create the new labels
+		taskTwoDaysLabel = new Label(HEADER_TASK_TWO_DAYS);
+		eventTwoDaysLabel = new Label(HEADER_EVENT_TWO_DAYS);
+		taskFloatLabel = new Label(HEADER_TASK_FLOAT);
+		eventOngoingLabel = new Label(HEADER_EVENT_ONGOING);
+		
+		// Get the updated data
+		int[] summary = InterfaceController.logicControl.getSummaryCount();
+		
+		// Update the current labels
+		taskTwoDaysCount = new Label(String.valueOf(summary[0]));
+		eventTwoDaysCount = new Label(String.valueOf(summary[1]));
+		taskFloatCount = new Label(String.valueOf(summary[2]));
+		eventOngoingCount = new Label(String.valueOf(summary[3]));
+		
+		// Add the labels again
+		taskTwoDaysBox.getChildren().addAll(taskTwoDaysCount, taskTwoDaysLabel);
+		eventTwoDaysBox.getChildren().addAll(eventTwoDaysCount, eventTwoDaysLabel);
+		taskFloatBox.getChildren().addAll(taskFloatCount, taskFloatLabel);
+		eventOngoingBox.getChildren().addAll(eventOngoingCount, eventOngoingLabel);
+		
+		// Set the margins
+		VBox.setMargin(taskTwoDaysCount, new Insets(0, 0, 15, 0));
+		VBox.setMargin(taskTwoDaysLabel, new Insets(0, 0, 15, 0));
+		
+		VBox.setMargin(eventTwoDaysCount, new Insets(0, 0, 15, 0));
+		VBox.setMargin(eventTwoDaysLabel, new Insets(0, 0, 15, 0));
+		
+		VBox.setMargin(taskFloatCount, new Insets(0, 0, 15, 0));
+		VBox.setMargin(taskFloatLabel, new Insets(0, 0, 15, 0));
+		
+		VBox.setMargin(eventOngoingCount, new Insets(0, 0, 15, 0));
+		VBox.setMargin(eventOngoingLabel, new Insets(0, 0, 15, 0));
+		
+		// CSS
+		taskTwoDaysCount.getStyleClass().add("summary-box-label-count");
+		taskTwoDaysLabel.getStyleClass().add("summary-box-label");
+		taskTwoDaysLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		
+		eventTwoDaysCount.getStyleClass().add("summary-box-label-count");
+		eventTwoDaysLabel.getStyleClass().add("summary-box-label");
+		eventTwoDaysLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		
+		taskFloatCount.getStyleClass().add("summary-box-label-count");
+		taskFloatLabel.getStyleClass().add("summary-box-label");
+		taskFloatLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		
+		eventOngoingCount.getStyleClass().add("summary-box-label-count");
+		eventOngoingLabel.getStyleClass().add("summary-box-label");
+		eventOngoingLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
 	}
 }

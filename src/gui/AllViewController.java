@@ -38,18 +38,10 @@ public class AllViewController {
     protected static final String HEADER_ALL_TASKS = "UPCOMING TASKS: ALL";
     protected static final String HEADER_ALL_EVENTS = "UPCOMING EVENTS: ALL";
     
-    private static boolean isTitle(String displayData) {
-    	
-    	// TODO: replace this with whatever format is required
-    	String firstWord = displayData.split(" ")[0];
-    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
-    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
-    }
-    
     private static HBox initDisplayElement(String displayData, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
-    	if (isTitle(displayData)) {
+    	if (LogicController.isTitle(displayData)) {
     		
     		Label elementLabel = new Label(displayData);
         	HBox elementBox = new HBox(elementLabel);
