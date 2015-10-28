@@ -44,7 +44,7 @@ public class Logic {
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s";
-    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "SEARCH\nFLOAT\n%s\nTASK\n%s\nEVENT\n%s"; 
+    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "FLOAT\n%s\nTASK\n%s\nEVENT\n%s"; 
     
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
