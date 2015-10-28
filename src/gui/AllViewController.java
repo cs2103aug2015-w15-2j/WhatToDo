@@ -110,7 +110,7 @@ public class AllViewController {
     		} else {
     			
     			elementIndex = new Label(splitDisplayData[0]);
-    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", ""));
+    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", "").trim());
     			HBox indexBox = new HBox(elementIndex);
     			indexBox.setAlignment(Pos.CENTER);
     			elementBox = new HBox(indexBox, elementLabel);
@@ -269,6 +269,12 @@ public class AllViewController {
         		InterfaceController.allBox.widthProperty().divide(2));
         allEventScroll.prefViewportWidthProperty().bind(
         		InterfaceController.allBox.widthProperty().divide(2));
+        
+        // Fix the width of the scroll panes to prevent resize of the inner labels
+        allTaskScroll.maxWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        allEventScroll.maxWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
         
         // Set the scroll separator to bind with the same line in DefaultViewController
         allScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());

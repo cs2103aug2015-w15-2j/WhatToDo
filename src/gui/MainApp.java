@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import struct.View;
 import javafx.scene.*;
 
 public class MainApp extends Application {

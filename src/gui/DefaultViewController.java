@@ -109,7 +109,7 @@ public class DefaultViewController {
     		} else {
     			
     			elementIndex = new Label(splitDisplayData[0]);
-    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", ""));
+    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", "").trim());
     			HBox indexBox = new HBox(elementIndex);
     			indexBox.setAlignment(Pos.CENTER);
     			elementBox = new HBox(indexBox, elementLabel);
@@ -188,6 +188,7 @@ public class DefaultViewController {
         
         // Set the scrollbar policy of the scroll pane
         defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        defTaskScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
         defTaskHeader.getStyleClass().add("box-title-label");
@@ -242,6 +243,7 @@ public class DefaultViewController {
         
         // Set the scrollbar policy of the scroll pane
         defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        defEventScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
         defEventHeader.getStyleClass().add("box-title-label");
@@ -262,6 +264,12 @@ public class DefaultViewController {
         defTaskScroll.prefViewportWidthProperty().bind(
         		InterfaceController.defBox.widthProperty().divide(2));
         defEventScroll.prefViewportWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        
+        // Fix the width of the scroll panes to prevent resize of the inner labels
+        defTaskScroll.maxWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        defEventScroll.maxWidthProperty().bind(
         		InterfaceController.defBox.widthProperty().divide(2));
         
         // CSS
