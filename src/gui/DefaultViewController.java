@@ -37,17 +37,10 @@ public class DefaultViewController {
     protected static final String HEADER_DEF_TASKS = "UPCOMING TASKS: SOON";
     protected static final String HEADER_DEF_EVENTS = "UPCOMING EVENTS: SOON";
     
-    private static boolean isTitle(String displayData) {
-    	
-    	String firstWord = displayData.split(" ")[0];
-    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
-    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
-    }
-    
     private static HBox initDisplayElement(String displayData) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
-    	if (isTitle(displayData)) {
+    	if (LogicController.isTitle(displayData)) {
     		
     		Label elementLabel = new Label(displayData);
         	HBox elementBox = new HBox(elementLabel);

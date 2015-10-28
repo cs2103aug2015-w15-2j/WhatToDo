@@ -8,6 +8,7 @@ package gui;
 
 import javafx.application.Application;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.scene.*;
 
@@ -71,6 +72,12 @@ public class MainApp extends Application {
         stage.setHeight(MIN_WINDOW_HEIGHT);
         stage.setMinHeight(MIN_WINDOW_HEIGHT);
         stage.setMinWidth(MIN_WINDOW_WIDTH);
+        
+        // Event handling for summary view
+        stage.addEventFilter(KeyEvent.KEY_PRESSED, 
+        		InterfaceController.logicControl.getTabPressHandler());
+        stage.addEventFilter(KeyEvent.KEY_RELEASED, 
+        		InterfaceController.logicControl.getTabPressHandler());
     }
     
     public static void initHelpStage() {

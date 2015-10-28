@@ -1,6 +1,5 @@
 package backend;
 
-import struct.CommandStub;
 import struct.Date;
 import struct.Command;
 
@@ -45,6 +44,14 @@ public class CommandParser {
     private static final String KEYWORD_EVENT_2 = KEYWORDS[2];
     private static final String KEYWORD_EVENT_3 = KEYWORDS[3];
     
+    private static final String[] EDIT_KEYWORDS = {"name", "date", "startd", "startt", "endd", "endt"};
+    private static final String KEYWORD_EDIT_NAME = EDIT_KEYWORDS[0];
+    private static final String KEYWORD_EDIT_DEADLINE = EDIT_KEYWORDS[1];
+    private static final String KEYWORD_EDIT_START_DATE = EDIT_KEYWORDS[2];
+    private static final String KEYWORD_EDIT_START_TIME = EDIT_KEYWORDS[3];
+    private static final String KEYWORD_EDIT_END_DATE = EDIT_KEYWORDS[4];
+    private static final String KEYWORD_EDIT_END_TIME = EDIT_KEYWORDS[5];
+    
     private static final ArrayList<String> nameOfDays = new ArrayList<String>();
     private static final ArrayList<String> fullNameOfDays = new ArrayList<String>();
     
@@ -86,15 +93,15 @@ public class CommandParser {
             	break;
             	
             case USER_COMMAND_UNDO :
-            	command = initUndoCommand();
+            	command = initUndoCommand(arguments);
             	break;
             	
             case USER_COMMAND_REDO :
-            	command = initRedoCommand();
+            	command = initRedoCommand(arguments);
             	break; 
                 
             case USER_COMMAND_EXIT :
-                command = initExitCommand();
+                command = initExitCommand(arguments);
                 break;
 
             default :
@@ -514,8 +521,6 @@ public class CommandParser {
 		} else {
 			return initInvalidCommand();
 		}
-		
-		
 	}
 	
 	
@@ -576,7 +581,11 @@ public class CommandParser {
     // Create undo command methods
     // ================================================================
 	
-	private Command initUndoCommand() {
+	private Command initUndoCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
 		Command command = new Command(Command.CommandType.UNDO);
 		return command;
 	}
@@ -586,7 +595,11 @@ public class CommandParser {
     // Create redo command methods
     // ================================================================
 	
-	private Command initRedoCommand() {
+	private Command initRedoCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
 		Command command = new Command(Command.CommandType.REDO);
 		return command;
 	}
@@ -596,7 +609,11 @@ public class CommandParser {
     // Create exit command methods
     // ================================================================
 	
-	private Command initExitCommand() {
+	private Command initExitCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
 		return new Command(Command.CommandType.EXIT);
 	}
 	
@@ -614,41 +631,5 @@ public class CommandParser {
 		command.setName(errorMsg);
 		return command;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-    public CommandStub getCommandType(String inputText) {
-
-        // Function stub, only has add and search commands
-        String command = inputText.split(" ")[0];
-        if (command.toLowerCase().equals("add")) {
-            return CommandStub.ADD;
-        } else if (command.toLowerCase().equals("search")) {
-            return CommandStub.SEARCH;
-        } else {
-            // Dummy condition
-            return CommandStub.ADD;
-        }
-    }
-
-    public boolean isSwapCommand(String viewState, String userInput) {
-        if (viewState.equals("scroll")) {
-            // Returns true if the command entered is "search" and the current state
-            // of the program is in scroll view
-            return (userInput.split(" ")[0].toLowerCase().equals("search"));
-        } else if (viewState.equals("split")) {
-            // Returns true if the command entered is "add" and the current state
-            // of the program is in split view
-            return (userInput.split(" ")[0].toLowerCase().equals("add"));
-        } else {
-            // Dummy condition, will not enter
-            return false;
-        }
-    }
     
 }
