@@ -1,10 +1,9 @@
 package backend;
 
 import java.nio.file.FileSystemException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import struct.Command;
+import struct.Command.CommandType;
 import struct.Date;
 import struct.Event;
 import struct.FloatingTask;
@@ -38,7 +37,6 @@ public class Logic {
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
-//    private static final String DISPLAY_NO_SEARCH_RESULTS = "There are no search results to display.\n";
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
@@ -78,11 +76,11 @@ public class Logic {
 	// Public methods
 	//============================================
     
-    /**
-     * executeCommand
-     * @param userInput
-     * @return
-     */
+    public CommandType getCommandType(String userInput) {
+    	Command command = commandParser.parse(userInput);
+    	return command.getCommandType(); 
+	}
+    
     public String executeCommand(String userInput) {
     	Command command = commandParser.parse(userInput);
     	switch (command.getCommandType()) {
