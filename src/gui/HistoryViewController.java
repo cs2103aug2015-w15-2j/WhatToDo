@@ -36,6 +36,7 @@ public class HistoryViewController {
 
     	Label feedbackIndex = new Label(index);
     	HBox indexBox = new HBox(feedbackIndex);
+    	indexBox.setAlignment(Pos.CENTER);
     	
     	Label feedbackLabel = new Label(feedbackMessage);
     	HBox feedbackBox = new HBox(indexBox, feedbackLabel);
