@@ -50,6 +50,9 @@ public class MainApp extends Application {
 
         // Run
         stage.show();
+        
+        // Set the first view to be the default view
+        InterfaceController.updateMainInterface(View.DEFAULT);
     }
 
     public static void main(String[] args) {

@@ -532,13 +532,10 @@ public class InterfaceController {
         //DoneViewController.initDoneView();
         //SearchViewController.initSearchView();
         
-        // Initial view will be default
-        viewBox = new HBox(defBox);
+        // Initial view will be empty
+        viewBox = new HBox();
         initFeedbackBar();
         initTextField();
-        
-        // Set default box to grow with view box
-        HBox.setHgrow(defBox, Priority.ALWAYS);
         
         // Create the line separator for defBox
         viewLine = new Line(0, 0, WIDTH_DEFAULT, 0);

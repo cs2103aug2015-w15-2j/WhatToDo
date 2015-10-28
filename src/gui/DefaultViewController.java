@@ -110,8 +110,20 @@ public class DefaultViewController {
     			
     			elementIndex = new Label(splitDisplayData[0]);
     			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", "").trim());
+    			
     			HBox indexBox = new HBox(elementIndex);
     			indexBox.setAlignment(Pos.CENTER);
+    			
+        		// Get the width of label and resize the line
+        		Text text = new Text(elementIndex.getText());
+        		Scene s = new Scene(new Group(text));
+        		// Override the CSS style to calculate the text width
+        		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
+        				+ "-fx-font-size: 14; ");
+        		text.applyCss();
+        		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
+    			indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
+    			
     			elementBox = new HBox(indexBox, elementLabel);
     			
     			// Set text wrapping for the display data
