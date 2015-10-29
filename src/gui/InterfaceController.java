@@ -515,8 +515,9 @@ public class InterfaceController {
 
     public static void initMainInterface() {
     	
-    	// Initial view is defined to be default
-    	currentView = View.DEFAULT;
+    	// Initial view set to ALL, 
+    	// just a dummy state other than DEFAULT
+    	currentView = View.ALL;
     	
     	// Initialize a LogicController
         logicControl = new LogicController();

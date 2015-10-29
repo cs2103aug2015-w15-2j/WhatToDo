@@ -160,8 +160,8 @@ public class AllViewController {
 
     private static void initAllTaskView(ArrayList<String> tasks) {
 
-    	Label defTaskHeader = new Label(HEADER_ALL_TASKS);
-        allTaskHeaderBox = new HBox(defTaskHeader);
+    	Label allTaskHeader = new Label(HEADER_ALL_TASKS);
+        allTaskHeaderBox = new HBox(allTaskHeader);
         allTaskHeaderBox.setAlignment(Pos.CENTER);
 
         allTaskContentBox = new VBox();
@@ -181,7 +181,7 @@ public class AllViewController {
         allTaskBox = new VBox(allTaskHeaderBox, allTaskScroll);
         
         // Set margins for the header label
-        HBox.setMargin(defTaskHeader, new Insets(
+        HBox.setMargin(allTaskHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
@@ -207,14 +207,14 @@ public class AllViewController {
         allTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        defTaskHeader.getStyleClass().add("box-title-label");
+        allTaskHeader.getStyleClass().add("box-title-label");
         allTaskHeaderBox.getStyleClass().add("box-title-all-task");
     }
 
     private static void initAllEventView(ArrayList<String> events) {
 
-    	Label defEventHeader = new Label(HEADER_ALL_EVENTS);
-        allEventHeaderBox = new HBox(defEventHeader);
+    	Label allEventHeader = new Label(HEADER_ALL_EVENTS);
+        allEventHeaderBox = new HBox(allEventHeader);
         allEventHeaderBox.setAlignment(Pos.CENTER);
 
         allEventContentBox = new VBox();
@@ -235,7 +235,7 @@ public class AllViewController {
         allEventBox = new VBox(allEventHeaderBox, allEventScroll);
         
         // Set margins for the header label
-        HBox.setMargin(defEventHeader, new Insets(
+        HBox.setMargin(allEventHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
@@ -261,7 +261,7 @@ public class AllViewController {
         allEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        defEventHeader.getStyleClass().add("box-title-label");
+        allEventHeader.getStyleClass().add("box-title-label");
         allEventHeaderBox.getStyleClass().add("box-title-all-event");
     }
 

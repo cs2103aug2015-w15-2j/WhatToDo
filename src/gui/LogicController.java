@@ -327,14 +327,16 @@ public class LogicController {
 		// Execute the command
 		String returnMessage = logic.executeCommand(textFieldInput);
 		
-		// Add the returnMessage to the feedback bar and history view
-		HistoryViewController.updateHistView(returnMessage);
-		
 		if (isSearch) {
+			// Add the returnMessage to the feedback bar and history view
 			InterfaceController.getFeedbackLabel().setText("Displaying results...");
+			HistoryViewController.updateHistView("Displaying results...");
+			
 			SearchViewController.updateSearchView(returnMessage);
 		} else {
+			// Add the returnMessage to the feedback bar and history view
 			InterfaceController.getFeedbackLabel().setText(returnMessage);
+			HistoryViewController.updateHistView(returnMessage);
 		}
 
 		// Update the necessary views
