@@ -19,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import struct.Command;
 import struct.View;
 
 public class LogicController {
@@ -184,8 +185,7 @@ public class LogicController {
         		//InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case SEARCH:
-        		// TODO
-        		//InterfaceController.updateMainInterface(View.SEARCH);
+        		InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
@@ -215,8 +215,7 @@ public class LogicController {
         		//InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case SEARCH:
-        		// TODO
-        		//InterfaceController.updateMainInterface(View.SEARCH);
+        		InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
@@ -246,8 +245,7 @@ public class LogicController {
         		//InterfaceController.updateMainInterface(View.HISTORY);
         		break;
         	case SEARCH:
-        		// TODO
-        		//InterfaceController.updateMainInterface(View.SEARCH);
+        		InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
@@ -276,8 +274,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
         	case SEARCH:
-        		// TODO
-        		//InterfaceController.updateMainInterface(View.SEARCH);
+        		InterfaceController.updateMainInterface(View.SEARCH);
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
@@ -325,14 +322,20 @@ public class LogicController {
         }
 	}
 
-	private static void runCommand(String textFieldInput) {
+	private static void runCommand(String textFieldInput, boolean isSearch) {
 		
 		// Execute the command
 		String returnMessage = logic.executeCommand(textFieldInput);
 		
 		// Add the returnMessage to the feedback bar and history view
-		InterfaceController.getFeedbackLabel().setText(returnMessage);
 		HistoryViewController.updateHistView(returnMessage);
+		
+		if (isSearch) {
+			InterfaceController.getFeedbackLabel().setText("Displaying results...");
+			SearchViewController.updateSearchView(returnMessage);
+		} else {
+			InterfaceController.getFeedbackLabel().setText(returnMessage);
+		}
 
 		// Update the necessary views
 		DefaultViewController.updateDefView();
@@ -410,6 +413,9 @@ public class LogicController {
             // Clear the textField
             textField.setText("");
 
+            // Do a preliminary parse to determine the type of operation
+            Command.CommandType operationType = logic.getCommandType(textFieldInput);
+            
             // Switch view depending on the input
             switch (textFieldInput) {
             case "def":
@@ -424,18 +430,25 @@ public class LogicController {
             case "unres":
             	changeView(View.UNRESOLVED);
             	break;
-            case "search":
-            	changeView(View.SEARCH);
-            	break;
             case "help":
             	changeView(View.HELP);
             	break;
-            case "exit":
-            	changeView(View.EXIT);
-            	break;
             default:
-                // Run the command
-                runCommand(textFieldInput);
+            	// Perform branching based on the operation type
+            	switch (operationType) {
+            	case EXIT:
+            		changeView(View.EXIT);
+            		break;
+            	case SEARCH:
+                    // Run the command
+                    runCommand(textFieldInput, true);
+                    changeView(View.SEARCH);
+            		break;
+            	default:
+                    // Run the command
+                    runCommand(textFieldInput, false);
+            		break;
+            	}
                 break;
             }
         }

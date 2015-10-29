@@ -80,8 +80,8 @@ public class InterfaceController {
     private static Line viewLine;
     
     // Used for updateMainInterface
-    protected static HBox defBox, allBox, histBox, doneBox, searchBox;
-    protected static VBox summaryBox;
+    protected static HBox defBox, allBox, histBox, doneBox;
+    protected static VBox summaryBox, searchBox;
 
     protected static LogicController logicControl;
     
@@ -530,7 +530,7 @@ public class InterfaceController {
         AllViewController.initAllView();
         HistoryViewController.initHistView();
         //DoneViewController.initDoneView();
-        //SearchViewController.initSearchView();
+        SearchViewController.initSearchView();
         
         // Initial view will be empty
         viewBox = new HBox();
@@ -646,12 +646,10 @@ public class InterfaceController {
     		break;
     		
     	case SEARCH:
-    		// TODO:
-    		//DoneViewController.updateDoneView();
     		viewBox.getChildren().add(searchBox);
     		
     		// Set done box to grow with view box
-            //HBox.setHgrow(doneBox, Priority.ALWAYS);
+            HBox.setHgrow(searchBox, Priority.ALWAYS);
     		
             // Change buttons
             changeButtonToSelected(View.SEARCH);
