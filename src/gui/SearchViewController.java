@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -261,8 +262,8 @@ public class SearchViewController {
 		// Loop for the floats
 		for (int i = 0; i < taskResults.size(); i++) {
 			HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+			VBox.setMargin(tempBox, new Insets(
+					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
 		}
 
@@ -410,11 +411,21 @@ public class SearchViewController {
 		searchTaskContentBox.getChildren().clear();
 		searchEventContentBox.getChildren().clear();
 		
+		int numOfEmptyMessages = 0;
 		for (int i = 0; i < taskResults.size(); i++) {
 			HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-			searchTaskContentBox.getChildren().add(tempBox);
+			if (taskResults.get(i).equals(MESSAGE_EMPTY)) {
+				numOfEmptyMessages++;
+				if (numOfEmptyMessages == 2) {
+					VBox.setMargin(tempBox, new Insets(
+							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+					searchTaskContentBox.getChildren().add(tempBox);
+				}
+			} else {
+				VBox.setMargin(tempBox, new Insets(
+						0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+				searchTaskContentBox.getChildren().add(tempBox);
+			}
 		}
 		
 		for (int i = 0; i < eventResults.size(); i++) {
