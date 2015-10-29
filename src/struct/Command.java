@@ -1,5 +1,7 @@
 package struct;
 
+import java.util.ArrayList;
+
 public class Command {
 	
 	public enum CommandType {
@@ -22,6 +24,7 @@ public class Command {
 	private String startTime; 
 	private String endTime;
 	private boolean isStart; 
+	private ArrayList<String> editList;
 	
 	//============================================
 	// Constructors
@@ -89,6 +92,10 @@ public class Command {
 	
 	public boolean getIsStart(){
 		return isStart; 
+	}
+	
+	public ArrayList<String> getEditList(){
+		return editList;
 	}
 	
 	//============================================
