@@ -110,9 +110,20 @@ public class AllViewController {
     		} else {
     			
     			elementIndex = new Label(splitDisplayData[0]);
-    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", ""));
+    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", "").trim());
     			HBox indexBox = new HBox(elementIndex);
     			indexBox.setAlignment(Pos.CENTER);
+    			
+        		// Get the width of label and resize the line
+        		Text text = new Text(elementIndex.getText());
+        		Scene s = new Scene(new Group(text));
+        		// Override the CSS style to calculate the text width
+        		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
+        				+ "-fx-font-size: 14; ");
+        		text.applyCss();
+        		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
+    			indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
+    			
     			elementBox = new HBox(indexBox, elementLabel);
     			
     			// Set text wrapping for the display data
@@ -149,8 +160,8 @@ public class AllViewController {
 
     private static void initAllTaskView(ArrayList<String> tasks) {
 
-    	Label defTaskHeader = new Label(HEADER_ALL_TASKS);
-        allTaskHeaderBox = new HBox(defTaskHeader);
+    	Label allTaskHeader = new Label(HEADER_ALL_TASKS);
+        allTaskHeaderBox = new HBox(allTaskHeader);
         allTaskHeaderBox.setAlignment(Pos.CENTER);
 
         allTaskContentBox = new VBox();
@@ -170,7 +181,7 @@ public class AllViewController {
         allTaskBox = new VBox(allTaskHeaderBox, allTaskScroll);
         
         // Set margins for the header label
-        HBox.setMargin(defTaskHeader, new Insets(
+        HBox.setMargin(allTaskHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
@@ -196,14 +207,14 @@ public class AllViewController {
         allTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        defTaskHeader.getStyleClass().add("box-title-label");
+        allTaskHeader.getStyleClass().add("box-title-label");
         allTaskHeaderBox.getStyleClass().add("box-title-all-task");
     }
 
     private static void initAllEventView(ArrayList<String> events) {
 
-    	Label defEventHeader = new Label(HEADER_ALL_EVENTS);
-        allEventHeaderBox = new HBox(defEventHeader);
+    	Label allEventHeader = new Label(HEADER_ALL_EVENTS);
+        allEventHeaderBox = new HBox(allEventHeader);
         allEventHeaderBox.setAlignment(Pos.CENTER);
 
         allEventContentBox = new VBox();
@@ -224,7 +235,7 @@ public class AllViewController {
         allEventBox = new VBox(allEventHeaderBox, allEventScroll);
         
         // Set margins for the header label
-        HBox.setMargin(defEventHeader, new Insets(
+        HBox.setMargin(allEventHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
@@ -250,7 +261,7 @@ public class AllViewController {
         allEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        defEventHeader.getStyleClass().add("box-title-label");
+        allEventHeader.getStyleClass().add("box-title-label");
         allEventHeaderBox.getStyleClass().add("box-title-all-event");
     }
 
@@ -269,6 +280,12 @@ public class AllViewController {
         		InterfaceController.allBox.widthProperty().divide(2));
         allEventScroll.prefViewportWidthProperty().bind(
         		InterfaceController.allBox.widthProperty().divide(2));
+        
+        // Fix the width of the scroll panes to prevent resize of the inner labels
+        allTaskScroll.maxWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        allEventScroll.maxWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
         
         // Set the scroll separator to bind with the same line in DefaultViewController
         allScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());

@@ -80,8 +80,8 @@ public class InterfaceController {
     private static Line viewLine;
     
     // Used for updateMainInterface
-    protected static HBox defBox, allBox, histBox, doneBox, searchBox;
-    protected static VBox summaryBox;
+    protected static HBox defBox, allBox, histBox, doneBox;
+    protected static VBox summaryBox, searchBox;
 
     protected static LogicController logicControl;
     
@@ -515,8 +515,9 @@ public class InterfaceController {
 
     public static void initMainInterface() {
     	
-    	// Initial view is defined to be default
-    	currentView = View.DEFAULT;
+    	// Initial view set to ALL, 
+    	// just a dummy state other than DEFAULT
+    	currentView = View.ALL;
     	
     	// Initialize a LogicController
         logicControl = new LogicController();
@@ -530,15 +531,12 @@ public class InterfaceController {
         AllViewController.initAllView();
         HistoryViewController.initHistView();
         //DoneViewController.initDoneView();
-        //SearchViewController.initSearchView();
+        SearchViewController.initSearchView();
         
-        // Initial view will be default
-        viewBox = new HBox(defBox);
+        // Initial view will be empty
+        viewBox = new HBox();
         initFeedbackBar();
         initTextField();
-        
-        // Set default box to grow with view box
-        HBox.setHgrow(defBox, Priority.ALWAYS);
         
         // Create the line separator for defBox
         viewLine = new Line(0, 0, WIDTH_DEFAULT, 0);
@@ -649,12 +647,10 @@ public class InterfaceController {
     		break;
     		
     	case SEARCH:
-    		// TODO:
-    		//DoneViewController.updateDoneView();
     		viewBox.getChildren().add(searchBox);
     		
     		// Set done box to grow with view box
-            //HBox.setHgrow(doneBox, Priority.ALWAYS);
+            HBox.setHgrow(searchBox, Priority.ALWAYS);
     		
             // Change buttons
             changeButtonToSelected(View.SEARCH);

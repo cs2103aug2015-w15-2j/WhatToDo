@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import struct.View;
 import javafx.scene.*;
 
 public class MainApp extends Application {
@@ -49,6 +50,9 @@ public class MainApp extends Application {
 
         // Run
         stage.show();
+        
+        // Set the first view to be the default view
+        InterfaceController.updateMainInterface(View.DEFAULT);
     }
 
     public static void main(String[] args) {

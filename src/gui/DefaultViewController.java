@@ -109,9 +109,21 @@ public class DefaultViewController {
     		} else {
     			
     			elementIndex = new Label(splitDisplayData[0]);
-    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", ""));
+    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", "").trim());
+    			
     			HBox indexBox = new HBox(elementIndex);
     			indexBox.setAlignment(Pos.CENTER);
+    			
+        		// Get the width of label and resize the line
+        		Text text = new Text(elementIndex.getText());
+        		Scene s = new Scene(new Group(text));
+        		// Override the CSS style to calculate the text width
+        		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
+        				+ "-fx-font-size: 14; ");
+        		text.applyCss();
+        		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
+    			indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
+    			
     			elementBox = new HBox(indexBox, elementLabel);
     			
     			// Set text wrapping for the display data
@@ -188,6 +200,7 @@ public class DefaultViewController {
         
         // Set the scrollbar policy of the scroll pane
         defTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        defTaskScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
         defTaskHeader.getStyleClass().add("box-title-label");
@@ -242,6 +255,7 @@ public class DefaultViewController {
         
         // Set the scrollbar policy of the scroll pane
         defEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        defEventScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
         defEventHeader.getStyleClass().add("box-title-label");
@@ -262,6 +276,12 @@ public class DefaultViewController {
         defTaskScroll.prefViewportWidthProperty().bind(
         		InterfaceController.defBox.widthProperty().divide(2));
         defEventScroll.prefViewportWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        
+        // Fix the width of the scroll panes to prevent resize of the inner labels
+        defTaskScroll.maxWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        defEventScroll.maxWidthProperty().bind(
         		InterfaceController.defBox.widthProperty().divide(2));
         
         // CSS
