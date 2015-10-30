@@ -145,4 +145,8 @@ public class Command {
 	public void setIsStartTime(boolean isStart) {
 		this.isStart = isStart; 
 	}
+	
+	public void setEditList(ArrayList<String> editList) {
+		this.editList = editList;
+	}
 }

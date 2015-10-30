@@ -21,15 +21,6 @@ public class CommandParser {
 	private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
 	private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
 	
-	public static void main (String[] args) {
-		String userInput = "edit 1 startd 101215 name something blah blah ";
-		CommandParser parser = new CommandParser();
-		Command command = parser.parse(userInput);
-		System.out.println(command.getCommandType());
-		System.out.println(command.getName());
-		System.out.println(command.getStartDate().getFullDate());
-	}
-	
     private static final String STRING_ONE_SPACE = " ";
     private static final String ESCAPE_CHARACTER = "\\";
 	
@@ -528,7 +519,6 @@ public class CommandParser {
 		}
 		
 		int nameIndex = getKeywordIndex(arguments, KEYWORD_EDIT_NAME);
-		System.out.println(nameIndex);
 		int deadlineIndex = getKeywordIndex(arguments, KEYWORD_EDIT_DEADLINE);
 		int startDateIndex = getKeywordIndex(arguments, KEYWORD_EDIT_START_DATE);
 		int startTimeIndex = getKeywordIndex(arguments, KEYWORD_EDIT_START_TIME);
@@ -542,15 +532,18 @@ public class CommandParser {
 		}
 		
 		ArrayList<Integer> indexArrayList = getIndexArrayList(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
-		Hashtable<Integer, String> indexKeywordHash = getHashtable(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
 		
 		if (indexArrayList.isEmpty()) {
 			String errorMsg = "Invalid edit command";
 			return initInvalidCommand(errorMsg);
 		}
 		
+		Hashtable<Integer, String> indexKeywordHash = getHashtable(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
+		ArrayList<String> editList = getEditList(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
+		
 		Command command = new Command();
 		command.setCommandType(Command.CommandType.EDIT);
+		command.setEditList(editList);
 		
 		for (int i = 0; i < indexArrayList.size(); i++) {
 			int keywordIndex = indexArrayList.get(i);
@@ -676,6 +669,29 @@ public class CommandParser {
 			indexKeywordHash.put(endTimeIndex, KEYWORD_EDIT_END_TIME);
 		}
 		return indexKeywordHash;
+	}
+	
+	private ArrayList<String> getEditList(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex, int endDateIndex, int endTimeIndex) {
+		ArrayList<String> editList = new ArrayList<String>();
+		if (nameIndex != -1) {
+			editList.add(KEYWORD_EDIT_NAME);
+		}
+		if (deadlineIndex != -1) {
+			editList.add(KEYWORD_EDIT_DEADLINE);
+		}
+		if (startDateIndex != -1) {
+			editList.add(KEYWORD_EDIT_START_DATE);
+		}
+		if (startTimeIndex != -1) {
+			editList.add(KEYWORD_EDIT_START_TIME);
+		}
+		if (endDateIndex != -1) {
+			editList.add(KEYWORD_EDIT_END_DATE);
+		}
+		if (endTimeIndex != -1) {
+			editList.add(KEYWORD_EDIT_END_TIME);
+		}
+		return editList;
 	}
 	
 	private Command editName (Command command, String argument) {
