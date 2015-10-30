@@ -95,6 +95,28 @@ public class LogicController {
 		
 		return allEventsSplit;
 	}
+	
+	public String[] getUnresTasks() {
+		
+		// Get the String from logic
+		String unresTasks = logic.taskPastUncompletedView();
+		
+		// Split the string by newline
+		String[] unresTasksSplit = unresTasks.split("\n");
+		
+		return unresTasksSplit;
+	}
+	
+	public String[] getUnresEvents() {
+		
+		// Get the String from logic
+		String unresEvents = logic.eventPastUncompletedView();
+		
+		// Split the string by newline
+		String[] unresEventsSplit = unresEvents.split("\n");
+		
+		return unresEventsSplit;
+	}
     
 	public int[] getSummaryCount() {
 		
@@ -220,6 +242,26 @@ public class LogicController {
 		return count;
 	}
 	
+	public int getUnresElementsCount() {
+		
+		int count = 0;
+		
+		String[] temp = InterfaceController.logicControl.getUnresTasks();
+		for (int i = 0; i < temp.length; i++) {
+			if (!isTitleOrDate(temp[i])) {
+				count++;
+			}
+		}
+		temp = InterfaceController.logicControl.getUnresEvents();
+		for (int i = 0; i < temp.length; i++) {
+			if (!isTitleOrDate(temp[i])) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
     public boolean isTitle(String displayData) {
     	
     	String firstWord = displayData.split(" ")[0];
@@ -263,8 +305,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
         	case UNRESOLVED:
-        		// TODO
-        		//InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
@@ -293,8 +334,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
         	case UNRESOLVED:
-        		// TODO
-        		//InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
@@ -323,8 +363,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.ALL);
         		break;
         	case UNRESOLVED:
-        		// TODO
-        		//InterfaceController.updateMainInterface(View.HISTORY);
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
@@ -385,8 +424,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
         	case UNRESOLVED:
-        		// TODO
-        		//InterfaceController.updateMainInterface(DoneViewController.initDoneView());
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
@@ -425,6 +463,7 @@ public class LogicController {
 		// Update the necessary views
 		DefaultViewController.updateDefView();
 		AllViewController.updateAllView();
+		UnresolvedViewController.updateUnresView();
 		InterfaceController.updateFilePathBar();
 	}
 	
@@ -527,7 +566,6 @@ public class LogicController {
             	break;
             case "config":
             	InterfaceController.openConfigLocation();
-            	
             	break;
             default:
             	// Perform branching based on the operation type

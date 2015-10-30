@@ -1,6 +1,5 @@
 package gui;
 
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import javafx.geometry.Insets;
@@ -15,28 +14,28 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
-public class AllViewController {
+public class UnresolvedViewController {
 
 	/* ================================================================================
      * JavaFX controls used in the general interface
      * ================================================================================
      */
 	
-	// Used for initAllTaskView
-    private static VBox allTaskBox, allTaskContentBox;
-    private static HBox allTaskHeaderBox;
-    private static ScrollPane allTaskScroll;
+	// Used for initUnresTaskView
+    private static VBox unresTaskBox, unresTaskContentBox;
+    private static HBox unresTaskHeaderBox;
+    private static ScrollPane unresTaskScroll;
 
-    // Used for initAllEventView
-    private static VBox allEventBox, allEventContentBox;
-    private static HBox allEventHeaderBox;
-    private static ScrollPane allEventScroll;
+    // Used for initUnresEventView
+    private static VBox unresEventBox, unresEventContentBox;
+    private static HBox unresEventHeaderBox;
+    private static ScrollPane unresEventScroll;
 
-    // Used for initAllView
-    private static Line allScrollLine;
+    // Used for initUnresView
+    private static Line unresScrollLine;
     
-    protected static final String HEADER_ALL_TASKS = "UPCOMING TASKS: ALL";
-    protected static final String HEADER_ALL_EVENTS = "UPCOMING EVENTS: ALL";
+    protected static final String HEADER_UNRESOLVED_TASKS = "UNRESOLVED TASKS";
+    protected static final String HEADER_UNRESOLVED_EVENTS = "UNRESOLVED EVENTS";
     
     private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
@@ -115,7 +114,7 @@ public class AllViewController {
     			indexBox.setAlignment(Pos.CENTER);
     			
 				// After removing the index, store it in the index map
-				ViewIndexMap.addToAllMap(Integer.parseInt(displayDataSplit[0]));
+				ViewIndexMap.addToUnresMap(Integer.parseInt(displayDataSplit[0]));
 				
         		// Get the width of label and resize the line
         		Text text = new Text(String.valueOf(numOfElements));
@@ -161,156 +160,158 @@ public class AllViewController {
     	}
     }
 
-    private static void initAllTaskView(String[] tasks) {
+    private static void initUnresTaskView(String[] tasks) {
 
-    	Label allTaskHeader = new Label(HEADER_ALL_TASKS);
-        allTaskHeaderBox = new HBox(allTaskHeader);
-        allTaskHeaderBox.setAlignment(Pos.CENTER);
+    	Label unresTaskHeader = new Label(HEADER_UNRESOLVED_TASKS);
+        unresTaskHeaderBox = new HBox(unresTaskHeader);
+        unresTaskHeaderBox.setAlignment(Pos.CENTER);
 
-        allTaskContentBox = new VBox();
+        unresTaskContentBox = new VBox();
         
+    	int numOfElements = InterfaceController.logicControl.getUnresElementsCount();
+    	
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
         	HBox tempBox = initDisplayElement(tasks[i], numOfElements, 1, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            allTaskContentBox.getChildren().add(tempBox);
+            unresTaskContentBox.getChildren().add(tempBox);
         }
         
-        allTaskScroll = new ScrollPane(allTaskContentBox);
-        allTaskScroll.setFitToWidth(true);
+        unresTaskScroll = new ScrollPane(unresTaskContentBox);
+        unresTaskScroll.setFitToWidth(true);
         
-        allTaskBox = new VBox(allTaskHeaderBox, allTaskScroll);
+        unresTaskBox = new VBox(unresTaskHeaderBox, unresTaskScroll);
         
         // Set margins for the header label
-        HBox.setMargin(allTaskHeader, new Insets(
+        HBox.setMargin(unresTaskHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
         // Set margins for the header
-        VBox.setMargin(allTaskHeaderBox, new Insets(
+        VBox.setMargin(unresTaskHeaderBox, new Insets(
         		0, InterfaceController.MARGIN_SCROLL, 
         		0, InterfaceController.MARGIN_SCROLL));
         
         // Set margins for the scroll pane
-        VBox.setMargin(allTaskScroll, new Insets(
+        VBox.setMargin(unresTaskScroll, new Insets(
         		InterfaceController.MARGIN_COMPONENT, 
         		InterfaceController.MARGIN_SCROLL, 
         		0, 
         		InterfaceController.MARGIN_SCROLL));
         
         // Set the alignment of the header image to be in the center
-        allTaskBox.setAlignment(Pos.CENTER);
+        unresTaskBox.setAlignment(Pos.CENTER);
         
         // Set the height of the scroll pane to grow with window height
-        VBox.setVgrow(allTaskScroll, Priority.ALWAYS);
+        VBox.setVgrow(unresTaskScroll, Priority.ALWAYS);
         
         // Set the scrollbar policy of the scroll pane
-        allTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        unresTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        allTaskHeader.getStyleClass().add("box-title-label");
-        allTaskHeaderBox.getStyleClass().add("box-title-all-task");
+        unresTaskHeader.getStyleClass().add("box-title-label");
+        unresTaskHeaderBox.getStyleClass().add("box-title-all-task");
     }
 
-    private static void initAllEventView(String[] events) {
+    private static void initUnresEventView(String[] events) {
 
-    	Label allEventHeader = new Label(HEADER_ALL_EVENTS);
-        allEventHeaderBox = new HBox(allEventHeader);
-        allEventHeaderBox.setAlignment(Pos.CENTER);
+    	Label unresEventHeader = new Label(HEADER_UNRESOLVED_EVENTS);
+        unresEventHeaderBox = new HBox(unresEventHeader);
+        unresEventHeaderBox.setAlignment(Pos.CENTER);
 
-        allEventContentBox = new VBox();
+        unresEventContentBox = new VBox();
         
+    	int numOfElements = InterfaceController.logicControl.getUnresElementsCount();
+    	
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
         	HBox tempBox = initDisplayElement(events[i], numOfElements, 1, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            allEventContentBox.getChildren().add(tempBox);
+            unresEventContentBox.getChildren().add(tempBox);
         }
         
         
-        allEventScroll = new ScrollPane(allEventContentBox);
-        allEventScroll.setFitToWidth(true);
+        unresEventScroll = new ScrollPane(unresEventContentBox);
+        unresEventScroll.setFitToWidth(true);
         
-        allEventBox = new VBox(allEventHeaderBox, allEventScroll);
+        unresEventBox = new VBox(unresEventHeaderBox, unresEventScroll);
         
         // Set margins for the header label
-        HBox.setMargin(allEventHeader, new Insets(
+        HBox.setMargin(unresEventHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
         // Set margins for the header
-        VBox.setMargin(allEventHeaderBox, new Insets(
+        VBox.setMargin(unresEventHeaderBox, new Insets(
         		0, InterfaceController.MARGIN_SCROLL, 
         		0, InterfaceController.MARGIN_SCROLL));
         
         // Set margins for the scroll pane
-        VBox.setMargin(allEventScroll, new Insets(
+        VBox.setMargin(unresEventScroll, new Insets(
         		InterfaceController.MARGIN_COMPONENT, 
         		InterfaceController.MARGIN_SCROLL, 
         		0, 
         		InterfaceController.MARGIN_SCROLL));
         
         // Set the alignment of the header image to be in the center
-        allEventBox.setAlignment(Pos.CENTER);
+        unresEventBox.setAlignment(Pos.CENTER);
 
         // Set the height of the scroll pane to grow with the window height
-        VBox.setVgrow(allEventScroll, Priority.ALWAYS);
+        VBox.setVgrow(unresEventScroll, Priority.ALWAYS);
         
         // Set the scrollbar policy of the scroll pane
-        allEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        unresEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        allEventHeader.getStyleClass().add("box-title-label");
-        allEventHeaderBox.getStyleClass().add("box-title-all-event");
+        unresEventHeader.getStyleClass().add("box-title-label");
+        unresEventHeaderBox.getStyleClass().add("box-title-all-event");
     }
 
-    public static void initAllView() {
+    public static void initUnresView() {
 
-        initAllTaskView(InterfaceController.logicControl.getAllTasks());
-        initAllEventView(InterfaceController.logicControl.getAllEvents());
+        initUnresTaskView(InterfaceController.logicControl.getUnresTasks());
+        initUnresEventView(InterfaceController.logicControl.getUnresEvents());
         
-        allScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
+        unresScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
         
-        InterfaceController.allBox = new HBox(allTaskBox, allScrollLine, allEventBox);
+        InterfaceController.unresBox = new HBox(unresTaskBox, unresScrollLine, unresEventBox);
         
         // Set the preferred viewport width of the two scroll panes to be half
         // of the entire view pane
-        allTaskScroll.prefViewportWidthProperty().bind(
-        		InterfaceController.allBox.widthProperty().divide(2));
-        allEventScroll.prefViewportWidthProperty().bind(
-        		InterfaceController.allBox.widthProperty().divide(2));
+        unresTaskScroll.prefViewportWidthProperty().bind(
+        		InterfaceController.unresBox.widthProperty().divide(2));
+        unresEventScroll.prefViewportWidthProperty().bind(
+        		InterfaceController.unresBox.widthProperty().divide(2));
         
         // Fix the width of the scroll panes to prevent resize of the inner labels
-        allTaskScroll.maxWidthProperty().bind(
+        unresTaskScroll.maxWidthProperty().bind(
         		InterfaceController.defBox.widthProperty().divide(2));
-        allEventScroll.maxWidthProperty().bind(
+        unresEventScroll.maxWidthProperty().bind(
         		InterfaceController.defBox.widthProperty().divide(2));
         
         // Set the scroll separator to bind with the same line in DefaultViewController
-        allScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());
+        unresScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());
         
         // CSS
-        allScrollLine.getStyleClass().add("line");
+        unresScrollLine.getStyleClass().add("line");
     }
     
-    public static void updateAllView() {
+    public static void updateUnresView() {
     	
     	// Clear the previous content already displayed
-        allTaskContentBox.getChildren().clear();
-        allEventContentBox.getChildren().clear();
-        ViewIndexMap.resetAllMap();
+        unresTaskContentBox.getChildren().clear();
+        unresEventContentBox.getChildren().clear();
+        ViewIndexMap.resetUnresMap();
         
         // Get the results of the file from logic
-        String[] tasks = InterfaceController.logicControl.getAllTasks();
-        String[] events = InterfaceController.logicControl.getAllEvents();
+        String[] tasks = InterfaceController.logicControl.getUnresTasks();
+        String[] events = InterfaceController.logicControl.getUnresEvents();
         
-    	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+    	int numOfElements = InterfaceController.logicControl.getUnresElementsCount();
     	
         // Run the loop through the entire task list
     	int numOfResults = 1;
@@ -319,7 +320,7 @@ public class AllViewController {
         	HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            allTaskContentBox.getChildren().add(tempBox);
+            unresTaskContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
 			if (!InterfaceController.logicControl.isTitleOrDate(tasks[i])) {
 				numOfResults++;
@@ -332,7 +333,7 @@ public class AllViewController {
         	HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            allEventContentBox.getChildren().add(tempBox);
+            unresEventContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
 			if (!InterfaceController.logicControl.isTitleOrDate(events[i])) {
 				numOfResults++;

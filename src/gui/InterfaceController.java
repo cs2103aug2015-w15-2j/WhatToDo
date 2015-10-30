@@ -81,7 +81,7 @@ public class InterfaceController {
     private static Line viewLine;
     
     // Used for updateMainInterface
-    protected static HBox defBox, allBox, histBox, doneBox;
+    protected static HBox defBox, allBox, histBox, doneBox, unresBox;
     protected static VBox summaryBox, searchBox;
 
     protected static LogicController logicControl;
@@ -108,6 +108,7 @@ public class InterfaceController {
     protected static final String PATH_HELP_SELECTED = "gui/resources/help_selected.png";
     protected static final String PATH_HELP_HOVER = "gui/resources/help_hover.png";
     protected static final String PATH_CONFIG = "gui/resources/config.png";
+    protected static final String PATH_TICK = "gui/resources/tick.png";
     
 	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config";
     
@@ -550,6 +551,7 @@ public class InterfaceController {
         SummaryViewController.initSummaryView();
         AllViewController.initAllView();
         HistoryViewController.initHistView();
+        UnresolvedViewController.initUnresView();
         //DoneViewController.initDoneView();
         SearchViewController.initSearchView();
         
@@ -651,12 +653,10 @@ public class InterfaceController {
     		break;
     		
     	case UNRESOLVED:
-    		// TODO:
-    		//DoneViewController.updateDoneView();
-    		viewBox.getChildren().add(doneBox);
+    		UnresolvedViewController.updateUnresView();
+    		viewBox.getChildren().add(unresBox);
     		
-    		// Set done box to grow with view box
-            //HBox.setHgrow(doneBox, Priority.ALWAYS);
+    		HBox.setHgrow(unresBox, Priority.ALWAYS);
     		
             // Change buttons
             changeButtonToSelected(View.UNRESOLVED);
