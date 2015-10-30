@@ -295,6 +295,7 @@ public class LogicController {
         	switch (view) {
         	case DEFAULT:
         		InterfaceController.updateMainInterface(View.DEFAULT);
+        		break;
         	case ALL:
         		InterfaceController.updateMainInterface(View.ALL);
         		break;

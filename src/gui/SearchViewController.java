@@ -284,7 +284,7 @@ public class SearchViewController {
         
         // Set margins for the header
         VBox.setMargin(searchTaskHeaderBox, new Insets(
-        		InterfaceController.MARGIN_COMPONENT, InterfaceController.MARGIN_SCROLL, 
+        		0, InterfaceController.MARGIN_SCROLL, 
         		0, InterfaceController.MARGIN_SCROLL));
         
         // Set margins for the scroll pane
@@ -337,7 +337,7 @@ public class SearchViewController {
         
         // Set margins for the header
         VBox.setMargin(searchEventHeaderBox, new Insets(
-        		InterfaceController.MARGIN_COMPONENT, InterfaceController.MARGIN_SCROLL, 
+        		0, InterfaceController.MARGIN_SCROLL, 
         		0, InterfaceController.MARGIN_SCROLL));
         
         // Set margins for the scroll pane
@@ -420,19 +420,25 @@ public class SearchViewController {
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
 		} else {
-			for (int i = 0; i < taskResults.size(); i++) {
-				HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
-				if (taskResults.get(i).equals(MESSAGE_EMPTY)) {
-					numOfEmptyMessages++;
-					if (numOfEmptyMessages == 2) {
+			boolean withinFloat = false;
+			boolean withinTask = false;
+			
+			// If there are no results for floating tasks
+			if (taskResults.get(1).equals(MESSAGE_EMPTY)) {
+				for (int i = 0; i < taskResults.size(); i++) {
+					HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
+					VBox.setMargin(tempBox, new Insets(
+							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+					searchTaskContentBox.getChildren().add(tempBox);
+				}
+			} else {
+				for (int i = 0; i < taskResults.size(); i++) {
+					if (!taskResults.get(i).equals(MESSAGE_EMPTY)) {
+						HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
 						VBox.setMargin(tempBox, new Insets(
 								0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 						searchTaskContentBox.getChildren().add(tempBox);
 					}
-				} else {
-					VBox.setMargin(tempBox, new Insets(
-							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-					searchTaskContentBox.getChildren().add(tempBox);
 				}
 			}
 		}
