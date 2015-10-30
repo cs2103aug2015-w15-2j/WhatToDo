@@ -41,41 +41,11 @@ public class SearchViewController {
 	// Used for initSearchView
 	private static Line searchScrollLine;
 
-	protected static final String SEMICOLON = ";";
-
 	protected static final String HEADER_SEARCH = "RESULTS FOR:";
 	protected static final String HEADER_SEARCH_TASKS = "TASKS";
 	protected static final String HEADER_SEARCH_EVENTS = "EVENTS";
 
 	protected static final String MESSAGE_EMPTY = "There are no items to display.";
-
-	private static void initSearchHeader(String searchTerm) {
-
-		Label searchHeaderLabel = new Label(HEADER_SEARCH);
-		Label searchHeaderTerm = new Label(searchTerm);
-		searchHeaderTerm.setWrapText(true);
-
-		searchHeaderBox = new VBox(searchHeaderLabel, searchHeaderTerm);
-		searchHeaderBox.setAlignment(Pos.CENTER);
-		
-        // Set margins for the header label
-        VBox.setMargin(searchHeaderLabel, new Insets(
-        		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
-        		0, 0));
-        VBox.setMargin(searchHeaderTerm, new Insets(
-        		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
-        		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
-        
-        // Set margins for the header
-        VBox.setMargin(searchHeaderBox, new Insets(
-        		0, InterfaceController.MARGIN_SCROLL - InterfaceController.WIDTH_VERT_LINE, 
-        		0, InterfaceController.MARGIN_SCROLL));
-        
-		// CSS
-		searchHeaderLabel.getStyleClass().add("box-title-label");
-		searchHeaderTerm.getStyleClass().add("box-title-label");
-		searchHeaderBox.getStyleClass().add("box-title");
-	}
 
 	private static boolean isDate(String displayData) {
 
@@ -137,7 +107,7 @@ public class SearchViewController {
 		return eventResults;
 	}
 
-	private static HBox initDisplayElement(String displayData, int index, boolean isTask) {
+	private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
 
 		if (isDate(displayData)) {
 
@@ -211,7 +181,7 @@ public class SearchViewController {
 				elementLabel.setWrapText(true);
 				
         		// Get the width of label and resize the line
-        		Text text = new Text(elementIndex.getText());
+        		Text text = new Text(String.valueOf(numOfElements));
         		Scene s = new Scene(new Group(text));
         		// Override the CSS style to calculate the text width
         		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
@@ -252,7 +222,7 @@ public class SearchViewController {
 		}
 	}
 
-	private static void initSearchTaskView(ArrayList<String> taskResults) {
+	private static void initSearchTaskView(ArrayList<String> taskResults, int numOfElements) {
 
 		Label searchTaskHeaderLabel = new Label(HEADER_SEARCH_TASKS);
 		searchTaskHeaderBox = new HBox(searchTaskHeaderLabel);
@@ -262,7 +232,7 @@ public class SearchViewController {
 
 		// Loop for the floats
 		for (int i = 0; i < taskResults.size(); i++) {
-			HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
+			HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, i + 1, true);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
@@ -305,7 +275,7 @@ public class SearchViewController {
         searchTaskHeaderBox.getStyleClass().add("box-title-all-task");
 	}
 
-	private static void initSearchEventView(ArrayList<String> eventResults) {
+	private static void initSearchEventView(ArrayList<String> eventResults, int numOfElements) {
 
 		Label searchEventHeaderLabel = new Label(HEADER_SEARCH_EVENTS);
 		searchEventHeaderBox = new HBox(searchEventHeaderLabel);
@@ -315,7 +285,7 @@ public class SearchViewController {
 
 		// Loop for the floats
 		for (int i = 0; i < eventResults.size(); i++) {
-			HBox tempBox = initDisplayElement(eventResults.get(i), i + 1, false);
+			HBox tempBox = initDisplayElement(eventResults.get(i), numOfElements, i + 1, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchEventContentBox.getChildren().add(tempBox);
@@ -364,21 +334,12 @@ public class SearchViewController {
 		String initialTerm = "NO RESULTS";
 		ArrayList<String> initialArray = new ArrayList<String>();
 
-		initSearchHeader(initialTerm);
-		initSearchTaskView(initialArray);
-		initSearchEventView(initialArray);
+		initSearchTaskView(initialArray, 0);
+		initSearchEventView(initialArray, 0);
 
 		searchScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
 
 		HBox searchBoxNoHeader = new HBox(searchTaskBox, searchScrollLine, searchEventBox);
-
-        // Set the scroll separator to bind with the same line in DefaultViewController
-        // but minus the height of the header
-		Group root = new Group(searchHeaderBox);
-        new Scene(root);
-        root.applyCss();
-        root.layout();
-        double headerHeight = searchHeaderBox.getLayoutBounds().getHeight();
         
 		InterfaceController.searchBox = new VBox(searchBoxNoHeader);
 		
@@ -412,21 +373,21 @@ public class SearchViewController {
 		searchTaskContentBox.getChildren().clear();
 		searchEventContentBox.getChildren().clear();
 		
-		int numOfEmptyMessages = 0;
+		int numOfElements = InterfaceController.logicControl.getSearchElementsCount(taskResults, eventResults);
+		
+		// Print the task results
 		// Only print the empty message if there are zero results
+		int numOfResults = 1;
 		if (taskResults.size() == 3 && isEmpty(taskResults.get(1))) {
-			HBox tempBox = initDisplayElement(taskResults.get(1), 2, true);
+			HBox tempBox = initDisplayElement(taskResults.get(1), numOfElements, numOfResults, true);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
 		} else {
-			boolean withinFloat = false;
-			boolean withinTask = false;
-			
 			// If there are no results for floating tasks
 			if (taskResults.get(1).equals(MESSAGE_EMPTY)) {
 				for (int i = 0; i < taskResults.size(); i++) {
-					HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
+					HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 					VBox.setMargin(tempBox, new Insets(
 							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 					searchTaskContentBox.getChildren().add(tempBox);
@@ -434,20 +395,27 @@ public class SearchViewController {
 			} else {
 				for (int i = 0; i < taskResults.size(); i++) {
 					if (!taskResults.get(i).equals(MESSAGE_EMPTY)) {
-						HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
+						HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 						VBox.setMargin(tempBox, new Insets(
 								0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 						searchTaskContentBox.getChildren().add(tempBox);
+						// Only increment the counter if an element is added
+						if (!InterfaceController.logicControl.isTitleOrDate(taskResults.get(i))) {
+							numOfResults++;
+						}
 					}
 				}
 			}
 		}
-		
+		// Print the event results
 		for (int i = 0; i < eventResults.size(); i++) {
-			HBox tempBox = initDisplayElement(eventResults.get(i), i + 1, false);
+			HBox tempBox = initDisplayElement(eventResults.get(i), numOfElements, numOfResults, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-			searchEventContentBox.getChildren().add(tempBox);
+        	searchEventContentBox.getChildren().add(tempBox);
+			if (!InterfaceController.logicControl.isTitleOrDate(eventResults.get(i))) {
+				numOfResults++;
+			}
 		}
 	}
 }

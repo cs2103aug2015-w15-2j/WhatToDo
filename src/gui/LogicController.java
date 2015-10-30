@@ -52,9 +52,7 @@ public class LogicController {
 		}
 	}
 	
-	public ArrayList<String> getDefTasks() {
-		
-		ArrayList<String> temp = new ArrayList<String>();
+	public String[] getDefTasks() {
 		
 		// Get the string from logic
 		String defTasks = logic.taskDefaultView();
@@ -62,41 +60,21 @@ public class LogicController {
 		// Split the string by newline
 		String[] defTasksSplit = defTasks.split("\n");
 		
-		// Traverse the split string array and ignore the empty lines
-		for (int i = 0; i < defTasksSplit.length; i++) {
-			if (!defTasksSplit[i].equals("")) {
-				// Add it to the ArrayList				
-				temp.add(defTasksSplit[i]);
-			}
-		}
-		
-		return temp;
+		return defTasksSplit;
 	}
 	
-	public ArrayList<String> getDefEvents() {
-		
-		ArrayList<String> temp = new ArrayList<String>();
+	public String[] getDefEvents() {
 		
 		// Get the string from logic
 		String defEvents = logic.eventDefaultView();
 		
 		// Split the string by newline
 		String[] defEventsSplit = defEvents.split("\n");
-		
-		// Traverse the split string array and ignore the empty lines
-		for (int i = 0; i < defEventsSplit.length; i++) {
-			if (!defEventsSplit[i].equals("")) {
-				// Add it to the ArrayList
-				temp.add(defEventsSplit[i]);
-			}
-		}
-		
-		return temp;
+
+		return defEventsSplit;
 	}
 	
 	public String[] getAllTasks() {
-		
-		ArrayList<String> temp = new ArrayList<String>();
 		
 		// Get the String from logic
 		String allTasks = logic.taskAllUncompletedView();
@@ -109,8 +87,6 @@ public class LogicController {
 	
 	public String[] getAllEvents() {
 		
-		ArrayList<String> temp = new ArrayList<String>();
-		
 		// Get the String from logic
 		String allEvents = logic.eventAllUncompletedView();
 		
@@ -120,23 +96,29 @@ public class LogicController {
 		return allEventsSplit;
 	}
 	
-    public static boolean isTitle(String displayData) {
+    public boolean isTitle(String displayData) {
     	
     	String firstWord = displayData.split(" ")[0];
     	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
     			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
     }
     
+    public boolean isTitleOrDate(String displayData) {
+    	// Use the definition that a date or title does not have a period in it
+    	// whereas an element will definitely have a period after its index
+    	return displayData.split(Pattern.quote(".")).length == 1;
+    }
+    
 	public int[] getSummaryCount() {
 		
-		ArrayList<String> defTasks = InterfaceController.logicControl.getDefTasks();
-		ArrayList<String> defEvents = InterfaceController.logicControl.getDefEvents();
+		String[] defTasks = InterfaceController.logicControl.getDefTasks();
+		String[] defEvents = InterfaceController.logicControl.getDefEvents();
 		int[] summary = {0, 0, 0, 0};
 		int currentIndex = 0;
 		
 		// First count for tasks and update the count array
-		for (int i = 0; i < defTasks.size(); i++) {
-			String temp = defTasks.get(i);
+		for (int i = 0; i < defTasks.length; i++) {
+			String temp = defTasks[i];
 			if (isTitle(temp)) {
 				// Switch array index to increment the right counter
 				temp = temp.split(" ")[0];
@@ -162,8 +144,8 @@ public class LogicController {
 		}
 		
 		// Count for events and update the count array
-		for (int i = 0; i < defEvents.size(); i++) {
-			String temp = defEvents.get(i);
+		for (int i = 0; i < defEvents.length; i++) {
+			String temp = defEvents[i];
 			if (isTitle(temp)) {
 				// Switch array index to increment the right counter
 				temp = temp.split(" ")[0];
@@ -189,6 +171,66 @@ public class LogicController {
 		}
 		
 		return summary;
+	}
+	
+	public int getDefElementsCount() {
+		
+		int count = 0;
+		
+		String[] temp = InterfaceController.logicControl.getDefTasks();
+		for (int i = 0; i < temp.length; i++) {
+			if (!isTitleOrDate(temp[i])) {
+				count++;
+			}
+		}
+		temp = InterfaceController.logicControl.getDefEvents();
+		for (int i = 0; i < temp.length; i++) {
+			if (!isTitleOrDate(temp[i])) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	public int getAllElementsCount() {
+		
+		int count = 0;
+		
+		String[] temp = InterfaceController.logicControl.getAllTasks();
+		for (int i = 0; i < temp.length; i++) {
+			if (!isTitleOrDate(temp[i])) {
+				count++;
+			}
+		}
+		temp = InterfaceController.logicControl.getAllEvents();
+		for (int i = 0; i < temp.length; i++) {
+			if (!isTitleOrDate(temp[i])) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	public int getSearchElementsCount(ArrayList<String> taskResults, 
+			ArrayList<String> eventResults) {
+		
+		int count = 0;
+		
+		for (int i = 0; i < taskResults.size(); i++) {
+			if (!isTitleOrDate(taskResults.get(i))) {
+				count++;
+			}
+		}
+		
+		for (int i = 0; i < eventResults.size(); i++) {
+			if (!isTitleOrDate(eventResults.get(i))) {
+				count++;
+			}
+		}
+		
+		return count;
 	}
 	
 	private static void changeView(View view) {

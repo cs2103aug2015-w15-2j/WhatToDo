@@ -37,10 +37,10 @@ public class DefaultViewController {
     protected static final String HEADER_DEF_TASKS = "UPCOMING TASKS: SOON";
     protected static final String HEADER_DEF_EVENTS = "UPCOMING EVENTS: SOON";
     
-    private static HBox initDisplayElement(String displayData) {
+    private static HBox initDisplayElement(String displayData, int numOfElements) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
-    	if (LogicController.isTitle(displayData)) {
+    	if (InterfaceController.logicControl.isTitle(displayData)) {
     		
     		Label elementLabel = new Label(displayData);
         	HBox elementBox = new HBox(elementLabel);
@@ -114,8 +114,9 @@ public class DefaultViewController {
     			HBox indexBox = new HBox(elementIndex);
     			indexBox.setAlignment(Pos.CENTER);
     			
-        		// Get the width of label and resize the line
-        		Text text = new Text(elementIndex.getText());
+        		// Get the width of label of the largest number in the list
+    			// In this case the largest number will be the number of elements in the list
+        		Text text = new Text(String.valueOf(numOfElements));
         		Scene s = new Scene(new Group(text));
         		// Override the CSS style to calculate the text width
         		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
@@ -153,7 +154,7 @@ public class DefaultViewController {
     	}
     }
 
-    private static void initDefTaskView(ArrayList<String> tasks) {
+    private static void initDefTaskView(String[] tasks) {
 
     	Label defTaskHeader = new Label(HEADER_DEF_TASKS);
         defTaskHeaderBox = new HBox(defTaskHeader);
@@ -162,9 +163,10 @@ public class DefaultViewController {
         defTaskContentBox = new VBox();
         
         // Run the loop through the entire task list
-        for (int i = 0; i < tasks.size(); i++) {
+        int numOfElements = InterfaceController.logicControl.getDefElementsCount();
+        for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks.get(i));
+        	HBox tempBox = initDisplayElement(tasks[i], numOfElements);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defTaskContentBox.getChildren().add(tempBox);
@@ -207,7 +209,7 @@ public class DefaultViewController {
         defTaskHeaderBox.getStyleClass().add("box-title");
     }
 
-    private static void initDefEventView(ArrayList<String> events) {
+    private static void initDefEventView(String[] events) {
 
     	Label defEventHeader = new Label(HEADER_DEF_EVENTS);
         defEventHeaderBox = new HBox(defEventHeader);
@@ -216,9 +218,10 @@ public class DefaultViewController {
         defEventContentBox = new VBox();
         
         // Run the loop through the entire task list
-        for (int i = 0; i < events.size(); i++) {
+        int numOfElements = InterfaceController.logicControl.getDefElementsCount();
+        for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events.get(i));
+        	HBox tempBox = initDisplayElement(events[i], numOfElements);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defEventContentBox.getChildren().add(tempBox);
@@ -295,22 +298,24 @@ public class DefaultViewController {
         defEventContentBox.getChildren().clear();
         
         // Get the results of the file from logic
-        ArrayList<String> tasks = InterfaceController.logicControl.getDefTasks();
-        ArrayList<String> events = InterfaceController.logicControl.getDefEvents();
+        String[] tasks = InterfaceController.logicControl.getDefTasks();
+        String[] events = InterfaceController.logicControl.getDefEvents();
+        
+        int numOfElements = InterfaceController.logicControl.getDefElementsCount();
         
         // Run the loop through the entire task list
-        for (int i = 0; i < tasks.size(); i++) {
+        for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks.get(i));
+        	HBox tempBox = initDisplayElement(tasks[i], numOfElements);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defTaskContentBox.getChildren().add(tempBox);
         }
         
         // Run the loop through the entire task list
-        for (int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events.get(i));
+        	HBox tempBox = initDisplayElement(events[i], numOfElements);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defEventContentBox.getChildren().add(tempBox);

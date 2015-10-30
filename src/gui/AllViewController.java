@@ -38,28 +38,10 @@ public class AllViewController {
     protected static final String HEADER_ALL_TASKS = "UPCOMING TASKS: ALL";
     protected static final String HEADER_ALL_EVENTS = "UPCOMING EVENTS: ALL";
     
-    private static boolean isDate(String displayData) {
-    	String day = displayData.split(",")[0];
-    	return day.equals("Monday") || 
-    			day.equals("Tuesday") || 
-    			day.equals("Wednesday") || 
-    			day.equals("Thursday") || 
-    			day.equals("Friday") || 
-    			day.equals("Saturday") || 
-    			day.equals("Sunday");
-    }
-    
-    private static boolean isTitleOrDate(String displayData) {
-    	// Assume that displayData is a title or a date if it is
-    	// an element
-		return InterfaceController.logicControl.isTitle(displayData) || 
-				isDate(displayData);
-    }
-    
-    private static HBox initDisplayElement(String displayData, boolean isTask) {
+    private static HBox initDisplayElement(String displayData, int numOfElements, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
-    	if (isTitleOrDate(displayData)) {
+    	if (InterfaceController.logicControl.isTitleOrDate(displayData)) {
     		
     		Label elementLabel = new Label(displayData.toUpperCase());
         	HBox elementBox = new HBox(elementLabel);
@@ -133,7 +115,7 @@ public class AllViewController {
     			indexBox.setAlignment(Pos.CENTER);
     			
         		// Get the width of label and resize the line
-        		Text text = new Text(elementIndex.getText());
+        		Text text = new Text(String.valueOf(numOfElements));
         		Scene s = new Scene(new Group(text));
         		// Override the CSS style to calculate the text width
         		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
@@ -187,7 +169,8 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks[i], true);
+        	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
@@ -240,7 +223,8 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events[i], false);
+        	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+        	HBox tempBox = initDisplayElement(events[i], numOfElements, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
@@ -322,10 +306,12 @@ public class AllViewController {
         String[] tasks = InterfaceController.logicControl.getAllTasks();
         String[] events = InterfaceController.logicControl.getAllEvents();
         
+    	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+    	
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks[i], true);
+        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
@@ -334,7 +320,7 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events[i], false);
+        	HBox tempBox = initDisplayElement(events[i], numOfElements, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
