@@ -102,6 +102,7 @@ public class SearchViewController {
 		for (int i = 0; i < resultsSplit.length; i++) {
 			if (resultsSplit[i].equals("FLOAT")) {
 				startRead = true;
+				taskResults.add(resultsSplit[i]);
 			} else if (resultsSplit[i].equals("EVENT")) {
 				startRead = false;
 				break;
@@ -179,7 +180,7 @@ public class SearchViewController {
 
 		} else {
 			// If there are no results
-			if (isEmpty(displayData)) {
+			if (isEmpty(displayData) || displayData.equals("FLOAT")) {
 				Label elementLabel = new Label(displayData);
 				elementLabel.setWrapText(true);
 				
@@ -204,7 +205,7 @@ public class SearchViewController {
 
 				String[] displayDataSplit = displayData.split(Pattern.quote("."));
 				String excludedString = displayDataSplit[0] + "."; 
-				String elementString = displayData.replaceFirst(excludedString, "");
+				String elementString = displayData.replaceFirst(excludedString, "").trim();
 				
 				Label elementLabel = new Label(elementString);
 				elementLabel.setWrapText(true);
@@ -379,7 +380,7 @@ public class SearchViewController {
         root.layout();
         double headerHeight = searchHeaderBox.getLayoutBounds().getHeight();
         
-		InterfaceController.searchBox = new VBox(searchHeaderBox, searchBoxNoHeader);
+		InterfaceController.searchBox = new VBox(searchBoxNoHeader);
 		
         // Set the preferred viewport width of the two scroll panes to be half
         // of the entire view pane
@@ -397,7 +398,7 @@ public class SearchViewController {
         // Bind the height of the separator line to the default line height minus the height
         // of the header
         searchScrollLine.endYProperty().bind(
-        		DefaultViewController.getDefScrollLine().endYProperty().subtract(headerHeight + 2));
+        		DefaultViewController.getDefScrollLine().endYProperty());
         
         // CSS
         searchScrollLine.getStyleClass().add("line");
@@ -412,19 +413,27 @@ public class SearchViewController {
 		searchEventContentBox.getChildren().clear();
 		
 		int numOfEmptyMessages = 0;
-		for (int i = 0; i < taskResults.size(); i++) {
-			HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
-			if (taskResults.get(i).equals(MESSAGE_EMPTY)) {
-				numOfEmptyMessages++;
-				if (numOfEmptyMessages == 2) {
+		// Only print the empty message if there are zero results
+		if (taskResults.size() == 3 && isEmpty(taskResults.get(1))) {
+			HBox tempBox = initDisplayElement(taskResults.get(1), 2, true);
+			VBox.setMargin(tempBox, new Insets(
+					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+			searchTaskContentBox.getChildren().add(tempBox);
+		} else {
+			for (int i = 0; i < taskResults.size(); i++) {
+				HBox tempBox = initDisplayElement(taskResults.get(i), i + 1, true);
+				if (taskResults.get(i).equals(MESSAGE_EMPTY)) {
+					numOfEmptyMessages++;
+					if (numOfEmptyMessages == 2) {
+						VBox.setMargin(tempBox, new Insets(
+								0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+						searchTaskContentBox.getChildren().add(tempBox);
+					}
+				} else {
 					VBox.setMargin(tempBox, new Insets(
 							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 					searchTaskContentBox.getChildren().add(tempBox);
 				}
-			} else {
-				VBox.setMargin(tempBox, new Insets(
-						0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-				searchTaskContentBox.getChildren().add(tempBox);
 			}
 		}
 		
