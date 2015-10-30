@@ -94,6 +94,32 @@ public class LogicController {
 		return temp;
 	}
 	
+	public String[] getAllTasks() {
+		
+		ArrayList<String> temp = new ArrayList<String>();
+		
+		// Get the String from logic
+		String allTasks = logic.taskAllUncompletedView();
+		
+		// Split the string by newline
+		String[] allTasksSplit = allTasks.split("\n");
+		
+		return allTasksSplit;
+	}
+	
+	public String[] getAllEvents() {
+		
+		ArrayList<String> temp = new ArrayList<String>();
+		
+		// Get the String from logic
+		String allEvents = logic.eventAllUncompletedView();
+		
+		// Split the string by newline
+		String[] allEventsSplit = allEvents.split("\n");
+		
+		return allEventsSplit;
+	}
+	
     public static boolean isTitle(String displayData) {
     	
     	String firstWord = displayData.split(" ")[0];

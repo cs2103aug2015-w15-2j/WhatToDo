@@ -38,12 +38,30 @@ public class AllViewController {
     protected static final String HEADER_ALL_TASKS = "UPCOMING TASKS: ALL";
     protected static final String HEADER_ALL_EVENTS = "UPCOMING EVENTS: ALL";
     
+    private static boolean isDate(String displayData) {
+    	String day = displayData.split(",")[0];
+    	return day.equals("Monday") || 
+    			day.equals("Tuesday") || 
+    			day.equals("Wednesday") || 
+    			day.equals("Thursday") || 
+    			day.equals("Friday") || 
+    			day.equals("Saturday") || 
+    			day.equals("Sunday");
+    }
+    
+    private static boolean isTitleOrDate(String displayData) {
+    	// Assume that displayData is a title or a date if it is
+    	// an element
+		return InterfaceController.logicControl.isTitle(displayData) || 
+				isDate(displayData);
+    }
+    
     private static HBox initDisplayElement(String displayData, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
-    	if (LogicController.isTitle(displayData)) {
+    	if (isTitleOrDate(displayData)) {
     		
-    		Label elementLabel = new Label(displayData);
+    		Label elementLabel = new Label(displayData.toUpperCase());
         	HBox elementBox = new HBox(elementLabel);
     		
     		// Create a divider line and add it to the elementBox
@@ -158,7 +176,7 @@ public class AllViewController {
     	}
     }
 
-    private static void initAllTaskView(ArrayList<String> tasks) {
+    private static void initAllTaskView(String[] tasks) {
 
     	Label allTaskHeader = new Label(HEADER_ALL_TASKS);
         allTaskHeaderBox = new HBox(allTaskHeader);
@@ -167,9 +185,9 @@ public class AllViewController {
         allTaskContentBox = new VBox();
         
         // Run the loop through the entire task list
-        for (int i = 0; i < tasks.size(); i++) {
+        for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks.get(i), true);
+        	HBox tempBox = initDisplayElement(tasks[i], true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
@@ -211,7 +229,7 @@ public class AllViewController {
         allTaskHeaderBox.getStyleClass().add("box-title-all-task");
     }
 
-    private static void initAllEventView(ArrayList<String> events) {
+    private static void initAllEventView(String[] events) {
 
     	Label allEventHeader = new Label(HEADER_ALL_EVENTS);
         allEventHeaderBox = new HBox(allEventHeader);
@@ -220,9 +238,9 @@ public class AllViewController {
         allEventContentBox = new VBox();
         
         // Run the loop through the entire task list
-        for (int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events.get(i), false);
+        	HBox tempBox = initDisplayElement(events[i], false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
@@ -267,8 +285,8 @@ public class AllViewController {
 
     public static void initAllView() {
 
-        initAllTaskView(InterfaceController.logicControl.getDefTasks());
-        initAllEventView(InterfaceController.logicControl.getDefEvents());
+        initAllTaskView(InterfaceController.logicControl.getAllTasks());
+        initAllEventView(InterfaceController.logicControl.getAllEvents());
         
         allScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
         
@@ -301,22 +319,22 @@ public class AllViewController {
         allEventContentBox.getChildren().clear();
         
         // Get the results of the file from logic
-        ArrayList<String> tasks = InterfaceController.logicControl.getDefTasks();
-        ArrayList<String> events = InterfaceController.logicControl.getDefEvents();
+        String[] tasks = InterfaceController.logicControl.getAllTasks();
+        String[] events = InterfaceController.logicControl.getAllEvents();
         
         // Run the loop through the entire task list
-        for (int i = 0; i < tasks.size(); i++) {
+        for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks.get(i), true);
+        	HBox tempBox = initDisplayElement(tasks[i], true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
         }
         
         // Run the loop through the entire task list
-        for (int i = 0; i < events.size(); i++) {
+        for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events.get(i), false);
+        	HBox tempBox = initDisplayElement(events[i], false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
