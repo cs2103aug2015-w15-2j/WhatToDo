@@ -30,7 +30,8 @@ public class InterfaceController {
      */
 
     // Used for initFilePathBar
-    private static HBox filepathBox;
+	private static ImageView filepathConfig;
+    private static HBox filepathBox, filepathLabelBox;
     private static VBox filepathBoxWithLine;
     private static Label filepathLabel;
     private static Line filepathLine;
@@ -106,6 +107,9 @@ public class InterfaceController {
     protected static final String PATH_HELP = "gui/resources/help.png";
     protected static final String PATH_HELP_SELECTED = "gui/resources/help_selected.png";
     protected static final String PATH_HELP_HOVER = "gui/resources/help_hover.png";
+    protected static final String PATH_CONFIG = "gui/resources/config.png";
+    
+	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config";
     
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
@@ -133,9 +137,20 @@ public class InterfaceController {
     private static void initFilePathBar() {
 
         filepathLabel = new Label(logicControl.getFilePath());
+        filepathLabelBox = new HBox(filepathLabel);
+        
         filepathLine = new Line(0, 0, WIDTH_DEFAULT, 0);
-
-        filepathBox = new HBox(filepathLabel);
+        filepathConfig = new ImageView(PATH_CONFIG);
+        
+        Region filepathBuffer = new Region();
+        filepathBuffer.setMaxSize(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
+        		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
+        filepathBuffer.setMinSize(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
+        		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
+        
+        HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
+        
+        filepathBox = new HBox(filepathBuffer, filepathLabelBox, filepathConfig);
         filepathBoxWithLine = new VBox(filepathBox, filepathLine);
 
         // Set margins for the filepath label
@@ -144,7 +159,7 @@ public class InterfaceController {
         		0, MARGIN_TEXT_BAR));
         
         // Set alignment of the filepath label
-        filepathBox.setAlignment(Pos.CENTER);
+        filepathLabelBox.setAlignment(Pos.CENTER);
 
         // Fix height for the filepath bar without lines
         filepathBox.setMaxHeight(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
@@ -161,6 +176,9 @@ public class InterfaceController {
         		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
+        
+        filepathConfig.addEventHandler(
+        		MouseEvent.MOUSE_CLICKED, logicControl.getConfigClickHandler());
 
         // CSS
         filepathLine.getStyleClass().add("line");
@@ -689,6 +707,14 @@ public class InterfaceController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    }
+    
+    public static void openConfigLocation() {
+    	try {
+    		Desktop.getDesktop().open(new File(PATH_CONFIG_FILE));
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
     }
     
     public static void closeMainInterface() {

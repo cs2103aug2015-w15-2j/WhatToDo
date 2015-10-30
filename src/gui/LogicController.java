@@ -379,6 +379,10 @@ public class LogicController {
 		return new PathClickHandler();
 	}
 	
+	public ConfigClickHandler getConfigClickHandler() {
+		return new ConfigClickHandler();
+	}
+	
 	public CloseHelpHandler getCloseHelpHandler() {
 		return new CloseHelpHandler();
 	}
@@ -679,6 +683,14 @@ public class LogicController {
     	@Override
     	public void handle(MouseEvent event) {
     		InterfaceController.openFileLocation();
+    	}
+    }
+    
+    private static class ConfigClickHandler implements EventHandler<MouseEvent> {
+    	
+    	@Override
+    	public void handle(MouseEvent event) {
+    		InterfaceController.openConfigLocation();
     	}
     }
     
