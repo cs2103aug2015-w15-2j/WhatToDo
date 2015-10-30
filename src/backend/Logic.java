@@ -98,8 +98,8 @@ public class Logic {
     			return executeUndo(command); 
     		case REDO : 
     			return executeRedo(command);
-    		case SET : 
-    			return executeSet(command);
+    		case SAVE : 
+    			return executeSave(command);
     		case EXIT :
     			return executeExit(); 
     		case INVALID :
@@ -482,7 +482,7 @@ public class Logic {
 		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
 	}
 	
-	private String executeSet(Command command) {
+	private String executeSave(Command command) {
 		String newFilePath = command.getName(); 
 		return storage.changeFileStorageLocation(newFilePath); 
 	}

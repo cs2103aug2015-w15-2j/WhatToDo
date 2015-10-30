@@ -30,15 +30,16 @@ public class CommandParser {
     private static final String USER_COMMAND_SEARCH = "search";
     private static final String USER_COMMAND_DONE = "done";
     private static final String USER_COMMAND_SET = "set";
+    private static final String USER_COMMAND_SAVE = "save";
     private static final String USER_COMMAND_EXIT = "exit";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_REDO = "redo";
     
-    private static final String[] KEYWORDS = {"by", "to", "from", "on"};
-    private static final String KEYWORD_DEADLINE = KEYWORDS[0];
-    private static final String KEYWORD_EVENT_1 = KEYWORDS[1];
-    private static final String KEYWORD_EVENT_2 = KEYWORDS[2];
-    private static final String KEYWORD_EVENT_3 = KEYWORDS[3];
+    private static final String KEYWORD_DEADLINE = "by";
+    private static final String KEYWORD_EVENT_1 = "to";
+    private static final String KEYWORD_EVENT_2 = "from";
+    private static final String KEYWORD_EVENT_3 = "on";
+    private static final String KEYWORD_SET = "as";
     
     private static final String KEYWORD_EDIT_NAME = "name";
     private static final String KEYWORD_EDIT_DEADLINE = "date";
@@ -81,6 +82,10 @@ public class CommandParser {
             	
             case USER_COMMAND_SET :
             	command = initSetCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_SAVE :
+            	command = initSaveCommand(arguments);
             	break;
             	
             case USER_COMMAND_DONE :
@@ -805,6 +810,24 @@ public class CommandParser {
 		}
 		
 		Command command = new Command(Command.CommandType.SET);
+		List<String> directoryList = arguments.subList(0, arguments.size());
+		String directory = getName(directoryList);
+		command.setName(directory);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create save command methods
+    // ================================================================
+	
+	private Command initSaveCommand(ArrayList<String> arguments) {
+		if (arguments.isEmpty()) {
+			String errorMsg = "Directory cannot be empty!";
+			return initInvalidCommand(errorMsg);
+		}
+		
+		Command command = new Command(Command.CommandType.SAVE);
 		List<String> directoryList = arguments.subList(0, arguments.size());
 		String directory = getName(directoryList);
 		command.setName(directory);
