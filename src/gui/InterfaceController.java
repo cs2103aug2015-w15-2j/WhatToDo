@@ -538,6 +538,9 @@ public class InterfaceController {
     	
     	// Initialize a LogicController
         logicControl = new LogicController();
+        
+        // Initialize the ViewIndexMap
+        ViewIndexMap.initAllMaps();
 
         initFilePathBar();
         initSideBar();

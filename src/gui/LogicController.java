@@ -95,19 +95,6 @@ public class LogicController {
 		
 		return allEventsSplit;
 	}
-	
-    public boolean isTitle(String displayData) {
-    	
-    	String firstWord = displayData.split(" ")[0];
-    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
-    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
-    }
-    
-    public boolean isTitleOrDate(String displayData) {
-    	// Use the definition that a date or title does not have a period in it
-    	// whereas an element will definitely have a period after its index
-    	return displayData.split(Pattern.quote(".")).length == 1;
-    }
     
 	public int[] getSummaryCount() {
 		
@@ -233,6 +220,33 @@ public class LogicController {
 		return count;
 	}
 	
+    public boolean isTitle(String displayData) {
+    	
+    	String firstWord = displayData.split(" ")[0];
+    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
+    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
+    }
+    
+    public boolean isTitleOrDate(String displayData) {
+    	// Use the definition that a date or title does not have a period in it
+    	// whereas an element will definitely have a period after its index
+    	return displayData.split(Pattern.quote(".")).length == 1;
+    }
+    
+    private static String mapToFileIndex(String textFieldInput) {
+    	
+    	String[] textFieldInputSplit = textFieldInput.split(" ");
+    	int viewIndex = Integer.parseInt(textFieldInputSplit[1]);
+    	
+    	textFieldInputSplit[1] = String.valueOf(ViewIndexMap.get(viewIndex));
+    	String modifiedString = "";
+    	for (int i = 0; i < textFieldInputSplit.length; i++) {
+    		modifiedString += textFieldInputSplit[i] + " ";
+    	}
+    	// Remove the extra space appended by the for loop
+    	return modifiedString.substring(0, modifiedString.length() - 1);
+    }
+    
 	private static void changeView(View view) {
 		
 		switch(InterfaceController.getCurrentView()) {
@@ -525,6 +539,20 @@ public class LogicController {
                     // Run the command
                     runCommand(textFieldInput, true);
                     changeView(View.SEARCH);
+            		break;
+            	// Only modify the user command for these operations by editing the 
+            	// index from ViewIndexMap
+            	case DELETE:
+                    // Run the command
+                    runCommand(mapToFileIndex(textFieldInput), false);
+            		break;
+            	case EDIT:
+                    // Run the command
+                    runCommand(mapToFileIndex(textFieldInput), false);
+            		break;
+            	case DONE:
+                    // Run the command
+                    runCommand(mapToFileIndex(textFieldInput), false);
             		break;
             	default:
                     // Run the command

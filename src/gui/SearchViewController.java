@@ -176,6 +176,10 @@ public class SearchViewController {
 				String[] displayDataSplit = displayData.split(Pattern.quote("."));
 				String excludedString = displayDataSplit[0] + "."; 
 				String elementString = displayData.replaceFirst(excludedString, "").trim();
+				String fileIndex = displayDataSplit[0].substring(5);
+				
+				// After removing the index, store it in the index map
+				ViewIndexMap.addToSearchMap(Integer.parseInt(fileIndex));
 				
 				Label elementLabel = new Label(elementString);
 				elementLabel.setWrapText(true);
@@ -372,6 +376,7 @@ public class SearchViewController {
 
 		searchTaskContentBox.getChildren().clear();
 		searchEventContentBox.getChildren().clear();
+		ViewIndexMap.resetSearchMap();
 		
 		int numOfElements = InterfaceController.logicControl.getSearchElementsCount(taskResults, eventResults);
 		

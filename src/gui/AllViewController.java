@@ -38,7 +38,7 @@ public class AllViewController {
     protected static final String HEADER_ALL_TASKS = "UPCOMING TASKS: ALL";
     protected static final String HEADER_ALL_EVENTS = "UPCOMING EVENTS: ALL";
     
-    private static HBox initDisplayElement(String displayData, int numOfElements, boolean isTask) {
+    private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
     	if (InterfaceController.logicControl.isTitleOrDate(displayData)) {
@@ -82,13 +82,13 @@ public class AllViewController {
     		
     	} else {
     		// Determine whether the element data is an element or a null response
-    		String[] splitDisplayData = displayData.split(Pattern.quote("."));
+    		String[] displayDataSplit = displayData.split(Pattern.quote("."));
     		
     		Label elementLabel, elementIndex;
     		HBox elementBox;
 
     		// For a null response (There are no items to display)
-    		if (splitDisplayData.length == 1) {
+    		if (displayDataSplit.length == 1) {
     			
     			elementLabel = new Label(displayData);
     			elementBox = new HBox(elementLabel);
@@ -109,11 +109,14 @@ public class AllViewController {
     			return elementBox;
     		} else {
     			
-    			elementIndex = new Label(splitDisplayData[0]);
-    			elementLabel = new Label(displayData.replaceFirst(splitDisplayData[0] + ".", "").trim());
+    			elementIndex = new Label(String.valueOf(index));
+    			elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
     			HBox indexBox = new HBox(elementIndex);
     			indexBox.setAlignment(Pos.CENTER);
     			
+				// After removing the index, store it in the index map
+				ViewIndexMap.addToAllMap(Integer.parseInt(displayDataSplit[0]));
+				
         		// Get the width of label and resize the line
         		Text text = new Text(String.valueOf(numOfElements));
         		Scene s = new Scene(new Group(text));
@@ -170,7 +173,7 @@ public class AllViewController {
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
         	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
-        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, true);
+        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, 1, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
@@ -224,7 +227,7 @@ public class AllViewController {
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
         	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
-        	HBox tempBox = initDisplayElement(events[i], numOfElements, false);
+        	HBox tempBox = initDisplayElement(events[i], numOfElements, 1, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
@@ -301,6 +304,7 @@ public class AllViewController {
     	// Clear the previous content already displayed
         allTaskContentBox.getChildren().clear();
         allEventContentBox.getChildren().clear();
+        ViewIndexMap.resetAllMap();
         
         // Get the results of the file from logic
         String[] tasks = InterfaceController.logicControl.getAllTasks();
@@ -309,21 +313,30 @@ public class AllViewController {
     	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
     	
         // Run the loop through the entire task list
+    	int numOfResults = 1;
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, true);
+        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
+			// Only increment the counter if an element is added
+			if (!InterfaceController.logicControl.isTitleOrDate(tasks[i])) {
+				numOfResults++;
+			}
         }
         
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events[i], numOfElements, false);
+        	HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
+			// Only increment the counter if an element is added
+			if (!InterfaceController.logicControl.isTitleOrDate(events[i])) {
+				numOfResults++;
+			}
         }
     }
 }
