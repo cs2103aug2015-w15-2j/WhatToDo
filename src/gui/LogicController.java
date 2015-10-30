@@ -440,6 +440,12 @@ public class LogicController {
             case "help":
             	changeView(View.HELP);
             	break;
+            case "openfile":
+            	InterfaceController.openFileLocation();
+            	break;
+            case "config":
+            	InterfaceController.openConfigLocation();
+            	break;
             default:
             	// Perform branching based on the operation type
             	switch (operationType) {
