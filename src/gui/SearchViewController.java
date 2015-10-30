@@ -396,6 +396,10 @@ public class SearchViewController {
 					VBox.setMargin(tempBox, new Insets(
 							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 					searchTaskContentBox.getChildren().add(tempBox);
+					// Only increment the counter if an element is added
+					if (!InterfaceController.logicControl.isTitleOrDate(taskResults.get(i))) {
+						numOfResults++;
+					}
 				}
 			} else {
 				for (int i = 0; i < taskResults.size(); i++) {
