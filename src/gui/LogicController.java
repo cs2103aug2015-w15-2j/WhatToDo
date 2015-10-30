@@ -445,6 +445,7 @@ public class LogicController {
             	break;
             case "config":
             	InterfaceController.openConfigLocation();
+            	
             	break;
             default:
             	// Perform branching based on the operation type

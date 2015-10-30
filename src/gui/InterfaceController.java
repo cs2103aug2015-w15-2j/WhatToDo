@@ -176,7 +176,6 @@ public class InterfaceController {
         		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
-        
         filepathConfig.addEventHandler(
         		MouseEvent.MOUSE_CLICKED, logicControl.getConfigClickHandler());
 
@@ -189,10 +188,10 @@ public class InterfaceController {
     protected static void updateFilePathBar() {
     	
     	filepathLabel = new Label(logicControl.getFilePath());
-    	
-    	// Clear the old file path label
-    	filepathBox.getChildren().clear();
-    	filepathBox.getChildren().add(filepathLabel);
+    	filepathLabelBox.getChildren().clear();
+    	filepathLabelBox.getChildren().add(filepathLabel);
+        
+    	HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
     	
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, logicControl.getPathHoverHandler(filepathLabel));
@@ -701,6 +700,8 @@ public class InterfaceController {
     
     public static void openFileLocation() {
 		try {
+			HistoryViewController.updateHistView("Opening file...");
+			InterfaceController.getFeedbackLabel().setText("Opening file...");
 			Desktop.getDesktop().open(
 					new File(InterfaceController.logicControl.getFilePath()));
 		} catch (IOException e) {
@@ -711,6 +712,8 @@ public class InterfaceController {
     
     public static void openConfigLocation() {
     	try {
+    		HistoryViewController.updateHistView("Opening config...");
+    		InterfaceController.getFeedbackLabel().setText("Opening config...");
     		Desktop.getDesktop().open(new File(PATH_CONFIG_FILE));
     	} catch (IOException e) {
     		e.printStackTrace();
