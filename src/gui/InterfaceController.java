@@ -52,6 +52,10 @@ public class InterfaceController {
     private static VBox sbUnresBox;
     private static ImageView sbUnresImage;
     
+    // Used for initSideBarDoneButton
+    private static VBox sbDoneBox;
+    private static ImageView sbDoneImage;
+    
     // Used for initSideBarSearchButton
     private static VBox sbSearchBox;
     private static ImageView sbSearchImage;
@@ -101,6 +105,9 @@ public class InterfaceController {
     protected static final String PATH_UNRESOLVED = "gui/resources/unresolved.png";
     protected static final String PATH_UNRESOLVED_SELECTED = "gui/resources/unresolved_selected.png";
     protected static final String PATH_UNRESOLVED_HOVER = "gui/resources/unresolved_hover.png";
+    protected static final String PATH_DONE = "gui/resources/done.png";
+    protected static final String PATH_DONE_SELECTED = "gui/resources/done_selected.png";
+    protected static final String PATH_DONE_HOVER = "gui/resources/done_hover.png";
     protected static final String PATH_SEARCH = "gui/resources/search.png";
     protected static final String PATH_SEARCH_SELECTED = "gui/resources/search_selected.png";
     protected static final String PATH_SEARCH_HOVER = "gui/resources/search_hover.png";
@@ -274,7 +281,7 @@ public class InterfaceController {
         		logicControl.getButtonClickHandler(View.HISTORY));
     }
     
-    private static void initSideBarDoneButton() {
+    private static void initSideBarUnresButton() {
 
     	sbUnresImage = new ImageView(PATH_UNRESOLVED);
     	sbUnresBox = new VBox(sbUnresImage);
@@ -296,6 +303,30 @@ public class InterfaceController {
     	sbUnresBox.addEventHandler(
         		MouseEvent.MOUSE_PRESSED, 
         		logicControl.getButtonClickHandler(View.UNRESOLVED));
+    }
+    
+    private static void initSideBarDoneButton() {
+
+    	sbDoneImage = new ImageView(PATH_DONE);
+    	sbDoneBox = new VBox(sbDoneImage);
+
+    	// Fix width and height for the button
+    	sbDoneBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbDoneBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+
+    	sbDoneBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+    	sbDoneBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
+    	
+        // Set listener for mouse interactions
+    	sbDoneBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(View.DONE));
+    	sbDoneBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(View.DONE));
+    	sbDoneBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(View.DONE));
     }
     
     private static void initSideBarSearchButton() {
@@ -368,6 +399,11 @@ public class InterfaceController {
     		sbUnresBox.getChildren().clear();
     		sbUnresBox.getChildren().add(sbUnresImage);
     		break;
+    	case DONE:
+    		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
+    		sbDoneBox.getChildren().clear();
+    		sbDoneBox.getChildren().add(sbDoneImage);
+    		break;
     	case SEARCH:
     		sbSearchImage = new ImageView(PATH_SEARCH_SELECTED);
     		sbSearchBox.getChildren().clear();
@@ -406,6 +442,11 @@ public class InterfaceController {
     		sbUnresBox.getChildren().clear();
     		sbUnresBox.getChildren().add(sbUnresImage);
     		break;
+    	case DONE:
+    		sbDoneImage = new ImageView(PATH_DONE);
+    		sbDoneBox.getChildren().clear();
+    		sbDoneBox.getChildren().add(sbDoneImage);
+    		break;
     	case SEARCH:
     		sbSearchImage = new ImageView(PATH_SEARCH);
     		sbSearchBox.getChildren().clear();
@@ -427,6 +468,7 @@ public class InterfaceController {
         initSideBarDefButton();
         initSideBarAllButton();
         initSideBarHistoryButton();
+        initSideBarUnresButton();
         initSideBarDoneButton();
         initSideBarSearchButton();
         initSideBarHelpButton();
@@ -436,7 +478,8 @@ public class InterfaceController {
         sbBox = new VBox(sbDefBox, 
         		sbAllBox, 
         		sbHistBox, 
-        		sbUnresBox, 
+        		sbUnresBox,
+        		sbDoneBox, 
         		sbSearchBox, 
         		sbHelpBox);
         
@@ -456,6 +499,8 @@ public class InterfaceController {
         VBox.setMargin(sbHistBox, new Insets(
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
         VBox.setMargin(sbUnresBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+        VBox.setMargin(sbDoneBox, new Insets(
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
         VBox.setMargin(sbSearchBox, new Insets(
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
@@ -666,6 +711,20 @@ public class InterfaceController {
             currentView = View.UNRESOLVED;
     		break;
     		
+    	case DONE:
+    		//DoneViewController.updateDoneView();
+    		viewBox.getChildren().add(doneBox);
+    		
+    		HBox.setHgrow(doneBox, Priority.ALWAYS);
+    		
+            // Change buttons
+            changeButtonToSelected(View.DONE);
+            changeButtonToUnselected(currentView);
+            
+            // Update currentView
+            currentView = View.DONE;
+    		break;
+    		
     	case SEARCH:
     		viewBox.getChildren().add(searchBox);
     		
@@ -773,8 +832,12 @@ public class InterfaceController {
     	return sbHistBox;
     }
     
-    public static VBox getDoneButton() {
+    public static VBox getUnresButton() {
     	return sbUnresBox;
+    }
+    
+    public static VBox getDoneButton() {
+    	return sbDoneBox;
     }
     
     public static VBox getSearchButton() {

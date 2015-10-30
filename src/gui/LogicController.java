@@ -307,6 +307,9 @@ public class LogicController {
         	case UNRESOLVED:
         		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
+        	case DONE:
+        		//InterfaceController.updateMainInterface(View.DONE);
+        		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
         		break;
@@ -335,6 +338,9 @@ public class LogicController {
         		break;
         	case UNRESOLVED:
         		InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		break;
+        	case DONE:
+        		//InterfaceController.updateMainInterface(View.DONE);
         		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
@@ -365,6 +371,9 @@ public class LogicController {
         	case UNRESOLVED:
         		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
+        	case DONE:
+        		//InterfaceController.updateMainInterface(View.DONE);
+        		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
         		break;
@@ -394,6 +403,9 @@ public class LogicController {
         	case HISTORY:
         		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
+        	case DONE:
+        		//InterfaceController.updateMainInterface(View.DONE);
+        		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
         		break;
@@ -408,10 +420,42 @@ public class LogicController {
         		break;
         	}
         	break;
-        	/* ================================================================================
-        	 * Search view
-        	 * ================================================================================
-        	 */
+        /* ================================================================================
+         * Done view
+         * ================================================================================
+         */
+        case DONE:
+        	switch (view) {
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
+        		break;
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
+        		break;
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
+        		break;
+        	case UNRESOLVED:
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		break;
+        	case SEARCH:
+        		InterfaceController.updateMainInterface(View.SEARCH);
+        		break;
+        	case HELP:
+        		HelpController.toggleHelpDialog();
+        		break;
+        	default:
+        		// Do nothing if already in this view
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
+        	}
+        	break;
+        /* ================================================================================
+         * Search view
+         * ================================================================================
+         */
         case SEARCH:
         	switch (view) {
         	case DEFAULT:
@@ -425,6 +469,9 @@ public class LogicController {
         		break;
         	case UNRESOLVED:
         		InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		break;
+        	case DONE:
+        		//InterfaceController.updateMainInterface(View.DONE);
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
@@ -464,6 +511,7 @@ public class LogicController {
 		DefaultViewController.updateDefView();
 		AllViewController.updateAllView();
 		UnresolvedViewController.updateUnresView();
+		//DoneViewController.updateDoneView();
 		InterfaceController.updateFilePathBar();
 	}
 	
@@ -557,6 +605,9 @@ public class LogicController {
             	break;
             case "unres":
             	changeView(View.UNRESOLVED);
+            	break;
+            case "done":
+            	changeView(View.DONE);
             	break;
             case "help":
             	changeView(View.HELP);
@@ -699,6 +750,14 @@ public class LogicController {
     				if (InterfaceController.getCurrentView() != View.UNRESOLVED && 
     				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_UNRESOLVED_HOVER);
+    					InterfaceController.getUnresButton().getChildren().clear();
+    					InterfaceController.getUnresButton().getChildren().add(hover);
+    				}
+    				break;
+    			case DONE:
+    				if (InterfaceController.getCurrentView() != View.DONE && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    					hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
@@ -756,6 +815,14 @@ public class LogicController {
     				if (InterfaceController.getCurrentView() != View.UNRESOLVED && 
     				InterfaceController.getCurrentView() != View.SUMMARY) {
     					hover = new ImageView(InterfaceController.PATH_UNRESOLVED);
+    					InterfaceController.getUnresButton().getChildren().clear();
+    					InterfaceController.getUnresButton().getChildren().add(hover);
+    				}
+    				break;
+    			case DONE:
+    				if (InterfaceController.getCurrentView() != View.DONE && 
+    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    					hover = new ImageView(InterfaceController.PATH_DONE);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
