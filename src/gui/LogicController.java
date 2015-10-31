@@ -33,6 +33,9 @@ public class LogicController {
 	private static final String CSS_UNDERLINE_ITALIC = CSS_UNDERLINE + "-fx-font-style: italic;";
 	private static final String CSS_NO_UNDERLINE_ITALIC = CSS_NO_UNDERLINE + "-fx-font-style: italic;";
 	
+	private static final boolean USER_SEARCH = false;
+	private static final boolean BACKGROUND_SEARCH = true;
+	
 	private static Logic logic;
 	private static CommandHistory commandHistory;
 	
@@ -590,15 +593,19 @@ public class LogicController {
         }
 	}
 
-	private static void runCommand(Command.CommandType operationType, String textFieldInput, boolean isSearch) {
+	private static void runCommand(Command.CommandType operationType, String textFieldInput, boolean isBackgroundUpdate) {
 		
 		// Execute the command
 		String returnMessage = logic.executeCommand(textFieldInput);
 		
-		if (isSearch) {
-			// Add the returnMessage to the feedback bar and history view
-			InterfaceController.getFeedbackLabel().setText("Displaying results...");
-			HistoryViewController.updateHistView("Displaying results...");
+		if (operationType == Command.CommandType.SEARCH) {
+			// Do not update the feedback bar and history view if the search operation
+			// is a background update of the last search term
+			if (!isBackgroundUpdate) {
+				// Add the returnMessage to the feedback bar and history view
+				InterfaceController.getFeedbackLabel().setText("Displaying results...");
+				HistoryViewController.updateHistView("Displaying results...");
+			}
 			
 			SearchViewController.updateSearchView(returnMessage);
 		} else {
@@ -698,6 +705,9 @@ public class LogicController {
      */	
 	
 	private static class TextInputHandler implements EventHandler<ActionEvent> {
+		
+		private String lastSearchCommand = "";
+		
         @Override
         public void handle(ActionEvent event) {
 
@@ -705,7 +715,7 @@ public class LogicController {
         	TextField textField = InterfaceController.getTextField();
         	
             String textFieldInput = textField.getText();
-
+            
             // Add the input into command history
             commandHistory.add(textFieldInput);
             commandHistory.resetIndex();
@@ -749,27 +759,70 @@ public class LogicController {
             		changeView(View.EXIT);
             		break;
             	case SEARCH:
+            		// Store the last search command to run the search again dynamically
+            		// upon the user's next operation
+            		lastSearchCommand = textFieldInput;
                     // Run the command
-                    runCommand(operationType, textFieldInput, true);
+                    runCommand(operationType, textFieldInput, USER_SEARCH);
                     changeView(View.SEARCH);
             		break;
             	// Only modify the user command for these operations by editing the 
             	// index from ViewIndexMap
             	case DELETE:
                     // Run the command
-                    runCommand(operationType, mapToFileIndex(textFieldInput), false);
+                    runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
+                    
+            		// Run the last search and update the search view only if the user is in search
+            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            			InterfaceController.updateMainInterface(View.SEARCH);
+            		}
+            		// If the user is not in search view, do not switch to search view
+            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            		}
             		break;
             	case EDIT:
                     // Run the command
-                    runCommand(operationType, mapToFileIndex(textFieldInput), false);
+                    runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
+                    
+            		// Run the last search and update the search view only if the user is in search
+            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            			InterfaceController.updateMainInterface(View.SEARCH);
+            		}
+            		// If the user is not in search view, do not switch to search view
+            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            		}
             		break;
             	case DONE:
                     // Run the command
-                    runCommand(operationType, mapToFileIndex(textFieldInput), false);
+                    runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
+                    
+            		// Run the last search and update the search view only if the user is in search
+            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            			InterfaceController.updateMainInterface(View.SEARCH);
+            		}
+            		// If the user is not in search view, do not switch to search view
+            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            		}
             		break;
             	default:
                     // Run the command
-                    runCommand(operationType, textFieldInput, false);
+                    runCommand(operationType, textFieldInput, USER_SEARCH);
+                    
+            		// Run the last search and update the search view only if the user is in search
+            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            			InterfaceController.updateMainInterface(View.SEARCH);
+            		}
+            		// If the user is not in search view, do not switch to search view
+            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            		}
             		break;
             	}
                 break;
