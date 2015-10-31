@@ -289,9 +289,9 @@ public class UnresolvedViewController {
         
         // Fix the width of the scroll panes to prevent resize of the inner labels
         unresTaskScroll.maxWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
+        		InterfaceController.unresBox.widthProperty().divide(2));
         unresEventScroll.maxWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
+        		InterfaceController.unresBox.widthProperty().divide(2));
         
         // Set the scroll separator to bind with the same line in DefaultViewController
         unresScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());

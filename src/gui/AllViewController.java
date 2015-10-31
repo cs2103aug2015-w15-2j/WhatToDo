@@ -288,9 +288,9 @@ public class AllViewController {
         
         // Fix the width of the scroll panes to prevent resize of the inner labels
         allTaskScroll.maxWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
+        		InterfaceController.allBox.widthProperty().divide(2));
         allEventScroll.maxWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
+        		InterfaceController.allBox.widthProperty().divide(2));
         
         // Set the scroll separator to bind with the same line in DefaultViewController
         allScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());
