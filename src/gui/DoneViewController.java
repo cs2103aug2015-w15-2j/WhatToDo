@@ -8,6 +8,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -110,8 +111,13 @@ public class DoneViewController {
     			
     			elementIndex = new Label(String.valueOf(index));
     			elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
+    			ImageView elementTick = new ImageView(InterfaceController.PATH_TICK);
+    			
     			HBox indexBox = new HBox(elementIndex);
+    			HBox labelBox = new HBox(elementLabel);
+    			HBox tickBox = new HBox(elementTick);
     			indexBox.setAlignment(Pos.CENTER);
+    			tickBox.setAlignment(Pos.CENTER);
     			
 				// After removing the index, store it in the index map
 				ViewIndexMap.addToDoneMap(Integer.parseInt(displayDataSplit[0]));
@@ -126,7 +132,12 @@ public class DoneViewController {
         		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
     			indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
     			
-    			elementBox = new HBox(indexBox, elementLabel);
+    			elementBox = new HBox(indexBox, labelBox, tickBox);
+    			
+    			HBox.setMargin(tickBox, new Insets(0, InterfaceController.MARGIN_TICK, 0, 0));
+    			
+    			// Make elementLabel grow to fit the scroll pane size
+    			HBox.setHgrow(labelBox, Priority.ALWAYS);
     			
     			// Set text wrapping for the display data
     			elementLabel.setWrapText(true);

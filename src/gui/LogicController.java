@@ -337,6 +337,10 @@ public class LogicController {
 				!displayData.equals(LogicController.MESSAGE_EMPTY);
     }
     
+	public boolean isCompleted(String displayData) {
+		return displayData.split(" ")[0].equals("done");
+	}
+    
     private static String mapToFileIndex(String textFieldInput) {
     	
     	String[] textFieldInputSplit = textFieldInput.split(" ");

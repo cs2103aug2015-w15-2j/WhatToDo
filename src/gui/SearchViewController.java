@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -88,9 +89,9 @@ public class SearchViewController {
 
 		return eventResults;
 	}
-
+	
 	private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
-
+		
 		if (InterfaceController.logicControl.isTitleOrDate(displayData)) {
 
 			Label elementLabel = new Label(displayData.toUpperCase());
@@ -164,7 +165,9 @@ public class SearchViewController {
 				ViewIndexMap.addToSearchMap(Integer.parseInt(fileIndex));
 				
 				Label elementLabel = new Label(elementString);
+				HBox labelBox = new HBox(elementLabel);
 				elementLabel.setWrapText(true);
+				HBox.setHgrow(labelBox, Priority.ALWAYS);
 				
         		// Get the width of label and resize the line
         		Text text = new Text(String.valueOf(numOfElements));
@@ -176,7 +179,17 @@ public class SearchViewController {
         		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
     			indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
 
-				HBox elementBox = new HBox(indexBox, elementLabel);
+				// Initialize the tick icon
+				ImageView elementTick = new ImageView(InterfaceController.PATH_TICK);
+				HBox tickBox = new HBox(elementTick);
+				tickBox.setAlignment(Pos.CENTER);
+				HBox.setMargin(elementTick, new Insets(0, InterfaceController.MARGIN_TICK, 0, 0));
+				
+    			HBox elementBox = new HBox(indexBox, labelBox, tickBox);
+    			
+    			if (!InterfaceController.logicControl.isCompleted(displayData)) {
+    				elementTick.getStyleClass().add("search-element-todo");
+    			}
 
     			// Set the margins of the element index label within the HBox
     			HBox.setMargin(elementIndex, new Insets(

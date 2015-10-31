@@ -141,6 +141,7 @@ public class InterfaceController {
     protected static final double MARGIN_COMPONENT = 10;
     protected static final double MARGIN_SCROLL = 30;
     protected static final double MARGIN_ARBITRARY = 6;
+    protected static final double MARGIN_TICK = 10;
 
     private static void initFilePathBar() {
 
