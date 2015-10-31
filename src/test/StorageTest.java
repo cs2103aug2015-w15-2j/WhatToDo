@@ -200,7 +200,7 @@ public class StorageTest {
 		storage.addFloatingTask(new FloatingTask("float task", false));
 
 		// This is a boundary case for line 1.
-		assertEquals("float;float task;todo",
+		assertEquals("float task",
 				storage.editName(1, "still floating"));
 		assertEquals(
 				"float;still floating;todo\n"
@@ -208,7 +208,7 @@ public class StorageTest {
 				storage.display());
 
 		// This is a boundary case for last line.
-		assertEquals("event;event time;todo;101015;1700;101015;2359",
+		assertEquals("event time",
 				storage.editName(3, "best event in town"));
 		assertEquals(
 				"float;still floating;todo\n"
@@ -216,7 +216,7 @@ public class StorageTest {
 				storage.display());
 
 		// This is a general case.
-		assertEquals("task;i am a task;todo;121212",
+		assertEquals("i am a task",
 				storage.editName(2, "tasking"));
 		assertEquals(
 				"float;still floating;todo\n"

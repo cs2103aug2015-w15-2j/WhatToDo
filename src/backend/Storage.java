@@ -61,6 +61,7 @@ public class Storage {
 	private static final int PARAM_LESS_ONE = 1;
 	private static final int PARAM_DOES_NOT_EXIST = -1;
 	private static final int PARAM_FIRST_WORD = 0;
+	private static final int PARAM_SECOND_WORD = 1;
 	private static final int PARAM_COMPARE_TO = 0;
 
 	// Used to offset difference in 1-based and 0-based counting.
@@ -218,7 +219,7 @@ public class Storage {
 	 *            line number in text file to be replaced.
 	 * @param newName
 	 *            new event/task name to replace old name with.
-	 * @return the text at specified line number before replacing name.
+	 * @return the old replaced task/event name at specified line number.
 	 * @throws FileSystemException
 	 *             when line number less than 0 or more than number of lines
 	 *             present in text file, or when error in reading file.
@@ -244,7 +245,7 @@ public class Storage {
 	 *            line number in text file to be replaced.
 	 * @param newDeadline
 	 *            new task deadline to replace old deadline with.
-	 * @return the text at specified line number before replacing deadline.
+	 * @return the deadline at specified line number before being replaced.
 	 * @throws FileSystemException
 	 *             when line number less than 0 or more than number of lines
 	 *             present in text file, or when error in reading file, or when
@@ -271,7 +272,7 @@ public class Storage {
 	 *            line number in text file to be replaced.
 	 * @param newDate
 	 *            new event start date to replace old start date with.
-	 * @return the text at specified line number before replacing start date.
+	 * @return event start date at specified line number before replacing.
 	 * @throws FileSystemException
 	 *             when line number less than 0 or more than number of lines
 	 *             present in text file, or when error in reading file, or when
@@ -299,7 +300,7 @@ public class Storage {
 	 *            line number in text file to be replaced.
 	 * @param newDate
 	 *            new event end date to replace old end date with.
-	 * @return the text at specified line number before replacing end date.
+	 * @return event end date at specified line number before replacing.
 	 * @throws FileSystemException
 	 *             when line number less than 0 or more than number of lines
 	 *             present in text file, or when error in reading file, or when
@@ -327,7 +328,7 @@ public class Storage {
 	 *            line number in text file to be replaced.
 	 * @param newTime
 	 *            new event start time to replace old start time with.
-	 * @return the text at specified line number before replacing start time.
+	 * @return event start time at specified line number before replacing.
 	 * @throws FileSystemException
 	 *             when line number less than 0 or more than number of lines
 	 *             present in text file, or when error in reading file, or when
@@ -355,7 +356,7 @@ public class Storage {
 	 *            line number in text file to be replaced.
 	 * @param newTime
 	 *            new event end time to replace old end time with.
-	 * @return the text at specified line number before replacing end time.
+	 * @return event end time at specified line number before replacing.
 	 * @throws FileSystemException
 	 *             when line number less than 0 or more than number of lines
 	 *             present in text file, or when error in reading file, or when
@@ -661,6 +662,7 @@ public class Storage {
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
+		String nameBeforeEdit = getSecondWord(lineToBeEdited);
 
 		if (typeToBeEdited.equals(STRING_TASK)) {
 			Task editedTask = new Task(lineToBeEdited);
@@ -687,7 +689,7 @@ public class Storage {
 			throw new IOException();
 		}
 
-		return lineToBeEdited;
+		return nameBeforeEdit;
 	}
 
 	// To refactor and improve
@@ -701,10 +703,12 @@ public class Storage {
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
+		String oldDeadline;
 
 		if (typeToBeEdited.equals(STRING_TASK)) {
 			Task editedTask = new Task(lineToBeEdited);
 
+			oldDeadline = editedTask.getDeadline().getFullDate();
 			editedTask.setDeadline(newDeadline);
 
 			deleteLineFromFile(lineNumber);
@@ -715,7 +719,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		return lineToBeEdited;
+		return oldDeadline;
 	}
 
 	// To refactor and improve
@@ -729,6 +733,7 @@ public class Storage {
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
+		String oldStartDate;
 
 		if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
@@ -741,6 +746,7 @@ public class Storage {
 						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
 			}
 
+			oldStartDate = editedEvent.getEventStartDate().getFullDate();
 			editedEvent.setEventStartDate(newStartDate);
 
 			deleteLineFromFile(lineNumber);
@@ -751,7 +757,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		return lineToBeEdited;
+		return oldStartDate;
 	}
 
 	// To refactor and improve
@@ -765,6 +771,7 @@ public class Storage {
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
+		String oldStartTime;
 
 		if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
@@ -776,6 +783,7 @@ public class Storage {
 						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
 			}
 
+			oldStartTime = editedEvent.getEventStartTime();
 			editedEvent.setEventStartTime(newStartTime);
 
 			deleteLineFromFile(lineNumber);
@@ -786,7 +794,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		return lineToBeEdited;
+		return oldStartTime;
 	}
 
 	// To refactor and improve
@@ -800,6 +808,7 @@ public class Storage {
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
+		String oldEndDate;
 
 		if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
@@ -811,6 +820,7 @@ public class Storage {
 						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
 			}
 
+			oldEndDate = editedEvent.getEventEndDate().getFullDate();
 			editedEvent.setEventEndDate(newEndDate);
 
 			deleteLineFromFile(lineNumber);
@@ -821,7 +831,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		return lineToBeEdited;
+		return oldEndDate;
 	}
 
 	// To refactor and improve
@@ -835,6 +845,7 @@ public class Storage {
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
+		String oldEndTime;
 
 		if (typeToBeEdited.equals(STRING_EVENT)) {
 			Event editedEvent = new Event(lineToBeEdited);
@@ -846,6 +857,7 @@ public class Storage {
 						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
 			}
 
+			oldEndTime = editedEvent.getEventEndTime();
 			editedEvent.setEventEndTime(newEndTime);
 
 			deleteLineFromFile(lineNumber);
@@ -856,7 +868,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		return lineToBeEdited;
+		return oldEndTime;
 	}
 
 	private boolean isValidStartAndEnd(Date startDate, String startTime,
@@ -1226,6 +1238,12 @@ public class Storage {
 		String parameters[] = text.split(TEXT_FILE_DIVIDER);
 
 		return parameters[PARAM_FIRST_WORD];
+	}
+	
+	private String getSecondWord(String text) {
+		String parameters[] = text.split(TEXT_FILE_DIVIDER);
+
+		return parameters[PARAM_SECOND_WORD];
 	}
 
 	private String getPathFromConfig() throws FileSystemException {
