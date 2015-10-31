@@ -36,7 +36,7 @@ public class LogicController {
 	private static Logic logic;
 	private static CommandHistory commandHistory;
 	
-	private static boolean mapIndexOutOfBounds = true;
+	private static boolean mapIndexOutOfBounds = false;
 	
 	public LogicController() {
 		
@@ -118,11 +118,33 @@ public class LogicController {
 		
 		// Get the String from logic
 		String unresEvents = logic.eventPastUncompletedView();
-		
+
 		// Split the string by newline
 		String[] unresEventsSplit = unresEvents.split("\n");
 		
 		return unresEventsSplit;
+	}
+	
+	public String[] getDoneTasks() {
+		
+		// Get the String from logic
+		String doneTasks = logic.taskAllView(true);
+		
+		// Split the string by newline
+		String[] doneTasksSplit = doneTasks.split("\n");
+		
+		return doneTasksSplit;
+	}
+	
+	public String[] getDoneEvents() {
+		
+		// Get the String from logic
+		String doneEvents = logic.eventAllView(true);
+		
+		// Split the string by newline
+		String[] doneEventsSplit = doneEvents.split("\n");
+		
+		return doneEventsSplit;
 	}
     
 	public int[] getSummaryCount() {
@@ -272,12 +294,36 @@ public class LogicController {
 		return count;
 	}
 	
+	public int getDoneElementsCount() {
+		
+		int count = 0;
+		
+		String[] temp = InterfaceController.logicControl.getDoneTasks();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		temp = InterfaceController.logicControl.getDoneEvents();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
     public boolean isTitle(String displayData) {
     	
     	String firstWord = displayData.split(" ")[0];
     	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
     			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
     }
+    
+	public boolean isEmpty(String displayData) {
+		return displayData.equals(LogicController.MESSAGE_EMPTY);
+	}
     
     public boolean isTitleOrDate(String displayData) {
     	// Use the definition that a date or title does not have a period in it
@@ -340,7 +386,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case DONE:
-        		//InterfaceController.updateMainInterface(View.DONE);
+        		InterfaceController.updateMainInterface(View.DONE);
         		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
@@ -375,7 +421,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case DONE:
-        		//InterfaceController.updateMainInterface(View.DONE);
+        		InterfaceController.updateMainInterface(View.DONE);
         		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
@@ -410,7 +456,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case DONE:
-        		//InterfaceController.updateMainInterface(View.DONE);
+        		InterfaceController.updateMainInterface(View.DONE);
         		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
@@ -430,7 +476,7 @@ public class LogicController {
         	}
         	break;
         /* ================================================================================
-         * Done view
+         * Unresolved view
          * ================================================================================
          */
         case UNRESOLVED:
@@ -445,7 +491,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.HISTORY);
         		break;
         	case DONE:
-        		//InterfaceController.updateMainInterface(View.DONE);
+        		InterfaceController.updateMainInterface(View.DONE);
         		break;
         	case SEARCH:
         		InterfaceController.updateMainInterface(View.SEARCH);
@@ -518,7 +564,7 @@ public class LogicController {
         		InterfaceController.updateMainInterface(View.UNRESOLVED);
         		break;
         	case DONE:
-        		//InterfaceController.updateMainInterface(View.DONE);
+        		InterfaceController.updateMainInterface(View.DONE);
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
@@ -540,7 +586,7 @@ public class LogicController {
         }
 	}
 
-	private static void runCommand(String textFieldInput, boolean isSearch) {
+	private static void runCommand(Command.CommandType operationType, String textFieldInput, boolean isSearch) {
 		
 		// Execute the command
 		String returnMessage = logic.executeCommand(textFieldInput);
@@ -552,8 +598,12 @@ public class LogicController {
 			
 			SearchViewController.updateSearchView(returnMessage);
 		} else {
-			// Modify the return message first if it is incorrect
-			if (mapIndexOutOfBounds) {
+			// Modify the return message first if it is incorrect and is an operation
+			// that uses indices (delete, done, edit)
+			if (mapIndexOutOfBounds && 
+					(operationType == Command.CommandType.DELETE || 
+					operationType == Command.CommandType.DONE || 
+					operationType == Command.CommandType.EDIT)) {
 				returnMessage = MESSAGE_INVALID_INDEX;
 			}
 			// Add the returnMessage to the feedback bar and history view
@@ -565,7 +615,7 @@ public class LogicController {
 		DefaultViewController.updateDefView();
 		AllViewController.updateAllView();
 		UnresolvedViewController.updateUnresView();
-		//DoneViewController.updateDoneView();
+		DoneViewController.updateDoneView();
 		InterfaceController.updateFilePathBar();
 	}
 	
@@ -696,26 +746,26 @@ public class LogicController {
             		break;
             	case SEARCH:
                     // Run the command
-                    runCommand(textFieldInput, true);
+                    runCommand(operationType, textFieldInput, true);
                     changeView(View.SEARCH);
             		break;
             	// Only modify the user command for these operations by editing the 
             	// index from ViewIndexMap
             	case DELETE:
                     // Run the command
-                    runCommand(mapToFileIndex(textFieldInput), false);
+                    runCommand(operationType, mapToFileIndex(textFieldInput), false);
             		break;
             	case EDIT:
                     // Run the command
-                    runCommand(mapToFileIndex(textFieldInput), false);
+                    runCommand(operationType, mapToFileIndex(textFieldInput), false);
             		break;
             	case DONE:
                     // Run the command
-                    runCommand(mapToFileIndex(textFieldInput), false);
+                    runCommand(operationType, mapToFileIndex(textFieldInput), false);
             		break;
             	default:
                     // Run the command
-                    runCommand(textFieldInput, false);
+                    runCommand(operationType, textFieldInput, false);
             		break;
             	}
                 break;

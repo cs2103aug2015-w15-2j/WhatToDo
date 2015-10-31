@@ -1,6 +1,5 @@
 package gui;
 
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import javafx.geometry.Insets;
@@ -15,28 +14,28 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
-public class AllViewController {
+public class DoneViewController {
 
 	/* ================================================================================
      * JavaFX controls used in the general interface
      * ================================================================================
      */
 	
-	// Used for initAllTaskView
-    private static VBox allTaskBox, allTaskContentBox;
-    private static HBox allTaskHeaderBox;
-    private static ScrollPane allTaskScroll;
+	// Used for initDoneTaskView
+    private static VBox doneTaskBox, doneTaskContentBox;
+    private static HBox doneTaskHeaderBox;
+    private static ScrollPane doneTaskScroll;
 
-    // Used for initAllEventView
-    private static VBox allEventBox, allEventContentBox;
-    private static HBox allEventHeaderBox;
-    private static ScrollPane allEventScroll;
+    // Used for initDoneEventView
+    private static VBox doneEventBox, doneEventContentBox;
+    private static HBox doneEventHeaderBox;
+    private static ScrollPane doneEventScroll;
 
-    // Used for initAllView
-    private static Line allScrollLine;
+    // Used for initDoneView
+    private static Line doneScrollLine;
     
-    protected static final String HEADER_ALL_TASKS = "UPCOMING TASKS: ALL";
-    protected static final String HEADER_ALL_EVENTS = "UPCOMING EVENTS: ALL";
+    protected static final String HEADER_DONE_TASKS = "COMPLETED TASKS";
+    protected static final String HEADER_DONE_EVENTS = "COMPLETED EVENTS";
     
     private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
@@ -115,7 +114,7 @@ public class AllViewController {
     			indexBox.setAlignment(Pos.CENTER);
     			
 				// After removing the index, store it in the index map
-				ViewIndexMap.addToAllMap(Integer.parseInt(displayDataSplit[0]));
+				ViewIndexMap.addToDoneMap(Integer.parseInt(displayDataSplit[0]));
 				
         		// Get the width of label and resize the line
         		Text text = new Text(String.valueOf(numOfElements));
@@ -161,202 +160,182 @@ public class AllViewController {
     	}
     }
 
-    private static void initAllTaskView(String[] tasks) {
+    private static void initDoneTaskView(String[] tasks) {
 
-    	Label allTaskHeader = new Label(HEADER_ALL_TASKS);
-        allTaskHeaderBox = new HBox(allTaskHeader);
-        allTaskHeaderBox.setAlignment(Pos.CENTER);
+    	Label doneTaskHeader = new Label(HEADER_DONE_TASKS);
+        doneTaskHeaderBox = new HBox(doneTaskHeader);
+        doneTaskHeaderBox.setAlignment(Pos.CENTER);
 
-        allTaskContentBox = new VBox();
+        doneTaskContentBox = new VBox();
         
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+        	int numOfElements = InterfaceController.logicControl.getDoneElementsCount();
         	HBox tempBox = initDisplayElement(tasks[i], numOfElements, 1, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            allTaskContentBox.getChildren().add(tempBox);
+            doneTaskContentBox.getChildren().add(tempBox);
         }
         
-        allTaskScroll = new ScrollPane(allTaskContentBox);
-        allTaskScroll.setFitToWidth(true);
+        doneTaskScroll = new ScrollPane(doneTaskContentBox);
+        doneTaskScroll.setFitToWidth(true);
         
-        allTaskBox = new VBox(allTaskHeaderBox, allTaskScroll);
+        doneTaskBox = new VBox(doneTaskHeaderBox, doneTaskScroll);
         
         // Set margins for the header label
-        HBox.setMargin(allTaskHeader, new Insets(
+        HBox.setMargin(doneTaskHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
         // Set margins for the header
-        VBox.setMargin(allTaskHeaderBox, new Insets(
+        VBox.setMargin(doneTaskHeaderBox, new Insets(
         		0, InterfaceController.MARGIN_SCROLL, 
         		0, InterfaceController.MARGIN_SCROLL));
         
         // Set margins for the scroll pane
-        VBox.setMargin(allTaskScroll, new Insets(
+        VBox.setMargin(doneTaskScroll, new Insets(
         		InterfaceController.MARGIN_COMPONENT, 
         		InterfaceController.MARGIN_SCROLL, 
         		0, 
         		InterfaceController.MARGIN_SCROLL));
         
         // Set the alignment of the header image to be in the center
-        allTaskBox.setAlignment(Pos.CENTER);
+        doneTaskBox.setAlignment(Pos.CENTER);
         
         // Set the height of the scroll pane to grow with window height
-        VBox.setVgrow(allTaskScroll, Priority.ALWAYS);
+        VBox.setVgrow(doneTaskScroll, Priority.ALWAYS);
         
         // Set the scrollbar policy of the scroll pane
-        allTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        doneTaskScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        allTaskHeader.getStyleClass().add("box-title-label");
-        allTaskHeaderBox.getStyleClass().add("box-title-all-task");
+        doneTaskHeader.getStyleClass().add("box-title-label");
+        doneTaskHeaderBox.getStyleClass().add("box-title-all-task");
     }
 
-    private static void initAllEventView(String[] events) {
+    private static void initDoneEventView(String[] events) {
 
-    	Label allEventHeader = new Label(HEADER_ALL_EVENTS);
-        allEventHeaderBox = new HBox(allEventHeader);
-        allEventHeaderBox.setAlignment(Pos.CENTER);
+    	Label doneEventHeader = new Label(HEADER_DONE_EVENTS);
+        doneEventHeaderBox = new HBox(doneEventHeader);
+        doneEventHeaderBox.setAlignment(Pos.CENTER);
 
-        allEventContentBox = new VBox();
+        doneEventContentBox = new VBox();
         
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+        	int numOfElements = InterfaceController.logicControl.getDoneElementsCount();
         	HBox tempBox = initDisplayElement(events[i], numOfElements, 1, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            allEventContentBox.getChildren().add(tempBox);
+            doneEventContentBox.getChildren().add(tempBox);
         }
         
         
-        allEventScroll = new ScrollPane(allEventContentBox);
-        allEventScroll.setFitToWidth(true);
+        doneEventScroll = new ScrollPane(doneEventContentBox);
+        doneEventScroll.setFitToWidth(true);
         
-        allEventBox = new VBox(allEventHeaderBox, allEventScroll);
+        doneEventBox = new VBox(doneEventHeaderBox, doneEventScroll);
         
         // Set margins for the header label
-        HBox.setMargin(allEventHeader, new Insets(
+        HBox.setMargin(doneEventHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
         // Set margins for the header
-        VBox.setMargin(allEventHeaderBox, new Insets(
+        VBox.setMargin(doneEventHeaderBox, new Insets(
         		0, InterfaceController.MARGIN_SCROLL, 
         		0, InterfaceController.MARGIN_SCROLL));
         
         // Set margins for the scroll pane
-        VBox.setMargin(allEventScroll, new Insets(
+        VBox.setMargin(doneEventScroll, new Insets(
         		InterfaceController.MARGIN_COMPONENT, 
         		InterfaceController.MARGIN_SCROLL, 
         		0, 
         		InterfaceController.MARGIN_SCROLL));
         
         // Set the alignment of the header image to be in the center
-        allEventBox.setAlignment(Pos.CENTER);
+        doneEventBox.setAlignment(Pos.CENTER);
 
         // Set the height of the scroll pane to grow with the window height
-        VBox.setVgrow(allEventScroll, Priority.ALWAYS);
+        VBox.setVgrow(doneEventScroll, Priority.ALWAYS);
         
         // Set the scrollbar policy of the scroll pane
-        allEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        doneEventScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         
         // CSS
-        allEventHeader.getStyleClass().add("box-title-label");
-        allEventHeaderBox.getStyleClass().add("box-title-all-event");
+        doneEventHeader.getStyleClass().add("box-title-label");
+        doneEventHeaderBox.getStyleClass().add("box-title-all-event");
     }
 
-    public static void initAllView() {
+    public static void initDoneView() {
 
-        initAllTaskView(InterfaceController.logicControl.getAllTasks());
-        initAllEventView(InterfaceController.logicControl.getAllEvents());
+        initDoneTaskView(InterfaceController.logicControl.getDoneTasks());
+        initDoneEventView(InterfaceController.logicControl.getDoneEvents());
         
-        allScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
+        doneScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
         
-        InterfaceController.allBox = new HBox(allTaskBox, allScrollLine, allEventBox);
+        InterfaceController.doneBox = new HBox(doneTaskBox, doneScrollLine, doneEventBox);
         
         // Set the preferred viewport width of the two scroll panes to be half
         // of the entire view pane
-        allTaskScroll.prefViewportWidthProperty().bind(
-        		InterfaceController.allBox.widthProperty().divide(2));
-        allEventScroll.prefViewportWidthProperty().bind(
-        		InterfaceController.allBox.widthProperty().divide(2));
+        doneTaskScroll.prefViewportWidthProperty().bind(
+        		InterfaceController.doneBox.widthProperty().divide(2));
+        doneEventScroll.prefViewportWidthProperty().bind(
+        		InterfaceController.doneBox.widthProperty().divide(2));
         
         // Fix the width of the scroll panes to prevent resize of the inner labels
-        allTaskScroll.maxWidthProperty().bind(
-        		InterfaceController.allBox.widthProperty().divide(2));
-        allEventScroll.maxWidthProperty().bind(
-        		InterfaceController.allBox.widthProperty().divide(2));
+        doneTaskScroll.maxWidthProperty().bind(
+        		InterfaceController.doneBox.widthProperty().divide(2));
+        doneEventScroll.maxWidthProperty().bind(
+        		InterfaceController.doneBox.widthProperty().divide(2));
         
         // Set the scroll separator to bind with the same line in DefaultViewController
-        allScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());
+        doneScrollLine.endYProperty().bind(DefaultViewController.getDefScrollLine().endYProperty());
         
         // CSS
-        allScrollLine.getStyleClass().add("line");
+        doneScrollLine.getStyleClass().add("line");
     }
     
-    public static void updateAllView() {
+    public static void updateDoneView() {
     	
     	// Clear the previous content already displayed
-        allTaskContentBox.getChildren().clear();
-        allEventContentBox.getChildren().clear();
-        ViewIndexMap.resetAllMap();
+        doneTaskContentBox.getChildren().clear();
+        doneEventContentBox.getChildren().clear();
+        ViewIndexMap.resetDoneMap();
         
         // Get the results of the file from logic
-        String[] tasks = InterfaceController.logicControl.getAllTasks();
-        String[] events = InterfaceController.logicControl.getAllEvents();
+        String[] tasks = InterfaceController.logicControl.getDoneTasks();
+        String[] events = InterfaceController.logicControl.getDoneEvents();
         
-    	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+    	int numOfElements = InterfaceController.logicControl.getDoneElementsCount();
     	
-    	// Print the task results
-    			// Only print the empty message if there are zero results
-    			int numOfResults = 1;
-    			if (tasks.length == 3 && InterfaceController.logicControl.isEmpty(tasks[1])) {
-    				HBox tempBox = initDisplayElement(tasks[1], numOfElements, numOfResults, true);
-    				VBox.setMargin(tempBox, new Insets(
-    						0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-    				allTaskContentBox.getChildren().add(tempBox);
-    			} else {
-    				// If there are no results for floating tasks
-    				if (InterfaceController.logicControl.isEmpty(tasks[1])) {
-    					for (int i = 0; i < tasks.length; i++) {
-    						HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
-    						VBox.setMargin(tempBox, new Insets(
-    								0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-    						allTaskContentBox.getChildren().add(tempBox);
-    						// Only increment the counter if an element is added
-    						if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
-    							numOfResults++;
-    						}
-    					}
-    				} else {
-    					for (int i = 0; i < tasks.length; i++) {
-    						if (!InterfaceController.logicControl.isEmpty(tasks[i])) {
-    							HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
-    							VBox.setMargin(tempBox, new Insets(
-    									0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-    							allTaskContentBox.getChildren().add(tempBox);
-    							// Only increment the counter if an element is added
-    							if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
-    								numOfResults++;
-    							}
-    						}
-    					}
-    				}
-    			}
-    			// Print the event results
-    			for (int i = 0; i < events.length; i++) {
-    				HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults, false);
-    	        	VBox.setMargin(tempBox, new Insets(
-    	        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-    	        	allEventContentBox.getChildren().add(tempBox);
-    				if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
-    					numOfResults++;
-    				}
-    			}
+        // Run the loop through the entire task list
+    	int numOfResults = 1;
+        for (int i = 0; i < tasks.length; i++) {
+        	// Use a temporary component for formatting
+        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
+        	VBox.setMargin(tempBox, new Insets(
+        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+            doneTaskContentBox.getChildren().add(tempBox);
+			// Only increment the counter if an element is added
+			if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
+				numOfResults++;
+			}
+        }
+        
+        // Run the loop through the entire task list
+        for (int i = 0; i < events.length; i++) {
+        	// Use a temporary component for formatting
+        	HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults, false);
+        	VBox.setMargin(tempBox, new Insets(
+        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+            doneEventContentBox.getChildren().add(tempBox);
+			// Only increment the counter if an element is added
+			if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
+				numOfResults++;
+			}
+        }
     }
 }

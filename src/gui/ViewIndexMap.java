@@ -12,6 +12,7 @@ public class ViewIndexMap {
 	private static ArrayList<Integer> allMap;
 	private static ArrayList<Integer> searchMap;
 	private static ArrayList<Integer> unresMap;
+	private static ArrayList<Integer> doneMap;
 	
 	public static void initAllMaps() {
 		
@@ -19,12 +20,14 @@ public class ViewIndexMap {
 		allMap = new ArrayList<Integer>();
 		searchMap = new ArrayList<Integer>();
 		unresMap = new ArrayList<Integer>();
+		doneMap = new ArrayList<Integer>();
 		
 		// Add an element to index 0 to offset the starting index
 		defMap.add(-1);
 		allMap.add(-1);
 		searchMap.add(-1);
 		unresMap.add(-1);
+		doneMap.add(-1);
 	}
 	
 	// ============================================================
@@ -71,6 +74,16 @@ public class ViewIndexMap {
 		}
 	}
 	
+	public static int getFromDoneMap(int viewIndex) {
+		if (viewIndex >= doneMap.size()) {
+			return -1;
+		} else if (viewIndex <= 0) {
+			return viewIndex;
+		} else {
+			return doneMap.get(viewIndex);
+		}
+	}
+	
 	public static int get(int viewIndex) {
 		switch (InterfaceController.getCurrentView()) {
 		case DEFAULT:
@@ -81,6 +94,8 @@ public class ViewIndexMap {
 			return getFromUnresMap(viewIndex);
 		case SEARCH:
 			return getFromSearchMap(viewIndex);
+		case DONE:
+			return getFromDoneMap(viewIndex);
 		default:
 			// Should not enter
 			return -1;
@@ -107,6 +122,10 @@ public class ViewIndexMap {
 		unresMap.add(fileIndex);
 	}
 	
+	public static void addToDoneMap(int fileIndex) {
+		doneMap.add(fileIndex);
+	}
+	
 	public static void setDefMap(int viewIndex, int fileIndex) {
 		defMap.set(viewIndex, fileIndex);
 	}
@@ -121,6 +140,10 @@ public class ViewIndexMap {
 	
 	public static void setUnresMap(int viewIndex, int fileIndex) {
 		unresMap.set(viewIndex, fileIndex);
+	}
+	
+	public static void setDoneMap(int viewIndex, int fileIndex) {
+		doneMap.set(viewIndex, fileIndex);
 	}
 	
 	// ============================================================
@@ -145,5 +168,10 @@ public class ViewIndexMap {
 	public static void resetUnresMap() {
 		unresMap = new ArrayList<Integer>();
 		unresMap.add(-1);
+	}
+	
+	public static void resetDoneMap() {
+		doneMap = new ArrayList<Integer>();
+		doneMap.add(-1);
 	}
 }

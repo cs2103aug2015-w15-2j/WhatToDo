@@ -117,7 +117,7 @@ public class InterfaceController {
     protected static final String PATH_CONFIG = "gui/resources/config.png";
     protected static final String PATH_TICK = "gui/resources/tick.png";
     
-	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config";
+	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
     
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
@@ -597,7 +597,7 @@ public class InterfaceController {
         AllViewController.initAllView();
         HistoryViewController.initHistView();
         UnresolvedViewController.initUnresView();
-        //DoneViewController.initDoneView();
+        DoneViewController.initDoneView();
         SearchViewController.initSearchView();
         
         // Initial view will be empty
@@ -712,7 +712,7 @@ public class InterfaceController {
     		break;
     		
     	case DONE:
-    		//DoneViewController.updateDoneView();
+    		DoneViewController.updateDoneView();
     		viewBox.getChildren().add(doneBox);
     		
     		HBox.setHgrow(doneBox, Priority.ALWAYS);
