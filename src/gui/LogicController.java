@@ -532,6 +532,14 @@ public class LogicController {
 		return new TabPressHandler();
 	}
 	
+	public HotKeyHandler getHotKeyHandler() {
+		return new HotKeyHandler();
+	}
+	
+	public HelpHotKeyHandler getHelpHotKeyHandler() {
+		return new HelpHotKeyHandler();
+	}
+	
 	public ButtonHoverHandler getButtonHoverHandler(View buttonType) {
 		return new ButtonHoverHandler(buttonType);
 	}
@@ -704,6 +712,96 @@ public class LogicController {
 				if (event.getCode() == KeyCode.TAB) {
 					InterfaceController.updateMainInterface(previous);
 				}
+			}
+		}
+	}
+
+	private static class HotKeyHandler implements EventHandler<KeyEvent> {
+
+		@Override
+		public void handle(KeyEvent event) {
+			if (event.isControlDown()) {
+				switch (event.getCode()) {
+				// For regular number keys
+				case DIGIT1:
+					changeView(View.DEFAULT);
+					break;
+				case DIGIT2:
+					changeView(View.ALL);
+					break;
+				case DIGIT3:
+					changeView(View.HISTORY);
+					break;
+				case DIGIT4:
+					changeView(View.UNRESOLVED);
+					break;
+				case DIGIT5:
+					changeView(View.DONE);
+					break;
+				case DIGIT6:
+					changeView(View.SEARCH);
+					break;
+				case DIGIT7:
+					changeView(View.HELP);
+					break;
+				// For users with a number pad
+				case NUMPAD1:
+					changeView(View.DEFAULT);
+					break;
+				case NUMPAD2:
+					changeView(View.ALL);
+					break;
+				case NUMPAD3:
+					changeView(View.HISTORY);
+					break;
+				case NUMPAD4:
+					changeView(View.UNRESOLVED);
+					break;
+				case NUMPAD5:
+					changeView(View.DONE);
+					break;
+				case NUMPAD6:
+					changeView(View.SEARCH);
+					break;
+				case NUMPAD7:
+					changeView(View.HELP);
+					break;
+				// For opening text and config files
+				case T:
+					InterfaceController.openFileLocation();
+					break;
+				case S:
+					InterfaceController.openConfigLocation();
+					break;
+				default:
+					// Do nothing
+					break;
+				}
+			} else {
+				// Do nothing
+			}
+		}
+	}
+	
+	private class HelpHotKeyHandler implements EventHandler<KeyEvent> {
+		
+		@Override
+		public void handle(KeyEvent event) {
+			if (event.isControlDown()) {
+				switch (event.getCode()) {
+				// For regular number key
+				case DIGIT7:
+					changeView(View.HELP);
+					break;
+				case NUMPAD7:
+					changeView(View.HELP);
+					break;
+				default:
+					// Do nothing
+					break;
+				}
+			} else {
+				// Do nothing
 			}
 		}
 	}

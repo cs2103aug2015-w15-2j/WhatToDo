@@ -82,6 +82,10 @@ public class MainApp extends Application {
         		InterfaceController.logicControl.getTabPressHandler());
         stage.addEventFilter(KeyEvent.KEY_RELEASED, 
         		InterfaceController.logicControl.getTabPressHandler());
+        
+        // Event handling for hotkeys
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, 
+        		InterfaceController.logicControl.getHotKeyHandler());
     }
     
     public static void initHelpStage() {
@@ -94,7 +98,13 @@ public class MainApp extends Application {
         help.setHeight(HEIGHT_HELP_DIALOG);
         help.setResizable(false);
         
+        // Change listener for when window is closed by user click
+        // Performs a strict window close instead of window toggle which loops infinitely
         help.showingProperty().addListener(
         		InterfaceController.logicControl.getCloseHelpHandler());
+        
+        // Event handling for hotkeys
+        help.addEventHandler(KeyEvent.KEY_PRESSED, 
+        		InterfaceController.logicControl.getHelpHotKeyHandler());
     }
 }
