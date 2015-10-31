@@ -26,12 +26,15 @@ public class LogicController {
 
 	private static final String MESSAGE_ERROR_FILESYSTEM = "Failed to create the file.";
 	protected static final String MESSAGE_EMPTY = "There are no items to display.";
+	private static final String MESSAGE_INVALID_INDEX = "Invalid index number entered.";
 	
 	private static final String CSS_UNDERLINE = "-fx-underline: true";
 	private static final String CSS_NO_UNDERLINE = "-fx-underline: false";
 	
 	private static Logic logic;
 	private static CommandHistory commandHistory;
+	
+	private static boolean mapIndexOutOfBounds = true;
 	
 	public LogicController() {
 		
@@ -289,15 +292,31 @@ public class LogicController {
     private static String mapToFileIndex(String textFieldInput) {
     	
     	String[] textFieldInputSplit = textFieldInput.split(" ");
-    	int viewIndex = Integer.parseInt(textFieldInputSplit[1]);
-    	
-    	textFieldInputSplit[1] = String.valueOf(ViewIndexMap.get(viewIndex));
-    	String modifiedString = "";
-    	for (int i = 0; i < textFieldInputSplit.length; i++) {
-    		modifiedString += textFieldInputSplit[i] + " ";
+    	String modifiedString = textFieldInput;
+    	try {
+    		int viewIndex = Integer.parseInt(textFieldInputSplit[1]);
+        	int fileIndex = ViewIndexMap.get(viewIndex);
+        	
+        	// Check if the index has exceeded the allowable size of the array
+        	// -1 should be returned by ViewIndexMap.get()
+        	mapIndexOutOfBounds = fileIndex == -1 && viewIndex != -1;
+        	
+        	// Proceed with normal operation
+        	// Negative and zero indices are handled by CommandParser
+        	textFieldInputSplit[1] = String.valueOf(fileIndex);
+        	modifiedString = "";
+        	for (int i = 0; i < textFieldInputSplit.length; i++) {
+        		modifiedString += textFieldInputSplit[i] + " ";
+        	}
+        	// Remove the extra space appended by the for loop
+        	modifiedString = modifiedString.substring(0, modifiedString.length() - 1);
+    	} catch (NumberFormatException e) {
+    		// User did not enter an integer and hence exception is thrown
+    		// Do not modify the string and pass through to CommandParser to reject
+    		mapIndexOutOfBounds = true;
     	}
-    	// Remove the extra space appended by the for loop
-    	return modifiedString.substring(0, modifiedString.length() - 1);
+    	
+    	return modifiedString;
     }
     
 	private static void changeView(View view) {
@@ -531,6 +550,10 @@ public class LogicController {
 			
 			SearchViewController.updateSearchView(returnMessage);
 		} else {
+			// Modify the return message first if it is incorrect
+			if (mapIndexOutOfBounds) {
+				returnMessage = MESSAGE_INVALID_INDEX;
+			}
 			// Add the returnMessage to the feedback bar and history view
 			InterfaceController.getFeedbackLabel().setText(returnMessage);
 			HistoryViewController.updateHistView(returnMessage);

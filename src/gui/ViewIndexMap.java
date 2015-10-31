@@ -32,19 +32,43 @@ public class ViewIndexMap {
 	// ============================================================
 	
 	public static int getFromDefMap(int viewIndex) {
-		return defMap.get(viewIndex);
+		if (viewIndex >= defMap.size()) {
+			return -1;
+		} else if (viewIndex <= 0) {
+			return viewIndex;
+		} else {
+			return defMap.get(viewIndex);
+		}
 	}
 	
 	public static int getFromAllMap(int viewIndex) {
-		return allMap.get(viewIndex);
+		if (viewIndex >= allMap.size()) {
+			return -1;
+		} else if (viewIndex <= 0) {
+			return viewIndex;
+		} else {
+			return allMap.get(viewIndex);
+		}
 	}
 	
 	public static int getFromSearchMap(int viewIndex) {
-		return searchMap.get(viewIndex);
+		if (viewIndex >= searchMap.size()) {
+			return -1;
+		} else if (viewIndex <= 0) {
+			return viewIndex;
+		} else {
+			return searchMap.get(viewIndex);
+		}
 	}
 	
 	public static int getFromUnresMap(int viewIndex) {
-		return unresMap.get(viewIndex);
+		if (viewIndex >= unresMap.size()) {
+			return -1;
+		} else if (viewIndex <= 0) {
+			return viewIndex;
+		} else {
+			return unresMap.get(viewIndex);
+		}
 	}
 	
 	public static int get(int viewIndex) {
