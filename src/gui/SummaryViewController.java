@@ -54,6 +54,8 @@ public class SummaryViewController {
 	private static final double MARGIN_SUMMARY_COUNT_HORIZ = 20;
 	private static final double MARGIN_SUMMARY_COUNT_VERT = 5;
 	
+	private static boolean isShowing = false;
+	
 	private static void initTaskTwoDays(int count, double maxWidth) {
 		
 		taskTwoDaysCount = new Label(String.valueOf(count));
@@ -193,8 +195,8 @@ public class SummaryViewController {
 		
 		allUnresCountBox.setMinWidth(maxWidth);
 		HBox.setMargin(allUnresLabel, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
-		HBox.setMargin(allUnresAttention, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
-		HBox.setMargin(allUnresClear, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
+		HBox.setMargin(allUnresAttention, new Insets(0, 0, 0, MARGIN_SUMMARY_COUNT_HORIZ));
+		HBox.setMargin(allUnresClear, new Insets(0, 0, 0, MARGIN_SUMMARY_COUNT_HORIZ));
 		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT_HORIZ, 0, 0));
 		HBox.setHgrow(allUnresNotifyBox, Priority.ALWAYS);
 		
@@ -333,5 +335,21 @@ public class SummaryViewController {
 		taskFloatCount.getStyleClass().add("summary-box-count");
 		eventOngoingCount.getStyleClass().add("summary-box-count");
 		allUnresCount.getStyleClass().add("summary-box-count");
+	}
+	
+	// ========================================
+	// Getters and setters for isShowing
+	// ========================================
+	
+	public static boolean isShowing() {
+		return isShowing;
+	}
+	
+	public static void startShowing() {
+		isShowing = true;
+	}
+	
+	public static void stopShowing() {
+		isShowing = false;
 	}
 }
