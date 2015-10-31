@@ -2,217 +2,297 @@ package gui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 public class SummaryViewController {
-
-	// Used for initSummaryHeader
-	private static Label summaryHeaderLabel;
-	private static HBox summaryHeaderBox;
 	
 	// Used for initTaskTwoDays
 	private static Label taskTwoDaysCount, taskTwoDaysLabel;
-	private static VBox taskTwoDaysBox;
+	private static HBox taskTwoDaysCountBox, taskTwoDaysLabelBox, taskTwoDaysBox;
 	
 	// Used for initEventTwoDays
 	private static Label eventTwoDaysCount, eventTwoDaysLabel;
-	private static VBox eventTwoDaysBox;
+	private static HBox eventTwoDaysCountBox, eventTwoDaysLabelBox, eventTwoDaysBox;
 	
 	// Used for initTaskFloat
 	private static Label taskFloatCount, taskFloatLabel;
-	private static VBox taskFloatBox;
+	private static HBox taskFloatCountBox, taskFloatLabelBox, taskFloatBox;
 	
 	// Used for initEventOngoing
 	private static Label eventOngoingCount, eventOngoingLabel;
-	private static VBox eventOngoingBox;
+	private static HBox eventOngoingCountBox, eventOngoingLabelBox, eventOngoingBox;
 	
-	// Used for initRowOne
-	private static HBox rowOneBox;
-	
-	// Used for initRowTwo
-	private static HBox rowTwoBox;
+	// Used for initAllUnres
+	private static Label allUnresCount, allUnresLabel, allUnresAttention, allUnresClear;
+	private static ImageView allUnresIcon;
+	private static HBox allUnresCountBox, allUnresLabelBox, allUnresNotifyBox, allUnresIconBox, allUnresBox;
 	
 	// Used for initSummaryView
 	private static VBox summaryBox;
 	
-	private static final String HEADER_SUMMARY = "Quick View";
-	private static final String HEADER_TASK_TWO_DAYS = "tasks due within two days";
-	private static final String HEADER_EVENT_TWO_DAYS = "events starting within two days";
-	private static final String HEADER_TASK_FLOAT = "tasks with no deadline";
-	private static final String HEADER_EVENT_ONGOING = "events ongoing";
+	private static final String PATH_UNRES_TICK = "gui/resources/unres_tick.png";
+	private static final String PATH_UNRES_ALERT = "gui/resources/unres_alert.png";
 	
-	private static void initSummaryHeader() {
-		
-		summaryHeaderLabel = new Label(HEADER_SUMMARY);
-		summaryHeaderBox = new HBox(summaryHeaderLabel);
-		summaryHeaderBox.setAlignment(Pos.CENTER);
-		
-		// CSS
-		summaryHeaderLabel.getStyleClass().add("summary-header");
-		summaryHeaderLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
-	}
+	private static final String HEADER_TASK_TWO_DAYS = "Tasks due within two days";
+	private static final String HEADER_EVENT_TWO_DAYS = "Events starting within two days";
+	private static final String HEADER_TASK_FLOAT = "Tasks with no deadline";
+	private static final String HEADER_EVENT_ONGOING = "Ongoing events";
+	private static final String HEADER_ALL_UNRES = "Unresolved tasks/events past deadline";
+	private static final String HEADER_ALL_UNRES_ATTENTION = "Some items require attention";
+	private static final String HEADER_ALL_UNRES_CLEAR = "All items clear";
 	
-	private static void initTaskTwoDays(String count) {
+	private static final double MARGIN_SUMMARY_BOX = 80;
+	private static final double MARGIN_SUMMARY_LABEL = 30;
+	private static final double MARGIN_SUMMARY_COUNT = 20;
+	
+	private static void initTaskTwoDays(int count, double maxWidth) {
 		
-		taskTwoDaysCount = new Label(count);
+		taskTwoDaysCount = new Label(String.valueOf(count));
 		taskTwoDaysLabel = new Label(HEADER_TASK_TWO_DAYS);
-		taskTwoDaysBox = new VBox(taskTwoDaysCount, taskTwoDaysLabel);
-		taskTwoDaysBox.setAlignment(Pos.BOTTOM_CENTER);
 		
-		taskTwoDaysBox.setMaxWidth(300);
-		taskTwoDaysBox.setMinWidth(300);
-		taskTwoDaysBox.setMaxHeight(200);
-		taskTwoDaysBox.setMinHeight(200);
+		taskTwoDaysCountBox = new HBox(taskTwoDaysCount);
+		taskTwoDaysLabelBox = new HBox(taskTwoDaysLabel);
+		taskTwoDaysCountBox.setAlignment(Pos.CENTER);
+		taskTwoDaysLabelBox.setAlignment(Pos.CENTER_LEFT);
 		
-		VBox.setMargin(taskTwoDaysCount, new Insets(0, 0, 15, 0));
-		VBox.setMargin(taskTwoDaysLabel, new Insets(0, 0, 15, 0));
+		taskTwoDaysCountBox.setMinWidth(maxWidth);
+		HBox.setMargin(taskTwoDaysLabel, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
+		HBox.setHgrow(taskTwoDaysLabelBox, Priority.ALWAYS);
+		
+		taskTwoDaysBox = new HBox(taskTwoDaysLabelBox, taskTwoDaysCountBox);
 		
 		// CSS
 		taskTwoDaysBox.getStyleClass().add("summary-box");
-		taskTwoDaysCount.getStyleClass().add("summary-box-label-count");
+		taskTwoDaysCount.getStyleClass().add("summary-box-count");
 		taskTwoDaysLabel.getStyleClass().add("summary-box-label");
 		taskTwoDaysLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		
+		taskTwoDaysLabelBox.getStyleClass().add("summary-box-label-box");
+		taskTwoDaysCountBox.getStyleClass().add("summary-box-count-box");
 	}
 	
-	private static void initEventTwoDays(String count) {
+	private static void initEventTwoDays(int count, double maxWidth) {
 		
-		eventTwoDaysCount = new Label(count);
+		eventTwoDaysCount = new Label(String.valueOf(count));
 		eventTwoDaysLabel = new Label(HEADER_EVENT_TWO_DAYS);
-		eventTwoDaysBox = new VBox(eventTwoDaysCount, eventTwoDaysLabel);
-		eventTwoDaysBox.setAlignment(Pos.BOTTOM_CENTER);
 		
-		eventTwoDaysBox.setMaxWidth(300);
-		eventTwoDaysBox.setMinWidth(300);
-		eventTwoDaysBox.setMaxHeight(200);
-		eventTwoDaysBox.setMinHeight(200);
+		eventTwoDaysCountBox = new HBox(eventTwoDaysCount);
+		eventTwoDaysLabelBox = new HBox(eventTwoDaysLabel);
+		eventTwoDaysCountBox.setAlignment(Pos.CENTER);
+		eventTwoDaysLabelBox.setAlignment(Pos.CENTER_LEFT);
 		
-		VBox.setMargin(eventTwoDaysCount, new Insets(0, 0, 15, 0));
-		VBox.setMargin(eventTwoDaysLabel, new Insets(0, 0, 15, 0));
+		eventTwoDaysCountBox.setMinWidth(maxWidth);
+		HBox.setMargin(eventTwoDaysLabel, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
+		HBox.setHgrow(eventTwoDaysLabelBox, Priority.ALWAYS);
 		
+		eventTwoDaysBox = new HBox(eventTwoDaysLabelBox, eventTwoDaysCountBox);
+
 		// CSS
 		eventTwoDaysBox.getStyleClass().add("summary-box");
-		eventTwoDaysCount.getStyleClass().add("summary-box-label-count");
+		eventTwoDaysCount.getStyleClass().add("summary-box-count");
 		eventTwoDaysLabel.getStyleClass().add("summary-box-label");
 		eventTwoDaysLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		
+		eventTwoDaysLabelBox.getStyleClass().add("summary-box-label-box");
+		eventTwoDaysCountBox.getStyleClass().add("summary-box-count-box");
 	}
 	
-	private static void initTaskFloat(String count) {
+	private static void initTaskFloat(int count, double maxWidth) {
 		
-		taskFloatCount = new Label(count);
+		taskFloatCount = new Label(String.valueOf(count));
 		taskFloatLabel = new Label(HEADER_TASK_FLOAT);
-		taskFloatBox = new VBox(taskFloatCount, taskFloatLabel);
-		taskFloatBox.setAlignment(Pos.BOTTOM_CENTER);
 		
-		taskFloatBox.setMaxWidth(300);
-		taskFloatBox.setMinWidth(300);
-		taskFloatBox.setMaxHeight(200);
-		taskFloatBox.setMinHeight(200);
+		taskFloatCountBox = new HBox(taskFloatCount);
+		taskFloatLabelBox = new HBox(taskFloatLabel);
+		taskFloatCountBox.setAlignment(Pos.CENTER);
+		taskFloatLabelBox.setAlignment(Pos.CENTER_LEFT);
 		
-		VBox.setMargin(taskFloatCount, new Insets(0, 0, 15, 0));
-		VBox.setMargin(taskFloatLabel, new Insets(0, 0, 15, 0));
+		taskFloatCountBox.setMinWidth(maxWidth);
+		HBox.setMargin(taskFloatLabel, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
+		HBox.setHgrow(taskFloatLabelBox, Priority.ALWAYS);
+		
+		taskFloatBox = new HBox(taskFloatLabelBox, taskFloatCountBox);
 		
 		// CSS
 		taskFloatBox.getStyleClass().add("summary-box");
-		taskFloatCount.getStyleClass().add("summary-box-label-count");
+		taskFloatCount.getStyleClass().add("summary-box-count");
 		taskFloatLabel.getStyleClass().add("summary-box-label");
 		taskFloatLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		
+		taskFloatLabelBox.getStyleClass().add("summary-box-label-box");
+		taskFloatCountBox.getStyleClass().add("summary-box-count-box");
 	}
 	
-	private static void initEventOngoing(String count) {
+	private static void initEventOngoing(int count, double maxWidth) {
 		
-		eventOngoingCount = new Label(count);
+		eventOngoingCount = new Label(String.valueOf(count));
 		eventOngoingLabel = new Label(HEADER_EVENT_ONGOING);
-		eventOngoingBox = new VBox(eventOngoingCount, eventOngoingLabel);
-		eventOngoingBox.setAlignment(Pos.BOTTOM_CENTER);
 		
-		eventOngoingBox.setMaxWidth(300);
-		eventOngoingBox.setMinWidth(300);
-		eventOngoingBox.setMaxHeight(200);
-		eventOngoingBox.setMinHeight(200);
+		eventOngoingCountBox = new HBox(eventOngoingCount);
+		eventOngoingLabelBox = new HBox(eventOngoingLabel);
+		eventOngoingCountBox.setAlignment(Pos.CENTER);
+		eventOngoingLabelBox.setAlignment(Pos.CENTER_LEFT);
 		
-		VBox.setMargin(eventOngoingCount, new Insets(0, 0, 15, 0));
-		VBox.setMargin(eventOngoingLabel, new Insets(0, 0, 15, 0));
+		eventOngoingCountBox.setMinWidth(maxWidth);
+		HBox.setMargin(eventOngoingLabel, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
+		HBox.setHgrow(eventOngoingLabelBox, Priority.ALWAYS);
+		
+		eventOngoingBox = new HBox(eventOngoingLabelBox, eventOngoingCountBox);
 		
 		// CSS
 		eventOngoingBox.getStyleClass().add("summary-box");
-		eventOngoingCount.getStyleClass().add("summary-box-label-count");
+		eventOngoingCount.getStyleClass().add("summary-box-count");
 		eventOngoingLabel.getStyleClass().add("summary-box-label");
 		eventOngoingLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		
+		eventOngoingLabelBox.getStyleClass().add("summary-box-label-box");
+		eventOngoingCountBox.getStyleClass().add("summary-box-count-box");
 	}
 	
-	private static void initRowOne(String taskCount, String eventCount) {
-		
-		initTaskTwoDays(taskCount);
-		initEventTwoDays(eventCount);
-		
-		Region spaceLeft = new Region();
-		Region spaceCenter = new Region();
-		Region spaceRight = new Region();
-		
-		rowOneBox = new HBox(spaceLeft, taskTwoDaysBox, spaceCenter, eventTwoDaysBox, spaceRight);
-		rowOneBox.setAlignment(Pos.CENTER);
-		
-		HBox.setHgrow(spaceLeft, Priority.ALWAYS);
-		HBox.setHgrow(spaceCenter, Priority.ALWAYS);
-		HBox.setHgrow(spaceRight, Priority.ALWAYS);
+	private static void initUnresIcon(int count) {
+		if (count == 0) {
+			allUnresIcon = new ImageView(PATH_UNRES_TICK);
+		} else {
+			allUnresIcon = new ImageView(PATH_UNRES_ALERT);
+		}
 	}
 	
-	private static void initRowTwo(String taskCount, String eventCount) {
+	private static void initUnresNotifyBox(int count) {
+		if (count == 0) {
+			allUnresNotifyBox = new HBox(allUnresClear);
+		} else {
+			allUnresNotifyBox = new HBox(allUnresAttention);
+		}
+	}
+	
+	private static void initAllUnres(int count, double maxWidth) {
 		
-		initTaskFloat(taskCount);
-		initEventOngoing(eventCount);
+		allUnresCount = new Label(String.valueOf(count));
+		allUnresLabel = new Label(HEADER_ALL_UNRES);
+		allUnresAttention = new Label(HEADER_ALL_UNRES_ATTENTION);
+		allUnresClear = new Label(HEADER_ALL_UNRES_CLEAR);
+		initUnresIcon(count);
 		
-		Region spaceLeft = new Region();
-		Region spaceCenter = new Region();
-		Region spaceRight = new Region();
+		allUnresCountBox = new HBox(allUnresCount);
+		allUnresLabelBox = new HBox(allUnresLabel);
+		allUnresIconBox = new HBox(allUnresIcon);
+		initUnresNotifyBox(count);
+		allUnresCountBox.setAlignment(Pos.CENTER);
+		allUnresLabelBox.setAlignment(Pos.CENTER_LEFT);
+		allUnresIconBox.setAlignment(Pos.CENTER);
+		allUnresNotifyBox.setAlignment(Pos.CENTER_LEFT);
 		
-		rowTwoBox = new HBox(spaceLeft, taskFloatBox, spaceCenter, eventOngoingBox, spaceRight);
-		rowTwoBox.setAlignment(Pos.CENTER);
+		allUnresCountBox.setMinWidth(maxWidth);
+		HBox.setMargin(allUnresLabel, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
+		HBox.setMargin(allUnresAttention, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
+		HBox.setMargin(allUnresClear, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
+		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT, 0, 0));
+		HBox.setHgrow(allUnresNotifyBox, Priority.ALWAYS);
 		
-		HBox.setHgrow(spaceLeft, Priority.ALWAYS);
-		HBox.setHgrow(spaceCenter, Priority.ALWAYS);
-		HBox.setHgrow(spaceRight, Priority.ALWAYS);
+		allUnresBox = new HBox(allUnresLabelBox, allUnresNotifyBox, allUnresIconBox, allUnresCountBox);
+		
+		// CSS
+		allUnresBox.getStyleClass().add("summary-box");
+		allUnresCount.getStyleClass().add("summary-box-count");
+		allUnresLabel.getStyleClass().add("summary-box-label");
+		allUnresAttention.getStyleClass().add("summary-box-notify");
+		allUnresClear.getStyleClass().add("summary-box-notify");
+		allUnresLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		allUnresAttention.setStyle("-fx-font-family: \"Myriad Pro Light\"; "
+				+ "-fx-font-style: italic;");
+		allUnresClear.setStyle("-fx-font-family: \"Myriad Pro Light\"; "
+				+ "-fx-font-style: italic;");
+		
+		allUnresLabelBox.getStyleClass().add("summary-box-label-box");
+		allUnresIconBox.getStyleClass().add("summary-box-label-box");
+		allUnresCountBox.getStyleClass().add("summary-box-count-box");
+		allUnresNotifyBox.getStyleClass().add("summary-box-notify-box");
 	}
 	
 	public static void initSummaryView() {
 		
 		int[] summary = InterfaceController.logicControl.getSummaryCount();
 		
-		//initSummaryHeader();
-		initRowOne(String.valueOf(summary[0]), String.valueOf(summary[1]));
-		initRowTwo(String.valueOf(summary[2]), String.valueOf(summary[3]));
+		// Obtain the largest value within summary
+		int maxValue = summary[0];
+		for (int i = 1; i < 5; i++) {
+			maxValue = Math.max(maxValue, summary[i]);
+		}
 		
-		//Region spaceHeader = new Region();
-		Region spaceTop = new Region();
-		Region spaceMid = new Region();
-		Region spaceBot = new Region();
+		Text text = new Text(String.valueOf(maxValue));
+		new Scene(new Group(text));
+		text.setStyle("-fx-font-family: \"Myriad Pro Light\";"
+				+ "-fx-font-size: 48;");
+		text.applyCss();
+		double maxWidth = text.getLayoutBounds().getWidth() + 2 * MARGIN_SUMMARY_COUNT;
 		
-		summaryBox = new VBox(spaceTop, rowOneBox, spaceMid, rowTwoBox, spaceBot);
+		initTaskTwoDays(summary[0], maxWidth);
+		initEventTwoDays(summary[1], maxWidth);
+		initTaskFloat(summary[2], maxWidth);
+		initEventOngoing(summary[3], maxWidth);
+		initAllUnres(summary[4], maxWidth);
+		
+		Region space1 = new Region();
+		Region space2 = new Region();
+		Region space3 = new Region();
+		Region space4 = new Region();
+		Region space5 = new Region();
+		Region space6 = new Region();
+		
+		summaryBox = new VBox(space1, taskTwoDaysBox, 
+				space2, eventTwoDaysBox, 
+				space3, taskFloatBox, 
+				space4, eventOngoingBox, 
+				space5, allUnresBox, 
+				space6);
+		
+		HBox.setHgrow(taskTwoDaysBox, Priority.ALWAYS);
+		HBox.setHgrow(eventTwoDaysBox, Priority.ALWAYS);
+		HBox.setHgrow(taskFloatBox, Priority.ALWAYS);
+		HBox.setHgrow(eventOngoingBox, Priority.ALWAYS);
+		HBox.setHgrow(allUnresBox, Priority.ALWAYS);
+		
+		VBox.setMargin(taskTwoDaysBox, new Insets(0, MARGIN_SUMMARY_BOX, 0, MARGIN_SUMMARY_BOX));
+		VBox.setMargin(eventTwoDaysBox, new Insets(0, MARGIN_SUMMARY_BOX, 0, MARGIN_SUMMARY_BOX));
+		VBox.setMargin(taskFloatBox, new Insets(0, MARGIN_SUMMARY_BOX, 0, MARGIN_SUMMARY_BOX));
+		VBox.setMargin(eventOngoingBox, new Insets(0, MARGIN_SUMMARY_BOX, 0, MARGIN_SUMMARY_BOX));
+		VBox.setMargin(allUnresBox, new Insets(0, MARGIN_SUMMARY_BOX, 0, MARGIN_SUMMARY_BOX));
+		
 		InterfaceController.summaryBox = summaryBox;
 		
-		//VBox.setVgrow(spaceHeader, Priority.ALWAYS);
-		VBox.setVgrow(spaceTop, Priority.ALWAYS);
-		VBox.setVgrow(spaceMid, Priority.ALWAYS);
-		VBox.setVgrow(spaceBot, Priority.ALWAYS);
+		VBox.setVgrow(space1, Priority.ALWAYS);
+		VBox.setVgrow(space2, Priority.ALWAYS);
+		VBox.setVgrow(space3, Priority.ALWAYS);
+		VBox.setVgrow(space4, Priority.ALWAYS);
+		VBox.setVgrow(space5, Priority.ALWAYS);
+		VBox.setVgrow(space6, Priority.ALWAYS);
+	}
+	
+	private static void updateUnresNotifyBox(int count) {
+		allUnresNotifyBox.getChildren().clear();
+		if (count == 0) {
+			allUnresNotifyBox.getChildren().add(allUnresClear);
+		} else {
+			allUnresNotifyBox.getChildren().add(allUnresAttention);
+		}
 	}
 	
 	public static void updateSummaryView() {
 		
 		// Clear the old data
-		taskTwoDaysBox.getChildren().clear();
-		eventTwoDaysBox.getChildren().clear();
-		taskFloatBox.getChildren().clear();
-		eventOngoingBox.getChildren().clear();
-		
-		// Create the new labels
-		taskTwoDaysLabel = new Label(HEADER_TASK_TWO_DAYS);
-		eventTwoDaysLabel = new Label(HEADER_EVENT_TWO_DAYS);
-		taskFloatLabel = new Label(HEADER_TASK_FLOAT);
-		eventOngoingLabel = new Label(HEADER_EVENT_ONGOING);
+		taskTwoDaysCountBox.getChildren().clear();
+		eventTwoDaysCountBox.getChildren().clear();
+		taskFloatCountBox.getChildren().clear();
+		eventOngoingCountBox.getChildren().clear();
+		allUnresCountBox.getChildren().clear();
 		
 		// Get the updated data
 		int[] summary = InterfaceController.logicControl.getSummaryCount();
@@ -222,41 +302,29 @@ public class SummaryViewController {
 		eventTwoDaysCount = new Label(String.valueOf(summary[1]));
 		taskFloatCount = new Label(String.valueOf(summary[2]));
 		eventOngoingCount = new Label(String.valueOf(summary[3]));
+		allUnresCount = new Label(String.valueOf(summary[4]));
 		
-		// Add the labels again
-		taskTwoDaysBox.getChildren().addAll(taskTwoDaysCount, taskTwoDaysLabel);
-		eventTwoDaysBox.getChildren().addAll(eventTwoDaysCount, eventTwoDaysLabel);
-		taskFloatBox.getChildren().addAll(taskFloatCount, taskFloatLabel);
-		eventOngoingBox.getChildren().addAll(eventOngoingCount, eventOngoingLabel);
+		// Update the icon depending on the new value of unresolved tasks
+		initUnresIcon(summary[4]);
+		allUnresIconBox.getChildren().clear();
+		allUnresIconBox.getChildren().add(allUnresIcon);
+		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT, 0, 0));
 		
-		// Set the margins
-		VBox.setMargin(taskTwoDaysCount, new Insets(0, 0, 15, 0));
-		VBox.setMargin(taskTwoDaysLabel, new Insets(0, 0, 15, 0));
+		// Update the notification text
+		updateUnresNotifyBox(summary[4]);
 		
-		VBox.setMargin(eventTwoDaysCount, new Insets(0, 0, 15, 0));
-		VBox.setMargin(eventTwoDaysLabel, new Insets(0, 0, 15, 0));
-		
-		VBox.setMargin(taskFloatCount, new Insets(0, 0, 15, 0));
-		VBox.setMargin(taskFloatLabel, new Insets(0, 0, 15, 0));
-		
-		VBox.setMargin(eventOngoingCount, new Insets(0, 0, 15, 0));
-		VBox.setMargin(eventOngoingLabel, new Insets(0, 0, 15, 0));
+		// Insert the new data
+		taskTwoDaysCountBox.getChildren().add(taskTwoDaysCount);
+		eventTwoDaysCountBox.getChildren().add(eventTwoDaysCount);
+		taskFloatCountBox.getChildren().add(taskFloatCount);
+		eventOngoingCountBox.getChildren().add(eventOngoingCount);
+		allUnresCountBox.getChildren().add(allUnresCount);
 		
 		// CSS
-		taskTwoDaysCount.getStyleClass().add("summary-box-label-count");
-		taskTwoDaysLabel.getStyleClass().add("summary-box-label");
-		taskTwoDaysLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
-		
-		eventTwoDaysCount.getStyleClass().add("summary-box-label-count");
-		eventTwoDaysLabel.getStyleClass().add("summary-box-label");
-		eventTwoDaysLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
-		
-		taskFloatCount.getStyleClass().add("summary-box-label-count");
-		taskFloatLabel.getStyleClass().add("summary-box-label");
-		taskFloatLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
-		
-		eventOngoingCount.getStyleClass().add("summary-box-label-count");
-		eventOngoingLabel.getStyleClass().add("summary-box-label");
-		eventOngoingLabel.setStyle("-fx-font-family: \"Myriad Pro Light\";");
+		taskTwoDaysCount.getStyleClass().add("summary-box-count");
+		eventTwoDaysCount.getStyleClass().add("summary-box-count");
+		taskFloatCount.getStyleClass().add("summary-box-count");
+		eventOngoingCount.getStyleClass().add("summary-box-count");
+		allUnresCount.getStyleClass().add("summary-box-count");
 	}
 }

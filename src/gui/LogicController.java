@@ -122,7 +122,7 @@ public class LogicController {
 		
 		String[] defTasks = InterfaceController.logicControl.getDefTasks();
 		String[] defEvents = InterfaceController.logicControl.getDefEvents();
-		int[] summary = {0, 0, 0, 0};
+		int[] summary = {0, 0, 0, 0, 0};
 		int currentIndex = 0;
 		
 		// First count for tasks and update the count array
@@ -178,6 +178,9 @@ public class LogicController {
 				}
 			}
 		}
+		
+		// Count the unresolved tasks and events as well
+		summary[4] = getUnresElementsCount();
 		
 		return summary;
 	}

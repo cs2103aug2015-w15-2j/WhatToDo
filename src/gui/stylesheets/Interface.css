@@ -14,6 +14,10 @@
 	src: url('../resources/MyriadPro-Semibold.otf');
 }
 
+@font-face {
+	src: url('../resources/MyriadPro-SemiboldIt.otf');
+}
+
 .root {
     -fx-background-image: url("../resources/windowBG.jpg");
     /* Original background color #dedede */
@@ -95,22 +99,35 @@
 	-fx-text-fill: #e5e5e5;
 }
 
-.summary-header {
-	-fx-font-size: 30;
-}
-
 .summary-box {
-	-fx-background-image: url("../resources/sbBG.jpg");
+	-fx-border-width: 1px;
+	-fx-border-color: #808080;
 }
 
 .summary-box-label {
 	-fx-font-size: 18;
-	-fx-text-fill: #e5e5e5;
 }
 
-.summary-box-label-count {
-	-fx-font-size: 90;
+.summary-box-label-box {
+	-fx-background-image: url("../resources/elementBG.jpg");
+}
+
+.summary-box-count {
+	-fx-font-size: 48;
 	-fx-text-fill: #e5e5e5;	
+}
+
+.summary-box-count-box {
+	-fx-background-image: url("../resources/sbBG.jpg");
+}
+
+.summary-box-notify {
+	-fx-font-size: 14;
+	-fx-text-fill: #808080;
+}
+
+.summary-box-notify-box {
+	-fx-background-image: url("../resources/elementBG.jpg");
 }
 
 .box-title {
