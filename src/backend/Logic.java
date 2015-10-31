@@ -1,6 +1,7 @@
 package backend;
 
 import java.nio.file.FileSystemException;
+import java.util.ArrayList;
 
 import struct.Command;
 import struct.Command.CommandType;
@@ -58,6 +59,8 @@ public class Logic {
     private CommandParser commandParser; 
     private Storage storage;
     private Memory memory; 
+    private Filter filter; 
+    private Formatter formatter; 
     //prevCommand refer to the last command that made changes to the file 
     private Command prevCommand; 
  
@@ -69,8 +72,25 @@ public class Logic {
 			commandParser = new CommandParser();
 			storage = new Storage();
 			memory = new Memory();
+			filter = new Filter(); 
+			formatter = new Formatter(); 
 			prevCommand = new Command(); 
 	}
+    
+    public static void main(String[] args){ 
+    	try{
+    		Logic l = new Logic(); 
+    		String[] linesInFile = l.getLinesInFile(); 
+    		Filter filter = new Filter(); 
+    		Formatter formatter = new Formatter(); 
+    		ArrayList<Integer> result = filter.matchTokensInQuery(linesInFile,TYPE_EVENT,"e"); 
+    		System.out.println(result.toString());
+    		System.out.println("out:\n"+ formatter.formatEventResults(linesInFile, result));
+    	}
+    	catch(Exception e){
+    		
+    	}
+    }
     
 	//============================================
 	// Public methods
@@ -330,70 +350,43 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
-    
-    private String executeSearch(Command command){
+     
+    private String executeSearch(Command command){ 
     	try{
-    		String query = command.getName();
     		String[] linesInFile = getLinesInFile();
-  
-    		StringBuffer floatBuffer = new StringBuffer(); 
-    		StringBuffer taskBuffer = new StringBuffer(); 
-    		StringBuffer eventBuffer = new StringBuffer(); 
-    		Date prevTaskDate = null; 
-    		Date prevEventDate = null; 
+    		String query = command.getName(); 
     		
-    		for(int index = 0; index < linesInFile.length; index++){
-    			String line = linesInFile[index].trim(); 
-    			String[] lineComponents = line.split(SEMICOLON);
-    			String name = lineComponents[INDEX_NAME]; 
-    			String type = lineComponents[INDEX_TYPE]; 
-    			String isDoneStr = lineComponents[INDEX_ISDONE];
-    			
-    			if(name.contains(query)){ 
-    				
-    				switch (type) {
-						case TYPE_FLOAT :
-							String formattedFloat = isDoneStr + " " + String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, name); 
-							floatBuffer.append(formattedFloat);
-							break;
-						case TYPE_TASK :
-							Date currTaskDate = new Date(lineComponents[INDEX_DUEDATE]);
-							prevTaskDate = addDateHeader(taskBuffer, currTaskDate, prevTaskDate);
-							String formattedTask = isDoneStr + " " + String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, name);  
-							taskBuffer.append(formattedTask);
-							break; 
-						case TYPE_EVENT : 
-							Date currEventDate = new Date(lineComponents[INDEX_STARTDATE]);
-							prevEventDate = addDateHeader(eventBuffer, currEventDate, prevEventDate);
-							
-							String startDate = lineComponents[INDEX_STARTDATE]; 
-							String endDate = lineComponents[INDEX_ENDDATE]; 
-							String startTime = lineComponents[INDEX_STARTTIME]; 
-							String endTime = lineComponents[INDEX_ENDTIME]; 
-							
-							String formattedEvent = isDoneStr + " " + String.format(DISPLAY_FORMAT_EVENT, index+1, startDate,startTime,endDate,endTime,name); 
-							eventBuffer.append(formattedEvent);
-							break;
-						default:
-							break;
-					}
-    			}
-    		}
+    		String floatResult = formattedSearchResult(linesInFile, TYPE_FLOAT, query); 
+    		String taskResult = formattedSearchResult(linesInFile, TYPE_TASK, query); 
+    		String eventResult = formattedSearchResult(linesInFile, TYPE_EVENT, query); 
     		
-    		String floatResult = addMsgIfEmpty(floatBuffer); 
-    		String taskResult = addMsgIfEmpty(taskBuffer); 
-    		String eventResult =  addMsgIfEmpty(eventBuffer); 
-    		
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, floatResult, taskResult, eventResult); 
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, floatResult, taskResult, eventResult);
     	}
     	catch(FileSystemException e){
     		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, e.getMessage(), e.getMessage(), e.getMessage());
     	}
-    	catch(Exception e){
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN); 
+    	catch(Exception e){ 
+    		e.printStackTrace();
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN);
     	}
+    	
     }
     
+    //TODO REFACTOR - considering putting all the formatting into formatter class 
+    private String formattedSearchResult(String[] linesInFile, String type, String query){
+    	ArrayList<Integer> result = filter.matchTokensInQuery(linesInFile, type, query); 
+    	switch(type){
+    		case TYPE_FLOAT : 
+    			return formatter.formatFloatResults(linesInFile, result);
+    		case TYPE_TASK : 
+    			return formatter.formatTaskResults(linesInFile, result); 
+    		case TYPE_EVENT : 
+    			return formatter.formatEventResults(linesInFile, result); 
+    		default : 
+    			return ""; 
+    	}
+    }
+        
     private String executeUndo(Command command){ 
     	try{
     		String currFileContents = storage.display();
