@@ -722,18 +722,16 @@ public class LogicController {
 	
 	private static class TabPressHandler implements EventHandler<KeyEvent> {
 		
-		private static boolean isShowing = false;
-		
 		@Override
 		public void handle(KeyEvent event) {
 			// Display the summary view
 			if (event.getCode() == KeyCode.TAB) {
-				if (!isShowing) {
+				if (!SummaryViewController.isShowing()) {
+					SummaryViewController.startShowing();
 					changeView(View.SUMMARY);
-					isShowing = true;
 				} else {
+					SummaryViewController.stopShowing();
 					InterfaceController.updateMainInterface(InterfaceController.getCurrentView());
-					isShowing = false;
 				}
 			}
 		}
@@ -968,6 +966,11 @@ public class LogicController {
     	
     	@Override
     	public void handle(MouseEvent event) {
+    		// When a user clicks a button without pressing TAB to exit the summary view
+    		// Sets the isShowing value in SummaryViewController
+    		if (SummaryViewController.isShowing()) {
+    			SummaryViewController.stopShowing();
+    		}
     		changeView(buttonType);
     	}
     }
