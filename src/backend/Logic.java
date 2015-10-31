@@ -45,7 +45,7 @@ public class Logic {
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s";
-    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "FLOAT\n%s\nTASK\n%s\nEVENT\n%s"; 
+    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "Showing results for \"%s\"\nFLOAT\n%s\nTASK\n%s\nEVENT\n%s"; 
     
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
@@ -357,14 +357,15 @@ public class Logic {
     		String taskResult = formattedSearchResult(linesInFile, TYPE_TASK, query); 
     		String eventResult = formattedSearchResult(linesInFile, TYPE_EVENT, query); 
     		
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, floatResult, taskResult, eventResult);
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, floatResult, taskResult, eventResult);
     	}
     	catch(FileSystemException e){
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, e.getMessage(), e.getMessage(), e.getMessage());
+    		//TODO REFACTOR command.getName()
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, command.getName(), e.getMessage(), e.getMessage(), e.getMessage());
     	}
     	catch(Exception e){ 
-    		e.printStackTrace();
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN);
+    		//TODO REFACTOR command.getName()
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, command.getName(), MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN);
     	}
     	
     }
