@@ -602,7 +602,7 @@ public class Logic {
     }
     
     //============================================
-  	// Private methods for View
+  	// Private methods for allView
   	//============================================
     
     private String getAllStatus(String[] linesInFile ,String type, boolean isDone){
@@ -619,34 +619,5 @@ public class Logic {
     			return ""; 
     	}
     }
-    
-    private String getPastUncompletedTask(String[] linesInFile) {
-    	StringBuffer pastTaskBuffer = new StringBuffer(); 
-    	Date prevDate = null; 
-    	
-    	for(int index = 0; index < linesInFile.length; index++){
-    		String line = linesInFile[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		Date today = Date.todayDate(); 
-    		Date deadline = (lineComponents[INDEX_TYPE].equals(TYPE_TASK)) ? 
-    				new Date(lineComponents[INDEX_DUEDATE]) : null;
-    	
-    		if(isUncompleted(TYPE_TASK, lineComponents) && deadline.compareTo(today) < 0){
-    			prevDate = addDateHeader(pastTaskBuffer, deadline, prevDate); 
-    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
-    			pastTaskBuffer.append(formatted);
-    		}
-    	}
-		return addMsgIfEmpty(pastTaskBuffer); 
-	}
-    
-    private Date addDateHeader(StringBuffer sb, Date currDate, Date prevDate){
-    	//add date header only if the currDate is different from the prevDate
-    	if(prevDate == null || currDate.compareTo(prevDate)!= 0){
-    		String dateHeader = currDate.formatDateLong(); 
-    		sb.append(dateHeader + NEWLINE); 
-    	}
-    	return currDate;
-    }
-   
+       
 }
