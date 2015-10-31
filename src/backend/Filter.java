@@ -13,12 +13,42 @@ public class Filter {
 	private static final int INDEX_ENDDATE = 5; 
 	private static final int INDEX_ENDTIME = 6;
 	
+	private static final String DONE = "done"; 
+	
 	private static final String REGEX_WHITESPACE = "\\s+"; 
 	
 	private static final String SEMICOLON = ";";
 
 	public Filter(){
 		
+	}
+	
+	public ArrayList<Integer> filterStatus(String[] linesInFile, String type, boolean isDone){ 
+		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
+		 
+		 for(int i = 0; i < linesInFile.length; i++){ 
+			 String line = linesInFile[i];
+			 if(isType(type, line) && isReqStatus(isDone, line)){
+				 resultList.add(i); 
+			 }
+		 }
+		 
+		 return resultList; 
+	}
+	
+	private boolean isReqStatus(boolean isDone, String line){ 
+		if(isDone){ 
+			return isCompleted(line); 
+		}
+		else{
+			return !isCompleted(line); 
+		}
+	}
+	
+	private boolean isCompleted(String line){ 
+		String[] lineFields = line.split(SEMICOLON);
+		String lineIsDone = lineFields[INDEX_ISDONE];
+		return lineIsDone.equals(DONE); 
 	}
 	
 	public ArrayList<Integer> matchTokensInQuery(String[] linesInFile, String type, String query){ 
@@ -72,11 +102,4 @@ public class Filter {
 	}
 	
 	//TODO filter for views 
-	
-	//TODO consider whether to do formatting in filter too 
-	//add DateHeaders 
-	//add index numbers (CANNOT use hash - may have tasks with same name!)
-	//display format for event vs task 
-	
-	//if not formatting, (another class is) consider make a class <index, line> 
 }

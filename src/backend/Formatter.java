@@ -16,6 +16,8 @@ public class Formatter {
 	private static final int INDEX_ENDTIME = 6; 
 	
 	private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
+    private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
+    private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
     private static final String SEARCH_RESULTS_FLOAT_OR_TASK = "%s %d. %s\n"; 
     private static final String SEARCH_RESULTS_EVENT = "%s %d. [%s %s - %s %s] %s\n"; 
     
@@ -26,6 +28,22 @@ public class Formatter {
 		
 	}
 	
+	public String formatFloat(String[] linesInFile, ArrayList<Integer> result){
+		StringBuffer contentBuffer = new StringBuffer();
+		for(int i : result){ 
+			String line = linesInFile[i]; 
+			String[] lineFields = line.split(SEMICOLON);
+//			String lineType = lineFields[INDEX_TYPE];
+//			assert items is floating task  
+			String lineName = lineFields[INDEX_NAME];
+			
+			String formattedLine = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, i+1, lineName);
+			contentBuffer.append(formattedLine); 
+		}
+		
+		return addMsgIfEmpty(contentBuffer); 
+	}
+		
 	public String formatFloatResults(String[] linesInFile, ArrayList<Integer> result){
 		StringBuffer contentBuffer = new StringBuffer();
 		for(int i : result){ 
@@ -37,6 +55,26 @@ public class Formatter {
 			String lineIsDone = lineFields[INDEX_ISDONE];
 			
 			String formattedLine = String.format(SEARCH_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
+			contentBuffer.append(formattedLine); 
+		}
+		
+		return addMsgIfEmpty(contentBuffer); 
+	}
+	
+	public String formatTask(String[] linesInFile, ArrayList<Integer> result){ 
+		StringBuffer contentBuffer = new StringBuffer();
+		Date prevlineDate = null; 
+		for(int i : result){ 
+			String line = linesInFile[i]; 
+			String[] lineFields = line.split(SEMICOLON);
+//			String lineType = lineFields[INDEX_TYPE];
+//			assert items is task  
+			String lineName = lineFields[INDEX_NAME];
+			
+			Date lineDate = new Date(lineFields[INDEX_DUEDATE]);
+			addDateHeader(contentBuffer, lineDate, prevlineDate); 
+			
+			String formattedLine = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, i+1, lineName);
 			contentBuffer.append(formattedLine); 
 		}
 		
@@ -58,6 +96,31 @@ public class Formatter {
 			addDateHeader(contentBuffer, lineDate, prevlineDate); 
 			
 			String formattedLine = String.format(SEARCH_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
+			contentBuffer.append(formattedLine); 
+		}
+		
+		return addMsgIfEmpty(contentBuffer); 
+	}
+	
+	public String formatEvent(String[] linesInFile, ArrayList<Integer> result){ 
+		StringBuffer contentBuffer = new StringBuffer();
+		Date prevlineDate = null; 
+		for(int i : result){ 
+			String line = linesInFile[i]; 
+			String[] lineFields = line.split(SEMICOLON);
+//			String lineType = lineFields[INDEX_TYPE];
+//			assert items is event  
+			String lineName = lineFields[INDEX_NAME];
+			String lineStartDate = lineFields[INDEX_STARTDATE]; 
+			String lineEndDate = lineFields[INDEX_ENDDATE];
+			String lineStartTime = lineFields[INDEX_STARTTIME]; 
+			String lineEndTime = lineFields[INDEX_ENDTIME]; 
+			
+			Date lineDate = new Date(lineFields[INDEX_STARTDATE]);
+			addDateHeader(contentBuffer, lineDate, prevlineDate); 
+			
+			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, i+1, 
+					lineStartDate, lineStartTime, lineEndDate, lineEndTime, lineName);
 			contentBuffer.append(formattedLine); 
 		}
 		

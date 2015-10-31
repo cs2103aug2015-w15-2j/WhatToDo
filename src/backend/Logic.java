@@ -83,9 +83,9 @@ public class Logic {
     		String[] linesInFile = l.getLinesInFile(); 
     		Filter filter = new Filter(); 
     		Formatter formatter = new Formatter(); 
-    		ArrayList<Integer> result = filter.matchTokensInQuery(linesInFile,TYPE_EVENT,"e"); 
+    		ArrayList<Integer> result = filter.filterStatus(linesInFile, TYPE_TASK, true); 
     		System.out.println(result.toString());
-    		System.out.println("out:\n"+ formatter.formatEventResults(linesInFile, result));
+    		System.out.println("out:\n"+ formatter.formatTask(linesInFile, result));
     	}
     	catch(Exception e){
     		
@@ -167,12 +167,27 @@ public class Logic {
             		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
 		}
     }
-     
-    public String taskAllUncompletedView(){ 
+    
+    private String getAllStatus(String[] linesInFile ,String type, boolean isDone){
+    	ArrayList<Integer> result = filter.filterStatus(linesInFile, type, isDone); 
+    	//TODO REFACTOR THIS SHIT
+    	switch(type){ 
+    		case TYPE_FLOAT : 
+    			return formatter.formatFloat(linesInFile, result); 
+    		case TYPE_TASK : 
+    			return formatter.formatTask(linesInFile, result); 
+    		case TYPE_EVENT : 
+    			return formatter.formatEvent(linesInFile, result); 
+    		default : 
+    			return ""; 
+    	}
+    }
+    
+    public String taskAllView(boolean isDone){ 
     	try{ 
     		String[] linesInFile = getLinesInFile();
-        	String floatContent = getAllUncompletedFloat(linesInFile); 
-        	String taskContent = getAllUncompletedTask(linesInFile); 
+        	String floatContent = getAllStatus(linesInFile, TYPE_FLOAT, isDone); 
+        	String taskContent = getAllStatus(linesInFile,TYPE_TASK, isDone);
         	
         	return String.format(DISPLAY_LAYOUT_ALL_TASK, taskContent, floatContent); 
     	}
@@ -183,11 +198,11 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN; 
     	}
     }
-      
-    public String eventAllUncompletedView(){ 
+    
+    public String eventAllView(boolean isDone){ 
     	try{
     		String[] linesInFile = getLinesInFile(); 
-    		return getAllUncompletedEvent(linesInFile);
+    		return getAllStatus(linesInFile, TYPE_EVENT, isDone);
     	}
     	catch(FileSystemException e){
     		return e.getMessage(); 
@@ -195,6 +210,18 @@ public class Logic {
     	catch(Exception e){
     		return MESSAGE_ERROR_UNKNOWN;
     	}
+    }
+    
+    //TODO remove when ready 
+    /** WILL BE REMOVED - REPLACED WITH taskAllView(boolean isDone)**/
+    public String taskAllUncompletedView(){ 
+    	return taskAllView(false); 
+    }
+    
+    //TODO remove when ready 
+    /** WILL BE REMOVED - REPLACED WITH eventAllView(boolean isDone)**/
+    public String eventAllUncompletedView(){ 
+    	return eventAllView(false); 
     }
     
     public String taskPastUncompletedView(){
@@ -595,48 +622,48 @@ public class Logic {
   	// Private methods for allUncompletedView
   	//============================================
     
-    private String getAllUncompletedTask(String[] linesInFile){
-    	StringBuffer uncompletedTaskBuffer = new StringBuffer(); 
-    	Date prevDeadline = null; 
-    	
-    	for(int index = 0; index < linesInFile.length; index++){
-    		String line = linesInFile[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		Date currDeadLine = (lineComponents[INDEX_TYPE].equals(TYPE_TASK)) ? 
-    				new Date(lineComponents[INDEX_DUEDATE]) : null;
-    		
-    		if(isUncompleted(TYPE_TASK, lineComponents)){
-    			prevDeadline = addDateHeader(uncompletedTaskBuffer, currDeadLine, prevDeadline);
-    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
-    			uncompletedTaskBuffer.append(formatted);
-    		}
-    	}
-    	
-    	//TODO refactor
-    	return (uncompletedTaskBuffer.length() == 0)? "TASK\n" + DISPLAY_NO_ITEMS : uncompletedTaskBuffer.toString().trim();
-    }
+//    private String getAllUncompletedTask(String[] linesInFile){
+//    	StringBuffer uncompletedTaskBuffer = new StringBuffer(); 
+//    	Date prevDeadline = null; 
+//    	
+//    	for(int index = 0; index < linesInFile.length; index++){
+//    		String line = linesInFile[index].trim(); 
+//    		String[] lineComponents = line.split(SEMICOLON);
+//    		Date currDeadLine = (lineComponents[INDEX_TYPE].equals(TYPE_TASK)) ? 
+//    				new Date(lineComponents[INDEX_DUEDATE]) : null;
+//    		
+//    		if(isUncompleted(TYPE_TASK, lineComponents)){
+//    			prevDeadline = addDateHeader(uncompletedTaskBuffer, currDeadLine, prevDeadline);
+//    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
+//    			uncompletedTaskBuffer.append(formatted);
+//    		}
+//    	}
+//    	
+//    	//TODO refactor
+//    	return (uncompletedTaskBuffer.length() == 0)? "TASK\n" + DISPLAY_NO_ITEMS : uncompletedTaskBuffer.toString().trim();
+//    }
     
-    private String getAllUncompletedEvent(String[] linesInFile){
-    	StringBuffer uncompletedEventBuffer = new StringBuffer(); 
-    	Date prevStartDate = null;
-    	
-    	for(int index = 0; index < linesInFile.length; index++){
-    		String line = linesInFile[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		Date currStartDate = (lineComponents[INDEX_TYPE].equals(TYPE_EVENT)) ?
-    				new Date(lineComponents[INDEX_STARTDATE]) : null; 
-    		
-    		if(isUncompleted(TYPE_EVENT, lineComponents)){
-    			prevStartDate = addDateHeader(uncompletedEventBuffer, currStartDate, prevStartDate); 
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
-    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
-    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
-    			uncompletedEventBuffer.append(formatted);
-    		}
-    	}
-
-    	return addMsgIfEmpty(uncompletedEventBuffer);
-    }
+//    private String getAllUncompletedEvent(String[] linesInFile){
+//    	StringBuffer uncompletedEventBuffer = new StringBuffer(); 
+//    	Date prevStartDate = null;
+//    	
+//    	for(int index = 0; index < linesInFile.length; index++){
+//    		String line = linesInFile[index].trim(); 
+//    		String[] lineComponents = line.split(SEMICOLON);
+//    		Date currStartDate = (lineComponents[INDEX_TYPE].equals(TYPE_EVENT)) ?
+//    				new Date(lineComponents[INDEX_STARTDATE]) : null; 
+//    		
+//    		if(isUncompleted(TYPE_EVENT, lineComponents)){
+//    			prevStartDate = addDateHeader(uncompletedEventBuffer, currStartDate, prevStartDate); 
+//    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
+//    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
+//    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+//    			uncompletedEventBuffer.append(formatted);
+//    		}
+//    	}
+//
+//    	return addMsgIfEmpty(uncompletedEventBuffer);
+//    }
     
     private String getPastUncompletedTask(String[] linesInFile) {
     	StringBuffer pastTaskBuffer = new StringBuffer(); 
