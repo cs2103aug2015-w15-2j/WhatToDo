@@ -47,6 +47,13 @@ public class Logic {
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "Showing results for \"%s\"\nFLOAT\n%s\nTASK\n%s\nEVENT\n%s"; 
     
+    private static final String KEYWORD_EDIT_NAME = "name";
+    private static final String KEYWORD_EDIT_DEADLINE = "date";
+    private static final String KEYWORD_EDIT_START_DATE = "startd";
+    private static final String KEYWORD_EDIT_START_TIME = "startt";
+    private static final String KEYWORD_EDIT_END_DATE = "endd";
+    private static final String KEYWORD_EDIT_END_TIME = "endt";
+    
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
     private static final String TYPE_EVENT = "event";
@@ -323,11 +330,50 @@ public class Logic {
     	}
     }
         
-    //TODO edit now only edit name of task - need to add code to determine 
-    //whether user wants to edit date, 
+    //TODO edit 
     private String executeEdit(Command command){
     	try{ 
     		int lineNumber = command.getIndex(); 
+    		ArrayList<String> editList = command.getEditList();
+    		
+    		//need to store old data first?  
+    		
+    		//TODO check if conversion required first 
+    		
+    		for(String editItem : editList){ 
+    			switch (editItem) {
+				case KEYWORD_EDIT_NAME :
+					String newName = command.getName(); 
+					storage.editName(lineNumber, newName); 
+					break;
+				case KEYWORD_EDIT_DEADLINE :
+					Date newDeadline = command.getDueDate(); 
+					storage.editTaskDeadline(lineNumber, newDeadline); 
+					break;
+				case KEYWORD_EDIT_START_DATE : 
+					Date newStartDate = command.getStartDate(); 
+					storage.editEventStartDate(lineNumber, newStartDate); 
+					break; 
+				case KEYWORD_EDIT_START_TIME : 
+					String newStartTime = command.getStartTime(); 
+					storage.editEventStartTime(lineNumber, newStartTime); 
+					break; 
+				case KEYWORD_EDIT_END_DATE : 
+					Date newEndDate = command.getEndDate();
+					storage.editEventEndDate(lineNumber, newEndDate); 
+					break; 
+				case KEYWORD_EDIT_END_TIME : 
+					String newEndTime = command.getEndTime(); 
+					storage.editEventEndTime(lineNumber, newEndTime); 
+					break; 
+				default:
+					break;
+				}
+    			
+    			//format feedback msg 
+    			return "NO FEEDBACK MSG YET"; 
+    		}
+    		
         	String newName = command.getName();  
         	//TODO format feedback msg for edit 
         	return storage.editName(lineNumber, newName); 
