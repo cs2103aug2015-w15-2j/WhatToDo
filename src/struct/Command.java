@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Command {
 	
 	public enum CommandType {
-		ADD, DELETE, EDIT, DONE, SEARCH, UNDO, REDO, SET, SAVE, EXIT, INVALID
+		ADD, DELETE, EDIT, SEARCH, DONE, SET, SAVE, UNDO, REDO, EXIT, INVALID
     }
 	
 	public enum DataType { 

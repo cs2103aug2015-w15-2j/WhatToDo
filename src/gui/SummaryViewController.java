@@ -6,6 +6,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -183,6 +184,13 @@ public class SummaryViewController {
 		allUnresAttention = new Label(HEADER_ALL_UNRES_ATTENTION);
 		allUnresClear = new Label(HEADER_ALL_UNRES_CLEAR);
 		initUnresIcon(count);
+		
+		allUnresAttention.addEventHandler(MouseEvent.MOUSE_ENTERED, 
+				InterfaceController.logicControl.getUnresHoverHandler(allUnresAttention));
+		allUnresAttention.addEventHandler(MouseEvent.MOUSE_EXITED, 
+				InterfaceController.logicControl.getUnresHoverHandler(allUnresAttention));
+		allUnresAttention.addEventHandler(MouseEvent.MOUSE_CLICKED, 
+				InterfaceController.logicControl.getUnresClickHandler());
 		
 		allUnresCountBox = new HBox(allUnresCount);
 		allUnresLabelBox = new HBox(allUnresLabel);
