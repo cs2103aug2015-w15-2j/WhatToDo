@@ -27,7 +27,7 @@ public class Storage {
 	private static final String COLLATED_FILE_PATH_FORMAT = "%s"
 			+ File.separator + "%s";
 	private static final String CONFIG_FILE_PATH = "config" + File.separator
-			+ "config";
+			+ "config.txt";
 
 	private static final String MESSAGE_CHANGE_STORAGE_SUCCESS = "You are now writing to \"%s\"";
 	private static final String MESSAGE_SAME_FILE = "Your file location remains unchanged.";

@@ -196,8 +196,10 @@ public class Logic {
     
     public String taskPastUncompletedView(){
     	try{
-    		String[] linesInFile = getLinesInFile(); 
-    		return getPastUncompletedTask(linesInFile);
+    		String[] linesInFile = getLinesInFile();
+    		ArrayList<Integer> pastTaskIndexes = filter.filterPastUncompleted(linesInFile, TYPE_TASK); 
+    		String formattedContent = formatter.formatTask(linesInFile, pastTaskIndexes); 
+    		return formattedContent; 
     	}
     	catch(FileSystemException e){ 
     		return e.getMessage();
@@ -207,7 +209,17 @@ public class Logic {
     }
 
     public String eventPastUncompletedView(){
-    	return "bar"; 
+    	try{
+    		String[] linesInFile = getLinesInFile();
+    		ArrayList<Integer> pastEventIndexes = filter.filterPastUncompleted(linesInFile, TYPE_EVENT); 
+    		String formattedContent = formatter.formatEvent(linesInFile, pastEventIndexes); 
+    		return formattedContent; 
+    	}
+    	catch(FileSystemException e){ 
+    		return e.getMessage();
+    	}catch (Exception e) {
+			return e.getMessage();
+		} 
     }
     
     public String getFilepath() {

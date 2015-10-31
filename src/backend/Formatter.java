@@ -24,9 +24,6 @@ public class Formatter {
 	private static final String SEMICOLON = ";";
 	private static final String NEWLINE = "\n";
     
-	public Formatter(){
-		
-	}
 	
 	public String formatFloat(String[] linesInFile, ArrayList<Integer> result){
 		StringBuffer contentBuffer = new StringBuffer();
