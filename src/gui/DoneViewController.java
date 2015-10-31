@@ -311,31 +311,51 @@ public class DoneViewController {
         
     	int numOfElements = InterfaceController.logicControl.getDoneElementsCount();
     	
-        // Run the loop through the entire task list
+    	// Print the task results
+    	// Only print the empty message if there are zero results
     	int numOfResults = 1;
-        for (int i = 0; i < tasks.length; i++) {
-        	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            doneTaskContentBox.getChildren().add(tempBox);
-			// Only increment the counter if an element is added
-			if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
-				numOfResults++;
-			}
-        }
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < events.length; i++) {
-        	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults, false);
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            doneEventContentBox.getChildren().add(tempBox);
-			// Only increment the counter if an element is added
-			if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
-				numOfResults++;
-			}
-        }
+    	if (tasks.length == 3 && InterfaceController.logicControl.isEmpty(tasks[1])) {
+    		HBox tempBox = initDisplayElement(tasks[1], numOfElements, numOfResults, true);
+    		VBox.setMargin(tempBox, new Insets(
+    				0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+    		doneTaskContentBox.getChildren().add(tempBox);
+    	} else {
+    		// If there are no results for floating tasks
+    		if (InterfaceController.logicControl.isEmpty(tasks[1])) {
+    			for (int i = 0; i < tasks.length; i++) {
+    				HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
+    				VBox.setMargin(tempBox, new Insets(
+    						0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+    				doneTaskContentBox.getChildren().add(tempBox);
+    				// Only increment the counter if an element is added
+    				if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
+    					numOfResults++;
+    				}
+    			}
+    		} else {
+    			for (int i = 0; i < tasks.length; i++) {
+    				if (!InterfaceController.logicControl.isEmpty(tasks[i])) {
+    					HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
+    					VBox.setMargin(tempBox, new Insets(
+    							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+    					doneTaskContentBox.getChildren().add(tempBox);
+    					// Only increment the counter if an element is added
+    					if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
+    						numOfResults++;
+    					}
+    				}
+    			}
+    		}
+    	}
+    	// Print the event results
+    	for (int i = 0; i < events.length; i++) {
+    		HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults, false);
+    		VBox.setMargin(tempBox, new Insets(
+    				0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+    		doneEventContentBox.getChildren().add(tempBox);
+    		if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
+    			numOfResults++;
+    		}
+    	}
     }
 }
