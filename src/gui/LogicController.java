@@ -84,7 +84,7 @@ public class LogicController {
 	public String[] getAllTasks() {
 		
 		// Get the String from logic
-		String allTasks = logic.taskAllUncompletedView();
+		String allTasks = logic.taskAllView(false);
 		
 		// Split the string by newline
 		String[] allTasksSplit = allTasks.split("\n");
@@ -95,7 +95,7 @@ public class LogicController {
 	public String[] getAllEvents() {
 		
 		// Get the String from logic
-		String allEvents = logic.eventAllUncompletedView();
+		String allEvents = logic.eventAllView(false);
 		
 		// Split the string by newline
 		String[] allEventsSplit = allEvents.split("\n");
