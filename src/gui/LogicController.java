@@ -319,6 +319,9 @@ public class LogicController {
         	case HELP:
         		HelpController.toggleHelpDialog();
         		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
+        		break;
         	case EXIT:
         		InterfaceController.closeMainInterface();
         		break;
@@ -350,6 +353,9 @@ public class LogicController {
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
+        		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
         		break;
         	case EXIT:
         		InterfaceController.closeMainInterface();
@@ -383,6 +389,9 @@ public class LogicController {
         	case HELP:
         		HelpController.toggleHelpDialog();
         		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
+        		break;
         	case EXIT:
         		InterfaceController.closeMainInterface();
         		break;
@@ -414,6 +423,9 @@ public class LogicController {
         		break;
         	case HELP:
         		HelpController.toggleHelpDialog();
+        		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
         		break;
         	case EXIT:
         		InterfaceController.closeMainInterface();
@@ -447,11 +459,14 @@ public class LogicController {
         	case HELP:
         		HelpController.toggleHelpDialog();
         		break;
-        	default:
-        		// Do nothing if already in this view
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
         		break;
         	case EXIT:
         		InterfaceController.closeMainInterface();
+        		break;
+        	default:
+        		// Do nothing if already in this view
         		break;
         	}
         	break;
@@ -479,15 +494,18 @@ public class LogicController {
         	case HELP:
         		HelpController.toggleHelpDialog();
         		break;
-        	default:
-        		// Do nothing if already in this view
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
         		break;
         	case EXIT:
         		InterfaceController.closeMainInterface();
         		break;
+        	default:
+        		// Do nothing if already in this view
+        		break;
         	}
         	break;
-        	
+
         default: // do nothing, should not enter
         	break;
         }
@@ -696,24 +714,18 @@ public class LogicController {
 	
 	private static class TabPressHandler implements EventHandler<KeyEvent> {
 		
-		private static View previous;
+		private static boolean isShowing = false;
 		
 		@Override
 		public void handle(KeyEvent event) {
 			// Display the summary view
-			if (event.getEventType() == KeyEvent.KEY_PRESSED) {
-				if (event.getCode() == KeyCode.TAB) {
-					// Prevent infinite looping when user keeps the TAB key pressed
-					if (InterfaceController.getCurrentView() != View.SUMMARY) {
-						previous = InterfaceController.getCurrentView();
-					}
-					InterfaceController.updateMainInterface(View.SUMMARY);
-				}
-			}
-			// Revert back to the previous view
-			if (event.getEventType() == KeyEvent.KEY_RELEASED) {					
-				if (event.getCode() == KeyCode.TAB) {
-					InterfaceController.updateMainInterface(previous);
+			if (event.getCode() == KeyCode.TAB) {
+				if (!isShowing) {
+					changeView(View.SUMMARY);
+					isShowing = true;
+				} else {
+					InterfaceController.updateMainInterface(InterfaceController.getCurrentView());
+					isShowing = false;
 				}
 			}
 		}
@@ -824,48 +836,42 @@ public class LogicController {
     			ImageView hover;
     			switch(buttonType) {
     			case DEFAULT:
-    				if (InterfaceController.getCurrentView() != View.DEFAULT && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
     					hover = new ImageView(InterfaceController.PATH_DEFAULT_HOVER);
     					InterfaceController.getHomeButton().getChildren().clear();
     					InterfaceController.getHomeButton().getChildren().add(hover);
     				}
     				break;
     			case ALL:
-    				if (InterfaceController.getCurrentView() != View.ALL && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.ALL) {
     					hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
     					InterfaceController.getAllButton().getChildren().clear();
     					InterfaceController.getAllButton().getChildren().add(hover);
     				}
     				break;
     			case HISTORY:
-    				if (InterfaceController.getCurrentView() != View.HISTORY && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.HISTORY) {
     					hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
     					InterfaceController.getHistButton().getChildren().clear();
     					InterfaceController.getHistButton().getChildren().add(hover);
     				}
     				break;
     			case UNRESOLVED:
-    				if (InterfaceController.getCurrentView() != View.UNRESOLVED && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
     					hover = new ImageView(InterfaceController.PATH_UNRESOLVED_HOVER);
     					InterfaceController.getUnresButton().getChildren().clear();
     					InterfaceController.getUnresButton().getChildren().add(hover);
     				}
     				break;
     			case DONE:
-    				if (InterfaceController.getCurrentView() != View.DONE && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.DONE) {
     					hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
     				break;
     			case SEARCH:
-    				if (InterfaceController.getCurrentView() != View.SEARCH && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.SEARCH) {
     					hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
     					InterfaceController.getSearchButton().getChildren().clear();
     					InterfaceController.getSearchButton().getChildren().add(hover);
@@ -873,8 +879,7 @@ public class LogicController {
     				break;
     			case HELP:
     				// Do not change the button if help dialog is showing
-    				if (!MainApp.help.isShowing() && 
-    						InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (!MainApp.help.isShowing()) {
     					hover = new ImageView(InterfaceController.PATH_HELP_HOVER);
     					InterfaceController.getHelpButton().getChildren().clear();
     					InterfaceController.getHelpButton().getChildren().add(hover);
@@ -889,48 +894,42 @@ public class LogicController {
     			ImageView hover;
     			switch(buttonType) {
     			case DEFAULT:
-    				if (InterfaceController.getCurrentView() != View.DEFAULT && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
     					hover = new ImageView(InterfaceController.PATH_DEFAULT);
     					InterfaceController.getHomeButton().getChildren().clear();
     					InterfaceController.getHomeButton().getChildren().add(hover);
     				}
     				break;
     			case ALL:
-    				if (InterfaceController.getCurrentView() != View.ALL && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.ALL) {
     					hover = new ImageView(InterfaceController.PATH_ALL);
     					InterfaceController.getAllButton().getChildren().clear();
     					InterfaceController.getAllButton().getChildren().add(hover);
     				}
     				break;
     			case HISTORY:
-    				if (InterfaceController.getCurrentView() != View.HISTORY && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.HISTORY) {
     					hover = new ImageView(InterfaceController.PATH_HIST);
     					InterfaceController.getHistButton().getChildren().clear();
     					InterfaceController.getHistButton().getChildren().add(hover);
     				}
     				break;
     			case UNRESOLVED:
-    				if (InterfaceController.getCurrentView() != View.UNRESOLVED && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
     					hover = new ImageView(InterfaceController.PATH_UNRESOLVED);
     					InterfaceController.getUnresButton().getChildren().clear();
     					InterfaceController.getUnresButton().getChildren().add(hover);
     				}
     				break;
     			case DONE:
-    				if (InterfaceController.getCurrentView() != View.DONE && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.DONE) {
     					hover = new ImageView(InterfaceController.PATH_DONE);
     					InterfaceController.getDoneButton().getChildren().clear();
     					InterfaceController.getDoneButton().getChildren().add(hover);
     				}
     				break;
     			case SEARCH:
-    				if (InterfaceController.getCurrentView() != View.SEARCH && 
-    				InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (InterfaceController.getCurrentView() != View.SEARCH) {
     					hover = new ImageView(InterfaceController.PATH_SEARCH);
     					InterfaceController.getSearchButton().getChildren().clear();
     					InterfaceController.getSearchButton().getChildren().add(hover);
@@ -938,8 +937,7 @@ public class LogicController {
     				break;
     			case HELP:
     				// Do not change the button if help dialog is showing
-    				if (!MainApp.help.isShowing() && 
-    						InterfaceController.getCurrentView() != View.SUMMARY) {
+    				if (!MainApp.help.isShowing()) {
     					hover = new ImageView(InterfaceController.PATH_HELP);
     					InterfaceController.getHelpButton().getChildren().clear();
     					InterfaceController.getHelpButton().getChildren().add(hover);

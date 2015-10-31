@@ -80,8 +80,6 @@ public class MainApp extends Application {
         // Event handling for summary view
         stage.addEventFilter(KeyEvent.KEY_PRESSED, 
         		InterfaceController.logicControl.getTabPressHandler());
-        stage.addEventFilter(KeyEvent.KEY_RELEASED, 
-        		InterfaceController.logicControl.getTabPressHandler());
         
         // Event handling for hotkeys
         stage.addEventHandler(KeyEvent.KEY_PRESSED, 

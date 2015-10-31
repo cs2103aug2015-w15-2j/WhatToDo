@@ -51,7 +51,8 @@ public class SummaryViewController {
 	
 	private static final double MARGIN_SUMMARY_BOX = 80;
 	private static final double MARGIN_SUMMARY_LABEL = 30;
-	private static final double MARGIN_SUMMARY_COUNT = 20;
+	private static final double MARGIN_SUMMARY_COUNT_HORIZ = 20;
+	private static final double MARGIN_SUMMARY_COUNT_VERT = 5;
 	
 	private static void initTaskTwoDays(int count, double maxWidth) {
 		
@@ -194,7 +195,7 @@ public class SummaryViewController {
 		HBox.setMargin(allUnresLabel, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
 		HBox.setMargin(allUnresAttention, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
 		HBox.setMargin(allUnresClear, new Insets(0, 0, 0, MARGIN_SUMMARY_LABEL));
-		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT, 0, 0));
+		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT_HORIZ, 0, 0));
 		HBox.setHgrow(allUnresNotifyBox, Priority.ALWAYS);
 		
 		allUnresBox = new HBox(allUnresLabelBox, allUnresNotifyBox, allUnresIconBox, allUnresCountBox);
@@ -232,7 +233,7 @@ public class SummaryViewController {
 		text.setStyle("-fx-font-family: \"Myriad Pro Light\";"
 				+ "-fx-font-size: 48;");
 		text.applyCss();
-		double maxWidth = text.getLayoutBounds().getWidth() + 2 * MARGIN_SUMMARY_COUNT;
+		double maxWidth = text.getLayoutBounds().getWidth() + 2 * MARGIN_SUMMARY_COUNT_HORIZ;
 		
 		initTaskTwoDays(summary[0], maxWidth);
 		initEventTwoDays(summary[1], maxWidth);
@@ -304,11 +305,17 @@ public class SummaryViewController {
 		eventOngoingCount = new Label(String.valueOf(summary[3]));
 		allUnresCount = new Label(String.valueOf(summary[4]));
 		
+		HBox.setMargin(taskTwoDaysCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		HBox.setMargin(eventTwoDaysCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		HBox.setMargin(taskFloatCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		HBox.setMargin(eventOngoingCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		HBox.setMargin(allUnresCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		
 		// Update the icon depending on the new value of unresolved tasks
 		initUnresIcon(summary[4]);
 		allUnresIconBox.getChildren().clear();
 		allUnresIconBox.getChildren().add(allUnresIcon);
-		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT, 0, 0));
+		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT_HORIZ, 0, 0));
 		
 		// Update the notification text
 		updateUnresNotifyBox(summary[4]);

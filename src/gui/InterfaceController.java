@@ -661,8 +661,8 @@ public class InterfaceController {
             HBox.setHgrow(defBox, Priority.ALWAYS);
             
             // Change buttons
-            changeButtonToSelected(View.DEFAULT);
             changeButtonToUnselected(currentView);
+            changeButtonToSelected(View.DEFAULT);
             
             // Update currentView
             currentView = View.DEFAULT;
@@ -676,8 +676,8 @@ public class InterfaceController {
             HBox.setHgrow(allBox, Priority.ALWAYS);
             
             // Change buttons
-            changeButtonToSelected(View.ALL);
             changeButtonToUnselected(currentView);
+            changeButtonToSelected(View.ALL);
             
             // Update currentView
             currentView = View.ALL;
@@ -690,8 +690,8 @@ public class InterfaceController {
             HBox.setHgrow(histBox, Priority.ALWAYS);
     		
             // Change buttons
-            changeButtonToSelected(View.HISTORY);
             changeButtonToUnselected(currentView);
+            changeButtonToSelected(View.HISTORY);
             
             // Update currentView
             currentView = View.HISTORY;
@@ -704,8 +704,8 @@ public class InterfaceController {
     		HBox.setHgrow(unresBox, Priority.ALWAYS);
     		
             // Change buttons
-            changeButtonToSelected(View.UNRESOLVED);
             changeButtonToUnselected(currentView);
+            changeButtonToSelected(View.UNRESOLVED);
             
             // Update currentView
             currentView = View.UNRESOLVED;
@@ -718,8 +718,8 @@ public class InterfaceController {
     		HBox.setHgrow(doneBox, Priority.ALWAYS);
     		
             // Change buttons
-            changeButtonToSelected(View.DONE);
             changeButtonToUnselected(currentView);
+            changeButtonToSelected(View.DONE);
             
             // Update currentView
             currentView = View.DONE;
@@ -732,8 +732,8 @@ public class InterfaceController {
             HBox.setHgrow(searchBox, Priority.ALWAYS);
     		
             // Change buttons
-            changeButtonToSelected(View.SEARCH);
             changeButtonToUnselected(currentView);
+            changeButtonToSelected(View.SEARCH);
             
             // Update currentView
             currentView = View.SEARCH;
@@ -745,9 +745,6 @@ public class InterfaceController {
     		
     		// Set summary box to grow with view box
             HBox.setHgrow(summaryBox, Priority.ALWAYS);
-            
-            // Update currentView
-            currentView = View.SUMMARY;
     		break;
     		
     	default: //ignore
