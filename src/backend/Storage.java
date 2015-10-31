@@ -36,6 +36,7 @@ public class Storage {
 	private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
 	private static final String MESSAGE_ERROR_WRITE_FILE = "Error encountered when writing to file.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS = "Cannot find line %d in text file.";
+	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_FLOAT = "Line %d is not a floating task!";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK = "Line %d is not a task!";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT = "Line %d is not an event!";
 	private static final String MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE = "Event start date/time is not earlier than end date/time.";
@@ -225,9 +226,9 @@ public class Storage {
 	public String editName(int lineNumber, String newName)
 			throws FileSystemException {
 		try {
-			String replacedLine = replaceName(lineNumber, newName);
+			String lineToReplace = replaceName(lineNumber, newName);
 
-			return replacedLine;
+			return lineToReplace;
 		} catch (IllegalArgumentException exception) {
 			throw new FileSystemException(exception.getMessage());
 		} catch (IOException exception) {
@@ -252,9 +253,9 @@ public class Storage {
 	public String editTaskDeadline(int lineNumber, Date newDeadline)
 			throws FileSystemException {
 		try {
-			String replacedLine = replaceTaskDeadline(lineNumber, newDeadline);
+			String lineToReplace = replaceTaskDeadline(lineNumber, newDeadline);
 
-			return replacedLine;
+			return lineToReplace;
 		} catch (IllegalArgumentException exception) {
 			throw new FileSystemException(exception.getMessage());
 		} catch (IOException exception) {
@@ -280,9 +281,9 @@ public class Storage {
 	public String editEventStartDate(int lineNumber, Date newDate)
 			throws FileSystemException {
 		try {
-			String replacedLine = replaceEventStartDate(lineNumber, newDate);
+			String lineToReplace = replaceEventStartDate(lineNumber, newDate);
 
-			return replacedLine;
+			return lineToReplace;
 		} catch (IllegalArgumentException exception) {
 			throw new FileSystemException(exception.getMessage());
 		} catch (IOException exception) {
@@ -308,9 +309,9 @@ public class Storage {
 	public String editEventEndDate(int lineNumber, Date newDate)
 			throws FileSystemException {
 		try {
-			String replacedLine = replaceEventEndDate(lineNumber, newDate);
+			String lineToReplace = replaceEventEndDate(lineNumber, newDate);
 
-			return replacedLine;
+			return lineToReplace;
 		} catch (IllegalArgumentException exception) {
 			throw new FileSystemException(exception.getMessage());
 		} catch (IOException exception) {
@@ -336,9 +337,9 @@ public class Storage {
 	public String editEventStartTime(int lineNumber, String newTime)
 			throws FileSystemException {
 		try {
-			String replacedLine = replaceEventStartTime(lineNumber, newTime);
+			String lineToReplace = replaceEventStartTime(lineNumber, newTime);
 
-			return replacedLine;
+			return lineToReplace;
 		} catch (IllegalArgumentException exception) {
 			throw new FileSystemException(exception.getMessage());
 		} catch (IOException exception) {
@@ -364,9 +365,9 @@ public class Storage {
 	public String editEventEndTime(int lineNumber, String newTime)
 			throws FileSystemException {
 		try {
-			String replacedLine = replaceEventEndTime(lineNumber, newTime);
+			String lineToReplace = replaceEventEndTime(lineNumber, newTime);
 
-			return replacedLine;
+			return lineToReplace;
 		} catch (IllegalArgumentException exception) {
 			throw new FileSystemException(exception.getMessage());
 		} catch (IOException exception) {
@@ -407,6 +408,84 @@ public class Storage {
 			String markedLine = markAsCompleted(lineNumber);
 
 			return markedLine;
+		} catch (IllegalArgumentException exception) {
+			throw new FileSystemException(exception.getMessage());
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
+		}
+	}
+	
+	/**
+	 * Retrieves the type of item (float/task/event) in the text file with specified line number. (1-based
+	 * counting)
+	 * 
+	 * @param lineNumber
+	 *            line number in text file to be found/queried.
+	 * @return the item type at specified line number.
+	 * @throws FileSystemException
+	 *             when line number less than 0 or more than number of lines
+	 *             present in text file, or when error in reading file.
+	 */
+	public String findTypeInLine(int lineNumber) throws FileSystemException {
+		try {
+			String itemType = findItemTypeFromFile(lineNumber);
+
+			return itemType;
+		} catch (IllegalArgumentException exception) {
+			throw new FileSystemException(exception.getMessage());
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
+		}
+	}
+	
+	/**
+	 * Converts floating task at specified line number into a task with specified deadline.
+	 * The newly converted task will be considered undone regardless of its status as a floating
+	 * task. (1-based counting)
+	 * 
+	 * @param lineNumber    line number in text file to be converted.
+	 * @param deadline      given deadline for converted task.
+	 * @return              the text at specified line number before conversion.
+	 * @throws FileSystemException
+	 *             when line number less than 0 or more than number of lines
+	 *             present in text file, or when error in reading file, or when
+	 *             the object at line number is not a floating task.
+	 */
+	public String convertFloatToTask(int lineNumber, Date deadline)
+			throws FileSystemException {
+		try {
+			String lineToConvert = changeFloatToTask(lineNumber, deadline);
+
+			return lineToConvert;
+		} catch (IllegalArgumentException exception) {
+			throw new FileSystemException(exception.getMessage());
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
+		}
+	}
+	
+	/**
+	 * Converts floating task at specified line number into an event with specified start date and time
+	 * and end date and time. The newly converted event will be considered undone regardless of its status
+	 * as a floating task. (1-based counting)
+	 * 
+	 * @param lineNumber    line number in text file to be converted.
+	 * @param startDate     given start date for converted event.
+	 * @param startTime     given start time for converted event.
+	 * @param endDate       given end date for converted event.
+	 * @param endTime       given end time for converted event.
+	 * @return              the text at specified line number before conversion.
+	 * @throws FileSystemException
+	 *             when line number less than 0 or more than number of lines
+	 *             present in text file, or when error in reading file, or when
+	 *             the object at line number is not a floating task.
+	 */ 
+	public String convertFloatToEvent(int lineNumber, Date startDate, String startTime, 
+			Date endDate, String endTime) throws FileSystemException {
+		try {
+			String lineToConvert = changeFloatToEvent(lineNumber, startDate, startTime, endDate, endTime);
+
+			return lineToConvert;
 		} catch (IllegalArgumentException exception) {
 			throw new FileSystemException(exception.getMessage());
 		} catch (IOException exception) {
@@ -562,11 +641,7 @@ public class Storage {
 
 		addFileContentsToArrayList(fileContents);
 
-		if (!isValidLineNumber(lineNumber, fileContents)) {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
 
 		String lineToDelete = fileContents.remove(lineNumber - PARAM_OFFSET);
 
@@ -582,11 +657,7 @@ public class Storage {
 
 		addFileContentsToArrayList(fileContents);
 
-		if (!isValidLineNumber(lineNumber, fileContents)) {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
@@ -626,11 +697,7 @@ public class Storage {
 
 		addFileContentsToArrayList(fileContents);
 
-		if (!isValidLineNumber(lineNumber, fileContents)) {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
@@ -658,11 +725,7 @@ public class Storage {
 
 		addFileContentsToArrayList(fileContents);
 
-		if (!isValidLineNumber(lineNumber, fileContents)) {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
@@ -698,11 +761,7 @@ public class Storage {
 
 		addFileContentsToArrayList(fileContents);
 
-		if (!isValidLineNumber(lineNumber, fileContents)) {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
@@ -737,11 +796,7 @@ public class Storage {
 
 		addFileContentsToArrayList(fileContents);
 
-		if (!isValidLineNumber(lineNumber, fileContents)) {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
@@ -776,11 +831,7 @@ public class Storage {
 
 		addFileContentsToArrayList(fileContents);
 
-		if (!isValidLineNumber(lineNumber, fileContents)) {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
 
 		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToBeEdited = getFirstWord(lineToBeEdited);
@@ -808,16 +859,106 @@ public class Storage {
 		return lineToBeEdited;
 	}
 
-	// Refactor
 	private boolean isValidStartAndEnd(Date startDate, String startTime,
 			Date endDate, String endTime) {
 		if (startDate.compareTo(endDate) > PARAM_COMPARE_TO) {
 			return false;
 		} else if (startDate.compareTo(endDate) == PARAM_COMPARE_TO) {
-			return (Integer.parseInt(endTime) > Integer.parseInt(startTime));
+			return isValidTimeRange(startTime, endTime);
 		} else {
 			return true;
 		}
+	}
+	
+	private boolean isValidTimeRange(String startTimeString, String endTimeString) {
+		int endTime = Integer.parseInt(endTimeString);
+		int startTime = Integer.parseInt(startTimeString);
+		
+		if (endTime > startTime) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private String findItemTypeFromFile(int lineNumber) throws IOException, IllegalArgumentException {
+		ArrayList<String> fileContents = new ArrayList<String>();
+		
+		addFileContentsToArrayList(fileContents);
+		
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
+		
+		String lineToFind = fileContents.get(lineNumber - PARAM_OFFSET);	
+		String itemType = getFirstWord(lineToFind);
+		
+		return itemType;
+	}
+
+	private void throwIllegalArgExceptionIfInvalid(int lineNumber,
+			ArrayList<String> fileContents) {
+		if (!isValidLineNumber(lineNumber, fileContents)) {
+			String errorMessage = String.format(
+					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
+			throw new IllegalArgumentException(errorMessage);
+		}
+	}
+	
+	private String changeFloatToTask(int lineNumber, Date deadline)
+			throws IOException, IllegalArgumentException {
+		ArrayList<String> fileContents = new ArrayList<String>();
+
+		addFileContentsToArrayList(fileContents);
+
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
+
+		String lineToBeChanged = fileContents.get(lineNumber - PARAM_OFFSET);
+		String typeToBeChanged = getFirstWord(lineToBeChanged);
+
+		if (typeToBeChanged.equals(STRING_FLOAT_TASK)) {
+			FloatingTask taskToBeChanged = new FloatingTask(lineToBeChanged);
+			
+			String taskName = taskToBeChanged.getName();
+			
+			Task newTask = new Task(taskName, false, deadline);
+
+			deleteLineFromFile(lineNumber);
+			addTaskToFile(newTask);
+		} else {
+			String errorMessage = String.format(
+					MESSAGE_ERROR_INVALID_LINE_ACCESS_FLOAT, lineNumber);
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		return lineToBeChanged;
+	}
+	
+	private String changeFloatToEvent(int lineNumber, Date startDate, String startTime,
+			Date endDate, String endTime) throws IOException, IllegalArgumentException {
+		ArrayList<String> fileContents = new ArrayList<String>();
+
+		addFileContentsToArrayList(fileContents);
+
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
+
+		String lineToBeChanged = fileContents.get(lineNumber - PARAM_OFFSET);
+		String typeToBeChanged = getFirstWord(lineToBeChanged);
+
+		if (typeToBeChanged.equals(STRING_FLOAT_TASK)) {
+			FloatingTask taskToBeChanged = new FloatingTask(lineToBeChanged);
+			
+			String taskName = taskToBeChanged.getName();
+			
+			Event newEvent = new Event(taskName, false, startDate, endDate, startTime, endTime);
+
+			deleteLineFromFile(lineNumber);
+			addEventToFile(newEvent);
+		} else {
+			String errorMessage = String.format(
+					MESSAGE_ERROR_INVALID_LINE_ACCESS_FLOAT, lineNumber);
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		return lineToBeChanged;
 	}
 
 	private void addFileContentsToArrayList(ArrayList<String> fileContents)
@@ -886,11 +1027,7 @@ public class Storage {
 
 		addFileContentsToArrayList(fileContents);
 
-		if (!isValidLineNumber(lineNumber, fileContents)) {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
 
 		String lineToMarkDone = fileContents.get(lineNumber - PARAM_OFFSET);
 		String typeToMarkDone = getFirstWord(lineToMarkDone);
