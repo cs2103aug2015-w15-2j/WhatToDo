@@ -233,6 +233,71 @@ public class StorageTest {
 		storage.editName(2, "overflow");
 	}
 	
+	@Test
+	public void testFindTypeInLine() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+		
+		// Setup for testing
+		storage.addTask(new Task("arrange meeting", false, new Date("020116")));
+		storage.addEvent(new Event ("Company D&D", false, new Date("211215"), new Date("211215"), "1800", "2300"));
+		storage.addFloatingTask(new FloatingTask("buy a painting", false));
+		
+		// This is a boundary case for line 1.
+		assertEquals("float", storage.findTypeInLine(1));
+		
+		// This is a boundary case for last line.
+		assertEquals("event", storage.findTypeInLine(3));
+		
+		// This is a general case.
+		assertEquals("task", storage.findTypeInLine(2));
+		
+		// Checks file remains unchanged.
+		assertEquals("float;buy a painting;todo\n"
+				+ "task;arrange meeting;todo;020116\nevent;Company D&D;todo;211215;1800;211215;2300\n", storage.display());
+			
+		// Clear File for next test.
+		storage.overwriteFile("");
+	}
+	
+	@Test
+	public void testConvertFloatToTask() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+		
+		// Setup for testing
+		storage.addTask(new Task("arrange meeting", false, new Date("020116")));
+		storage.addEvent(new Event ("Company D&D", false, new Date("211215"), new Date("211215"), "1800", "2300"));
+		storage.addFloatingTask(new FloatingTask("buy a painting", false));
+				
+		storage.convertFloatToTask(1, new Date("030116"));
+
+		assertEquals("task;arrange meeting;todo;020116\ntask;buy a painting;todo;030116\n"
+				+ "event;Company D&D;todo;211215;1800;211215;2300\n", storage.display());
+			
+		// Clear File for next test.
+		storage.overwriteFile("");
+	}
+	
+	@Test
+	public void testConvertFloatToEvent() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+		
+		// Setup for testing
+		storage.addTask(new Task("arrange meeting", false, new Date("020116")));
+		storage.addEvent(new Event ("Company D&D", false, new Date("211215"), new Date("211215"), "1800", "2300"));
+		storage.addFloatingTask(new FloatingTask("buy a painting", false));
+				
+		storage.convertFloatToEvent(1, new Date("030116"), "1300", new Date("030116"), "1500");
+
+		assertEquals("task;arrange meeting;todo;020116\nevent;Company D&D;todo;211215;1800;211215;2300\n"
+				+ "event;buy a painting;todo;030116;1300;030116;1500\n", storage.display());
+			
+		// Clear File for next test.
+		storage.overwriteFile("");
+	}
+	
 	/*
 	@Test
 	public void testEditTaskDeadline() {
