@@ -874,7 +874,7 @@ public class Storage {
 		int endTime = Integer.parseInt(endTimeString);
 		int startTime = Integer.parseInt(startTimeString);
 		
-		if (endTime > startTime) {
+		if (endTime >= startTime) {
 			return true;
 		} else {
 			return false;
