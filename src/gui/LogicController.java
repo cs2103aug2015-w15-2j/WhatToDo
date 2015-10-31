@@ -28,8 +28,10 @@ public class LogicController {
 	protected static final String MESSAGE_EMPTY = "There are no items to display.";
 	private static final String MESSAGE_INVALID_INDEX = "Invalid index number entered.";
 	
-	private static final String CSS_UNDERLINE = "-fx-underline: true";
-	private static final String CSS_NO_UNDERLINE = "-fx-underline: false";
+	private static final String CSS_UNDERLINE = "-fx-underline: true;";
+	private static final String CSS_NO_UNDERLINE = "-fx-underline: false;";
+	private static final String CSS_UNDERLINE_ITALIC = CSS_UNDERLINE + "-fx-font-style: italic;";
+	private static final String CSS_NO_UNDERLINE_ITALIC = CSS_NO_UNDERLINE + "-fx-font-style: italic;";
 	
 	private static Logic logic;
 	private static CommandHistory commandHistory;
@@ -608,6 +610,14 @@ public class LogicController {
 		return new PathClickHandler();
 	}
 	
+	public UnresHoverHandler getUnresHoverHandler(Label allUnresAttention) {
+		return new UnresHoverHandler(allUnresAttention);
+	}
+	
+	public UnresClickHandler getUnresClickHandler() {
+		return new UnresClickHandler();
+	}
+	
 	public ConfigClickHandler getConfigClickHandler() {
 		return new ConfigClickHandler();
 	}
@@ -1008,11 +1018,9 @@ public class LogicController {
     	
     	@Override
     	public void handle(MouseEvent event) {
-    		
     		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
     			filepathLabel.setStyle(CSS_UNDERLINE);
     		}
-    		
     		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
     			filepathLabel.setStyle(CSS_NO_UNDERLINE);
     		}
@@ -1024,6 +1032,35 @@ public class LogicController {
     	@Override
     	public void handle(MouseEvent event) {
     		InterfaceController.openFileLocation();
+    	}
+    }
+    
+    private static class UnresHoverHandler implements EventHandler<MouseEvent> {
+    	
+    	Label allUnresAttention;
+    	
+    	UnresHoverHandler(Label allUnresAttention) {
+    		this.allUnresAttention = allUnresAttention;
+    	}
+    	
+    	@Override
+    	public void handle(MouseEvent event) {
+    		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
+    			allUnresAttention.setStyle(CSS_UNDERLINE);
+    			allUnresAttention.setStyle(CSS_UNDERLINE_ITALIC);
+    		}
+    		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
+    			allUnresAttention.setStyle(CSS_NO_UNDERLINE);
+    			allUnresAttention.setStyle(CSS_NO_UNDERLINE_ITALIC);
+    		}
+    	}
+    }
+    
+    private static class UnresClickHandler implements EventHandler<MouseEvent> {
+    	@Override
+    	public void handle(MouseEvent event) {
+    		SummaryViewController.stopShowing();
+    		InterfaceController.updateMainInterface(View.UNRESOLVED);
     	}
     }
     
