@@ -13,14 +13,28 @@ public class CommandParser {
 	
     private static final int POSITION_PARAM_COMMAND = 0;
     private static final int POSITION_FIRST_PARAM_ARGUMENT = 1;
+    private static final int POSITION_FIRST_INDEX = 0;
+    private static final int POSITION_THIRD_INDEX = 2;
+    private static final int POSITION_FOURTH_INDEX = 3;
+    private static final int POSITION_PLUS_ONE = 1;
+    private static final int POSITION_PLUS_TWO = 2;
+    private static final int POSITION_DIFFERENCE_TWO = 2;
+    private static final int POSITION_DIFFERENCE_THREE = 3;
+    private static final int POSITION_DIFFERENCE_FOUR = 4;
+    
+    private static final int ZERO = 0;
+    
+    private static final int NUMBER_OF_DAYS_IN_A_WEEK = 7;
+    private static final int NUMBER_OF_DAYS_IN_TWO_WEEKS = 14;
 	
-	private static final String REGEX_WHITESPACES = "[\\s,]+";
-	private static final String REGEX_POSITIVE_INTEGER = "^\\d+$";
-	private static final String REGEX_12_HOUR_SIMPLE_TIME = "(1[012]|[1-9]|0[1-9])(\\s)?(?i)(am|pm)";
-	private static final String REGEX_12_HOUR_TIME = "(1[012]|[1-9]|0[1-9])(:|.)?[0-5][0-9](\\s)?(?i)(am|pm)";
-	private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
-	private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
-	
+    private static final String REGEX_WHITESPACES = "[\\s,]+";
+    private static final String REGEX_POSITIVE_INTEGER = "^\\d+$";
+    private static final String REGEX_12_HOUR_SIMPLE_TIME = "(1[012]|[1-9]|0[1-9])(\\s)?(?i)(am|pm)";
+    private static final String REGEX_12_HOUR_TIME = "(1[012]|[1-9]|0[1-9])(:|.)?" 
+                                                    + "[0-5][0-9](\\s)?(?i)(am|pm)";
+    private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
+    private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
+
     private static final String STRING_ONE_SPACE = " ";
     private static final String ESCAPE_CHARACTER = "\\";
 	
@@ -31,14 +45,18 @@ public class CommandParser {
     private static final String USER_COMMAND_DONE = "done";
     private static final String USER_COMMAND_SET = "set";
     private static final String USER_COMMAND_SAVE = "save";
-    private static final String USER_COMMAND_EXIT = "exit";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_REDO = "redo";
+    private static final String USER_COMMAND_EXIT = "exit";
     
     private static final String KEYWORD_DEADLINE = "by";
-    private static final String KEYWORD_EVENT_1 = "to";
-    private static final String KEYWORD_EVENT_2 = "from";
-    private static final String KEYWORD_EVENT_3 = "on";
+    private static final String KEYWORD_TODAY = "today";
+    private static final String KEYWORD_TOMORROW_ONE = "tomorrow";
+    private static final String KEYWORD_TOMORROW_TWO = "tmr";
+    private static final String KEYWORD_TOMORROW_THREE = "tomo";
+    private static final String KEYWORD_EVENT_TO = "to";
+    private static final String KEYWORD_EVENT_FROM = "from";
+    private static final String KEYWORD_EVENT_ON = "on";
     private static final String KEYWORD_SET = "as";
     
     private static final String KEYWORD_EDIT_NAME = "name";
@@ -48,10 +66,14 @@ public class CommandParser {
     private static final String KEYWORD_EDIT_END_DATE = "endd";
     private static final String KEYWORD_EDIT_END_TIME = "endt";
     
-    private static final ArrayList<String> nameOfDays = new ArrayList<String>();
-    private static final ArrayList<String> fullNameOfDays = new ArrayList<String>();
+    private static final ArrayList<String> DAYS_ARRAY_LIST = new ArrayList<String>();
+    private static final ArrayList<String> DAYS_FULL_ARRAY_LIST = new ArrayList<String>();
+    
+    private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
     
 	public CommandParser() {
+        initDaysArrayList();
+        initFullDaysArrayList();
     }
 
     public Command parse(String userInput) {
@@ -59,8 +81,6 @@ public class CommandParser {
         ArrayList<String> parameters = splitString(userInput);
         String userCommand = getUserCommand(parameters);
         ArrayList<String> arguments = getUserArguments(parameters);
-        initNameOfDays();
-        initFullNameOfDays();
 
         switch (userCommand.toLowerCase()) {
 
@@ -80,16 +100,16 @@ public class CommandParser {
             	command = initSearchCommand(arguments);
             	break;
             	
+            case USER_COMMAND_DONE :
+            	command = initDoneCommand(arguments);
+            	break;
+            	
             case USER_COMMAND_SET :
             	command = initSetCommand(arguments);
             	break;
             	
             case USER_COMMAND_SAVE :
             	command = initSaveCommand(arguments);
-            	break;
-            	
-            case USER_COMMAND_DONE :
-            	command = initDoneCommand(arguments);
             	break;
             	
             case USER_COMMAND_UNDO :
@@ -133,13 +153,15 @@ public class CommandParser {
 	private Command initAddCommand(ArrayList<String> arguments) {
 		Command command;
 		int size = arguments.size();
+		
 		if (size == 0) {
 			String errorMsg = "Please input the task name!";
 			return initInvalidCommand(errorMsg);
 		} else if (arguments.contains(KEYWORD_DEADLINE)) {
 			command = addTask(arguments);
-		} else if (arguments.contains(KEYWORD_EVENT_1) && arguments.contains(KEYWORD_EVENT_2)) {
-			if (arguments.contains(KEYWORD_EVENT_3)) {
+		} else if (arguments.contains(KEYWORD_EVENT_TO) 
+				&& arguments.contains(KEYWORD_EVENT_FROM)) {
+			if (arguments.contains(KEYWORD_EVENT_ON)) {
 				command = addDayEvent(arguments);
 			} else {
 				command = addEvent(arguments);
@@ -152,15 +174,18 @@ public class CommandParser {
 	
 	private Command addTask(ArrayList<String> arguments) {
 		int keywordIndex = arguments.indexOf(KEYWORD_DEADLINE);
-		int index = keywordIndex + 1;
+		int index = keywordIndex + POSITION_PLUS_ONE;
 		String dateString = "";
+		
 		while (index < arguments.size()) {
 			dateString += arguments.get(index);
 			index++;
 		}
+		
 		Date date = getDate(dateString);
-		List<String> nameList = arguments.subList(0, keywordIndex);
+		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, keywordIndex);
 		String name = getName(nameList);
+		
 		if (date == null) {
 			String errorMsg = "Invalid Date";
 			return initInvalidCommand(errorMsg);
@@ -169,6 +194,7 @@ public class CommandParser {
 			String errorMsg = "Invalid Task Name!";
 			return initInvalidCommand(errorMsg);
 		}
+		
 		Command command = new Command(Command.CommandType.ADD);
 		command.setDataType(Command.DataType.TASK);
 		command.setName(name);
@@ -177,19 +203,20 @@ public class CommandParser {
 	}
 	
 	private Command addEvent(ArrayList<String> arguments) {
+		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_TO);
+		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_FROM);
 		
-		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_1);
-		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_2);
-		
-		if (Math.abs(keywordToIndex - keywordFromIndex) != 3 || (arguments.size() - keywordToIndex != 3 && arguments.size() - keywordFromIndex != 3)) {
+		if (Math.abs(keywordToIndex - keywordFromIndex) != POSITION_DIFFERENCE_THREE 
+			|| (arguments.size() - keywordToIndex != POSITION_DIFFERENCE_THREE 
+			&& arguments.size() - keywordFromIndex != POSITION_DIFFERENCE_THREE)) {
 			String errorMsg = "Invalid format for adding Event";
 			return initInvalidCommand(errorMsg);
 		}
 		
-		Date startDate = getDate(arguments.get(keywordFromIndex + 1));
-		String startTime = getTime(arguments.get(keywordFromIndex + 2));
-		Date endDate = getDate(arguments.get(keywordToIndex + 1));
-		String endTime = getTime(arguments.get(keywordToIndex + 2));
+		Date startDate = getDate(arguments.get(keywordFromIndex + POSITION_PLUS_ONE));
+		String startTime = getTime(arguments.get(keywordFromIndex + POSITION_PLUS_TWO));
+		Date endDate = getDate(arguments.get(keywordToIndex + POSITION_PLUS_ONE));
+		String endTime = getTime(arguments.get(keywordToIndex + POSITION_PLUS_TWO));
 		String name = null;
 		
 		if (startDate == null) {
@@ -220,16 +247,17 @@ public class CommandParser {
 			}
 		}
 		if (keywordToIndex > keywordFromIndex) {
-			List<String> nameList = arguments.subList(0, keywordFromIndex);
+			List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, keywordFromIndex);
 			name = getName(nameList);
 		} else {
-			List<String> nameList = arguments.subList(0, keywordToIndex);
+			List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, keywordToIndex);
 			name = getName(nameList);
 		}
 		if (name == null) {
 			String errorMsg = "Invalid Event name";
 			return initInvalidCommand(errorMsg);
 		}
+		
 		Command command = new Command(Command.CommandType.ADD);
 		command.setDataType(Command.DataType.EVENT);
 		command.setName(name);
@@ -241,23 +269,22 @@ public class CommandParser {
 	}
 	
 	private Command addDayEvent(ArrayList<String> arguments) {
-		
-		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_1);
-		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_2);
-		int keywordOnIndex = arguments.indexOf(KEYWORD_EVENT_3);
-		
+		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_TO);
+		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_FROM);
+		int keywordOnIndex = arguments.indexOf(KEYWORD_EVENT_ON);
 		int minIndex = Math.min(keywordToIndex, Math.min(keywordFromIndex, keywordOnIndex));
 		int maxIndex = Math.max(keywordToIndex, Math.max(keywordFromIndex, keywordOnIndex));
 		
-		if ((maxIndex - minIndex) != 4 || (arguments.size() - 2) != maxIndex) {
+		if (maxIndex - minIndex != POSITION_DIFFERENCE_FOUR 
+			|| arguments.size() - maxIndex != POSITION_DIFFERENCE_TWO) {
 			String errorMsg = "Invalid format for adding Event";
 			return initInvalidCommand(errorMsg);
 		}
 		
-		Date date = getDate(arguments.get(keywordOnIndex + 1));
-		String startTime = getTime(arguments.get(keywordFromIndex + 1));
-		String endTime = getTime(arguments.get(keywordToIndex + 1));
-		List<String> nameList = arguments.subList(0, minIndex);
+		Date date = getDate(arguments.get(keywordOnIndex + POSITION_PLUS_ONE));
+		String startTime = getTime(arguments.get(keywordFromIndex + POSITION_PLUS_ONE));
+		String endTime = getTime(arguments.get(keywordToIndex + POSITION_PLUS_ONE));
+		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, minIndex);
 		String name = getName(nameList);
 		
 		if (date == null) {
@@ -293,7 +320,7 @@ public class CommandParser {
 	private Command addFloatingTask(ArrayList<String> arguments) {
 		Command command = new Command(Command.CommandType.ADD);
 		command.setDataType(Command.DataType.FLOATING_TASK);
-		List<String> nameList = arguments.subList(0, arguments.size());
+		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, arguments.size());
 		String name = getName(nameList);
 		command.setName(name);
 		return command;
@@ -301,7 +328,7 @@ public class CommandParser {
 	
 	private String getName(List<String> arguments) {
 		String name = "";
-		if (arguments.size() == 0) {
+		if (arguments.isEmpty()) {
 			return null;
 		}
 		for (int i = 0; i < arguments.size(); i++) {
@@ -316,27 +343,32 @@ public class CommandParser {
 	
 	private Date getDate(String date) {
 		Date todayDate = Date.todayDate();
-		if (date.equals("today")){
+		if (date.equals(KEYWORD_TODAY)){
 			return todayDate;
-		} else if (date.equals("tomorrow") || date.equals("tmr") || date.equals("tomo")) {
+		} else if (date.equals(KEYWORD_TOMORROW_ONE) || date.equals(KEYWORD_TOMORROW_TWO) 
+				   || date.equals(KEYWORD_TOMORROW_THREE)) {
 			return Date.tomorrowDate();
-		} else if (fullNameOfDays.contains(date.toLowerCase())) {
-			int day = nameOfDays.indexOf(date.substring(0,3).toLowerCase());
-			int today = nameOfDays.indexOf(todayDate.getDayString().substring(0,3).toLowerCase());
+		} else if (DAYS_FULL_ARRAY_LIST.contains(date.toLowerCase())) {
+			String daySubstring = date.substring(POSITION_FIRST_INDEX, POSITION_FOURTH_INDEX).toLowerCase();
+			int day = DAYS_ARRAY_LIST.indexOf(daySubstring);
+			String todayString = todayDate.getDayString();
+			String todaySubstring = todayString.substring(POSITION_FIRST_INDEX, POSITION_FOURTH_INDEX).toLowerCase();
+			int today = DAYS_ARRAY_LIST.indexOf(todaySubstring);
 			int difference = day - today;
 			if (difference >= 0) {
 				return todayDate.plusDay(difference);
 			} else {
-				return todayDate.plusDay(difference + 7);
+				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_A_WEEK);
 			}
-		} else if (date.substring(0,1).equals("n") && fullNameOfDays.contains(date.substring(1).toLowerCase())) {
-			int day = nameOfDays.indexOf(date.substring(1,4).toLowerCase());
-			int today = nameOfDays.indexOf(todayDate.getDayString().substring(0,3).toLowerCase());
+		} else if (date.substring(0,1).equals("n") 
+				&& DAYS_FULL_ARRAY_LIST.contains(date.substring(1).toLowerCase())) {
+			int day = DAYS_ARRAY_LIST.indexOf(date.substring(1,4).toLowerCase());
+			int today = DAYS_ARRAY_LIST.indexOf(todayDate.getDayString().substring(0,3).toLowerCase());
 			int difference = day - today;
 			if (difference >= 0) {
-				return todayDate.plusDay(difference + 7);
+				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_A_WEEK);
 			} else {
-				return todayDate.plusDay(difference + 14);
+				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_TWO_WEEKS);
 			}
 		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == 4) {
 			String year = todayDate.getFullDate().substring(4);
@@ -345,7 +377,8 @@ public class CommandParser {
 			if (isValidDate(date) && todayDate.compareTo(currDate) <= 0) {
 				return currDate;
 			}
-		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == 6 && isValidDate(date)) {
+		} else if (date.matches(REGEX_POSITIVE_INTEGER) 
+				&& String.valueOf(date).length() == 6 && isValidDate(date)) {
 			Date currDate = new Date(date);
 			if (todayDate.compareTo(currDate) <= 0) {
 				return currDate;
@@ -375,31 +408,31 @@ public class CommandParser {
 		}
 	}
 	
-	private void initNameOfDays() {
-		nameOfDays.add("mon");
-		nameOfDays.add("tue");
-		nameOfDays.add("wed");
-		nameOfDays.add("thu");
-		nameOfDays.add("fri");
-		nameOfDays.add("sat");
-		nameOfDays.add("sun");
+	private void initDaysArrayList() {
+		DAYS_ARRAY_LIST.add("mon");
+		DAYS_ARRAY_LIST.add("tue");
+		DAYS_ARRAY_LIST.add("wed");
+		DAYS_ARRAY_LIST.add("thu");
+		DAYS_ARRAY_LIST.add("fri");
+		DAYS_ARRAY_LIST.add("sat");
+		DAYS_ARRAY_LIST.add("sun");
 	}
 	
-	private void initFullNameOfDays() {
-		fullNameOfDays.add("mon");
-		fullNameOfDays.add("tue");
-		fullNameOfDays.add("wed");
-		fullNameOfDays.add("thu");
-		fullNameOfDays.add("fri");
-		fullNameOfDays.add("sat");
-		fullNameOfDays.add("sun");
-		fullNameOfDays.add("monday");
-		fullNameOfDays.add("tuesday");
-		fullNameOfDays.add("wednesday");
-		fullNameOfDays.add("thursday");
-		fullNameOfDays.add("friday");
-		fullNameOfDays.add("saturday");
-		fullNameOfDays.add("sunday");
+	private void initFullDaysArrayList() {
+		DAYS_FULL_ARRAY_LIST.add("mon");
+		DAYS_FULL_ARRAY_LIST.add("tue");
+		DAYS_FULL_ARRAY_LIST.add("wed");
+		DAYS_FULL_ARRAY_LIST.add("thu");
+		DAYS_FULL_ARRAY_LIST.add("fri");
+		DAYS_FULL_ARRAY_LIST.add("sat");
+		DAYS_FULL_ARRAY_LIST.add("sun");
+		DAYS_FULL_ARRAY_LIST.add("monday");
+		DAYS_FULL_ARRAY_LIST.add("tuesday");
+		DAYS_FULL_ARRAY_LIST.add("wednesday");
+		DAYS_FULL_ARRAY_LIST.add("thursday");
+		DAYS_FULL_ARRAY_LIST.add("friday");
+		DAYS_FULL_ARRAY_LIST.add("saturday");
+		DAYS_FULL_ARRAY_LIST.add("sunday");
 	}
 	
 	private String getTime(String time) {
@@ -530,21 +563,26 @@ public class CommandParser {
 		int endDateIndex = getKeywordIndex(arguments, KEYWORD_EDIT_END_DATE);
 		int endTimeIndex = getKeywordIndex(arguments, KEYWORD_EDIT_END_TIME);
 		
-		if (repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex) != null) {
-			String repeatedKeyword = repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
+		if (repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, 
+				             startTimeIndex, endDateIndex, endTimeIndex) != null) {
+			String repeatedKeyword = repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, 
+					                                  startTimeIndex, endDateIndex, endTimeIndex);
 			String errorMsg = "Double keywords " + repeatedKeyword + " not accepted!";
 			return initInvalidCommand(errorMsg);
 		}
 		
-		ArrayList<Integer> indexArrayList = getIndexArrayList(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
+		ArrayList<Integer> indexArrayList = getIndexArrayList(nameIndex, deadlineIndex, startDateIndex, 
+				                                              startTimeIndex, endDateIndex, endTimeIndex);
 		
 		if (indexArrayList.isEmpty()) {
 			String errorMsg = "Invalid edit command";
 			return initInvalidCommand(errorMsg);
 		}
 		
-		Hashtable<Integer, String> indexKeywordHash = getHashtable(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
-		ArrayList<String> editList = getEditList(nameIndex, deadlineIndex, startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
+		Hashtable<Integer, String> indexKeywordHash = getHashtable(nameIndex, deadlineIndex, startDateIndex, 
+				                                                   startTimeIndex, endDateIndex, endTimeIndex);
+		ArrayList<String> editList = getEditList(nameIndex, deadlineIndex, startDateIndex, 
+				                                 startTimeIndex, endDateIndex, endTimeIndex);
 		
 		Command command = new Command();
 		command.setCommandType(Command.CommandType.EDIT);
@@ -607,7 +645,8 @@ public class CommandParser {
 		return -1;
 	}
 	
-	private String repeatedKeywords(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex, int endDateIndex, int endTimeIndex) {
+	private String repeatedKeywords(int nameIndex, int deadlineIndex, int startDateIndex, 
+			                        int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		if (nameIndex == -2) {
 			return KEYWORD_EDIT_NAME;
 		}
@@ -629,7 +668,8 @@ public class CommandParser {
 		return null;
 	}
 	
-	private ArrayList<Integer> getIndexArrayList(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex, int endDateIndex, int endTimeIndex) {
+	private ArrayList<Integer> getIndexArrayList(int nameIndex, int deadlineIndex, int startDateIndex, 
+			                                     int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		ArrayList<Integer> indexArrayList = new ArrayList<Integer>();
 		if (nameIndex != -1) {
 			indexArrayList.add(nameIndex);
@@ -653,7 +693,8 @@ public class CommandParser {
 		return indexArrayList;
 	}
 	
-	private Hashtable<Integer, String> getHashtable(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex, int endDateIndex, int endTimeIndex) {
+	private Hashtable<Integer, String> getHashtable(int nameIndex, int deadlineIndex, int startDateIndex, 
+			                                        int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		Hashtable<Integer, String> indexKeywordHash = new Hashtable<Integer, String>();
 		if (nameIndex != -1) {
 			indexKeywordHash.put(nameIndex, KEYWORD_EDIT_NAME);
@@ -676,7 +717,8 @@ public class CommandParser {
 		return indexKeywordHash;
 	}
 	
-	private ArrayList<String> getEditList(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex, int endDateIndex, int endTimeIndex) {
+	private ArrayList<String> getEditList(int nameIndex, int deadlineIndex, int startDateIndex, 
+			                              int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		ArrayList<String> editList = new ArrayList<String>();
 		if (nameIndex != -1) {
 			editList.add(KEYWORD_EDIT_NAME);
@@ -814,6 +856,10 @@ public class CommandParser {
 		String directory = getName(directoryList);
 		command.setName(directory);
 		return command;
+	}
+	
+	public void setAliasHash(Hashtable<String, String> commandAliases) {
+		this.commandAliases = commandAliases;
 	}
 	
 	
