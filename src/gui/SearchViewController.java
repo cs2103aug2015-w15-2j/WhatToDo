@@ -45,22 +45,6 @@ public class SearchViewController {
 	protected static final String HEADER_SEARCH_TASKS = "TASKS";
 	protected static final String HEADER_SEARCH_EVENTS = "EVENTS";
 
-	private static boolean isDate(String displayData) {
-
-		// To prevent comparisons failing across different OSes
-		// Assume a string is a date if it does not start with either
-		// "todo" or "done" (if it is an element)
-		// Also cannot match the no results found message
-		return !(displayData.split(" ")[0].equals("todo") || 
-				displayData.split(" ")[0].equals("done") || 
-				displayData.split(" ")[0].equals("There"));
-	}
-
-	private static boolean isEmpty(String displayData) {
-
-		return displayData.equals(LogicController.MESSAGE_EMPTY);
-	}
-
 	private static ArrayList<String> getTaskResults(String displayData) {
 
 		String[] resultsSplit = displayData.split("\n");
@@ -107,7 +91,7 @@ public class SearchViewController {
 
 	private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
 
-		if (isDate(displayData)) {
+		if (InterfaceController.logicControl.isTitleOrDate(displayData)) {
 
 			Label elementLabel = new Label(displayData.toUpperCase());
 			HBox elementBox = new HBox(elementLabel);
@@ -148,7 +132,7 @@ public class SearchViewController {
 
 		} else {
 			// If there are no results
-			if (isEmpty(displayData) || displayData.equals("FLOAT")) {
+			if (InterfaceController.logicControl.isEmpty(displayData) || displayData.equals("FLOAT")) {
 				Label elementLabel = new Label(displayData);
 				elementLabel.setWrapText(true);
 				
@@ -381,14 +365,14 @@ public class SearchViewController {
 		// Print the task results
 		// Only print the empty message if there are zero results
 		int numOfResults = 1;
-		if (taskResults.size() == 3 && isEmpty(taskResults.get(1))) {
+		if (taskResults.size() == 3 && InterfaceController.logicControl.isEmpty(taskResults.get(1))) {
 			HBox tempBox = initDisplayElement(taskResults.get(1), numOfElements, numOfResults, true);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
 		} else {
 			// If there are no results for floating tasks
-			if (taskResults.get(1).equals(LogicController.MESSAGE_EMPTY)) {
+			if (InterfaceController.logicControl.isEmpty(taskResults.get(1))) {
 				for (int i = 0; i < taskResults.size(); i++) {
 					HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 					VBox.setMargin(tempBox, new Insets(
@@ -401,7 +385,7 @@ public class SearchViewController {
 				}
 			} else {
 				for (int i = 0; i < taskResults.size(); i++) {
-					if (!taskResults.get(i).equals(LogicController.MESSAGE_EMPTY)) {
+					if (!InterfaceController.logicControl.isEmpty(taskResults.get(i))) {
 						HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 						VBox.setMargin(tempBox, new Insets(
 								0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));

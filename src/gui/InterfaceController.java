@@ -597,7 +597,7 @@ public class InterfaceController {
         AllViewController.initAllView();
         HistoryViewController.initHistView();
         UnresolvedViewController.initUnresView();
-        //DoneViewController.initDoneView();
+        DoneViewController.initDoneView();
         SearchViewController.initSearchView();
         
         // Initial view will be empty
@@ -712,7 +712,7 @@ public class InterfaceController {
     		break;
     		
     	case DONE:
-    		//DoneViewController.updateDoneView();
+    		DoneViewController.updateDoneView();
     		viewBox.getChildren().add(doneBox);
     		
     		HBox.setHgrow(doneBox, Priority.ALWAYS);
