@@ -321,7 +321,7 @@ public class AllViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allTaskContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
-			if (!InterfaceController.logicControl.isTitleOrDate(tasks[i])) {
+			if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
 				numOfResults++;
 			}
         }
@@ -334,7 +334,7 @@ public class AllViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             allEventContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
-			if (!InterfaceController.logicControl.isTitleOrDate(events[i])) {
+			if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
 				numOfResults++;
 			}
         }

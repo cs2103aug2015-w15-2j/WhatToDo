@@ -25,6 +25,8 @@ import struct.View;
 public class LogicController {
 
 	private static final String MESSAGE_ERROR_FILESYSTEM = "Failed to create the file.";
+	protected static final String MESSAGE_EMPTY = "There are no items to display.";
+	
 	private static final String CSS_UNDERLINE = "-fx-underline: true";
 	private static final String CSS_NO_UNDERLINE = "-fx-underline: false";
 	
@@ -191,13 +193,13 @@ public class LogicController {
 		
 		String[] temp = InterfaceController.logicControl.getDefTasks();
 		for (int i = 0; i < temp.length; i++) {
-			if (!isTitleOrDate(temp[i])) {
+			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
 		temp = InterfaceController.logicControl.getDefEvents();
 		for (int i = 0; i < temp.length; i++) {
-			if (!isTitleOrDate(temp[i])) {
+			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
@@ -211,13 +213,13 @@ public class LogicController {
 		
 		String[] temp = InterfaceController.logicControl.getAllTasks();
 		for (int i = 0; i < temp.length; i++) {
-			if (!isTitleOrDate(temp[i])) {
+			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
 		temp = InterfaceController.logicControl.getAllEvents();
 		for (int i = 0; i < temp.length; i++) {
-			if (!isTitleOrDate(temp[i])) {
+			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
@@ -231,13 +233,13 @@ public class LogicController {
 		int count = 0;
 		
 		for (int i = 0; i < taskResults.size(); i++) {
-			if (!isTitleOrDate(taskResults.get(i))) {
+			if (isNonEmptyElement(taskResults.get(i))) {
 				count++;
 			}
 		}
 		
 		for (int i = 0; i < eventResults.size(); i++) {
-			if (!isTitleOrDate(eventResults.get(i))) {
+			if (isNonEmptyElement(eventResults.get(i))) {
 				count++;
 			}
 		}
@@ -251,13 +253,13 @@ public class LogicController {
 		
 		String[] temp = InterfaceController.logicControl.getUnresTasks();
 		for (int i = 0; i < temp.length; i++) {
-			if (!isTitleOrDate(temp[i])) {
+			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
 		temp = InterfaceController.logicControl.getUnresEvents();
 		for (int i = 0; i < temp.length; i++) {
-			if (!isTitleOrDate(temp[i])) {
+			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
@@ -275,7 +277,13 @@ public class LogicController {
     public boolean isTitleOrDate(String displayData) {
     	// Use the definition that a date or title does not have a period in it
     	// whereas an element will definitely have a period after its index
-    	return displayData.split(Pattern.quote(".")).length == 1;
+    	return displayData.split(Pattern.quote(".")).length == 1 && 
+    			!displayData.equals(MESSAGE_EMPTY);
+    }
+    
+    public boolean isNonEmptyElement(String displayData) {
+    	return !isTitleOrDate(displayData) && 
+				!displayData.equals(LogicController.MESSAGE_EMPTY);
     }
     
     private static String mapToFileIndex(String textFieldInput) {
@@ -1030,10 +1038,6 @@ public class LogicController {
     		switch (scrollpane) {
     		case HISTORY:
     			HistoryViewController.getHistScroll().setVvalue((Double)newValue);
-    			break;
-    		case UNRESOLVED:
-    			// TODO
-    			//DoneViewController.getDoneScroll().setVvalue((Double)newValue);
     			break;
     		default:
     			// Ignore, should not enter

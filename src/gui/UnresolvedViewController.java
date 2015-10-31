@@ -322,7 +322,7 @@ public class UnresolvedViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresTaskContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
-			if (!InterfaceController.logicControl.isTitleOrDate(tasks[i])) {
+			if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
 				numOfResults++;
 			}
         }
@@ -335,7 +335,7 @@ public class UnresolvedViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresEventContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
-			if (!InterfaceController.logicControl.isTitleOrDate(events[i])) {
+			if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
 				numOfResults++;
 			}
         }
