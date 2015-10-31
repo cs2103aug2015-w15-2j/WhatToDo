@@ -31,7 +31,7 @@ public class InterfaceController {
 
     // Used for initFilePathBar
 	private static ImageView filepathConfig;
-    private static HBox filepathBox, filepathLabelBox;
+    private static HBox filepathBox, filepathLabelBox, filepathConfigBox;
     private static VBox filepathBoxWithLine;
     private static Label filepathLabel;
     private static Line filepathLine;
@@ -149,6 +149,7 @@ public class InterfaceController {
         
         filepathLine = new Line(0, 0, WIDTH_DEFAULT, 0);
         filepathConfig = new ImageView(PATH_CONFIG);
+        filepathConfigBox = new HBox(filepathConfig);
         
         Region filepathBuffer = new Region();
         filepathBuffer.setMaxSize(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
@@ -158,7 +159,7 @@ public class InterfaceController {
         
         HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
         
-        filepathBox = new HBox(filepathBuffer, filepathLabelBox, filepathConfig);
+        filepathBox = new HBox(filepathBuffer, filepathLabelBox, filepathConfigBox);
         filepathBoxWithLine = new VBox(filepathBox, filepathLine);
 
         // Set margins for the filepath label
@@ -184,7 +185,7 @@ public class InterfaceController {
         		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
-        filepathConfig.addEventHandler(
+        filepathConfigBox.addEventHandler(
         		MouseEvent.MOUSE_CLICKED, logicControl.getConfigClickHandler());
 
         // CSS
