@@ -72,7 +72,7 @@ public class Formatter {
 			String lineName = lineFields[INDEX_NAME];
 			
 			Date lineDate = new Date(lineFields[INDEX_DUEDATE]);
-			addDateHeader(contentBuffer, lineDate, prevlineDate); 
+			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
 			
 			String formattedLine = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, i+1, lineName);
 			contentBuffer.append(formattedLine); 
@@ -93,7 +93,7 @@ public class Formatter {
 			String lineIsDone = lineFields[INDEX_ISDONE];
 			
 			Date lineDate = new Date(lineFields[INDEX_DUEDATE]);
-			addDateHeader(contentBuffer, lineDate, prevlineDate); 
+			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
 			
 			String formattedLine = String.format(SEARCH_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
 			contentBuffer.append(formattedLine); 
@@ -117,7 +117,7 @@ public class Formatter {
 			String lineEndTime = lineFields[INDEX_ENDTIME]; 
 			
 			Date lineDate = new Date(lineFields[INDEX_STARTDATE]);
-			addDateHeader(contentBuffer, lineDate, prevlineDate); 
+			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
 			
 			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, i+1, 
 					lineStartDate, lineStartTime, lineEndDate, lineEndTime, lineName);
@@ -143,7 +143,7 @@ public class Formatter {
 			String lineEndTime = lineFields[INDEX_ENDTIME]; 
 			
 			Date lineDate = new Date(lineFields[INDEX_STARTDATE]);
-			addDateHeader(contentBuffer, lineDate, prevlineDate); 
+			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
 			
 			String formattedLine = String.format(SEARCH_RESULTS_EVENT, lineIsDone, i+1, 
 					lineStartDate, lineStartTime, lineEndDate, lineEndTime, lineName);

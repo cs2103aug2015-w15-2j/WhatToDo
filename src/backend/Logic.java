@@ -77,20 +77,20 @@ public class Logic {
 			prevCommand = new Command(); 
 	}
     
-    public static void main(String[] args){ 
-    	try{
-    		Logic l = new Logic(); 
-    		String[] linesInFile = l.getLinesInFile(); 
-    		Filter filter = new Filter(); 
-    		Formatter formatter = new Formatter(); 
-    		ArrayList<Integer> result = filter.filterStatus(linesInFile, TYPE_TASK, true); 
-    		System.out.println(result.toString());
-    		System.out.println("out:\n"+ formatter.formatTask(linesInFile, result));
-    	}
-    	catch(Exception e){
-    		
-    	}
-    }
+//    public static void main(String[] args){ 
+//    	try{
+//    		Logic l = new Logic(); 
+//    		String[] linesInFile = l.getLinesInFile(); 
+//    		Filter filter = new Filter(); 
+//    		Formatter formatter = new Formatter(); 
+//    		ArrayList<Integer> result = filter.filterStatus(linesInFile, TYPE_TASK, true); 
+//    		System.out.println(result.toString());
+//    		System.out.println("out:\n"+ formatter.formatTask(linesInFile, result));
+//    	}
+//    	catch(Exception e){
+//    		
+//    	}
+//    }
     
 	//============================================
 	// Public methods
