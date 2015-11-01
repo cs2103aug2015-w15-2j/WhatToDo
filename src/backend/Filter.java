@@ -18,7 +18,7 @@ public class Filter {
 	
 	private static final String DONE = "done"; 
 	
-	private static final String REGEX_WHITESPACE = "\\s+"; 
+	private static final String REGEX_WHITESPACES = "[\\s,]+"; 
 	
 	private static final String SEMICOLON = ";";
 	
@@ -144,7 +144,7 @@ public class Filter {
 	
 	private String[] parseQuery(String rawQuery){ 
 		String query = rawQuery.trim().toLowerCase();
-		String[] tokens = query.split(REGEX_WHITESPACE);
+		String[] tokens = query.split(REGEX_WHITESPACES);
 		return tokens; 
 	}
 	
