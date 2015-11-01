@@ -5,16 +5,21 @@ import java.util.ArrayList;
 public class Command {
 	
 	public enum CommandType {
-		ADD, DELETE, EDIT, SEARCH, DONE, SET, SAVE, UNDO, REDO, EXIT, INVALID
+		ADD, DELETE, EDIT, SEARCH, DONE, SET, SAVE, UNDO, REDO, VIEW, EXIT, INVALID
     }
 	
 	public enum DataType { 
 		TASK, FLOATING_TASK, EVENT, ALL
 	}
 	
+	public enum ViewType {
+		ALL, DEF, HIST, UNRES, SEARCH, HELP, DONE, OPENFILE, CONFIG
+	}
+	
 	private String userInput; 
 	private CommandType commandType;
 	private DataType dataType;
+	private ViewType viewType;
 	//name may contain arguments for commands instead of event or task name
 	private String name;
 	private int index;
@@ -30,7 +35,7 @@ public class Command {
 	// Constructors
 	//============================================
 	
-	public Command(){
+	public Command() {
 		
 	}
 	
@@ -42,7 +47,7 @@ public class Command {
 	// Public Methods
 	//============================================	
 	
-	public boolean isUndoOrRedo(){
+	public boolean isUndoOrRedo() {
 		return this.commandType == CommandType.UNDO || this.commandType == CommandType.REDO;
 	}
 	
@@ -61,12 +66,16 @@ public class Command {
 	public DataType getDataType() {
 		return dataType;
 	}
+	
+	public ViewType getViewType() {
+		return viewType;
+	}
 
 	public String getName() {
 		return name;
 	}
 	
-	public int getIndex(){
+	public int getIndex() {
 		return index;
 	}
 
@@ -90,11 +99,11 @@ public class Command {
 		return endTime;
 	}
 	
-	public boolean getIsStart(){
+	public boolean getIsStart() {
 		return isStart; 
 	}
 	
-	public ArrayList<String> getEditList(){
+	public ArrayList<String> getEditList() {
 		return editList;
 	}
 	
@@ -112,6 +121,10 @@ public class Command {
 
 	public void setDataType(DataType dataType) {
 		this.dataType = dataType;
+	}
+	
+	public void setViewType(ViewType viewType) {
+		this.viewType = viewType;
 	}
 
 	public void setName(String name) {

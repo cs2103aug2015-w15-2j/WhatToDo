@@ -47,6 +47,13 @@ public class CommandParser {
     private static final String USER_COMMAND_SAVE = "save";
     private static final String USER_COMMAND_UNDO = "undo";
     private static final String USER_COMMAND_REDO = "redo";
+    private static final String USER_COMMAND_VIEW_ALL = "all";
+    private static final String USER_COMMAND_VIEW_DEF = "def";
+    private static final String USER_COMMAND_VIEW_HIST = "hist";
+    private static final String USER_COMMAND_VIEW_UNRES = "unres";
+    private static final String USER_COMMAND_VIEW_HELP = "help";
+    private static final String USER_COMMAND_VIEW_OPEN_FILE = "openfile";
+    private static final String USER_COMMAND_VIEW_CONFIG = "config";
     private static final String USER_COMMAND_EXIT = "exit";
     
     private static final String KEYWORD_DEADLINE = "by";
@@ -119,6 +126,34 @@ public class CommandParser {
             case USER_COMMAND_REDO :
             	command = initRedoCommand(arguments);
             	break; 
+            	
+            case USER_COMMAND_VIEW_ALL :
+            	command = initViewAllCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_VIEW_DEF :
+            	command = initViewDefCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_VIEW_HIST :
+            	command = initViewHistCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_VIEW_UNRES :
+            	command = initViewUnresCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_VIEW_HELP :
+            	command = initViewHelpCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_VIEW_OPEN_FILE :
+            	command = initViewOpenFileCommand(arguments);
+            	break;
+            	
+            case USER_COMMAND_VIEW_CONFIG :
+            	command = initViewConfigCommand(arguments);
+            	break;
                 
             case USER_COMMAND_EXIT :
                 command = initExitCommand(arguments);
@@ -587,6 +622,7 @@ public class CommandParser {
 		Command command = new Command();
 		command.setCommandType(Command.CommandType.EDIT);
 		command.setEditList(editList);
+		command.setIndex(index);
 		
 		for (int i = 0; i < indexArrayList.size(); i++) {
 			int keywordIndex = indexArrayList.get(i);
@@ -807,13 +843,14 @@ public class CommandParser {
 	
 	
     // ================================================================
-    // Create search command methods
+    // Create search command method
     // ================================================================
 	
 	private Command initSearchCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Please input your search terms!";
-			return initInvalidCommand(errorMsg);
+			Command command = new Command(Command.CommandType.VIEW);
+			command.setViewType(Command.ViewType.SEARCH);
+			return command;
 		}
 		List<String> searchList = arguments.subList(0, arguments.size());
 		String searchWords = getName(searchList);
@@ -824,10 +861,15 @@ public class CommandParser {
 	
 	
     // ================================================================
-    // Create done command methods
+    // Create done command method
     // ================================================================
 	
 	private Command initDoneCommand(ArrayList<String> arguments) {
+		if (arguments.isEmpty()) {
+			Command command = new Command(Command.CommandType.VIEW);
+			command.setViewType(Command.ViewType.DONE);
+			return command;
+		}
 		int index = getIndex(arguments);
 		
 		if (arguments.size() > 1 && index <= 0) {
@@ -847,7 +889,7 @@ public class CommandParser {
 	
 	private Command initSetCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Directory cannot be empty!";
+			String errorMsg = "Please specify ";
 			return initInvalidCommand(errorMsg);
 		}
 		
@@ -859,12 +901,13 @@ public class CommandParser {
 	}
 	
 	public void setAliasHash(Hashtable<String, String> commandAliases) {
+		
 		this.commandAliases = commandAliases;
 	}
 	
 	
     // ================================================================
-    // Create save command methods
+    // Create save command method
     // ================================================================
 	
 	private Command initSaveCommand(ArrayList<String> arguments) {
@@ -882,7 +925,7 @@ public class CommandParser {
 	
 	
     // ================================================================
-    // Create undo command methods
+    // Create undo command method
     // ================================================================
 	
 	private Command initUndoCommand(ArrayList<String> arguments) {
@@ -896,7 +939,7 @@ public class CommandParser {
 	
 	
     // ================================================================
-    // Create redo command methods
+    // Create redo command method
     // ================================================================
 	
 	private Command initRedoCommand(ArrayList<String> arguments) {
@@ -910,7 +953,112 @@ public class CommandParser {
 	
 	
     // ================================================================
-    // Create exit command methods
+    // Create view all command method
+    // ================================================================
+	
+	private Command initViewAllCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.VIEW);
+		command.setViewType(Command.ViewType.ALL);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create view def command method
+    // ================================================================
+	
+	private Command initViewDefCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.VIEW);
+		command.setViewType(Command.ViewType.DEF);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create view hist command method
+    // ================================================================
+	
+	private Command initViewHistCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.VIEW);
+		command.setViewType(Command.ViewType.HIST);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create view unres command method
+    // ================================================================
+	
+	private Command initViewUnresCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.VIEW);
+		command.setViewType(Command.ViewType.UNRES);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create view help command method
+    // ================================================================
+	
+	private Command initViewHelpCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.VIEW);
+		command.setViewType(Command.ViewType.HELP);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create view open file command method
+    // ================================================================
+	
+	private Command initViewOpenFileCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.VIEW);
+		command.setViewType(Command.ViewType.OPENFILE);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create view config command method
+    // ================================================================
+	
+	private Command initViewConfigCommand(ArrayList<String> arguments) {
+		if (!arguments.isEmpty()) {
+			String errorMsg = "This command does not expect arguments!";
+			return initInvalidCommand(errorMsg);
+		}
+		Command command = new Command(Command.CommandType.VIEW);
+		command.setViewType(Command.ViewType.CONFIG);
+		return command;
+	}
+	
+	
+    // ================================================================
+    // Create exit command method
     // ================================================================
 	
 	private Command initExitCommand(ArrayList<String> arguments) {
