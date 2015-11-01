@@ -39,7 +39,7 @@ public class AutoComplete {
 	private static boolean showingBeforeLoseFocus = false;
 	private static int numOfResults = -1;
 	
-	private static final double WIDTH_POPUP = 150;
+	private static final double WIDTH_POPUP = 200;
 	private static final double HEIGHT_POPUP = 150;
 	
 	private static void initAllCommands() {
@@ -48,29 +48,29 @@ public class AutoComplete {
 		initAliasCommands();
 	}
 	
-	private static void initOperationCommands() {
-		operationCommands = new ArrayList<Alias>();
-		operationCommands.add(new Alias("def", "def"));
-		operationCommands.add(new Alias("all", "all"));
-		operationCommands.add(new Alias("hist", "hist"));
-		operationCommands.add(new Alias("unres", "unres"));
-		operationCommands.add(new Alias("done", "done"));
-		operationCommands.add(new Alias("search", "search"));
-		operationCommands.add(new Alias("help", "help"));
-		operationCommands.add(new Alias("openfile", "openfile"));
-		operationCommands.add(new Alias("config", "config"));
-	}
-	
 	private static void initShortcutCommands() {
 		shortcutCommands = new ArrayList<Alias>();
-		shortcutCommands.add(new Alias("add", "add"));
-		shortcutCommands.add(new Alias("delete", "delete"));
-		shortcutCommands.add(new Alias("edit", "edit"));
-		shortcutCommands.add(new Alias("redo", "redo"));
-		shortcutCommands.add(new Alias("undo", "undo"));
-		shortcutCommands.add(new Alias("set", "set"));
-		shortcutCommands.add(new Alias("save", "save"));
-		shortcutCommands.add(new Alias("exit", "exit"));
+		shortcutCommands.add(new Alias("def", "def"));
+		shortcutCommands.add(new Alias("all", "all"));
+		shortcutCommands.add(new Alias("hist", "hist"));
+		shortcutCommands.add(new Alias("unres", "unres"));
+		shortcutCommands.add(new Alias("help", "help"));
+		shortcutCommands.add(new Alias("openfile", "openfile"));
+		shortcutCommands.add(new Alias("config", "config"));
+	}
+	
+	private static void initOperationCommands() {
+		operationCommands = new ArrayList<Alias>();
+		operationCommands.add(new Alias("add", "add"));
+		operationCommands.add(new Alias("delete", "delete"));
+		operationCommands.add(new Alias("edit", "edit"));
+		operationCommands.add(new Alias("done", "done"));
+		operationCommands.add(new Alias("search", "search"));
+		operationCommands.add(new Alias("redo", "redo"));
+		operationCommands.add(new Alias("undo", "undo"));
+		operationCommands.add(new Alias("set", "set"));
+		operationCommands.add(new Alias("save", "save"));
+		operationCommands.add(new Alias("exit", "exit"));
 	}
 	
 	private static void initAliasCommands() {
@@ -141,6 +141,17 @@ public class AutoComplete {
 	
 	public static boolean isShowing() {
 		return isShowing;
+	}
+	
+	private static boolean isShortcutCommand(Alias alias) {
+		boolean isShortcut = false;
+		for (int i = 0; i < shortcutCommands.size(); i++) {
+			if (alias.getOriginal().equals(shortcutCommands.get(i).getOriginal())) {
+				isShortcut = true;
+				break;
+			}
+		}
+		return isShortcut;
 	}
 	
 	private static void initPopupList() {
@@ -214,7 +225,15 @@ public class AutoComplete {
 	}
 	
 	public static String getSelectedItem() {
-		return popupList.getSelectionModel().getSelectedItem().getAlias();
+		// Run a check to see if the returned item is a shortcut command
+		// Any command but a shortcut command should have a space appended
+		// to the end for convenience
+		Alias selected = popupList.getSelectionModel().getSelectedItem();
+		if (!isShortcutCommand(selected)) {
+			return selected.getAlias() + " "; 
+		} else {
+			return selected.getAlias();
+		}
 	}
 	
 	public static void switchFocus() {
