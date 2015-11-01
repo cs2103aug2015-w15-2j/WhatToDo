@@ -34,6 +34,14 @@ public class ViewIndexMap {
 	// Getters to access the individual view maps
 	// ============================================================
 	
+	/**
+	 * This method returns the fileIndex associated with the input index
+	 * for the default view
+	 * 
+	 * @param viewIndex
+	 * 		      The index as seen by the user displayed by the view
+	 * @return The index of the element within the text file
+	 */
 	public static int getFromDefMap(int viewIndex) {
 		if (viewIndex >= defMap.size()) {
 			return -1;
@@ -44,6 +52,14 @@ public class ViewIndexMap {
 		}
 	}
 	
+	/**
+	 * This method returns the fileIndex associated with the input index
+	 * for the all view
+	 * 
+	 * @param viewIndex
+	 * 		      The index as seen by the user displayed by the view
+	 * @return The index of the element within the text file
+	 */
 	public static int getFromAllMap(int viewIndex) {
 		if (viewIndex >= allMap.size()) {
 			return -1;
@@ -54,6 +70,14 @@ public class ViewIndexMap {
 		}
 	}
 	
+	/**
+	 * This method returns the fileIndex associated with the input index
+	 * for the search
+	 * 
+	 * @param viewIndex
+	 * 		      The index as seen by the user displayed by the view
+	 * @return The index of the element within the text file
+	 */
 	public static int getFromSearchMap(int viewIndex) {
 		if (viewIndex >= searchMap.size()) {
 			return -1;
@@ -64,6 +88,14 @@ public class ViewIndexMap {
 		}
 	}
 	
+	/**
+	 * This method returns the fileIndex associated with the input index
+	 * for the unresolved view
+	 * 
+	 * @param viewIndex
+	 * 		      The index as seen by the user displayed by the view
+	 * @return The index of the element within the text file
+	 */
 	public static int getFromUnresMap(int viewIndex) {
 		if (viewIndex >= unresMap.size()) {
 			return -1;
@@ -74,6 +106,14 @@ public class ViewIndexMap {
 		}
 	}
 	
+	/**
+	 * This method returns the fileIndex associated with the input index
+	 * for the done view
+	 * 
+	 * @param viewIndex
+	 * 		      The index as seen by the user displayed by the view
+	 * @return The index of the element within the text file
+	 */
 	public static int getFromDoneMap(int viewIndex) {
 		if (viewIndex >= doneMap.size()) {
 			return -1;
@@ -84,6 +124,14 @@ public class ViewIndexMap {
 		}
 	}
 	
+	/**
+	 * This method calls the correct get() operation based on the current view
+	 * the user is in
+	 * 
+	 * @param viewIndex
+	 * 		      The index as seen by the user displayed by the view
+	 * @return The index of the element within the text file
+	 */
 	public static int get(int viewIndex) {
 		switch (InterfaceController.getCurrentView()) {
 		case DEFAULT:
