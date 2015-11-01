@@ -623,7 +623,7 @@ public class CommandParser {
 				                                              startTimeIndex, endDateIndex, endTimeIndex);
 		
 		if (indexArrayList.isEmpty()) {
-			String errorMsg = "Invalid edit command";
+			String errorMsg = "Invalid edit format";
 			return initInvalidCommand(errorMsg);
 		}
 		
@@ -635,6 +635,14 @@ public class CommandParser {
 		if (startDateIndex >= 0 && endDateIndex >= 0) {
 			Date startDate = getDate(arguments.get(startDateIndex + 1));
 			Date endDate = getDate(arguments.get(endDateIndex + 1));
+			if (startDate == null) {
+				String errorMsg = "Invalid Start Date";
+				return initInvalidCommand(errorMsg);
+			}
+			if (endDate == null) {
+				String errorMsg = "Invalid End Date";
+				return initInvalidCommand(errorMsg);
+			}
 			if (startDate.compareTo(endDate) == 1) {
 				String errorMsg = "Start Date cannot be later than End Date";
 				return initInvalidCommand(errorMsg);
