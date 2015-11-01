@@ -622,6 +622,7 @@ public class CommandParser {
 		Command command = new Command();
 		command.setCommandType(Command.CommandType.EDIT);
 		command.setEditList(editList);
+		command.setIndex(index);
 		
 		for (int i = 0; i < indexArrayList.size(); i++) {
 			int keywordIndex = indexArrayList.get(i);
@@ -888,7 +889,7 @@ public class CommandParser {
 	
 	private Command initSetCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Directory cannot be empty!";
+			String errorMsg = "Please specify ";
 			return initInvalidCommand(errorMsg);
 		}
 		
@@ -900,6 +901,7 @@ public class CommandParser {
 	}
 	
 	public void setAliasHash(Hashtable<String, String> commandAliases) {
+		
 		this.commandAliases = commandAliases;
 	}
 	
