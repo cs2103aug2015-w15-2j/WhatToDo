@@ -52,14 +52,14 @@ public class Date implements Comparable<Date>{
     
     public static String todayDateLong(){
     	Calendar cal = Calendar.getInstance(); 
-    	SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd MMM yyyy"); 
+    	SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy"); 
     	return sdf.format(cal.getTime());
     }
     
     public static String tomorrowDateLong(){
     	Calendar cal = Calendar.getInstance();
     	cal.add(Calendar.DATE,1); 
-    	SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd MMM yyyy"); 
+    	SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy"); 
     	return sdf.format(cal.getTime());
     }
     
@@ -139,7 +139,7 @@ public class Date implements Comparable<Date>{
     public String formatDateLong(){ 
     	Calendar cal = Calendar.getInstance(); 
     	cal.set(this.year, this.month-1, this.day);
-    	SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd MMM yyyy"); 
+    	SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy"); 
     	return sdf.format(cal.getTime());
     }
 
