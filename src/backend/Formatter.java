@@ -23,7 +23,24 @@ public class Formatter {
     
 	private static final String SEMICOLON = ";";
 	private static final String NEWLINE = "\n";
+	private static final String EMPTYSTRING = ""; 
     
+	public String formatFloatOrTaskWithoutHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){
+		StringBuffer contentBuffer = new StringBuffer();
+		for(int i : result){ 
+			String line = linesInFile[i]; 
+			String[] lineFields = line.split(SEMICOLON);
+//			String lineType = lineFields[INDEX_TYPE];
+//			assert items is floating task  
+			String lineName = lineFields[INDEX_NAME];
+			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] : EMPTYSTRING;
+			
+			String formattedLine = String.format(SEARCH_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
+			contentBuffer.append(formattedLine); 
+		}
+		
+		return addMsgIfEmpty(contentBuffer); 
+	}
 	
 	public String formatFloat(String[] linesInFile, ArrayList<Integer> result){
 		StringBuffer contentBuffer = new StringBuffer();

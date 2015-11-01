@@ -4,8 +4,6 @@ import java.nio.file.FileSystemException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.sun.xml.internal.bind.v2.runtime.Name;
-
 import struct.Command;
 import struct.Command.CommandType;
 import struct.Date;
@@ -29,6 +27,7 @@ public class Logic {
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added float \"%s\" to list.";
 	private static final String MESSAGE_ADD_EVENT = "Added event \"%s\" to list. Start: %s at %s End: %s at %s.";
 	private static final String MESSAGE_DELETE_LINE = "Deleted %s from list.";
+	private static final String MESSAGE_EDIT_CONVERSION_INVALID = "Not enough arguments for conversion"; 
 	private static final String MESSAGE_MARK_DONE = "Done %s";
 	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
@@ -371,8 +370,7 @@ public class Logic {
     				return executeEditNoConversion(command); 
     			case CONVERSION_INVALID :
     			default : 
-    				//TODO format invalid conversion
-    				return "invalid conversion - not enough arguments"; 
+    				return MESSAGE_EDIT_CONVERSION_INVALID;  
     		}
     	}
     	catch(FileSystemException e){
@@ -418,9 +416,8 @@ public class Logic {
     	return "converted float to event";  
     }
 
-    //TODO - currently only works for single edit 
-    //     - need to make it work for multiple edits at the same time 
-    //	   - feed back msg not done
+    //TODO - need to make it work for multiple edits at the same time 
+    //     - currently only works for single edit 
 	private String executeEditNoConversion(Command command)	throws FileSystemException {
 		int lineNumber = command.getIndex(); 
 		ArrayList<String> editList = command.getEditList(); 
