@@ -29,6 +29,9 @@ public class CommandParser {
     
     private static final int NUMBER_OF_DAYS_IN_A_WEEK = 7;
     private static final int NUMBER_OF_DAYS_IN_TWO_WEEKS = 14;
+    
+    private static final int NUMBER_REPEATED_EDIT_KEYWORD = -2;
+    private static final int NUMBER_NO_EDIT_KEYWORD = -1;
 	
     private static final String REGEX_WHITESPACES = "[\\s;]+";
     private static final String REGEX_POSITIVE_INTEGER = "^\\d+$";
@@ -39,7 +42,16 @@ public class CommandParser {
     private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
 
     private static final String STRING_ONE_SPACE = " ";
+    private static final String STRING_ONE_DOT = ".";
+    private static final String STRING_ONE_COLON = ":";
+    private static final String STRING_EMPTY = "";
     private static final String ESCAPE_CHARACTER = "\\";
+    
+    private static final String TIME_MIDNIGHT = "0000";
+    private static final String TIME_ZERO_HOUR = "00";
+    private static final String TIME_ZERO_MINUTE = "00";
+    private static final int TIME_MAXIMUM = 2400;
+    private static final int TIME_ADD_TWELVE = 12;
 	
     private static final String USER_COMMAND_ADD = "add";
     private static final String USER_COMMAND_DELETE = "delete";
@@ -412,7 +424,7 @@ public class CommandParser {
 			} else {
 				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_TWO_WEEKS);
 			}
-		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == 4) {
+		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == SMALL_DATE_LENGTH) {
 			String year = todayDate.getFullDate().substring(4);
 			date = date + year;
 			Date currDate = new Date(date);
@@ -420,7 +432,7 @@ public class CommandParser {
 				return currDate;
 			}
 		} else if (date.matches(REGEX_POSITIVE_INTEGER) 
-				&& String.valueOf(date).length() == 6 && isValidDate(date)) {
+				&& String.valueOf(date).length() == FULL_DATE_LENGTH && isValidDate(date)) {
 			Date currDate = new Date(date);
 			if (todayDate.compareTo(currDate) <= 0) {
 				return currDate;
@@ -484,31 +496,31 @@ public class CommandParser {
 			String hourString = time.substring(0, time.length() - 2).trim();
 			int hourInt = Integer.parseInt(hourString);
 			if (period.equals("pm") && hourInt != 12) {
-				hourInt += 12;
+				hourInt += TIME_ADD_TWELVE;
 			}
 			if (period.equals("am") && hourInt == 12) {
-				timeString = "0000";
+				timeString = TIME_MIDNIGHT;
 			}
 			hourString = Integer.toString(hourInt);
 			if (hourString.length() == 1) {
-				timeString = "0" + hourString + "00";
+				timeString = "0" + hourString + TIME_ZERO_MINUTE;
 			} else {
-				timeString = hourString + "00";
+				timeString = hourString + TIME_ZERO_MINUTE;
 			}
 			return timeString;
 		} else if (time.matches(REGEX_12_HOUR_TIME)) {
 			String period = time.substring(time.length() - 2).toLowerCase();
 			timeString = time.substring(0, time.length() - 2).trim();
-			timeString = timeString.replace(".","");
-			timeString = timeString.replace(":","");
+			timeString = timeString.replace(STRING_ONE_DOT, STRING_EMPTY);
+			timeString = timeString.replace(STRING_ONE_COLON, STRING_EMPTY);
 			String minuteString = timeString.substring(timeString.length() - 2);
 			String hourString = timeString.substring(0, timeString.length() - 2);
 			int hourInt = Integer.parseInt(hourString);
 			if (period.equals("pm") && hourInt != 12) {
-				hourInt += 12;
+				hourInt += TIME_ADD_TWELVE;
 			}
 			if (period.equals("am") && hourInt == 12) {
-				return "00" + minuteString;
+				return TIME_ZERO_HOUR + minuteString;
 			}
 			hourString = Integer.toString(hourInt);
 			if (hourString.length() == 1) {
@@ -516,15 +528,15 @@ public class CommandParser {
 			} else {
 				timeString = hourString + minuteString;
 			}
-			if (Integer.parseInt(timeString) < 2400) {
+			if (Integer.parseInt(timeString) < TIME_MAXIMUM) {
 				return timeString;
 			}
 		} else if (time.matches(REGEX_24_HOUR_SIMPLE_TIME)){
 			timeString = time;
 			if (time.length() == 1) {
-				timeString = "0" + time + "00";
+				timeString = "0" + time + TIME_ZERO_MINUTE;
 			} else if (time.length() == 2) {
-				timeString = time + "00";
+				timeString = time + TIME_ZERO_MINUTE;
 			}
 			return timeString;
 		} else if (time.matches(REGEX_24_HOUR_TIME)) {
@@ -534,7 +546,7 @@ public class CommandParser {
 			if (timeString.length() == 3) {
 				timeString = "0" + timeString;
 			}
-			if (Integer.parseInt(timeString) < 2400) {
+			if (Integer.parseInt(timeString) < TIME_MAXIMUM) {
 				return timeString;
 			}
 		}
@@ -557,9 +569,13 @@ public class CommandParser {
     // ================================================================
 	
 	private Command initDeleteCommand(ArrayList<String> arguments) {
-		int index = getIndex(arguments);
+		if (arguments.isEmpty()) {
+			String errorMsg = "Index input required";
+			return initInvalidCommand(errorMsg);
+		}
 		
-		if (arguments.size() > 1 && index <= 0) {
+		int index = getIndex(arguments);
+		if (arguments.size() > 1 || index <= 0) {
 			String errorMsg = "Invalid index input";
 			return initInvalidCommand(errorMsg);
 		}
@@ -712,31 +728,31 @@ public class CommandParser {
 			int keywordIndex = arguments.indexOf(keyword);
 			List<String> subList = arguments.subList(keywordIndex + 1, arguments.size());
 			if (subList.contains(keyword)) {
-				return -2;
+				return NUMBER_REPEATED_EDIT_KEYWORD;
 			}
 			return keywordIndex;
 		}
-		return -1;
+		return NUMBER_NO_EDIT_KEYWORD;
 	}
 	
 	private String repeatedKeywords(int nameIndex, int deadlineIndex, int startDateIndex, 
 			                        int startTimeIndex, int endDateIndex, int endTimeIndex) {
-		if (nameIndex == -2) {
+		if (nameIndex == NUMBER_REPEATED_EDIT_KEYWORD) {
 			return KEYWORD_EDIT_NAME;
 		}
-		if (deadlineIndex == -2) {
+		if (deadlineIndex == NUMBER_REPEATED_EDIT_KEYWORD) {
 			return KEYWORD_EDIT_DEADLINE;
 		}
-		if (startDateIndex == -2) {
+		if (startDateIndex == NUMBER_REPEATED_EDIT_KEYWORD) {
 			return KEYWORD_EDIT_START_DATE;
 		}
-		if (startTimeIndex == -2) {
+		if (startTimeIndex == NUMBER_REPEATED_EDIT_KEYWORD) {
 			return KEYWORD_EDIT_START_TIME;
 		}
-		if (endDateIndex == -2) {
+		if (endDateIndex == NUMBER_REPEATED_EDIT_KEYWORD) {
 			return KEYWORD_EDIT_END_DATE;
 		}
-		if (endTimeIndex == -2) {
+		if (endTimeIndex == NUMBER_REPEATED_EDIT_KEYWORD) {
 			return KEYWORD_EDIT_END_TIME;
 		}
 		return null;
@@ -745,22 +761,22 @@ public class CommandParser {
 	private ArrayList<Integer> getIndexArrayList(int nameIndex, int deadlineIndex, int startDateIndex, 
 			                                     int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		ArrayList<Integer> indexArrayList = new ArrayList<Integer>();
-		if (nameIndex != -1) {
+		if (nameIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexArrayList.add(nameIndex);
 		}
-		if (deadlineIndex != -1) {
+		if (deadlineIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexArrayList.add(deadlineIndex);
 		}
-		if (startDateIndex != -1) {
+		if (startDateIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexArrayList.add(startDateIndex);
 		}
-		if (startTimeIndex != -1) {
+		if (startTimeIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexArrayList.add(startTimeIndex);
 		}
-		if (endDateIndex != -1) {
+		if (endDateIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexArrayList.add(endDateIndex);
 		}
-		if (endTimeIndex != -1) {
+		if (endTimeIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexArrayList.add(endTimeIndex);
 		}
 		Collections.sort(indexArrayList);
@@ -770,22 +786,22 @@ public class CommandParser {
 	private Hashtable<Integer, String> getHashtable(int nameIndex, int deadlineIndex, int startDateIndex, 
 			                                        int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		Hashtable<Integer, String> indexKeywordHash = new Hashtable<Integer, String>();
-		if (nameIndex != -1) {
+		if (nameIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexKeywordHash.put(nameIndex, KEYWORD_EDIT_NAME);
 		}
-		if (deadlineIndex != -1) {
+		if (deadlineIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexKeywordHash.put(deadlineIndex, KEYWORD_EDIT_DEADLINE);
 		}
-		if (startDateIndex != -1) {
+		if (startDateIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexKeywordHash.put(startDateIndex, KEYWORD_EDIT_START_DATE);
 		}
-		if (startTimeIndex != -1) {
+		if (startTimeIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexKeywordHash.put(startTimeIndex, KEYWORD_EDIT_START_TIME);
 		}
-		if (endDateIndex != -1) {
+		if (endDateIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexKeywordHash.put(endDateIndex, KEYWORD_EDIT_END_DATE);
 		}
-		if (endTimeIndex != -1) {
+		if (endTimeIndex != NUMBER_NO_EDIT_KEYWORD) {
 			indexKeywordHash.put(endTimeIndex, KEYWORD_EDIT_END_TIME);
 		}
 		return indexKeywordHash;
@@ -794,22 +810,22 @@ public class CommandParser {
 	private ArrayList<String> getEditList(int nameIndex, int deadlineIndex, int startDateIndex, 
 			                              int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		ArrayList<String> editList = new ArrayList<String>();
-		if (nameIndex != -1) {
+		if (nameIndex != NUMBER_NO_EDIT_KEYWORD) {
 			editList.add(KEYWORD_EDIT_NAME);
 		}
-		if (deadlineIndex != -1) {
+		if (deadlineIndex != NUMBER_NO_EDIT_KEYWORD) {
 			editList.add(KEYWORD_EDIT_DEADLINE);
 		}
-		if (startDateIndex != -1) {
+		if (startDateIndex != NUMBER_NO_EDIT_KEYWORD) {
 			editList.add(KEYWORD_EDIT_START_DATE);
 		}
-		if (startTimeIndex != -1) {
+		if (startTimeIndex != NUMBER_NO_EDIT_KEYWORD) {
 			editList.add(KEYWORD_EDIT_START_TIME);
 		}
-		if (endDateIndex != -1) {
+		if (endDateIndex != NUMBER_NO_EDIT_KEYWORD) {
 			editList.add(KEYWORD_EDIT_END_DATE);
 		}
-		if (endTimeIndex != -1) {
+		if (endTimeIndex != NUMBER_NO_EDIT_KEYWORD) {
 			editList.add(KEYWORD_EDIT_END_TIME);
 		}
 		return editList;
@@ -826,7 +842,6 @@ public class CommandParser {
 	
 	private Command editDeadline(Command command, String argument) {
 		Date deadline = getDate(argument);
-		
 		if (deadline == null) {
 			String errorMsg = "Invalid deadline date";
 			return initInvalidCommand(errorMsg);
@@ -837,7 +852,6 @@ public class CommandParser {
 	
 	private Command editStartDate(Command command, String argument) {
 		Date startDate = getDate(argument);
-		
 		if (startDate == null) {
 			String errorMsg = "Invalid start date";
 			return initInvalidCommand(errorMsg);
@@ -848,7 +862,6 @@ public class CommandParser {
 	
 	private Command editStartTime(Command command, String argument) {
 		String startTime = getTime(argument);
-		
 		if (startTime == null) {
 			String errorMsg = "Invalid start time";
 			return initInvalidCommand(errorMsg);
@@ -859,7 +872,6 @@ public class CommandParser {
 	
 	private Command editEndDate(Command command, String argument) {
 		Date endDate = getDate(argument);
-		
 		if (endDate == null) {
 			String errorMsg = "Invalid end date";
 			return initInvalidCommand(errorMsg);
@@ -870,7 +882,6 @@ public class CommandParser {
 	
 	private Command editEndTime(Command command, String argument) {
 		String endTime = getTime(argument);
-		
 		if (endTime == null) {
 			String errorMsg = "Invalid end time";
 			return initInvalidCommand(errorMsg);
@@ -910,7 +921,7 @@ public class CommandParser {
 		}
 		int index = getIndex(arguments);
 		
-		if (arguments.size() > 1 && index <= 0) {
+		if (arguments.size() > 1 || index <= 0) {
 			String errorMsg = "Invalid input of index";
 			return initInvalidCommand(errorMsg);
 		}
@@ -950,10 +961,9 @@ public class CommandParser {
 	
 	private Command initSaveCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Directory cannot be empty!";
+			String errorMsg = "Directory cannot be empty";
 			return initInvalidCommand(errorMsg);
 		}
-		
 		Command command = new Command(Command.CommandType.SAVE);
 		List<String> directoryList = arguments.subList(0, arguments.size());
 		String directory = getName(directoryList);
@@ -968,7 +978,7 @@ public class CommandParser {
 	
 	private Command initUndoCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.UNDO);
@@ -982,7 +992,7 @@ public class CommandParser {
 	
 	private Command initRedoCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.REDO);
@@ -996,7 +1006,7 @@ public class CommandParser {
 	
 	private Command initViewAllCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
@@ -1011,7 +1021,7 @@ public class CommandParser {
 	
 	private Command initViewDefCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
@@ -1026,7 +1036,7 @@ public class CommandParser {
 	
 	private Command initViewHistCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
@@ -1041,7 +1051,7 @@ public class CommandParser {
 	
 	private Command initViewUnresCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
@@ -1056,7 +1066,7 @@ public class CommandParser {
 	
 	private Command initViewHelpCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
@@ -1071,7 +1081,7 @@ public class CommandParser {
 	
 	private Command initViewOpenFileCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
@@ -1086,7 +1096,7 @@ public class CommandParser {
 	
 	private Command initViewConfigCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
@@ -1101,7 +1111,7 @@ public class CommandParser {
 	
 	private Command initExitCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments!";
+			String errorMsg = "This command does not expect arguments";
 			return initInvalidCommand(errorMsg);
 		}
 		return new Command(Command.CommandType.EXIT);
@@ -1111,10 +1121,6 @@ public class CommandParser {
     // ================================================================
     // Create invalid command methods
     // ================================================================
-	
-	private Command initInvalidCommand() {
-		return new Command(Command.CommandType.INVALID);
-	}
 	
 	private Command initInvalidCommand(String errorMsg) {
 		Command command = new Command(Command.CommandType.INVALID);
