@@ -92,7 +92,7 @@ public class SearchViewController {
 	
 	private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
 		
-		if (InterfaceController.logicControl.isTitleOrDate(displayData)) {
+		if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
 
 			Label elementLabel = new Label(displayData.toUpperCase());
 			HBox elementBox = new HBox(elementLabel);
@@ -133,7 +133,7 @@ public class SearchViewController {
 
 		} else {
 			// If there are no results
-			if (InterfaceController.logicControl.isEmpty(displayData) || displayData.equals("FLOAT")) {
+			if (InterfaceController.getLogic().isEmpty(displayData) || displayData.equals("FLOAT")) {
 				Label elementLabel = new Label(displayData);
 				elementLabel.setWrapText(true);
 				
@@ -187,7 +187,7 @@ public class SearchViewController {
 				
     			HBox elementBox = new HBox(indexBox, labelBox, tickBox);
     			
-    			if (!InterfaceController.logicControl.isCompleted(displayData)) {
+    			if (!InterfaceController.getLogic().isCompleted(displayData)) {
     				elementTick.getStyleClass().add("search-element-todo");
     			}
 
@@ -373,38 +373,38 @@ public class SearchViewController {
 		searchEventContentBox.getChildren().clear();
 		ViewIndexMap.resetSearchMap();
 		
-		int numOfElements = InterfaceController.logicControl.getSearchElementsCount(taskResults, eventResults);
+		int numOfElements = InterfaceController.getLogic().getSearchElementsCount(taskResults, eventResults);
 		
 		// Print the task results
 		// Only print the empty message if there are zero results
 		int numOfResults = 1;
-		if (taskResults.size() == 3 && InterfaceController.logicControl.isEmpty(taskResults.get(1))) {
+		if (taskResults.size() == 3 && InterfaceController.getLogic().isEmpty(taskResults.get(1))) {
 			HBox tempBox = initDisplayElement(taskResults.get(1), numOfElements, numOfResults, true);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
 		} else {
 			// If there are no results for floating tasks
-			if (InterfaceController.logicControl.isEmpty(taskResults.get(1))) {
+			if (InterfaceController.getLogic().isEmpty(taskResults.get(1))) {
 				for (int i = 0; i < taskResults.size(); i++) {
 					HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 					VBox.setMargin(tempBox, new Insets(
 							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 					searchTaskContentBox.getChildren().add(tempBox);
 					// Only increment the counter if an element is added
-					if (InterfaceController.logicControl.isNonEmptyElement(taskResults.get(i))) {
+					if (InterfaceController.getLogic().isNonEmptyElement(taskResults.get(i))) {
 						numOfResults++;
 					}
 				}
 			} else {
 				for (int i = 0; i < taskResults.size(); i++) {
-					if (!InterfaceController.logicControl.isEmpty(taskResults.get(i))) {
+					if (!InterfaceController.getLogic().isEmpty(taskResults.get(i))) {
 						HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 						VBox.setMargin(tempBox, new Insets(
 								0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 						searchTaskContentBox.getChildren().add(tempBox);
 						// Only increment the counter if an element is added
-						if (InterfaceController.logicControl.isNonEmptyElement(taskResults.get(i))) {
+						if (InterfaceController.getLogic().isNonEmptyElement(taskResults.get(i))) {
 							numOfResults++;
 						}
 					}
@@ -417,7 +417,7 @@ public class SearchViewController {
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
         	searchEventContentBox.getChildren().add(tempBox);
-			if (InterfaceController.logicControl.isNonEmptyElement(eventResults.get(i))) {
+			if (InterfaceController.getLogic().isNonEmptyElement(eventResults.get(i))) {
 				numOfResults++;
 			}
 		}

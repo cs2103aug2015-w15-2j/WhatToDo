@@ -24,10 +24,9 @@ import java.nio.file.FileSystemException;
 
 public class InterfaceController {
 
-    /* ================================================================================
-     * JavaFX controls used in the general interface
-     * ================================================================================
-     */
+    // ==================================================
+    // JavaFX controls used in the general interface
+    // ==================================================
 
     // Used for initFilePathBar
 	private static ImageView filepathConfig;
@@ -88,11 +87,10 @@ public class InterfaceController {
     protected static HBox defBox, allBox, histBox, doneBox, unresBox;
     protected static VBox summaryBox, searchBox;
 
-    protected static LogicController logicControl;
-    
+    private static LogicController logicControl;  
     private static View currentView;
     
-    // Values for button images
+    // file paths for button images
     protected static final String PATH_DEFAULT = "gui/resources/home.png";
     protected static final String PATH_DEFAULT_SELECTED = "gui/resources/home_selected.png";
     protected static final String PATH_DEFAULT_HOVER = "gui/resources/home_hover.png";
@@ -158,11 +156,16 @@ public class InterfaceController {
         filepathBuffer.setMinSize(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
         		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
         
-        HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
-        
         filepathBox = new HBox(filepathBuffer, filepathLabelBox, filepathConfigBox);
         filepathBoxWithLine = new VBox(filepathBox, filepathLine);
 
+        // ==================================================
+        // Component formatting
+        // ==================================================
+        
+        // Set filepath label to grow with bar width
+        HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
+        
         // Set margins for the filepath label
         HBox.setMargin(filepathLabel, new Insets(
         		0, MARGIN_TEXT_BAR, 
@@ -197,12 +200,17 @@ public class InterfaceController {
     
     protected static void updateFilePathBar() {
     	
+    	// Clear and replace old data
     	filepathLabel = new Label(logicControl.getFilePath());
     	filepathLabelBox.getChildren().clear();
     	filepathLabelBox.getChildren().add(filepathLabel);
         
+        // ==================================================
+        // Component formatting
+        // ==================================================
     	HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
     	
+    	// Adding event handlers
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, logicControl.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
@@ -212,7 +220,7 @@ public class InterfaceController {
     }
 
     private static void initSideBarDefButton() {
-
+    	
         sbDefImage = new ImageView(PATH_DEFAULT);
         sbDefBox = new VBox(sbDefImage);
 
@@ -862,5 +870,9 @@ public class InterfaceController {
     
     public static void setCurrentView(View newView) {
     	currentView = newView;
+    }
+    
+    public static LogicController getLogic() {
+    	return logicControl;
     }
 }

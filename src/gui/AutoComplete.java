@@ -161,7 +161,7 @@ public class AutoComplete {
 		popupList.setMinSize(WIDTH_POPUP, HEIGHT_POPUP);
 		popupList.setMaxSize(WIDTH_POPUP, HEIGHT_POPUP);
 		
-		popupList.setOnKeyPressed(InterfaceController.logicControl.getAutoCompleteSelectHandler());
+		popupList.setOnKeyPressed(InterfaceController.getLogic().getAutoCompleteSelectHandler());
 	}
 	
 	public static void initPopup() {

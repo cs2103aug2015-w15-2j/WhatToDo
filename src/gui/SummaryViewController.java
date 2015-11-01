@@ -186,11 +186,11 @@ public class SummaryViewController {
 		initUnresIcon(count);
 		
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_ENTERED, 
-				InterfaceController.logicControl.getUnresHoverHandler(allUnresAttention));
+				InterfaceController.getLogic().getUnresHoverHandler(allUnresAttention));
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_EXITED, 
-				InterfaceController.logicControl.getUnresHoverHandler(allUnresAttention));
+				InterfaceController.getLogic().getUnresHoverHandler(allUnresAttention));
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_CLICKED, 
-				InterfaceController.logicControl.getUnresClickHandler());
+				InterfaceController.getLogic().getUnresClickHandler());
 		
 		allUnresCountBox = new HBox(allUnresCount);
 		allUnresLabelBox = new HBox(allUnresLabel);
@@ -230,7 +230,7 @@ public class SummaryViewController {
 	
 	public static void initSummaryView() {
 		
-		int[] summary = InterfaceController.logicControl.getSummaryCount();
+		int[] summary = InterfaceController.getLogic().getSummaryCount();
 		
 		// Obtain the largest value within summary
 		int maxValue = summary[0];
@@ -306,7 +306,7 @@ public class SummaryViewController {
 		allUnresCountBox.getChildren().clear();
 		
 		// Get the updated data
-		int[] summary = InterfaceController.logicControl.getSummaryCount();
+		int[] summary = InterfaceController.getLogic().getSummaryCount();
 		
 		// Update the current labels
 		taskTwoDaysCount = new Label(String.valueOf(summary[0]));

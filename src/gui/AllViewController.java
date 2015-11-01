@@ -41,7 +41,7 @@ public class AllViewController {
     private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
-    	if (InterfaceController.logicControl.isTitleOrDate(displayData)) {
+    	if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
     		
     		Label elementLabel = new Label(displayData.toUpperCase());
         	HBox elementBox = new HBox(elementLabel);
@@ -172,7 +172,7 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+        	int numOfElements = InterfaceController.getLogic().getAllElementsCount();
         	HBox tempBox = initDisplayElement(tasks[i], numOfElements, 1, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
@@ -226,7 +226,7 @@ public class AllViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+        	int numOfElements = InterfaceController.getLogic().getAllElementsCount();
         	HBox tempBox = initDisplayElement(events[i], numOfElements, 1, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
@@ -272,8 +272,8 @@ public class AllViewController {
 
     public static void initAllView() {
 
-        initAllTaskView(InterfaceController.logicControl.getAllTasks());
-        initAllEventView(InterfaceController.logicControl.getAllEvents());
+        initAllTaskView(InterfaceController.getLogic().getAllTasks());
+        initAllEventView(InterfaceController.getLogic().getAllEvents());
         
         allScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
         
@@ -307,41 +307,41 @@ public class AllViewController {
         ViewIndexMap.resetAllMap();
         
         // Get the results of the file from logic
-        String[] tasks = InterfaceController.logicControl.getAllTasks();
-        String[] events = InterfaceController.logicControl.getAllEvents();
+        String[] tasks = InterfaceController.getLogic().getAllTasks();
+        String[] events = InterfaceController.getLogic().getAllEvents();
         
-    	int numOfElements = InterfaceController.logicControl.getAllElementsCount();
+    	int numOfElements = InterfaceController.getLogic().getAllElementsCount();
 
     	// Print the task results
     	// Only print the empty message if there are zero results
     	int numOfResults = 1;
-    	if (tasks.length == 3 && InterfaceController.logicControl.isEmpty(tasks[1])) {
+    	if (tasks.length == 3 && InterfaceController.getLogic().isEmpty(tasks[1])) {
     		HBox tempBox = initDisplayElement(tasks[1], numOfElements, numOfResults, true);
     		VBox.setMargin(tempBox, new Insets(
     				0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     		allTaskContentBox.getChildren().add(tempBox);
     	} else {
     		// If there are no results for floating tasks
-    		if (InterfaceController.logicControl.isEmpty(tasks[1])) {
+    		if (InterfaceController.getLogic().isEmpty(tasks[1])) {
     			for (int i = 0; i < tasks.length; i++) {
     				HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
     				VBox.setMargin(tempBox, new Insets(
     						0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     				allTaskContentBox.getChildren().add(tempBox);
     				// Only increment the counter if an element is added
-    				if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
+    				if (InterfaceController.getLogic().isNonEmptyElement(tasks[i])) {
     					numOfResults++;
     				}
     			}
     		} else {
     			for (int i = 0; i < tasks.length; i++) {
-    				if (!InterfaceController.logicControl.isEmpty(tasks[i])) {
+    				if (!InterfaceController.getLogic().isEmpty(tasks[i])) {
     					HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
     					VBox.setMargin(tempBox, new Insets(
     							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     					allTaskContentBox.getChildren().add(tempBox);
     					// Only increment the counter if an element is added
-    					if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
+    					if (InterfaceController.getLogic().isNonEmptyElement(tasks[i])) {
     						numOfResults++;
     					}
     				}
@@ -354,7 +354,7 @@ public class AllViewController {
     		VBox.setMargin(tempBox, new Insets(
     				0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     		allEventContentBox.getChildren().add(tempBox);
-    		if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
+    		if (InterfaceController.getLogic().isNonEmptyElement(events[i])) {
     			numOfResults++;
     		}
     	}

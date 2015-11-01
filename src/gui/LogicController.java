@@ -152,8 +152,8 @@ public class LogicController {
     
 	public int[] getSummaryCount() {
 		
-		String[] defTasks = InterfaceController.logicControl.getDefTasks();
-		String[] defEvents = InterfaceController.logicControl.getDefEvents();
+		String[] defTasks = InterfaceController.getLogic().getDefTasks();
+		String[] defEvents = InterfaceController.getLogic().getDefEvents();
 		int[] summary = {0, 0, 0, 0, 0};
 		int currentIndex = 0;
 		
@@ -221,13 +221,13 @@ public class LogicController {
 		
 		int count = 0;
 		
-		String[] temp = InterfaceController.logicControl.getDefTasks();
+		String[] temp = InterfaceController.getLogic().getDefTasks();
 		for (int i = 0; i < temp.length; i++) {
 			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
-		temp = InterfaceController.logicControl.getDefEvents();
+		temp = InterfaceController.getLogic().getDefEvents();
 		for (int i = 0; i < temp.length; i++) {
 			if (isNonEmptyElement(temp[i])) {
 				count++;
@@ -241,13 +241,13 @@ public class LogicController {
 		
 		int count = 0;
 		
-		String[] temp = InterfaceController.logicControl.getAllTasks();
+		String[] temp = InterfaceController.getLogic().getAllTasks();
 		for (int i = 0; i < temp.length; i++) {
 			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
-		temp = InterfaceController.logicControl.getAllEvents();
+		temp = InterfaceController.getLogic().getAllEvents();
 		for (int i = 0; i < temp.length; i++) {
 			if (isNonEmptyElement(temp[i])) {
 				count++;
@@ -281,13 +281,13 @@ public class LogicController {
 		
 		int count = 0;
 		
-		String[] temp = InterfaceController.logicControl.getUnresTasks();
+		String[] temp = InterfaceController.getLogic().getUnresTasks();
 		for (int i = 0; i < temp.length; i++) {
 			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
-		temp = InterfaceController.logicControl.getUnresEvents();
+		temp = InterfaceController.getLogic().getUnresEvents();
 		for (int i = 0; i < temp.length; i++) {
 			if (isNonEmptyElement(temp[i])) {
 				count++;
@@ -301,13 +301,13 @@ public class LogicController {
 		
 		int count = 0;
 		
-		String[] temp = InterfaceController.logicControl.getDoneTasks();
+		String[] temp = InterfaceController.getLogic().getDoneTasks();
 		for (int i = 0; i < temp.length; i++) {
 			if (isNonEmptyElement(temp[i])) {
 				count++;
 			}
 		}
-		temp = InterfaceController.logicControl.getDoneEvents();
+		temp = InterfaceController.getLogic().getDoneEvents();
 		for (int i = 0; i < temp.length; i++) {
 			if (isNonEmptyElement(temp[i])) {
 				count++;
