@@ -84,6 +84,13 @@ public class MainApp extends Application {
         // Event handling for hotkeys
         stage.addEventHandler(KeyEvent.KEY_PRESSED, 
         		InterfaceController.logicControl.getHotKeyHandler());
+        
+        // Focus handling for autocomplete popup
+        stage.focusedProperty().addListener(
+        		InterfaceController.logicControl.getLostFocusListener());
+        
+        stage.xProperty().addListener(InterfaceController.logicControl.getWidthPositionListener());
+        stage.yProperty().addListener(InterfaceController.logicControl.getHeightPositionListener());
     }
     
     public static void initHelpStage() {
@@ -99,7 +106,7 @@ public class MainApp extends Application {
         // Change listener for when window is closed by user click
         // Performs a strict window close instead of window toggle which loops infinitely
         help.showingProperty().addListener(
-        		InterfaceController.logicControl.getCloseHelpHandler());
+        		InterfaceController.logicControl.getCloseHelpListener());
         
         // Event handling for hotkeys
         help.addEventHandler(KeyEvent.KEY_PRESSED, 

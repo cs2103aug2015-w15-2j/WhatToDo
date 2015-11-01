@@ -527,7 +527,10 @@ public class InterfaceController {
         // Assign text handlers to the text field
         textField.setOnAction(logicControl.getTextInputHandler());
         textField.addEventFilter(KeyEvent.KEY_PRESSED, logicControl.getKeyPressHandler());
-        //textField.textProperty().addListener(logicControl.getAutoCompleteHandler());
+        
+        // Initialize autocomplete
+        AutoComplete.initPopup();
+        textField.textProperty().addListener(logicControl.getAutoCompleteListener());
         
         textBox = new VBox(textField);
 
