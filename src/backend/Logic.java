@@ -202,19 +202,7 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
-    
-    //TODO remove when ready 
-    /** WILL BE REMOVED - REPLACED WITH taskAllView(boolean isDone)**/
-    public String taskAllUncompletedView(){ 
-    	return taskAllView(false); 
-    }
-    
-    //TODO remove when ready 
-    /** WILL BE REMOVED - REPLACED WITH eventAllView(boolean isDone)**/
-    public String eventAllUncompletedView(){ 
-    	return eventAllView(false); 
-    }
-    
+        
     public String taskPastUncompletedView(){
     	try{
     		String[] linesInFile = getLinesInFile();
