@@ -683,6 +683,10 @@ public class LogicController {
 		return new ConfigClickHandler();
 	}
 	
+	public AutoCompleteHandler getAutoCompleteHandler() {
+		return new AutoCompleteHandler();
+	}
+	
 	public CloseHelpHandler getCloseHelpHandler() {
 		return new CloseHelpHandler();
 	}
@@ -1176,6 +1180,19 @@ public class LogicController {
     	@Override
     	public void handle(MouseEvent event) {
     		InterfaceController.openConfigLocation();
+    	}
+    }
+    
+    private static class AutoCompleteHandler implements ChangeListener<String> {
+    	@Override
+    	public void changed(ObservableValue<? extends String> observable, 
+    			String oldValue, String newValue) {
+    		// Only perform autocompletion when the string is within one word
+    		if (newValue.split(" ").length == 1 && !newValue.equals("")) {
+    			AutoComplete.initPopup(newValue);
+    		} else {
+    			AutoComplete.closePopup();
+    		}
     	}
     }
     
