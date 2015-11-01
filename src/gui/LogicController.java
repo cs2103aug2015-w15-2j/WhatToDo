@@ -838,28 +838,34 @@ public class LogicController {
         @Override
         public void handle(KeyEvent event) {
         	// If up key pressed
-            if (event.getCode() == KeyCode.UP) {
-            	String prevCommand = commandHistory.getPrevious();
-            	InterfaceController.getTextField().setText(prevCommand);
-            	// Required for positionCaret to work correctly
-            	Platform.runLater(new Runnable() {
-            		@Override
-            		public void run() {
-            			InterfaceController.getTextField().positionCaret(prevCommand.length());
-            		}
-            	});
-            }
+        	if (event.getCode() == KeyCode.UP) {
+        		// Only register keypress when autocomplete is now showing
+        		if (!AutoComplete.isShowing()) {
+        			String prevCommand = commandHistory.getPrevious();
+        			InterfaceController.getTextField().setText(prevCommand);
+        			// Required for positionCaret to work correctly
+        			Platform.runLater(new Runnable() {
+        				@Override
+        				public void run() {
+        					InterfaceController.getTextField().positionCaret(prevCommand.length());
+        				}
+        			});
+        		}
+        	}
             // If down key pressed
-            if (event.getCode() == KeyCode.DOWN) {
-            	String nextCommand = commandHistory.getNext();
-            	InterfaceController.getTextField().setText(nextCommand);
-            	// Required for positionCaret to work correctly
-            	Platform.runLater(new Runnable() {
-            		@Override
-            		public void run() {
-            			InterfaceController.getTextField().positionCaret(nextCommand.length());
-            		}
-            	});
+        	if (event.getCode() == KeyCode.DOWN) {
+        		// Only register keypress when autocomplete is not showing
+        		if (!AutoComplete.isShowing()) {
+        			String nextCommand = commandHistory.getNext();
+        			InterfaceController.getTextField().setText(nextCommand);
+        			// Required for positionCaret to work correctly
+        			Platform.runLater(new Runnable() {
+        				@Override
+        				public void run() {
+        					InterfaceController.getTextField().positionCaret(nextCommand.length());
+        				}
+        			});
+        		}
             }
         }
     }
@@ -1188,6 +1194,7 @@ public class LogicController {
     	public void changed(ObservableValue<? extends String> observable, 
     			String oldValue, String newValue) {
     		// Only perform autocompletion when the string is within one word
+    		// and is not empty
     		if (newValue.split(" ").length == 1 && !newValue.equals("")) {
     			AutoComplete.initPopup(newValue);
     		} else {

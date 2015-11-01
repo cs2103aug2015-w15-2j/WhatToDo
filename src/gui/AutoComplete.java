@@ -1,28 +1,36 @@
 package gui;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PopupControl;
+import javafx.scene.input.KeyCode;
 
 public class AutoComplete {
 
 	// JavaFX components used for the popup
 	
 	// Used for initPopupList
-	private static ListView<Alias> popupList;
+	private static ListView<Alias> popupList = new ListView<Alias>();
 	
 	// Used for initPopup
-	private static PopupControl popup;
+	private static PopupControl popup = new PopupControl();
 	
 	// Variables to store the command strings
 	private static ArrayList<Alias> shortcutCommands;
 	private static ArrayList<Alias> operationCommands;
 	private static ArrayList<Alias> aliasCommands;
 	
+	private static boolean isShowing = false;
 	private static int numOfResults = -1;
+	
+	private static final double WIDTH_POPUP = 150;
+	private static final double HEIGHT_POPUP = 150;
 	
 	private static void initAllCommands() {
 		initShortcutCommands();
@@ -72,7 +80,7 @@ public class AutoComplete {
 		}
 	}
 	
-	public static ArrayList<Alias> getMatchingCommands(String searchTerm) {
+	private static ArrayList<Alias> getMatchingCommands(String searchTerm) {
 		
 		ArrayList<Alias> matchedCommands = new ArrayList<Alias>();
 		
@@ -121,6 +129,10 @@ public class AutoComplete {
 		return matchedCommands;
 	}
 	
+	public static boolean isShowing() {
+		return isShowing;
+	}
+	
 	private static void initPopupList(String searchTerm) {
 		
 		// Perform a matching search and get the results
@@ -129,25 +141,37 @@ public class AutoComplete {
 		
 		// Convert from ArrayList to ObservableList
 		ObservableList<Alias> matchedList = FXCollections.observableArrayList(matchedCommands);
-		popupList = new ListView<Alias>();
+		popupList.getItems().clear();
 		popupList.setItems(matchedList);
+		
+		popupList.setMinSize(WIDTH_POPUP, HEIGHT_POPUP);
+		popupList.setMaxSize(WIDTH_POPUP, HEIGHT_POPUP);
 	}
 	
 	public static void initPopup(String searchTerm) {
 		
 		initAllCommands();
 		initPopupList(searchTerm);
-		
-		popup = new PopupControl();
+
 		// Only show the popup list if there are results
 		if (numOfResults > 0) {
 			popup.getScene().setRoot(popupList);
+			isShowing = true;
 			popup.show(MainApp.stage);
+			switchFocus();
+		} else {
+			isShowing = false;
+			popup.hide();
 		}
 	}
 	
 	public static void closePopup() {
 		popup.hide();
+	}
+	
+	public static void switchFocus() {
+		popupList.requestFocus();
+		popupList.getSelectionModel().select(0);
 	}
 }
 
@@ -170,6 +194,16 @@ class Alias {
 	}
 	
 	public boolean isUserDefined() {
-		return alias.equals(original);
+		return !alias.equals(original);
+	}
+	
+	@Override
+	public String toString() {
+		// Display both the alias and original if it is user defined
+		if (isUserDefined()) {
+			return alias + " : " + original;
+		} else {
+			return alias;
+		}
 	}
 }
