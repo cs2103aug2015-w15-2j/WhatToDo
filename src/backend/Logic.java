@@ -504,7 +504,7 @@ public class Logic {
     	ArrayList<Integer> result = filter.matchTokensInQuery(linesInFile, type, query); 
     	switch(type){
     		case TYPE_FLOAT : 
-    			return formatter.formatFloatResults(linesInFile, result);
+    			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result, true);
     		case TYPE_TASK : 
     			return formatter.formatTaskResults(linesInFile, result); 
     		case TYPE_EVENT : 
@@ -727,7 +727,7 @@ public class Logic {
     	//TODO REFACTOR THIS SHIT
     	switch(type){ 
     		case TYPE_FLOAT : 
-    			return formatter.formatFloat(linesInFile, result); 
+    			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result,false); 
     		case TYPE_TASK : 
     			return formatter.formatTask(linesInFile, result); 
     		case TYPE_EVENT : 
