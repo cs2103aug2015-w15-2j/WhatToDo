@@ -683,16 +683,32 @@ public class LogicController {
 		return new ConfigClickHandler();
 	}
 	
-	public AutoCompleteHandler getAutoCompleteHandler() {
-		return new AutoCompleteHandler();
+	public AutoCompleteSelectHandler getAutoCompleteSelectHandler() {
+		return new AutoCompleteSelectHandler();
 	}
 	
-	public CloseHelpHandler getCloseHelpHandler() {
-		return new CloseHelpHandler();
+	public AutoCompleteListener getAutoCompleteListener() {
+		return new AutoCompleteListener();
+	}
+	
+	public LostFocusListener getLostFocusListener() {
+		return new LostFocusListener();
+	}
+	
+	public CloseHelpListener getCloseHelpListener() {
+		return new CloseHelpListener();
 	}
 	
 	public ScrollListener getScrollListener(View scrollpane) {
 		return new ScrollListener(scrollpane);
+	}
+	
+	public WidthPositionListener getWidthPositionListener() {
+		return new WidthPositionListener();
+	}
+	
+	public HeightPositionListener getHeightPositionListener() {
+		return new HeightPositionListener();
 	}
 	
 	public HeightListener getHeightListener() {
@@ -1189,21 +1205,62 @@ public class LogicController {
     	}
     }
     
-    private static class AutoCompleteHandler implements ChangeListener<String> {
+    private static class AutoCompleteSelectHandler implements EventHandler<KeyEvent> {
+    	
+    	@Override
+    	public void handle(KeyEvent event) {
+    		if (event.getCode() == KeyCode.ENTER) {
+    			
+    			InterfaceController.getTextField().setText(AutoComplete.getSelectedItem());
+    			
+    			// Position the caret
+    			Platform.runLater(new Runnable() {
+    				@Override
+    				public void run() {
+    					String text = InterfaceController.getTextField().getText();
+    					InterfaceController.getTextField().positionCaret(text.length());
+    				}
+    			});
+    			
+    			AutoComplete.closePopup();
+    		}
+    	}
+    }
+    
+    private static class AutoCompleteListener implements ChangeListener<String> {
     	@Override
     	public void changed(ObservableValue<? extends String> observable, 
     			String oldValue, String newValue) {
     		// Only perform autocompletion when the string is within one word
     		// and is not empty
     		if (newValue.split(" ").length == 1 && !newValue.equals("")) {
-    			AutoComplete.initPopup(newValue);
+    			AutoComplete.updatePopup(newValue);
     		} else {
     			AutoComplete.closePopup();
     		}
     	}
     }
     
-    private static class CloseHelpHandler implements ChangeListener<Boolean> {
+    private static class LostFocusListener implements ChangeListener<Boolean> {
+    	
+    	boolean showingBeforeLostFocus = false;
+    	
+    	@Override
+    	public void changed(ObservableValue<? extends Boolean> observable, 
+    			Boolean oldValue, Boolean newValue) {
+    		        	
+    		if (!newValue) {
+    			showingBeforeLostFocus = AutoComplete.isShowing();
+    			AutoComplete.closePopup();
+    		} else {
+    			if (showingBeforeLostFocus) {
+    				AutoComplete.showPopup();
+    			}
+    		}
+    	}
+    }
+    
+    private static class CloseHelpListener implements ChangeListener<Boolean> {
     	
     	@Override
     	public void changed(ObservableValue<? extends Boolean> observable, 
@@ -1240,6 +1297,24 @@ public class LogicController {
     	}
     }
     
+    private static class WidthPositionListener implements ChangeListener<Number> {
+    	
+    	@Override
+    	public void changed(ObservableValue<? extends Number> observable, 
+    			Number oldValue, Number newValue) {
+    		AutoComplete.setX((double)newValue);
+    	}
+    }
+    
+    private static class HeightPositionListener implements ChangeListener<Number> {
+    	
+    	@Override
+    	public void changed(ObservableValue<? extends Number> observable, 
+    			Number oldValue, Number newValue) {
+    		AutoComplete.setY((double)newValue);
+    	}
+    }
+    
     private static class HeightListener implements ChangeListener<Number> {
 
     	@Override
@@ -1258,6 +1333,8 @@ public class LogicController {
     				InterfaceController.HEIGHT_FEEDBACK - 
     				InterfaceController.HEIGHT_TEXT_BOX - 
     				InterfaceController.HEIGHT_HORIZ_LINE);
+    		
+    		AutoComplete.setY(MainApp.stage.getY());
     	}
     }
 

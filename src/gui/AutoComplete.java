@@ -4,22 +4,31 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PopupControl;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
+import javafx.stage.Popup;
+import javafx.stage.PopupWindow;
+import javafx.stage.PopupWindow.AnchorLocation;
 
 public class AutoComplete {
 
 	// JavaFX components used for the popup
 	
 	// Used for initPopupList
-	private static ListView<Alias> popupList = new ListView<Alias>();
+	private static ListView<Alias> popupList;
 	
 	// Used for initPopup
-	private static PopupControl popup = new PopupControl();
+	private static Popup popup;
 	
 	// Variables to store the command strings
 	private static ArrayList<Alias> shortcutCommands;
@@ -27,6 +36,7 @@ public class AutoComplete {
 	private static ArrayList<Alias> aliasCommands;
 	
 	private static boolean isShowing = false;
+	private static boolean showingBeforeLoseFocus = false;
 	private static int numOfResults = -1;
 	
 	private static final double WIDTH_POPUP = 150;
@@ -133,49 +143,96 @@ public class AutoComplete {
 		return isShowing;
 	}
 	
-	private static void initPopupList(String searchTerm) {
+	private static void initPopupList() {
+		
+		popupList = new ListView<Alias>();
+		
+		popupList.setMinSize(WIDTH_POPUP, HEIGHT_POPUP);
+		popupList.setMaxSize(WIDTH_POPUP, HEIGHT_POPUP);
+		
+		popupList.setOnKeyPressed(InterfaceController.logicControl.getAutoCompleteSelectHandler());
+	}
+	
+	public static void initPopup() {
+		
+		initAllCommands();
+		initPopupList();
+
+		// Only show the popup list if there are results
+		popup = new Popup();
+	}
+	
+	public static void updatePopup(String searchTerm) {
 		
 		// Perform a matching search and get the results
 		ArrayList<Alias> matchedCommands = getMatchingCommands(searchTerm);
 		numOfResults = matchedCommands.size();
+		List<Alias> matchedToSort = matchedCommands;
+		Collections.sort(matchedToSort);
 		
 		// Convert from ArrayList to ObservableList
-		ObservableList<Alias> matchedList = FXCollections.observableArrayList(matchedCommands);
+		ObservableList<Alias> matchedList = FXCollections.observableArrayList(matchedToSort);
 		popupList.getItems().clear();
 		popupList.setItems(matchedList);
 		
-		popupList.setMinSize(WIDTH_POPUP, HEIGHT_POPUP);
-		popupList.setMaxSize(WIDTH_POPUP, HEIGHT_POPUP);
-	}
-	
-	public static void initPopup(String searchTerm) {
-		
-		initAllCommands();
-		initPopupList(searchTerm);
-
 		// Only show the popup list if there are results
 		if (numOfResults > 0) {
-			popup.getScene().setRoot(popupList);
-			isShowing = true;
-			popup.show(MainApp.stage);
-			switchFocus();
+			String textFieldInput = InterfaceController.getTextField().getText();
+			String firstResult = popupList.getItems().get(0).getAlias();
+			if (numOfResults == 1 && textFieldInput.equals(firstResult)) {
+				isShowing = false;
+				popup.hide();
+			} else {
+				// Wrap popupList in a Pane to prevent sizing problems
+				Pane popupPane = new Pane(popupList);
+				popupPane.getStyleClass().add("pane");
+
+				popup.getScene().setRoot(popupPane);
+				isShowing = true;
+				popup.show(MainApp.stage);
+
+				// Calculate window locations to set autocomplete anchor
+				setX(MainApp.stage.getX());
+				setY(MainApp.stage.getY());
+
+				switchFocus();
+			}
 		} else {
 			isShowing = false;
 			popup.hide();
 		}
 	}
 	
+	public static void showPopup() {
+		isShowing = true;
+		popup.show(MainApp.stage);
+	}
+	
 	public static void closePopup() {
+		isShowing = false;
 		popup.hide();
+	}
+	
+	public static String getSelectedItem() {
+		return popupList.getSelectionModel().getSelectedItem().getAlias();
 	}
 	
 	public static void switchFocus() {
 		popupList.requestFocus();
 		popupList.getSelectionModel().select(0);
+		popupList.scrollTo(0);
+	}
+	
+	public static void setX(double coord) {
+		popup.setX(coord + 6 + InterfaceController.WIDTH_SIDEBAR + InterfaceController.MARGIN_TEXT_FIELD);
+	}
+	
+	public static void setY(double coord) {
+		popup.setY(coord + MainApp.stage.getHeight() - InterfaceController.HEIGHT_FEEDBACK - InterfaceController.HEIGHT_TEXT_FIELD - HEIGHT_POPUP);
 	}
 }
 
-class Alias {
+class Alias implements Comparable<Alias> {
 	 
 	private String alias;
 	private String original;
@@ -204,6 +261,15 @@ class Alias {
 			return alias + " : " + original;
 		} else {
 			return alias;
+		}
+	}
+	
+	@Override
+	public int compareTo(Alias b) {
+		if (this.alias.equals(b.alias)) {
+			return this.original.compareTo(b.original);
+		} else {
+			return this.alias.compareTo(b.alias);
 		}
 	}
 }

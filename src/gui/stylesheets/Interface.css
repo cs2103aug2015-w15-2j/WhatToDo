@@ -161,3 +161,22 @@
 .sidebar {
 	-fx-background-image: url(../resources/sbBG.jpg);
 }
+
+.list-cell {
+	-fx-padding: 5;
+}
+
+.list-cell:selected {
+	-fx-background-image: url("../resources/sbBG.jpg");
+}
+
+.pane {
+	-fx-focus-color: #BFBFBF;
+}
+
+.list-view .scroll-bar:vertical .increment-arrow,
+.list-view .scroll-bar:vertical .decrement-arrow,
+.list-view .scroll-bar:vertical .increment-button,
+.list-view .scroll-bar:vertical .decrement-button {
+    -fx-padding:0;
+}
