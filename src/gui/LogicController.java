@@ -33,6 +33,8 @@ public class LogicController {
 	private static final String CSS_UNDERLINE_ITALIC = CSS_UNDERLINE + "-fx-font-style: italic;";
 	private static final String CSS_NO_UNDERLINE_ITALIC = CSS_NO_UNDERLINE + "-fx-font-style: italic;";
 	
+	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
+	
 	private static final boolean USER_SEARCH = false;
 	private static final boolean BACKGROUND_SEARCH = true;
 	
@@ -630,6 +632,36 @@ public class LogicController {
 		InterfaceController.updateFilePathBar();
 	}
 	
+    /**
+     * This method opens the text file currently set by the application for writing.
+     * This text file is opened in the user's default associated application
+     */
+    protected static void openFileLocation() {
+		try {
+			HistoryViewController.updateHistView("Opening file...");
+			InterfaceController.getFeedbackLabel().setText("Opening file...");
+			Desktop.getDesktop().open(
+					new File(InterfaceController.getLogic().getFilePath()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    /**
+     * This method opens the configuration file currently used by the application
+     * for storing settings and aliases.
+     * This text file is opened in the user's default associated application
+     */
+    protected static void openConfigLocation() {
+    	try {
+    		HistoryViewController.updateHistView("Opening config...");
+    		InterfaceController.getFeedbackLabel().setText("Opening config...");
+    		Desktop.getDesktop().open(new File(PATH_CONFIG_FILE));
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
 	/* ================================================================================
      * Getters to allow InterfaceController to access the private handling classes
      * ================================================================================
@@ -767,10 +799,10 @@ public class LogicController {
             	changeView(View.HELP);
             	break;
             case "openfile":
-            	InterfaceController.openFileLocation();
+            	openFileLocation();
             	break;
             case "config":
-            	InterfaceController.openConfigLocation();
+            	openConfigLocation();
             	break;
             default:
             	// Perform branching based on the operation type
@@ -955,10 +987,10 @@ public class LogicController {
 					break;
 				// For opening text and config files
 				case T:
-					InterfaceController.openFileLocation();
+					openFileLocation();
 					break;
 				case S:
-					InterfaceController.openConfigLocation();
+					openConfigLocation();
 					break;
 				default:
 					// Do nothing
@@ -1164,7 +1196,7 @@ public class LogicController {
     	
     	@Override
     	public void handle(MouseEvent event) {
-    		InterfaceController.openFileLocation();
+    		openFileLocation();
     	}
     }
     
@@ -1201,7 +1233,7 @@ public class LogicController {
     	
     	@Override
     	public void handle(MouseEvent event) {
-    		InterfaceController.openConfigLocation();
+    		openConfigLocation();
     	}
     }
     

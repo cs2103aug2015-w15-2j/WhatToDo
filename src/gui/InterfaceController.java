@@ -115,8 +115,6 @@ public class InterfaceController {
     protected static final String PATH_CONFIG = "gui/resources/config.png";
     protected static final String PATH_TICK = "gui/resources/tick.png";
     
-	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
-    
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
     protected static final double WIDTH_DEFAULT_BUTTON = 50;
@@ -415,36 +413,6 @@ public class InterfaceController {
     		
     	default: //ignore
     		break;
-    	}
-    }
-    
-    /**
-     * This method opens the text file currently set by the application for writing.
-     * This text file is opened in the user's default associated application
-     */
-    protected static void openFileLocation() {
-		try {
-			HistoryViewController.updateHistView("Opening file...");
-			InterfaceController.getFeedbackLabel().setText("Opening file...");
-			Desktop.getDesktop().open(
-					new File(logicControl.getFilePath()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
-    
-    /**
-     * This method opens the configuration file currently used by the application
-     * for storing settings and aliases.
-     * This text file is opened in the user's default associated application
-     */
-    protected static void openConfigLocation() {
-    	try {
-    		HistoryViewController.updateHistView("Opening config...");
-    		InterfaceController.getFeedbackLabel().setText("Opening config...");
-    		Desktop.getDesktop().open(new File(PATH_CONFIG_FILE));
-    	} catch (IOException e) {
-    		e.printStackTrace();
     	}
     }
     
