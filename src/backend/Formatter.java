@@ -18,12 +18,13 @@ public class Formatter {
 	private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
-    private static final String SEARCH_RESULTS_FLOAT_OR_TASK = "%s %d. %s\n"; 
+    private static final String SEARCH_RESULTS_FLOAT_OR_TASK = "%s%d. %s\n"; 
     private static final String SEARCH_RESULTS_EVENT = "%s %d. [%s %s - %s %s] %s\n"; 
     
 	private static final String SEMICOLON = ";";
 	private static final String NEWLINE = "\n";
 	private static final String EMPTYSTRING = ""; 
+	private static final String SPACE = " "; 
     
 	public String formatFloatOrTaskWithoutHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){
 		StringBuffer contentBuffer = new StringBuffer();
@@ -33,9 +34,9 @@ public class Formatter {
 //			String lineType = lineFields[INDEX_TYPE];
 //			assert items is float or task  
 			String lineName = lineFields[INDEX_NAME];
-			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] : EMPTYSTRING;
+			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] + SPACE : EMPTYSTRING;
 			
-			String formattedLine = String.format(SEARCH_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName).trim();
+			String formattedLine = String.format(SEARCH_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
 			contentBuffer.append(formattedLine); 
 		}
 		
@@ -71,7 +72,7 @@ public class Formatter {
 //			String lineType = lineFields[INDEX_TYPE];
 //			assert items is task  
 			String lineName = lineFields[INDEX_NAME];
-			String lineIsDone = lineFields[INDEX_ISDONE];
+			String lineIsDone = lineFields[INDEX_ISDONE] + SPACE;
 			
 			Date lineDate = new Date(lineFields[INDEX_DUEDATE]);
 			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
