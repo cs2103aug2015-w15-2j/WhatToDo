@@ -18,7 +18,7 @@ public class Filter {
 	
 	private static final String DONE = "done"; 
 	
-	private static final String REGEX_WHITESPACE = "\\s+"; 
+	private static final String REGEX_WHITESPACES = "[\\s,]+"; 
 	
 	private static final String SEMICOLON = ";";
 	
@@ -26,6 +26,20 @@ public class Filter {
 	// Public methods
 	//============================================
 		
+	//TODO call filterDate in def view 
+	public ArrayList<Integer> filterDate(String[] linesInFile, String type, Date date){ 
+		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
+		 
+		 for(int i = 0; i < linesInFile.length; i++){ 
+			 String line = linesInFile[i]; 
+			 if(isType(type, line) && isOnDate(date, line)){
+				 resultList.add(i); 
+			 }
+		 } 
+		 
+		 return resultList; 
+	}
+	
 	public ArrayList<Integer> filterStatus(String[] linesInFile, String type, boolean isDone){ 
 		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		 
@@ -87,6 +101,17 @@ public class Filter {
 		return lineType.equals(type); 
 	}
 	
+	private boolean isOnDate(Date date, String line){
+		String[] lineFields = line.split(SEMICOLON);
+		Date lineDate = new Date(lineFields[INDEX_DUEDATE]);
+		if(lineDate.compareTo(date) == 0){ 
+			return true; 
+		}
+		else{ 
+			return false; 
+		}
+	}
+	
 	private boolean isReqStatus(boolean isDone, String line){ 
 		if(isDone){ 
 			return isCompleted(line); 
@@ -119,7 +144,7 @@ public class Filter {
 	
 	private String[] parseQuery(String rawQuery){ 
 		String query = rawQuery.trim().toLowerCase();
-		String[] tokens = query.split(REGEX_WHITESPACE);
+		String[] tokens = query.split(REGEX_WHITESPACES);
 		return tokens; 
 	}
 	
