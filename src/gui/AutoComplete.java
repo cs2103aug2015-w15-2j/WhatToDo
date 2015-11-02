@@ -76,6 +76,7 @@ public class AutoComplete {
 	
 	private static void initAliasCommands() {
 		aliasCommands = new ArrayList<Alias>();
+		// TODO
 	}
 	
 	private static boolean isSubstring(String input, String target) {
@@ -133,9 +134,25 @@ public class AutoComplete {
 				}
 			}
 		}
-		
-		// TODO: check for matches in aliasCommands
-		// Omitted until there is a method to get alias from config
+		// Check for matches in operationCommands
+		for (int i = 0; i < aliasCommands.size(); i++) {
+			// Check 1: length of command in array not shorter than searchTerm
+			if (aliasCommands.get(i).getAlias().length() >= searchTerm.length()) {
+				// Check 2: if lengths are the same
+				if (aliasCommands.get(i).getAlias().length() == searchTerm.length()) {
+					// Check 3: if both are the same string
+					if (aliasCommands.get(i).getAlias().equals(searchTerm)) {
+						matchedCommands.add(aliasCommands.get(i));
+					}
+				} else {
+					// If shortcutCommand.length > searchTerm.length
+					// Check 4: if searchTerm is a substring of shortcutCommand
+					if (isSubstring(searchTerm, aliasCommands.get(i).getAlias())) {
+						matchedCommands.add(aliasCommands.get(i));
+					}
+				}
+			}
+		}
 		
 		return matchedCommands;
 	}
