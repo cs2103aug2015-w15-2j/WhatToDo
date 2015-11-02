@@ -28,6 +28,7 @@ public class Storage {
 			+ File.separator + "%s";
 	private static final String CONFIG_FILE_PATH = "config" + File.separator
 			+ "config.txt";
+	private static final String ALIAS_FILE_PATH = "config" + File.separator + "alias.txt";
 
 	private static final String MESSAGE_CHANGE_STORAGE_SUCCESS = "You are now writing to \"%s\"";
 	private static final String MESSAGE_SAME_FILE = "Your file location remains unchanged.";
@@ -48,6 +49,8 @@ public class Storage {
 			+ " both old and new file paths. Please delete either one before continuing.";
 
 	private static final String TEXT_FILE_DIVIDER = ";";
+	
+	private static final String FORMAT_ALIAS = "%s" + TEXT_FILE_DIVIDER + "%s";
 
 	private static final String STRING_TASK = "task";
 	private static final String STRING_FLOAT_TASK = "float";
@@ -92,6 +95,7 @@ public class Storage {
 		filePath = getPathFromConfig();
 
 		createFile();
+		createAliasFile();
 	}
 
 	public String getFilePath() {
@@ -515,10 +519,127 @@ public class Storage {
 			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
 		}
 	}
+	
+	public void addToAliasFile(String aliasLine, String actualCommandType) throws FileSystemException {
+		try {
+			updateAliasFile(aliasLine, actualCommandType); 
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
+		}
+	}
+	
+	public void deleteFromAliasFile(String aliasLine) throws FileSystemException {
+		try {
+			removeFromAliasFile(aliasLine); 
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
+		}
+	}
+	
+	public String readAliasFile() throws FileSystemException {
+		try {
+			String fileContents = displayAliasFile(); 
+			
+			return fileContents;
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
+		}
+	}
 
 	/*
 	 * Private Methods Start Here.
 	 */
+	
+	private void updateAliasFile(String aliasLine, String actualCommandType)
+			throws IOException {
+		ArrayList<String> fileContents = readAliasFileToArrayList();
+		
+		String lineToAdd = String.format(FORMAT_ALIAS, aliasLine, actualCommandType);
+		fileContents.add(lineToAdd);
+
+		int lastLine = fileContents.size() - PARAM_LESS_ONE;
+		
+		PrintWriter configWriter = new PrintWriter(ALIAS_FILE_PATH);
+
+		for (int i = PARAM_START_LOOP_ZERO; i < lastLine; i++) {
+			configWriter.println(fileContents.get(i));
+		}
+		configWriter.print(fileContents.get(lastLine));
+		
+		configWriter.close();
+	}
+	
+	private void removeFromAliasFile(String aliasLine) throws IOException {
+		ArrayList<String> fileContents = readAliasFileToArrayList();
+		
+		for (int i = PARAM_START_LOOP_ZERO; i < fileContents.size(); i++) {
+			String aliasFromFile = getFirstWord(fileContents.get(i));
+			if (aliasFromFile.equals(aliasLine)) {
+				fileContents.remove(i);
+				break;
+			}
+		}
+
+		int lastLine = fileContents.size() - PARAM_LESS_ONE;
+		
+		PrintWriter configWriter = new PrintWriter(ALIAS_FILE_PATH);
+
+		if (lastLine == PARAM_DOES_NOT_EXIST) {
+			configWriter.print(EMPTY_STRING);
+			configWriter.close();
+			return;
+		}	
+
+		for (int i = PARAM_START_LOOP_ZERO; i < lastLine; i++) {
+			configWriter.println(fileContents.get(i));
+		}
+		configWriter.print(fileContents.get(lastLine));
+		
+		configWriter.close();
+	}
+	
+	private String displayAliasFile() throws IOException {
+		FileReader fileToBeRead = new FileReader(ALIAS_FILE_PATH);
+		BufferedReader aliasFileReader = new BufferedReader(fileToBeRead);
+		
+		StringBuilder fileContents = new StringBuilder();
+		
+		while (true) {
+			String lineRead = aliasFileReader.readLine();
+
+			if (isEndOfFile(lineRead)) {
+				break;
+			} else {
+				fileContents.append(lineRead);
+				fileContents.append(NEWLINE);
+			}
+		}
+		
+		aliasFileReader.close();
+		
+		return fileContents.toString();
+	}
+	
+	private ArrayList<String> readAliasFileToArrayList()
+			throws IOException {
+		FileReader fileToBeRead = new FileReader(ALIAS_FILE_PATH);
+		BufferedReader aliasFileReader = new BufferedReader(fileToBeRead);
+		
+		ArrayList<String> fileContents = new ArrayList<String>();
+		
+		while (true) {
+			String lineRead = aliasFileReader.readLine();
+
+			if (isEndOfFile(lineRead)) {
+				break;
+			} else {
+				fileContents.add(lineRead);
+			}
+		}
+		
+		aliasFileReader.close();
+		return fileContents;
+	}
 	
 	private String findAttribute(int lineNumber, int type) throws IOException, IllegalArgumentException {
 		ArrayList<String> fileContents = new ArrayList<String>();
@@ -1352,6 +1473,12 @@ public class Storage {
 			createDirectoryIfMissing(file);
 		}
 
+		createNewFileIfFileDoesNotExist(file);
+	}
+	
+	private void createAliasFile() throws FileSystemException {
+		File file = new File(ALIAS_FILE_PATH);
+		
 		createNewFileIfFileDoesNotExist(file);
 	}
 

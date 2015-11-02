@@ -622,6 +622,25 @@ public class StorageTest {
 		storage.overwriteFile("");
 	}
 	
+	@Test
+	public void testAlias() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+		
+		storage.addToAliasFile("insert", "add");  
+		storage.addToAliasFile("remove", "delete"); 
+		storage.addToAliasFile("plus", "add");
+		storage.deleteFromAliasFile("insert"); 
+		assertEquals("remove;delete\nplus;add\n",storage.readAliasFile());
+		storage.deleteFromAliasFile("plus");
+		storage.deleteFromAliasFile("remove");
+		assertEquals("",storage.readAliasFile());
+		storage.addToAliasFile("wakaka", "done");
+		assertEquals("wakaka;done\n",storage.readAliasFile());
+		storage.deleteFromAliasFile("wakaka");
+		assertEquals("",storage.readAliasFile());
+	}
+	
 	 /*
 	 * @Test public void testEditEventStartTime() { fail("Not yet implemented");
 	 * }
