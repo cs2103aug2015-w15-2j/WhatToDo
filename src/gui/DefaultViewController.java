@@ -40,7 +40,7 @@ public class DefaultViewController {
     private static HBox initDisplayElement(String displayData, int numOfElements, int index) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
-    	if (InterfaceController.logicControl.isTitle(displayData)) {
+    	if (InterfaceController.getLogic().isTitle(displayData)) {
     		
     		Label elementLabel = new Label(displayData);
         	HBox elementBox = new HBox(elementLabel);
@@ -166,7 +166,7 @@ public class DefaultViewController {
         defTaskContentBox = new VBox();
         
         // Run the loop through the entire task list
-        int numOfElements = InterfaceController.logicControl.getDefElementsCount();
+        int numOfElements = InterfaceController.getLogic().getDefElementsCount();
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
         	HBox tempBox = initDisplayElement(tasks[i], numOfElements, 1);
@@ -221,7 +221,7 @@ public class DefaultViewController {
         defEventContentBox = new VBox();
         
         // Run the loop through the entire task list
-        int numOfElements = InterfaceController.logicControl.getDefElementsCount();
+        int numOfElements = InterfaceController.getLogic().getDefElementsCount();
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
         	HBox tempBox = initDisplayElement(events[i], numOfElements, 1);
@@ -270,8 +270,8 @@ public class DefaultViewController {
 
     public static void initDefView() {
 
-        initDefTaskView(InterfaceController.logicControl.getDefTasks());
-        initDefEventView(InterfaceController.logicControl.getDefEvents());
+        initDefTaskView(InterfaceController.getLogic().getDefTasks());
+        initDefEventView(InterfaceController.getLogic().getDefEvents());
         
         defScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
         
@@ -302,10 +302,10 @@ public class DefaultViewController {
         ViewIndexMap.resetDefMap();
         
         // Get the results of the file from logic
-        String[] tasks = InterfaceController.logicControl.getDefTasks();
-        String[] events = InterfaceController.logicControl.getDefEvents();
+        String[] tasks = InterfaceController.getLogic().getDefTasks();
+        String[] events = InterfaceController.getLogic().getDefEvents();
         
-        int numOfElements = InterfaceController.logicControl.getDefElementsCount();
+        int numOfElements = InterfaceController.getLogic().getDefElementsCount();
         
         // Run the loop through the entire task list
         int numOfResults = 1;
@@ -316,7 +316,7 @@ public class DefaultViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defTaskContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
-			if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
+			if (InterfaceController.getLogic().isNonEmptyElement(tasks[i])) {
 				numOfResults++;
 			}
         }
@@ -329,14 +329,14 @@ public class DefaultViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             defEventContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
-			if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
+			if (InterfaceController.getLogic().isNonEmptyElement(events[i])) {
 				numOfResults++;
 			}
         }
     }
     
     /* ================================================================================
-     * Getters for LogicController to access required JavaFX components
+     * Getters for getLogic()ler to access required JavaFX components
      * ================================================================================
      */
     

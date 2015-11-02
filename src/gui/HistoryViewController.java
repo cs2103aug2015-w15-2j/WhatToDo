@@ -85,7 +85,7 @@ public class HistoryViewController {
         
         // Set the scroll pane to automatically scroll to the end
         histContentBox.heightProperty().addListener(
-        		InterfaceController.logicControl.
+        		InterfaceController.getLogic().
         		getScrollListener(View.HISTORY));
         
         histScroll = new ScrollPane(histContentBox);
@@ -153,7 +153,7 @@ public class HistoryViewController {
     }
     
     /* ================================================================================
-     * Getters for LogicController to access required JavaFX components
+     * Getters for getLogic()ler to access required JavaFX components
      * ================================================================================
      */
     

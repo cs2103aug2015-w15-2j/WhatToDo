@@ -40,7 +40,7 @@ public class UnresolvedViewController {
     private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
-    	if (InterfaceController.logicControl.isTitleOrDate(displayData)) {
+    	if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
     		
     		Label elementLabel = new Label(displayData.toUpperCase());
         	HBox elementBox = new HBox(elementLabel);
@@ -168,7 +168,7 @@ public class UnresolvedViewController {
 
         unresTaskContentBox = new VBox();
         
-    	int numOfElements = InterfaceController.logicControl.getUnresElementsCount();
+    	int numOfElements = InterfaceController.getLogic().getUnresElementsCount();
     	
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.length; i++) {
@@ -223,7 +223,7 @@ public class UnresolvedViewController {
 
         unresEventContentBox = new VBox();
         
-    	int numOfElements = InterfaceController.logicControl.getUnresElementsCount();
+    	int numOfElements = InterfaceController.getLogic().getUnresElementsCount();
     	
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
@@ -273,8 +273,8 @@ public class UnresolvedViewController {
 
     public static void initUnresView() {
 
-        initUnresTaskView(InterfaceController.logicControl.getUnresTasks());
-        initUnresEventView(InterfaceController.logicControl.getUnresEvents());
+        initUnresTaskView(InterfaceController.getLogic().getUnresTasks());
+        initUnresEventView(InterfaceController.getLogic().getUnresEvents());
         
         unresScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
         
@@ -308,10 +308,10 @@ public class UnresolvedViewController {
         ViewIndexMap.resetUnresMap();
         
         // Get the results of the file from logic
-        String[] tasks = InterfaceController.logicControl.getUnresTasks();
-        String[] events = InterfaceController.logicControl.getUnresEvents();
+        String[] tasks = InterfaceController.getLogic().getUnresTasks();
+        String[] events = InterfaceController.getLogic().getUnresEvents();
         
-    	int numOfElements = InterfaceController.logicControl.getUnresElementsCount();
+    	int numOfElements = InterfaceController.getLogic().getUnresElementsCount();
     	
         // Run the loop through the entire task list
     	int numOfResults = 1;
@@ -322,7 +322,7 @@ public class UnresolvedViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresTaskContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
-			if (InterfaceController.logicControl.isNonEmptyElement(tasks[i])) {
+			if (InterfaceController.getLogic().isNonEmptyElement(tasks[i])) {
 				numOfResults++;
 			}
         }
@@ -335,7 +335,7 @@ public class UnresolvedViewController {
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresEventContentBox.getChildren().add(tempBox);
 			// Only increment the counter if an element is added
-			if (InterfaceController.logicControl.isNonEmptyElement(events[i])) {
+			if (InterfaceController.getLogic().isNonEmptyElement(events[i])) {
 				numOfResults++;
 			}
         }
