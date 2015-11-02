@@ -630,6 +630,7 @@ public class LogicController {
 		UnresolvedViewController.updateUnresView();
 		DoneViewController.updateDoneView();
 		InterfaceController.updateFilePathBar();
+		SummaryViewController.updateSummaryView();
 	}
 	
     /**
@@ -825,8 +826,8 @@ public class LogicController {
             	runCommand(operationType, textFieldInput, USER_SEARCH);
             	changeView(View.SEARCH);
             	break;
-            	// Only modify the user command for these operations by editing the 
-            	// index from ViewIndexMap
+            // Only modify the user command for these operations by editing the 
+            // index from ViewIndexMap
             case DELETE:
             	// Run the command
             	runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
