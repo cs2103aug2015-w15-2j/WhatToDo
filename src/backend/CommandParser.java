@@ -96,11 +96,6 @@ public class CommandParser {
     private static final ArrayList<String> COMMANDS_ARRAY_LIST = new ArrayList<String>();
     private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
     
-    public static void main (String[] args) {
-    	Hashtable<String, String> hashmap = new Hashtable<String, String>();
-    	CommandParser parser = new CommandParser(hashmap);
-    }
-    
 	public CommandParser() {
         initDaysArrayList();
         initFullDaysArrayList();
@@ -698,31 +693,6 @@ public class CommandParser {
 				                                                   startTimeIndex, endDateIndex, endTimeIndex);
 		ArrayList<String> editList = getEditList(nameIndex, deadlineIndex, startDateIndex, 
 				                                 startTimeIndex, endDateIndex, endTimeIndex);
-		
-		if (startDateIndex >= 0 && endDateIndex >= 0) {
-			Date startDate = getDate(arguments.get(startDateIndex + 1));
-			Date endDate = getDate(arguments.get(endDateIndex + 1));
-			if (startDate == null) {
-				String errorMsg = "Invalid Start Date";
-				return initInvalidCommand(errorMsg);
-			}
-			if (endDate == null) {
-				String errorMsg = "Invalid End Date";
-				return initInvalidCommand(errorMsg);
-			}
-			if (startDate.compareTo(endDate) == 1) {
-				String errorMsg = "Start Date cannot be later than End Date";
-				return initInvalidCommand(errorMsg);
-			}
-			if (startDate.compareTo(endDate) == 0 && startTimeIndex >= 0 && endTimeIndex >= 0) {
-				String startTime = arguments.get(startTimeIndex + 1);
-				String endTime = arguments.get(endTimeIndex + 1);
-				if (!areValidTimes(startTime, endTime)) {
-					String errorMsg = "Start Time cannot be later than or equal to End Time for single day Event";
-					return initInvalidCommand(errorMsg);
-				}
-			}
-		}
 		
 		Command command = new Command();
 		command.setCommandType(Command.CommandType.EDIT);
