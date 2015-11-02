@@ -493,10 +493,53 @@ public class Storage {
 			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
 		}
 	}
+	
+	/**
+	 * Retrieves the attribute at specified line number of specified type.
+	 * 
+	 * @param lineNumber              line number in text file to be retrieved.
+	 * @param type                    type of attribute to get from line.
+	 * @return                        the attribute of given type at given line. null if no such
+	 *                                attribute exists at given line.
+	 * @throws FileSystemException    when line number less than 0 or more than number of lines
+	 *                                present in text file, or when error in reading file.
+	 */
+	public String getAttribute(int lineNumber, int type) throws FileSystemException {
+		try {
+			String attribute = findAttribute(lineNumber, type);
+			
+			return attribute;
+		} catch (IllegalArgumentException exception) {
+			throw new FileSystemException(exception.getMessage());
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
+		}
+	}
 
 	/*
 	 * Private Methods Start Here.
 	 */
+	
+	private String findAttribute(int lineNumber, int type) throws IOException, IllegalArgumentException {
+		ArrayList<String> fileContents = new ArrayList<String>();
+		
+		addFileContentsToArrayList(fileContents);
+		
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
+		
+		String lineToFind = fileContents.get(lineNumber - PARAM_OFFSET);
+		
+		int numParameters = countParameters(lineToFind);
+		
+		String attribute;
+		if (numParameters > type && type >= PARAM_FIRST_WORD) {
+			attribute = getSpecificWord(type, lineToFind);
+		} else {
+			attribute = null;
+		}
+		
+		return attribute;
+	}
 
 	private void addFloatTaskToFile(FloatingTask newFloatTask)
 			throws IOException {
@@ -1233,17 +1276,31 @@ public class Storage {
 		writeContentsToFile(fileContents);
 		updateConfigFile(newLocation);
 	}
+	
+	private String[] splitParameters(String line) {
+		return line.split(TEXT_FILE_DIVIDER);
+	}
 
 	private String getFirstWord(String text) {
-		String parameters[] = text.split(TEXT_FILE_DIVIDER);
-
-		return parameters[PARAM_FIRST_WORD];
+		return getSpecificWord(PARAM_FIRST_WORD, text);
 	}
 	
 	private String getSecondWord(String text) {
-		String parameters[] = text.split(TEXT_FILE_DIVIDER);
-
-		return parameters[PARAM_SECOND_WORD];
+		return getSpecificWord(PARAM_SECOND_WORD, text);
+	}
+	
+	private String getSpecificWord(int wordNumber, String text) {
+		String parameters[] = splitParameters(text);
+		String specificWord = parameters[wordNumber];
+		
+		return specificWord;
+	}
+	
+	private int countParameters(String text) {
+		String parameters[] = splitParameters(text);
+		int numberParameters = parameters.length;
+		
+		return numberParameters;
 	}
 
 	private String getPathFromConfig() throws FileSystemException {
