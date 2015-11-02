@@ -43,10 +43,6 @@ public class InterfaceController {
     private static VBox sbAllBox;
     private static ImageView sbAllImage;
     
-    // Used for initSideBarHistoryButton
-    private static VBox sbHistBox;
-    private static ImageView sbHistImage;
-    
     // Used for initSideBarUnresButton
     private static VBox sbUnresBox;
     private static ImageView sbUnresImage;
@@ -58,6 +54,10 @@ public class InterfaceController {
     // Used for initSideBarSearchButton
     private static VBox sbSearchBox;
     private static ImageView sbSearchImage;
+    
+    // Used for initSideBarHistoryButton
+    private static VBox sbHistBox;
+    private static ImageView sbHistImage;
     
     // Used for initSideBarHelpButton
     private static VBox sbHelpBox;
@@ -595,28 +595,6 @@ public class InterfaceController {
         		MouseEvent.MOUSE_PRESSED, 
         		logicControl.getButtonClickHandler(View.ALL));
     }
-
-    private static void initSideBarHistoryButton() {
-    	sbHistImage = new ImageView(PATH_HIST);
-    	sbHistBox = new VBox(sbHistImage);
-    	
-    	sbHistBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbHistBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
-
-    	sbHistBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-    	sbHistBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
-    	
-        // Event handlers for mouse interactions
-    	sbHistBox.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(View.HISTORY));
-    	sbHistBox.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(View.HISTORY));
-    	sbHistBox.addEventHandler(
-        		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(View.HISTORY));
-    }
     
     private static void initSideBarUnresButton() {
     	sbUnresImage = new ImageView(PATH_UNRESOLVED);
@@ -684,6 +662,29 @@ public class InterfaceController {
         		logicControl.getButtonClickHandler(View.SEARCH));
     }
     
+    
+    private static void initSideBarHistoryButton() {
+    	sbHistImage = new ImageView(PATH_HIST);
+    	sbHistBox = new VBox(sbHistImage);
+    	
+    	sbHistBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+    	sbHistBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+
+    	sbHistBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+    	sbHistBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
+    	
+        // Event handlers for mouse interactions
+    	sbHistBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(View.HISTORY));
+    	sbHistBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(View.HISTORY));
+    	sbHistBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(View.HISTORY));
+    }
+    
     private static void initSideBarHelpButton() {
     	sbHelpImage = new ImageView(PATH_HELP);
     	sbHelpBox = new VBox(sbHelpImage);
@@ -709,20 +710,20 @@ public class InterfaceController {
     private static void initSideBar() {
         initSideBarDefButton();
         initSideBarAllButton();
-        initSideBarHistoryButton();
         initSideBarUnresButton();
         initSideBarDoneButton();
         initSideBarSearchButton();
+        initSideBarHistoryButton();
         initSideBarHelpButton();
         
         changeButtonToSelected(View.DEFAULT);
 
         sbBox = new VBox(sbDefBox, 
         		sbAllBox, 
-        		sbHistBox, 
         		sbUnresBox,
         		sbDoneBox, 
-        		sbSearchBox, 
+        		sbSearchBox,
+        		sbHistBox,
         		sbHelpBox);
         
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);

@@ -378,14 +378,14 @@ public class SearchViewController {
 		// Print the task results
 		// Only print the empty message if there are zero results
 		int numOfResults = 1;
-		if (taskResults.size() == 3 && InterfaceController.getLogic().isEmpty(taskResults.get(1))) {
-			HBox tempBox = initDisplayElement(taskResults.get(1), numOfElements, numOfResults, true);
+		if (taskResults.size() == 3 && InterfaceController.getLogic().isEmpty(taskResults.get(2))) {
+			HBox tempBox = initDisplayElement(taskResults.get(2), numOfElements, numOfResults, true);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
 		} else {
 			// If there are no results for floating tasks
-			if (InterfaceController.getLogic().isEmpty(taskResults.get(1))) {
+			if (InterfaceController.getLogic().isEmpty(taskResults.get(taskResults.size() - 1))) {
 				for (int i = 0; i < taskResults.size(); i++) {
 					HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 					VBox.setMargin(tempBox, new Insets(
