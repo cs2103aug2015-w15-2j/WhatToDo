@@ -76,7 +76,7 @@ public class Task extends Data implements Comparable<Task>{
 		} else {
 			status = STRING_NOT_DONE;
 		}
-		return String.format(FORMAT_TO_STRING, this.name, status, this.deadline.getFullDate());
+		return String.format(FORMAT_TO_STRING, this.name, status, this.deadline.formatDateShort());
 	}
 
 	//============================================

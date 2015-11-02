@@ -448,7 +448,7 @@ public class CommandParser {
 				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_TWO_WEEKS);
 			}
 		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == SMALL_DATE_LENGTH) {
-			String year = todayDate.getFullDate().substring(4);
+			String year = todayDate.formatDateShort().substring(4);
 			date = date + year;
 			Date currDate = new Date(date);
 			if (isValidDate(date) && todayDate.compareTo(currDate) <= 0) {

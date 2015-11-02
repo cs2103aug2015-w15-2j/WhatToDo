@@ -26,9 +26,9 @@ public class CommandParserTest {
 		Command command = parser.parse(userInput);
 		String name = command.getName();
 		Date endDate = command.getDueDate();
-		String endDateString = endDate.getFullDate();
+		String endDateString = endDate.formatDateShort();
 		Date testDate = new Date("231115");
-		String testDateString = testDate.getFullDate();
+		String testDateString = testDate.formatDateShort();
 		assertEquals("something", name);
 		assertEquals(testDateString, endDateString);
 	}
@@ -40,13 +40,13 @@ public class CommandParserTest {
 		Command command = parser.parse(userInput);
 		String name = command.getName();
 		Date endDate = command.getEndDate();
-		String endDateString = endDate.getFullDate();
+		String endDateString = endDate.formatDateShort();
 		Date testEndDate = new Date("011115");
-		String testEndDateString = testEndDate.getFullDate();
+		String testEndDateString = testEndDate.formatDateShort();
 		Date startDate = command.getStartDate();
-		String startDateString = startDate.getFullDate();
+		String startDateString = startDate.formatDateShort();
 		Date testStartDate = new Date("301015");
-		String testStartDateString = testStartDate.getFullDate();
+		String testStartDateString = testStartDate.formatDateShort();
 		String startTime = command.getStartTime();
 		String endTime = command.getEndTime();
 		assertEquals("event", name);
