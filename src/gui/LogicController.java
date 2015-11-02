@@ -778,107 +778,113 @@ public class LogicController {
             // Do a preliminary parse to determine the type of operation
             Command.CommandType operationType = logic.getCommandType(textFieldInput);
             
-            // Switch view depending on the input
-            switch (textFieldInput) {
-            case "def":
-            	changeView(View.DEFAULT);
+            // Perform branching based on the operation type
+            switch (operationType) {
+            case VIEW:
+            	// Run another parse of the command to get the destination view
+            	switch(logic.getViewType(textFieldInput)) {
+                case DEF:
+                	changeView(View.DEFAULT);
+                	break;
+                case ALL:
+                	changeView(View.ALL);
+                	break;
+                case HIST:
+                	changeView(View.HISTORY);
+                	break;
+                case UNRES:
+                	changeView(View.UNRESOLVED);
+                	break;
+                case SEARCH:
+                	changeView(View.SEARCH);
+                	break;
+                case DONE:
+                	changeView(View.DONE);
+                	break;
+                case HELP:
+                	changeView(View.HELP);
+                	break;
+                case OPENFILE:
+                	openFileLocation();
+                	break;
+                case CONFIG:
+                	openConfigLocation();
+                	break;
+                default:
+                	break;
+            	}
             	break;
-            case "all":
-            	changeView(View.ALL);
+            case EXIT:
+            	changeView(View.EXIT);
             	break;
-            case "hist":
-            	changeView(View.HISTORY);
+            case SEARCH:
+            	// Store the last search command to run the search again dynamically
+            	// upon the user's next operation
+            	lastSearchCommand = textFieldInput;
+            	// Run the command
+            	runCommand(operationType, textFieldInput, USER_SEARCH);
+            	changeView(View.SEARCH);
             	break;
-            case "unres":
-            	changeView(View.UNRESOLVED);
-            	break;
-            case "done":
-            	changeView(View.DONE);
-            	break;
-            case "help":
-            	changeView(View.HELP);
-            	break;
-            case "openfile":
-            	openFileLocation();
-            	break;
-            case "config":
-            	openConfigLocation();
-            	break;
-            default:
-            	// Perform branching based on the operation type
-            	switch (operationType) {
-            	case EXIT:
-            		changeView(View.EXIT);
-            		break;
-            	case SEARCH:
-            		// Store the last search command to run the search again dynamically
-            		// upon the user's next operation
-            		lastSearchCommand = textFieldInput;
-                    // Run the command
-                    runCommand(operationType, textFieldInput, USER_SEARCH);
-                    changeView(View.SEARCH);
-            		break;
             	// Only modify the user command for these operations by editing the 
             	// index from ViewIndexMap
-            	case DELETE:
-                    // Run the command
-                    runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
-                    
-            		// Run the last search and update the search view only if the user is in search
-            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
-            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
-            			InterfaceController.updateMainInterface(View.SEARCH);
-            		}
-            		// If the user is not in search view, do not switch to search view
-            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
-            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
-            		}
-            		break;
-            	case EDIT:
-                    // Run the command
-                    runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
-                    
-            		// Run the last search and update the search view only if the user is in search
-            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
-            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
-            			InterfaceController.updateMainInterface(View.SEARCH);
-            		}
-            		// If the user is not in search view, do not switch to search view
-            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
-            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
-            		}
-            		break;
-            	case DONE:
-                    // Run the command
-                    runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
-                    
-            		// Run the last search and update the search view only if the user is in search
-            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
-            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
-            			InterfaceController.updateMainInterface(View.SEARCH);
-            		}
-            		// If the user is not in search view, do not switch to search view
-            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
-            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
-            		}
-            		break;
-            	default:
-                    // Run the command
-                    runCommand(operationType, textFieldInput, USER_SEARCH);
-                    
-            		// Run the last search and update the search view only if the user is in search
-            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
-            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
-            			InterfaceController.updateMainInterface(View.SEARCH);
-            		}
-            		// If the user is not in search view, do not switch to search view
-            		if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
-            			runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
-            		}
-            		break;
+            case DELETE:
+            	// Run the command
+            	runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
+
+            	// Run the last search and update the search view only if the user is in search
+            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            		InterfaceController.updateMainInterface(View.SEARCH);
             	}
-                break;
+            	// If the user is not in search view, do not switch to search view
+            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            	}
+            	break;
+            case EDIT:
+            	// Run the command
+            	runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
+
+            	// Run the last search and update the search view only if the user is in search
+            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            		InterfaceController.updateMainInterface(View.SEARCH);
+            	}
+            	// If the user is not in search view, do not switch to search view
+            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            	}
+            	break;
+            case DONE:
+            	// Run the command
+            	runCommand(operationType, mapToFileIndex(textFieldInput), USER_SEARCH);
+
+            	// Run the last search and update the search view only if the user is in search
+            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            		InterfaceController.updateMainInterface(View.SEARCH);
+            	}
+            	// If the user is not in search view, do not switch to search view
+            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            	}
+            	break;
+            default:
+            	// Run the command
+            	runCommand(operationType, textFieldInput, USER_SEARCH);
+
+            	// Run the last search and update the search view only if the user is in search
+            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            		InterfaceController.updateMainInterface(View.SEARCH);
+            	}
+            	// If the user is not in search view, do not switch to search view
+            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, BACKGROUND_SEARCH);
+            	}
+            	break;
             }
+
         }
     }
 	
