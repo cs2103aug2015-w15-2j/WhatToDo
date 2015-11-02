@@ -3,6 +3,7 @@ package backend;
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import struct.Command;
 import struct.Command.CommandType;
@@ -63,7 +64,7 @@ public class Logic {
 
     private static final ArrayList<String> FLOAT_TO_TASK_ATTRIBUTE_LIST = 
     		new ArrayList<String>(Arrays.asList(KEYWORD_EDIT_DEADLINE));
-    private static final ArrayList<String> FLOAT_TO_EVENT_ATTRIBUTE_LIST = 
+    private static final ArrayList<String> ATTRIBUTE_LIST_FLOAT_TO_EVENT = 
     		new ArrayList<String>(Arrays.asList(KEYWORD_EDIT_START_DATE, KEYWORD_EDIT_START_TIME, 
     				                            KEYWORD_EDIT_END_DATE, KEYWORD_EDIT_END_TIME));
     
@@ -376,7 +377,7 @@ public class Logic {
     	else if(lineType.equals(TYPE_FLOAT) && editList.containsAll(FLOAT_TO_TASK_ATTRIBUTE_LIST)){ 
     		return CONVERSION_TO_TASK; 
     	}
-    	else if(lineType.equals(TYPE_FLOAT) && editList.containsAll(FLOAT_TO_EVENT_ATTRIBUTE_LIST)){
+    	else if(lineType.equals(TYPE_FLOAT) && editList.containsAll(ATTRIBUTE_LIST_FLOAT_TO_EVENT)){
     		return CONVERSION_TO_EVENT; 
     	}
     	else{ 
@@ -447,7 +448,6 @@ public class Logic {
     }
 
     //TODO - need to make it work for multiple edits at the same time 
-    //     - currently only works for single edit 
 	private String executeEditNoConversion(Command command)	throws FileSystemException {
 		int lineNumber = command.getIndex(); 
 		String lineType = storage.getAttribute(lineNumber, INDEX_TYPE); 
@@ -478,10 +478,37 @@ public class Logic {
 		return "edited float";
 	}
 	
-	//TODO executeEditTask
-	private String executeEditTask(Command command) {
-		// TODO Auto-generated method stub
-		return null;
+	private String executeEditTask(Command command) throws FileSystemException {
+		ArrayList<String> editList = command.getEditList(); 
+		
+		//assert editList is not null 
+		if(Collections.disjoint(editList, ATTRIBUTE_LIST_FLOAT_TO_EVENT)){ 
+			int lineNumber = command.getIndex();
+			//TODO refactor this shit 
+			String newName = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME); 
+			Date newDeadline =  (editList.contains(KEYWORD_EDIT_DEADLINE)) ? command.getDueDate() : new Date(storage.getAttribute(lineNumber, INDEX_DUEDATE));
+			String newDeadlineStr = newDeadline.formatDateShort(); 
+			String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
+			boolean isDone = (isDoneStr.equals(DONE))? true : false;  
+			
+			String addEditedTaskCmdStr = String.format(COMMAND_FORMAT_ADD_TASK, newName, newDeadlineStr);    	
+	    	Command addEditedTask = commandParser.parse(addEditedTaskCmdStr); 
+	    	if(addEditedTask.getCommandType() == CommandType.ADD && addEditedTask.getDataType() == DataType.TASK){ 
+	    		storage.deleteLine(lineNumber); 
+	    		Task editedTask = new Task(newName, isDone, newDeadline); 
+	    		storage.addTask(editedTask);
+	    		
+	    		//TODO
+	    		return "edited task";
+	    	}else{ 
+	    		//TODO 
+	    		return addEditedTask.getName(); 
+	    	}
+		}
+		else{ 
+			//TODO
+			return "cannot convert from task to event"; 
+		}
 	}
 	
 	//TODO executeEditEvent
