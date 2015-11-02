@@ -129,12 +129,6 @@ public class Date implements Comparable<Date>{
     public String formatDateShort() {
         return fullDate;
     }
-
-    //TODO to be removed
-    // For display purposes
-    public String getFormatDate() {
-        return "" + day + "/" + month + "/" + year;
-    }
     
     public String formatDateLong(){ 
     	Calendar cal = Calendar.getInstance(); 
@@ -143,7 +137,6 @@ public class Date implements Comparable<Date>{
     	return sdf.format(cal.getTime());
     }
 
-    
 	//============================================
 	// Private methods 
 	//============================================
