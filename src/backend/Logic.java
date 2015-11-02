@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import struct.Command;
 import struct.Command.CommandType;
+import struct.Command.DataType;
 import struct.Command.ViewType;
 import struct.Date;
 import struct.Event;
@@ -23,12 +24,14 @@ public class Logic {
 	private static final int INDEX_STARTTIME = 4; 
 	private static final int INDEX_ENDDATE = 5; 
 	private static final int INDEX_ENDTIME = 6; 
+	
+    private static final String COMMAND_FORMAT_ADD_TASK = "add %s by %s"; 
+    private static final String COMMAND_FORMAT_ADD_EVENT = "add %s from %s %s to %s %s";
 
 	private static final String MESSAGE_ADD_TASK = "Added task \"%s\" to list. Due on %s.";
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added float \"%s\" to list.";
 	private static final String MESSAGE_ADD_EVENT = "Added event \"%s\" to list. Start: %s at %s End: %s at %s.";
 	private static final String MESSAGE_DELETE_LINE = "Deleted %s from list.";
-	private static final String MESSAGE_EDIT_CONVERSION_INVALID = "Not enough arguments for conversion"; 
 	private static final String MESSAGE_MARK_DONE = "Done %s";
 	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
@@ -39,6 +42,7 @@ public class Logic {
 	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
     private static final String MESSAGE_ERROR_INVALID_COMMAND = "\"%s\" is an invalid command. %s"; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
+	private static final String MESSAGE_ERROR_EDIT_INSUFFICIENT_ARGS = "Not enough arguments for conversion"; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
@@ -73,6 +77,7 @@ public class Logic {
     private static final String TYPE_EVENT = "event";
     
     private static final String TODO = "todo"; 
+    private static final String DONE = "done"; 
     
     private static final String NEWLINE = "\n";
     private static final String SEMICOLON = ";";
@@ -336,6 +341,29 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
+    
+  //TODO edit 
+    private String executeEdit(Command command){
+    	try{     		
+    		switch(getConversionStatus(command)){  
+    			case CONVERSION_TO_TASK : 
+    				return executeEditConvertToTask(command);  
+    			case CONVERSION_TO_EVENT : 
+    				return executeEditConvertToEvent(command);  
+    			case CONVERSION_NOT_REQ : 
+    				return executeEditNoConversion(command); 
+    			case CONVERSION_INVALID :
+    			default : 
+    				return MESSAGE_ERROR_EDIT_INSUFFICIENT_ARGS;  
+    		}
+    	}
+    	catch(FileSystemException e){
+    		return e.getMessage();
+    	}
+    	catch(Exception e){
+    		return MESSAGE_ERROR_UNKNOWN; 
+    	}
+    }
    
     private int getConversionStatus(Command command) throws FileSystemException{ 
 		ArrayList<String> editList = command.getEditList();
@@ -363,107 +391,106 @@ public class Logic {
     private boolean isTaskOrEvent(String lineType){ 
     	return lineType.equals(TYPE_TASK) || lineType.equals(TYPE_EVENT); 
     }
-        
-    //TODO edit 
-    private String executeEdit(Command command){
-    	try{     		
-    		switch(getConversionStatus(command)){  
-    			case CONVERSION_TO_TASK : 
-    				return executeEditTaskConversion(command);  
-    			case CONVERSION_TO_EVENT : 
-    				return executeEditEventConversion(command);  
-    			case CONVERSION_NOT_REQ : 
-    				return executeEditNoConversion(command); 
-    			case CONVERSION_INVALID :
-    			default : 
-    				return MESSAGE_EDIT_CONVERSION_INVALID;  
-    		}
-    	}
-    	catch(FileSystemException e){
-    		return e.getMessage();
-    	}
-    	catch(Exception e){
-    		return MESSAGE_ERROR_UNKNOWN; 
-    	}
-    }
-    
-    private String executeEditTaskConversion(Command command) throws FileSystemException{ 
-    	int lineNumber = command.getIndex(); 
-    	Date deadline = command.getDueDate(); 
+       
+    private String executeEditConvertToTask(Command command) throws FileSystemException{
     	ArrayList<String> editList = command.getEditList(); 
-    	
-    	//must edit name if required first
-    	if(editList.contains(KEYWORD_EDIT_NAME)){ 
-    		String newName = command.getName();  
-    		storage.editName(lineNumber, newName); 
+    	int lineNumber = command.getIndex(); 
+    	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME);  
+    	Date deadline = command.getDueDate(); 
+    	String deadlineStr = deadline.formatDateShort(); 
+    	String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE);
+    	Boolean isDone = (isDoneStr.equals(DONE)) ? true : false; 
+    
+    	String addTaskCmdString = String.format(COMMAND_FORMAT_ADD_TASK, name, deadlineStr);    	
+    	Command addTaskCmd = commandParser.parse(addTaskCmdString); 
+    	if(addTaskCmd.getCommandType() == CommandType.ADD && addTaskCmd.getDataType() == DataType.TASK){ 
+    		storage.deleteLine(lineNumber); 
+    		Task convertedTask = new Task(name, isDone, deadline); 
+    		storage.addTask(convertedTask);
+    		
+    		//TODO
+    		return "converted float to task";
+    	}else{ 
+    		//TODO 
+    		return addTaskCmd.getName(); 
     	}
-    	storage.convertFloatToTask(lineNumber, deadline); 
-    	
-    	//TODO - fb msg
-    	return "converted float to task";  
+    	      	  
     }
     
-    private String executeEditEventConversion(Command command) throws FileSystemException{ 
+    private String executeEditConvertToEvent(Command command) throws FileSystemException{ 
+    	ArrayList<String> editList = command.getEditList(); 
     	int lineNumber = command.getIndex(); 
+    	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME); 
     	Date startDate = command.getStartDate(); 
+    	String startDateStr = startDate.formatDateShort(); 
     	Date endDate = command.getEndDate(); 
+    	String endDateStr = endDate.formatDateShort(); 
     	String startTime = command.getStartTime(); 
     	String endTime = command.getEndTime(); 
-    	ArrayList<String> editList = command.getEditList(); 
+    	String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE);
+    	Boolean isDone = (isDoneStr.equals(DONE)) ? true : false; 
     	
-    	//must edit name if required first 
-    	if(editList.contains(KEYWORD_EDIT_NAME)){ 
-    		String newName = command.getName();  
-    		storage.editName(lineNumber, newName); 
-    	}
-    	storage.convertFloatToEvent(lineNumber, startDate, startTime, endDate, endTime); 
-    	
-    	//TODO - fb msg
-    	return "converted float to event";  
+    	String addEventCmdString = String.format(COMMAND_FORMAT_ADD_EVENT, name, startDateStr, startTime, endDateStr, endTime);  
+    	System.out.println(addEventCmdString);
+    	Command addEventCmd = commandParser.parse(addEventCmdString); 
+    	if(addEventCmd.getCommandType() == CommandType.ADD && addEventCmd.getDataType() == DataType.EVENT){ 
+    		storage.deleteLine(lineNumber); 
+    		Event convertedEvent = new Event(name, isDone, startDate, endDate, startTime, endTime); 
+    		storage.addEvent(convertedEvent);
+    		
+    		//TODO
+    		return "converted float to event";
+    	}else{ 
+    		//TODO 
+    		return addEventCmd.getName(); 
+    	}	
     }
 
     //TODO - need to make it work for multiple edits at the same time 
     //     - currently only works for single edit 
 	private String executeEditNoConversion(Command command)	throws FileSystemException {
 		int lineNumber = command.getIndex(); 
-		ArrayList<String> editList = command.getEditList(); 
-		
-		for(String editItem : editList){ 
-			switch (editItem) {
-				case KEYWORD_EDIT_NAME :
-					String newName = command.getName(); 
-					storage.editName(lineNumber, newName); 
-					break;
-				case KEYWORD_EDIT_DEADLINE :
-					Date newDeadline = command.getDueDate(); 
-					storage.editTaskDeadline(lineNumber, newDeadline); 
-					break;
-				case KEYWORD_EDIT_START_DATE : 
-					Date newStartDate = command.getStartDate(); 
-					storage.editEventStartDate(lineNumber, newStartDate); 
-					break; 
-				case KEYWORD_EDIT_START_TIME : 
-					String newStartTime = command.getStartTime(); 
-					storage.editEventStartTime(lineNumber, newStartTime); 
-					break; 
-				case KEYWORD_EDIT_END_DATE : 
-					Date newEndDate = command.getEndDate();
-					storage.editEventEndDate(lineNumber, newEndDate); 
-					break; 
-				case KEYWORD_EDIT_END_TIME : 
-					String newEndTime = command.getEndTime(); 
-					storage.editEventEndTime(lineNumber, newEndTime); 
-					break; 
-				default :
-					break;
-			}
+		String lineType = storage.getAttribute(lineNumber, INDEX_TYPE); 
+		switch(lineType){ 
+			case TYPE_FLOAT :
+				return executeEditFloat(command); 
+			case TYPE_TASK : 
+				return executeEditTask(command); 
+			case TYPE_EVENT : 
+				return executeEditEvent(command); 
+			default:
+				//TODO
+				return "edit with no conversion has error"; 
 		}
-		
-		//TODO - fb msg
-		return "no conversion - edited fields only"; 
 	}
-    
-    private String executeDone(Command command){
+
+	private String executeEditFloat(Command command) throws FileSystemException{
+		int lineNumber = command.getIndex();
+		String newName = command.getName(); 
+		String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
+		boolean isDone = (isDoneStr.equals(DONE))? true : false;  
+		FloatingTask newFloatingTask = new FloatingTask(newName,isDone); 
+		
+		storage.deleteLine(lineNumber); 
+		storage.addFloatingTask(newFloatingTask);
+		
+		//TODO format fb msg
+		return "edited float";
+	}
+	
+	//TODO executeEditTask
+	private String executeEditTask(Command command) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	//TODO executeEditEvent
+    private String executeEditEvent(Command command) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private String executeDone(Command command){
     	try{
     		State stateBeforeExecutingCommand = getState(command);
     		
@@ -504,7 +531,7 @@ public class Logic {
     	}
     	
     }
-        
+    
     //TODO REFACTOR - considering putting all the formatting into formatter class 
     private String formattedSearchResult(String[] linesInFile, String type, String query){
     	ArrayList<Integer> result = filter.matchTokensInQuery(linesInFile, type, query); 

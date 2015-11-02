@@ -96,8 +96,8 @@ public class Event extends Data implements Comparable<Event>{
 		} else {
 			status = STRING_NOT_DONE;
 		}
-		return String.format(FORMAT_TO_STRING, this.name, status, this.eventStartDate.getFullDate(), 
-				this.eventStartTime, this.eventEndDate.getFullDate(), this.eventEndTime);
+		return String.format(FORMAT_TO_STRING, this.name, status, this.eventStartDate.formatDateShort(), 
+				this.eventStartTime, this.eventEndDate.formatDateShort(), this.eventEndTime);
 	}
 
 	//============================================

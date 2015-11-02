@@ -751,7 +751,7 @@ public class Storage {
 		if (typeToBeEdited.equals(STRING_TASK)) {
 			Task editedTask = new Task(lineToBeEdited);
 
-			oldDeadline = editedTask.getDeadline().getFullDate();
+			oldDeadline = editedTask.getDeadline().formatDateShort();
 			editedTask.setDeadline(newDeadline);
 
 			deleteLineFromFile(lineNumber);
@@ -789,7 +789,7 @@ public class Storage {
 						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
 			}
 
-			oldStartDate = editedEvent.getEventStartDate().getFullDate();
+			oldStartDate = editedEvent.getEventStartDate().formatDateShort();
 			editedEvent.setEventStartDate(newStartDate);
 
 			deleteLineFromFile(lineNumber);
@@ -863,7 +863,7 @@ public class Storage {
 						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
 			}
 
-			oldEndDate = editedEvent.getEventEndDate().getFullDate();
+			oldEndDate = editedEvent.getEventEndDate().formatDateShort();
 			editedEvent.setEventEndDate(newEndDate);
 
 			deleteLineFromFile(lineNumber);

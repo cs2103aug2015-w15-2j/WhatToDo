@@ -126,7 +126,7 @@ public class Date implements Comparable<Date>{
 
     }
 
-    public String getFullDate() {
+    public String formatDateShort() {
         return fullDate;
     }
 
@@ -149,7 +149,7 @@ public class Date implements Comparable<Date>{
 	//============================================
     
     private int getIntReverseDate(Date date){
-    	String dateString = date.getFullDate(); 
+    	String dateString = date.formatDateShort(); 
     	return getIntDate(getReverseDate(dateString));
     }
     
