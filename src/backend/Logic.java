@@ -32,7 +32,8 @@ public class Logic {
 	private static final String MESSAGE_ADD_TASK = "Added task \"%s\" to list. Due on %s.";
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added float \"%s\" to list.";
 	private static final String MESSAGE_ADD_EVENT = "Added event \"%s\" to list. Start: %s at %s End: %s at %s.";
-	private static final String MESSAGE_DELETE_LINE = "Deleted %s from list.";
+	private static final String MESSAGE_DELETE_ITEM = "Deleted %s from list.";
+	private static final String MESSAGE_EDIT_CONVERSION = "Converted float \"%s\" to %s \"%s\".";
 	private static final String MESSAGE_MARK_DONE = "Done %s";
 	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
@@ -43,7 +44,10 @@ public class Logic {
 	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
     private static final String MESSAGE_ERROR_INVALID_COMMAND = "\"%s\" is an invalid command. %s"; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
+    private static final String MESSAGE_ERROR_EDIT = "Error encountered when editing item."; 
 	private static final String MESSAGE_ERROR_EDIT_INSUFFICIENT_ARGS = "Not enough arguments for conversion"; 
+    private static final String MESSAGE_ERROR_EDIT_INVALID_CONVERSION = "A %s cannot be converted to an %s";
+    private static final String MESSAGE_ERROR_EDIT_INVALID_EDIT = "Invalid edit. %s"; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
@@ -82,6 +86,7 @@ public class Logic {
     
     private static final String NEWLINE = "\n";
     private static final String SEMICOLON = ";";
+    private static final String EMPTYSTRING = "";
     
     private CommandParser commandParser; 
     private Storage storage;
@@ -329,7 +334,7 @@ public class Logic {
     		
     		int lineNumber = command.getIndex(); 
         	String deletedLine = storage.deleteLine(lineNumber); 
-        	String deleteFeedback = String.format(MESSAGE_DELETE_LINE, formatLine(deletedLine)); 
+        	String deleteFeedback = String.format(MESSAGE_DELETE_ITEM, formatLine(deletedLine)); 
         	
         	boolean isSaved = saveState(stateBeforeExecutingCommand);
         	clearRedo(command);
@@ -342,8 +347,7 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
-    
-  //TODO edit - format feedback message 
+
     private String executeEdit(Command command){
     	try{     		
     		switch(getConversionStatus(command)){  
@@ -398,7 +402,8 @@ public class Logic {
     	
     	ArrayList<String> editList = command.getEditList(); 
     	int lineNumber = command.getIndex(); 
-    	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME);  
+    	String oldName = storage.getAttribute(lineNumber, INDEX_NAME);
+    	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : oldName;  
     	Date deadline = command.getDueDate(); 
     	String deadlineStr = deadline.formatDateShort(); 
     	String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE);
@@ -411,17 +416,16 @@ public class Logic {
     		Task convertedTask = new Task(name, isDone, deadline); 
     		storage.addTask(convertedTask);
     		
+    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_TASK, name);
+    		
     		boolean isSaved = saveState(stateBeforeExecutingCommand);
             clearRedo(command);
-            //TODO
-            return formFeedbackMsg("converted float to task", isSaved);
+            return formFeedbackMsg(editFeedback, isSaved);
     	}else{ 
-    		//TODO 
-    		return addTaskCmd.getName(); 
-    	}
-    	
-    	
-    	      	  
+    		//assert cmdtype == invalid 
+    		String reason = (addTaskCmd.getName() != null)? addTaskCmd.getName() : EMPTYSTRING;
+    		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason);  
+    	}	  
     }
     
     private String executeEditConvertToEvent(Command command) throws FileSystemException{ 
@@ -429,7 +433,8 @@ public class Logic {
     	
     	ArrayList<String> editList = command.getEditList(); 
     	int lineNumber = command.getIndex(); 
-    	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME); 
+    	String oldName = storage.getAttribute(lineNumber, INDEX_NAME); 
+    	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : oldName; 
     	Date startDate = command.getStartDate(); 
     	String startDateStr = startDate.formatDateShort(); 
     	Date endDate = command.getEndDate(); 
@@ -446,13 +451,15 @@ public class Logic {
     		Event convertedEvent = new Event(name, isDone, startDate, endDate, startTime, endTime); 
     		storage.addEvent(convertedEvent);
     		
-    		//TODO
+    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_EVENT, name);
+    		
     		boolean isSaved = saveState(stateBeforeExecutingCommand);
             clearRedo(command);
-            return formFeedbackMsg("converted float to event", isSaved);
+            return formFeedbackMsg(editFeedback, isSaved);
     	}else{ 
-    		//TODO 
-    		return addEventCmd.getName(); 
+    		//assert cmdtype == invalid 
+    		String reason = (addEventCmd.getName() != null)? addEventCmd.getName() : EMPTYSTRING;
+    		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason);  
     	}	
     }
 
@@ -467,8 +474,7 @@ public class Logic {
 			case TYPE_EVENT : 
 				return executeEditEvent(command); 
 			default:
-				//TODO
-				return "edit with no conversion has error"; 
+				return MESSAGE_ERROR_EDIT; 
 		}
 	}
 
@@ -486,7 +492,7 @@ public class Logic {
 	
 		boolean isSaved = saveState(stateBeforeExecutingCommand);
         clearRedo(command);
-        //TODO format fb msg
+        ////TODO format fb msg for edited float 
         return formFeedbackMsg("edited float", isSaved);
 	}
 	
@@ -514,19 +520,19 @@ public class Logic {
 	    		
 	    		boolean isSaved = saveState(stateBeforeExecutingCommand);
 	            clearRedo(command);
-	            //TODO
+	            //TODO format fb msg for edited task 
 	            return formFeedbackMsg("edited task", isSaved);
 	    	}else{ 
-	    		//TODO 
-	    		return addEditedTaskCmd.getName(); 
+        		//assert cmdtype == invalid 
+        		String reason = (addEditedTaskCmd.getName() != null)? addEditedTaskCmd.getName() : EMPTYSTRING;
+        		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason); 
 	    	}
 		}
 		else{ 
-			//TODO
-			return "cannot convert from task to event"; 
+			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_TASK, TYPE_EVENT); 
 		}
 	}
-
+	
     private String executeEditEvent(Command command) throws FileSystemException {
     	State stateBeforeExecutingCommand = getState(command);
     	
@@ -555,19 +561,19 @@ public class Logic {
         		
         		boolean isSaved = saveState(stateBeforeExecutingCommand);
                 clearRedo(command);
-                //TODO 
+                //TODO format fb msg for edited event 
                 return formFeedbackMsg("edited event", isSaved);
         	}else{ 
-        		//TODO 
-        		return addEditedEventCmd.getName(); 
+        		//assert cmdtype == invalid 
+        		String reason = (addEditedEventCmd.getName() != null)? addEditedEventCmd.getName() : EMPTYSTRING;
+        		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason); 
         	}	
     	}
     	else{ 
-    		//TODO
-			return "cannot convert from event to task"; 
+			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_EVENT, TYPE_TASK);
     	}
 	}
-
+   
 	private String executeDone(Command command){
     	try{
     		State stateBeforeExecutingCommand = getState(command);
@@ -697,12 +703,12 @@ public class Logic {
     	prevCommand = command; 
     }
    	
-	private String formFeedbackMsg(String addFeedback, boolean isSaved) {
+	private String formFeedbackMsg(String cmdFeedback, boolean isSaved) {
 		if(isSaved){
-        	return addFeedback;
+        	return cmdFeedback;
         }
         else{
-        	return addFeedback + MESSAGE_ERROR_UNDO;
+        	return cmdFeedback + MESSAGE_ERROR_UNDO;
         }
 	}
 	
@@ -724,7 +730,7 @@ public class Logic {
     
     private String handleInvalid(Command command){ 
     	String userInput = command.getUserInput(); 
-    	String reason = (command.getName() != null)? command.getName() : "";
+    	String reason = (command.getName() != null)? command.getName() : EMPTYSTRING;
     	return String.format(MESSAGE_ERROR_INVALID_COMMAND, userInput, reason); 
     }
     
