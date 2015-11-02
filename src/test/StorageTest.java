@@ -578,6 +578,50 @@ public class StorageTest {
 		storage.overwriteFile("");
 	}
 	
+	@Test
+	public void testGetAttribute() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+
+		// Setup for testing.
+		storage.addTask(new Task("i am a task", false, new Date("121212")));
+		storage.addEvent(new Event("event time", false, new Date("101015"),
+				new Date("111015"), "1700", "2359"));
+		storage.addFloatingTask(new FloatingTask("float task", false));
+
+		assertEquals("float", storage.getAttribute(1, 0));
+		assertEquals("float task", storage.getAttribute(1, 1));
+		assertEquals("todo", storage.getAttribute(1, 2));
+		
+		// These are boundary cases where type = 3 and -1 for float task.
+		assertEquals(null, storage.getAttribute(1, 3));
+		assertEquals(null, storage.getAttribute(1, -1));
+		
+		assertEquals("task", storage.getAttribute(2, 0));
+		assertEquals("i am a task", storage.getAttribute(2, 1));
+		assertEquals("todo", storage.getAttribute(2, 2));
+		assertEquals("121212", storage.getAttribute(2, 3));
+		
+		// These are boundary cases where type = 4 and -1 for float task.
+		assertEquals(null, storage.getAttribute(2, 4));
+		assertEquals(null, storage.getAttribute(2, -1));
+		
+		assertEquals("event", storage.getAttribute(3, 0));
+		assertEquals("event time", storage.getAttribute(3, 1));
+		assertEquals("todo", storage.getAttribute(3, 2));
+		assertEquals("101015", storage.getAttribute(3, 3));
+		assertEquals("1700", storage.getAttribute(3, 4));
+		assertEquals("111015", storage.getAttribute(3, 5));
+		assertEquals("2359", storage.getAttribute(3, 6));
+		
+		// These are boundary cases where type = 7 and -1 for float task.
+		assertEquals(null, storage.getAttribute(3, 7));
+		assertEquals(null, storage.getAttribute(3, -1));
+
+		// Clear File for next test.
+		storage.overwriteFile("");
+	}
+	
 	 /*
 	 * @Test public void testEditEventStartTime() { fail("Not yet implemented");
 	 * }
