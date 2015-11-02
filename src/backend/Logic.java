@@ -343,7 +343,7 @@ public class Logic {
     	}
     }
     
-  //TODO edit 
+  //TODO edit - format feedback message 
     private String executeEdit(Command command){
     	try{     		
     		switch(getConversionStatus(command)){  
@@ -394,6 +394,8 @@ public class Logic {
     }
        
     private String executeEditConvertToTask(Command command) throws FileSystemException{
+    	State stateBeforeExecutingCommand = getState(command);
+    	
     	ArrayList<String> editList = command.getEditList(); 
     	int lineNumber = command.getIndex(); 
     	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME);  
@@ -409,16 +411,22 @@ public class Logic {
     		Task convertedTask = new Task(name, isDone, deadline); 
     		storage.addTask(convertedTask);
     		
-    		//TODO
-    		return "converted float to task";
+    		boolean isSaved = saveState(stateBeforeExecutingCommand);
+            clearRedo(command);
+            //TODO
+            return formFeedbackMsg("converted float to task", isSaved);
     	}else{ 
     		//TODO 
     		return addTaskCmd.getName(); 
     	}
+    	
+    	
     	      	  
     }
     
     private String executeEditConvertToEvent(Command command) throws FileSystemException{ 
+    	State stateBeforeExecutingCommand = getState(command);
+    	
     	ArrayList<String> editList = command.getEditList(); 
     	int lineNumber = command.getIndex(); 
     	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME); 
@@ -439,7 +447,9 @@ public class Logic {
     		storage.addEvent(convertedEvent);
     		
     		//TODO
-    		return "converted float to event";
+    		boolean isSaved = saveState(stateBeforeExecutingCommand);
+            clearRedo(command);
+            return formFeedbackMsg("converted float to event", isSaved);
     	}else{ 
     		//TODO 
     		return addEventCmd.getName(); 
@@ -463,6 +473,8 @@ public class Logic {
 	}
 
 	private String executeEditFloat(Command command) throws FileSystemException{
+		State stateBeforeExecutingCommand = getState(command);
+		
 		int lineNumber = command.getIndex();
 		String newName = command.getName(); 
 		String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
@@ -471,12 +483,16 @@ public class Logic {
 		
 		storage.deleteLine(lineNumber); 
 		storage.addFloatingTask(newFloatingTask);
-		
-		//TODO format fb msg
-		return "edited float";
+	
+		boolean isSaved = saveState(stateBeforeExecutingCommand);
+        clearRedo(command);
+        //TODO format fb msg
+        return formFeedbackMsg("edited float", isSaved);
 	}
 	
 	private String executeEditTask(Command command) throws FileSystemException {
+		State stateBeforeExecutingCommand = getState(command);
+		
 		ArrayList<String> editList = command.getEditList(); 
 		
 		//assert editList is not null 
@@ -496,8 +512,10 @@ public class Logic {
 	    		Task editedTask = new Task(newName, isDone, newDeadline); 
 	    		storage.addTask(editedTask);
 	    		
-	    		//TODO
-	    		return "edited task";
+	    		boolean isSaved = saveState(stateBeforeExecutingCommand);
+	            clearRedo(command);
+	            //TODO
+	            return formFeedbackMsg("edited task", isSaved);
 	    	}else{ 
 	    		//TODO 
 	    		return addEditedTaskCmd.getName(); 
@@ -510,6 +528,8 @@ public class Logic {
 	}
 
     private String executeEditEvent(Command command) throws FileSystemException {
+    	State stateBeforeExecutingCommand = getState(command);
+    	
     	ArrayList<String> editList = command.getEditList(); 
     	
     	//assert editList is not null 
@@ -533,8 +553,10 @@ public class Logic {
         		Event editedEvent = new Event(newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime); 
         		storage.addEvent(editedEvent);
         		
-        		//TODO
-        		return "edited event";
+        		boolean isSaved = saveState(stateBeforeExecutingCommand);
+                clearRedo(command);
+                //TODO 
+                return formFeedbackMsg("edited event", isSaved);
         	}else{ 
         		//TODO 
         		return addEditedEventCmd.getName(); 
