@@ -48,7 +48,7 @@ public class Logic {
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s";
-    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "Showing results for \"%s\"\nFLOAT\n%s\nTASK\n%s\nEVENT\n%s"; 
+    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "Showing results for \"%s\"\nTASK\n%s\nFLOAT\n%s\nEVENT\n%s"; 
     
     private static final String KEYWORD_EDIT_NAME = "name";
     private static final String KEYWORD_EDIT_DEADLINE = "date";
@@ -492,7 +492,7 @@ public class Logic {
     		String taskResult = formattedSearchResult(linesInFile, TYPE_TASK, query); 
     		String eventResult = formattedSearchResult(linesInFile, TYPE_EVENT, query); 
     		
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, floatResult, taskResult, eventResult);
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, taskResult, floatResult, eventResult);
     	}
     	catch(FileSystemException e){
     		//TODO REFACTOR command.getName()
@@ -504,7 +504,7 @@ public class Logic {
     	}
     	
     }
-    
+        
     //TODO REFACTOR - considering putting all the formatting into formatter class 
     private String formattedSearchResult(String[] linesInFile, String type, String query){
     	ArrayList<Integer> result = filter.matchTokensInQuery(linesInFile, type, query); 
