@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import struct.Command;
 import struct.Command.CommandType;
+import struct.Command.ViewType;
 import struct.Date;
 import struct.Event;
 import struct.FloatingTask;
@@ -105,6 +106,11 @@ public class Logic {
     	Command command = commandParser.parse(userInput);
     	return command.getCommandType(); 
 	}
+    
+    public ViewType getViewType(String userInput){ 
+    	Command command = commandParser.parse(userInput);
+    	return command.getViewType();
+    }
     
     public String executeCommand(String userInput) {
     	Command command = commandParser.parse(userInput);
