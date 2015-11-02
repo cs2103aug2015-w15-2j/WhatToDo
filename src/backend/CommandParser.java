@@ -40,11 +40,12 @@ public class CommandParser {
                                                     + "[0-5][0-9](\\s)?(?i)(am|pm)";
     private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
     private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
-
+    
     private static final String STRING_ONE_SPACE = " ";
     private static final String STRING_ONE_DOT = ".";
     private static final String STRING_ONE_COLON = ":";
     private static final String STRING_EMPTY = "";
+    private static final String STRING_VERIFIED = "verified";
     private static final String ESCAPE_CHARACTER = "\\";
     
     private static final String TIME_MIDNIGHT = "0000";
@@ -92,18 +93,28 @@ public class CommandParser {
     private static final ArrayList<String> DAYS_ARRAY_LIST = new ArrayList<String>();
     private static final ArrayList<String> DAYS_FULL_ARRAY_LIST = new ArrayList<String>();
     
+    private static final ArrayList<String> COMMANDS_ARRAY_LIST = new ArrayList<String>();
     private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
     
 	public CommandParser() {
         initDaysArrayList();
         initFullDaysArrayList();
+        initCommandsArrayList();
     }
+	
+	public CommandParser(Hashtable<String, String> commandAliases) {
+		this.commandAliases = commandAliases;
+		initDaysArrayList();
+		initFullDaysArrayList();
+		initCommandsArrayList();
+	}
 
     public Command parse(String userInput) {
         Command command;
         ArrayList<String> parameters = splitString(userInput);
-        String userCommand = getUserCommand(parameters);
-        ArrayList<String> arguments = getUserArguments(parameters);
+        ArrayList<String> convertedParameters = convertParameters(parameters);
+        String userCommand = getUserCommand(convertedParameters);
+        ArrayList<String> arguments = getUserArguments(convertedParameters);
 
         switch (userCommand.toLowerCase()) {
 
@@ -186,6 +197,18 @@ public class CommandParser {
     private ArrayList<String> splitString(String arguments) {
         String[] strArray = arguments.trim().split(REGEX_WHITESPACES);
         return new ArrayList<String>(Arrays.asList(strArray));
+    }
+    
+    private ArrayList<String> convertParameters(ArrayList<String> parameters) {
+    	for (int i = 0; i < parameters.size(); i++) {
+    		String parameter = parameters.get(i);
+    		if (commandAliases.containsKey(parameter)) {
+    			String newParameter = commandAliases.get(parameter);
+    			parameters.remove(i);
+    			parameters.add(i, newParameter);
+    		}
+    	}
+    	return parameters;
     }
 
     private String getUserCommand(ArrayList<String> parameters) {
@@ -570,16 +593,36 @@ public class CommandParser {
 	
 	private Command initDeleteCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Index input required";
+			String errorMsg = "Please specify index or alias command to delete";
 			return initInvalidCommand(errorMsg);
 		}
 		
-		int index = getIndex(arguments);
-		if (arguments.size() > 1 || index <= 0) {
-			String errorMsg = "Invalid index input";
+		if (arguments.size() > 1) {
+			String errorMsg = "Invalid index or alias command";
 			return initInvalidCommand(errorMsg);
 		}
 		
+		String argument = arguments.get(0);
+		
+		if (argument.matches(REGEX_POSITIVE_INTEGER)) {
+			return deleteIndex(Integer.parseInt(argument));
+		} else {
+			return deleteAlias(argument);
+		}
+	}
+	
+	private Command deleteAlias(String alias) {
+		 if (!commandAliases.containsKey(alias)) {
+			 String errorMsg = "No such alias set";
+			 return initInvalidCommand(errorMsg);
+		 } else {
+			 Command command = new Command(Command.CommandType.DELETEALIAS);
+			 command.setName(alias);
+			 return command;
+		 }
+	}
+	
+	private Command deleteIndex(int index) {
 		Command command = new Command(Command.CommandType.DELETE);
 		command.setIndex(index);
 		return command;
@@ -593,6 +636,10 @@ public class CommandParser {
 		catch (Exception e) {
 			return 0;
 		}
+	}
+	
+	public void deleteAliasFromHash(String command) {
+		commandAliases.remove(command);
 	}
 	
 	
@@ -938,8 +985,22 @@ public class CommandParser {
 	
 	private Command initSetCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Please specify ";
+			String errorMsg = "Please specify a command and an alias";
 			return initInvalidCommand(errorMsg);
+		}
+		if (arguments.get(1) != KEYWORD_SET || arguments.size() != 3) {
+			String errorMsg = "Invalid set format";
+			return initInvalidCommand(errorMsg);
+		}
+		String commandKeyword = arguments.get(0);
+		String alias = arguments.get(2);
+		String commandKeywordVerified = verifyCommandKeyword(commandKeyword);
+		String aliasVerified = verifyAlias(alias);
+		if (!commandKeywordVerified.equals(STRING_VERIFIED)) {
+			return initInvalidCommand(commandKeywordVerified);
+		}
+		if (!aliasVerified.equals(STRING_VERIFIED)) {
+			return initInvalidCommand(aliasVerified);
 		}
 		
 		Command command = new Command(Command.CommandType.SET);
@@ -949,9 +1010,64 @@ public class CommandParser {
 		return command;
 	}
 	
-	public void setAliasHash(Hashtable<String, String> commandAliases) {
-		
-		this.commandAliases = commandAliases;
+	private String verifyCommandKeyword(String commandKeyword) {
+		if (COMMANDS_ARRAY_LIST.contains(commandKeyword)) {
+			return STRING_VERIFIED;
+		} else {
+			String errorMsg = commandKeyword + " is not a registered command/keyword";
+			return errorMsg;
+		}
+	}
+	
+	private String verifyAlias(String alias) {
+		if (COMMANDS_ARRAY_LIST.contains(alias)) {
+			String errorMsg = "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use";
+			return errorMsg;
+		} else if (alias.matches(REGEX_POSITIVE_INTEGER)) {
+			String errorMsg = "Positive Integers cannot be used as aliases";
+			return errorMsg;
+		} else {
+			return STRING_VERIFIED;
+		}
+	}
+	
+	private void initCommandsArrayList() {
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_ADD);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_DELETE);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_EDIT);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_SEARCH);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_DONE);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_SET);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_SAVE);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_UNDO);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_REDO);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_ALL);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_DEF);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_HIST);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_UNRES);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_HELP);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_OPEN_FILE);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_CONFIG);
+		COMMANDS_ARRAY_LIST.add(USER_COMMAND_EXIT);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_DEADLINE);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_TODAY);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_TOMORROW_ONE);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_TOMORROW_TWO);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_TOMORROW_THREE);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EVENT_TO);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EVENT_FROM);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EVENT_ON);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_SET);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_NAME);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_DEADLINE);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_START_DATE);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_START_TIME);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_END_DATE);
+		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_END_TIME);
+	}
+	
+	public void setAlias(String newCommand, String originalCommand) {
+		commandAliases.put(newCommand, originalCommand);
 	}
 	
 	
