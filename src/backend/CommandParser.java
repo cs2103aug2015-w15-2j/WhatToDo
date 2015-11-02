@@ -96,6 +96,11 @@ public class CommandParser {
     private static final ArrayList<String> COMMANDS_ARRAY_LIST = new ArrayList<String>();
     private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
     
+    public static void main (String[] args) {
+    	Hashtable<String, String> hashmap = new Hashtable<String, String>();
+    	CommandParser parser = new CommandParser(hashmap);
+    }
+    
 	public CommandParser() {
         initDaysArrayList();
         initFullDaysArrayList();
@@ -521,11 +526,10 @@ public class CommandParser {
 			if (period.equals("pm") && hourInt != 12) {
 				hourInt += TIME_ADD_TWELVE;
 			}
+			hourString = Integer.toString(hourInt);
 			if (period.equals("am") && hourInt == 12) {
 				timeString = TIME_MIDNIGHT;
-			}
-			hourString = Integer.toString(hourInt);
-			if (hourString.length() == 1) {
+			} else if (hourString.length() == 1) {
 				timeString = "0" + hourString + TIME_ZERO_MINUTE;
 			} else {
 				timeString = hourString + TIME_ZERO_MINUTE;
