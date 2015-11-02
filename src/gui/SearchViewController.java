@@ -53,21 +53,17 @@ public class SearchViewController {
 		boolean startRead = false;
 
 		for (int i = 0; i < resultsSplit.length; i++) {
-			if (resultsSplit[i].equals("FLOAT")) {
+			if (resultsSplit[i].equals("TASK")) {
 				startRead = true;
-				taskResults.add(resultsSplit[i]);
 			} else if (resultsSplit[i].equals("EVENT")) {
 				startRead = false;
 				break;
 			} else {
 				if (startRead) {
-					if (!resultsSplit[i].equals("TASK")) {
-						taskResults.add(resultsSplit[i]);
-					}
+					taskResults.add(resultsSplit[i]);
 				}
 			}
 		}
-
 		return taskResults;
 	}
 
@@ -86,12 +82,10 @@ public class SearchViewController {
 				}
 			}
 		}
-
 		return eventResults;
 	}
 	
 	private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
-		
 		if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
 
 			Label elementLabel = new Label(displayData.toUpperCase());
@@ -328,9 +322,6 @@ public class SearchViewController {
 	}
 
 	public static void initSearchView() {
-
-		// Initialize default empty values for initial view
-		String initialTerm = "NO RESULTS";
 		ArrayList<String> initialArray = new ArrayList<String>();
 
 		initSearchTaskView(initialArray, 0);
@@ -365,7 +356,6 @@ public class SearchViewController {
 	}
 
 	public static void updateSearchView(String results) {
-
 		ArrayList<String> taskResults = getTaskResults(results);
 		ArrayList<String> eventResults = getEventResults(results);
 

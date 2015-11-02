@@ -604,9 +604,10 @@ public class LogicController {
 			// Do not update the feedback bar and history view if the search operation
 			// is a background update of the last search term
 			if (!isBackgroundUpdate) {
-				// Add the returnMessage to the feedback bar and history view
-				InterfaceController.getFeedbackLabel().setText("Displaying results...");
-				HistoryViewController.updateHistView("Displaying results...");
+				String searchTerm = returnMessage.split("\n")[0];
+				// Add the search terms to the feedback bar and history view
+				InterfaceController.getFeedbackLabel().setText(searchTerm);
+				HistoryViewController.updateHistView(searchTerm);
 			}
 			
 			SearchViewController.updateSearchView(returnMessage);
