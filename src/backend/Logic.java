@@ -62,7 +62,7 @@ public class Logic {
     private static final String KEYWORD_EDIT_END_DATE = "endd";
     private static final String KEYWORD_EDIT_END_TIME = "endt";
 
-    private static final ArrayList<String> FLOAT_TO_TASK_ATTRIBUTE_LIST = 
+    private static final ArrayList<String> ATTRIBUTE_LIST_FLOAT_TO_TASK = 
     		new ArrayList<String>(Arrays.asList(KEYWORD_EDIT_DEADLINE));
     private static final ArrayList<String> ATTRIBUTE_LIST_FLOAT_TO_EVENT = 
     		new ArrayList<String>(Arrays.asList(KEYWORD_EDIT_START_DATE, KEYWORD_EDIT_START_TIME, 
@@ -374,7 +374,7 @@ public class Logic {
     	if(containNameOnly(editList) || isTaskOrEvent(lineType)){
     		return CONVERSION_NOT_REQ; 
     	}
-    	else if(lineType.equals(TYPE_FLOAT) && editList.containsAll(FLOAT_TO_TASK_ATTRIBUTE_LIST)){ 
+    	else if(lineType.equals(TYPE_FLOAT) && editList.containsAll(ATTRIBUTE_LIST_FLOAT_TO_TASK)){ 
     		return CONVERSION_TO_TASK; 
     	}
     	else if(lineType.equals(TYPE_FLOAT) && editList.containsAll(ATTRIBUTE_LIST_FLOAT_TO_EVENT)){
@@ -432,7 +432,6 @@ public class Logic {
     	Boolean isDone = (isDoneStr.equals(DONE)) ? true : false; 
     	
     	String addEventCmdString = String.format(COMMAND_FORMAT_ADD_EVENT, name, startDateStr, startTime, endDateStr, endTime);  
-    	System.out.println(addEventCmdString);
     	Command addEventCmd = commandParser.parse(addEventCmdString); 
     	if(addEventCmd.getCommandType() == CommandType.ADD && addEventCmd.getDataType() == DataType.EVENT){ 
     		storage.deleteLine(lineNumber); 
@@ -447,7 +446,6 @@ public class Logic {
     	}	
     }
 
-    //TODO - need to make it work for multiple edits at the same time 
 	private String executeEditNoConversion(Command command)	throws FileSystemException {
 		int lineNumber = command.getIndex(); 
 		String lineType = storage.getAttribute(lineNumber, INDEX_TYPE); 
@@ -492,8 +490,8 @@ public class Logic {
 			boolean isDone = (isDoneStr.equals(DONE))? true : false;  
 			
 			String addEditedTaskCmdStr = String.format(COMMAND_FORMAT_ADD_TASK, newName, newDeadlineStr);    	
-	    	Command addEditedTask = commandParser.parse(addEditedTaskCmdStr); 
-	    	if(addEditedTask.getCommandType() == CommandType.ADD && addEditedTask.getDataType() == DataType.TASK){ 
+	    	Command addEditedTaskCmd = commandParser.parse(addEditedTaskCmdStr); 
+	    	if(addEditedTaskCmd.getCommandType() == CommandType.ADD && addEditedTaskCmd.getDataType() == DataType.TASK){ 
 	    		storage.deleteLine(lineNumber); 
 	    		Task editedTask = new Task(newName, isDone, newDeadline); 
 	    		storage.addTask(editedTask);
@@ -502,7 +500,7 @@ public class Logic {
 	    		return "edited task";
 	    	}else{ 
 	    		//TODO 
-	    		return addEditedTask.getName(); 
+	    		return addEditedTaskCmd.getName(); 
 	    	}
 		}
 		else{ 
@@ -510,11 +508,42 @@ public class Logic {
 			return "cannot convert from task to event"; 
 		}
 	}
-	
-	//TODO executeEditEvent
-    private String executeEditEvent(Command command) {
-		// TODO Auto-generated method stub
-		return null;
+
+    private String executeEditEvent(Command command) throws FileSystemException {
+    	ArrayList<String> editList = command.getEditList(); 
+    	
+    	//assert editList is not null 
+    	if(Collections.disjoint(editList, ATTRIBUTE_LIST_FLOAT_TO_TASK)){ 
+    		int lineNumber = command.getIndex();
+    		//TODO refactor this shit 
+    		String newName = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME); 
+    		Date newStartDate = (editList.contains(KEYWORD_EDIT_START_DATE)) ? command.getStartDate() : new Date(storage.getAttribute(lineNumber, INDEX_STARTDATE));
+    		String newStartDateStr = newStartDate.formatDateShort();
+    		Date newEndDate = (editList.contains(KEYWORD_EDIT_END_DATE)) ? command.getEndDate() : new Date(storage.getAttribute(lineNumber, INDEX_ENDDATE));
+    		String newEndDateStr = newEndDate.formatDateShort(); 
+    		String newStartTime = (editList.contains(KEYWORD_EDIT_START_TIME)) ? command.getStartTime() : storage.getAttribute(lineNumber, INDEX_STARTTIME);
+    		String newEndTime = (editList.contains(KEYWORD_EDIT_END_TIME)) ? command.getEndTime() : storage.getAttribute(lineNumber, INDEX_ENDTIME);
+    		String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
+			boolean isDone = (isDoneStr.equals(DONE))? true : false;  
+    		
+    		String addEditedEventCmdString = String.format(COMMAND_FORMAT_ADD_EVENT, newName, newStartDateStr, newStartTime, newEndDateStr, newEndTime);  
+        	Command addEditedEventCmd = commandParser.parse(addEditedEventCmdString); 
+        	if(addEditedEventCmd.getCommandType() == CommandType.ADD && addEditedEventCmd.getDataType() == DataType.EVENT){ 
+        		storage.deleteLine(lineNumber); 
+        		Event editedEvent = new Event(newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime); 
+        		storage.addEvent(editedEvent);
+        		
+        		//TODO
+        		return "edited event";
+        	}else{ 
+        		//TODO 
+        		return addEditedEventCmd.getName(); 
+        	}	
+    	}
+    	else{ 
+    		//TODO
+			return "cannot convert from event to task"; 
+    	}
 	}
 
 	private String executeDone(Command command){
