@@ -139,10 +139,11 @@ public class CommandParser {
 
     public Command parse(String userInput) {
         Command command;
+        ArrayList<String> originalParameters = splitString(userInput);
         ArrayList<String> parameters = splitString(userInput);
         ArrayList<String> convertedParameters = convertParameters(parameters);
         String userCommand = getUserCommand(convertedParameters);
-        ArrayList<String> arguments = getUserArguments(parameters);
+        ArrayList<String> arguments = getUserArguments(originalParameters);
         ArrayList<String> convertedArguments = getUserArguments(convertedParameters);
 
         switch (userCommand.toLowerCase()) {
@@ -611,7 +612,7 @@ public class CommandParser {
 		}
 		
 		String argument = arguments.get(0);
-		
+		System.out.println(argument);
 		if (argument.matches(REGEX_POSITIVE_INTEGER)) {
 			return deleteIndex(Integer.parseInt(argument));
 		} else {
@@ -960,11 +961,11 @@ public class CommandParser {
 		if (arguments.isEmpty()) {
 			return initInvalidCommand(ERROR_SET);
 		}
-		if (arguments.get(1) != KEYWORD_SET || arguments.size() != 3) {
+		if (!arguments.get(1).equals(KEYWORD_SET)|| arguments.size() != 3) {
 			return initInvalidCommand(ERROR_SET_FORMAT);
 		}
-		String commandKeyword = arguments.get(0);
-		String alias = arguments.get(2);
+		String commandKeyword = arguments.get(2);
+		String alias = arguments.get(0);
 		String commandKeywordVerified = verifyCommandKeyword(commandKeyword);
 		String aliasVerified = verifyAlias(alias);
 		if (!commandKeywordVerified.equals(STRING_VERIFIED)) {
