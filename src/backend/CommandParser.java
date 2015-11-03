@@ -295,7 +295,7 @@ public class CommandParser {
 	}
 
 	private String getDateString(ArrayList<String> arguments, int index) {
-		String dateString = "";
+		String dateString = STRING_EMPTY;
 		while (index < arguments.size()) {
 			dateString += arguments.get(index);
 			index++;
@@ -972,9 +972,8 @@ public class CommandParser {
 		}
 		
 		Command command = new Command(Command.CommandType.SET);
-		List<String> directoryList = arguments.subList(0, arguments.size());
-		String directory = getName(directoryList);
-		command.setName(directory);
+		command.setName(alias);
+		command.setOriginalCommand(commandKeyword);
 		return command;
 	}
 	
@@ -1198,5 +1197,5 @@ public class CommandParser {
 		command.setName(errorMsg);
 		return command;
 	}
-    
+
 }
