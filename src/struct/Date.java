@@ -130,6 +130,13 @@ public class Date implements Comparable<Date>{
         return fullDate;
     }
     
+    public String formatDateMedium(){ 
+    	Calendar cal = Calendar.getInstance(); 
+    	cal.set(this.year, this.month-1, this.day);
+    	SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM"); 
+    	return sdf.format(cal.getTime());
+    }
+    
     public String formatDateLong(){ 
     	Calendar cal = Calendar.getInstance(); 
     	cal.set(this.year, this.month-1, this.day);
