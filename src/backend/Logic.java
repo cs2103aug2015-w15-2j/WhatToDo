@@ -42,6 +42,8 @@ public class Logic {
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
 	private static final String MESSAGE_UNDO = "Executed undo command successfully."; 
 	private static final String MESSAGE_NO_UNDO = "There are no commands to undo.";
+	private static final String MESSAGE_SET = "Set new alias \"%s\" for \"%s\"."; 
+	private static final String MESSAGE_DELETE_ALIAS = "Deleted alias \"%s\"."; 
 	private static final String MESSAGE_EXIT = "Exit";
 	
 	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
@@ -55,7 +57,7 @@ public class Logic {
     
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%d. %s;Start: %s End: %s %s\n";  
+    private static final String DISPLAY_FORMAT_EVENT = "%d. %s;Start: %s         End: %s %s\n";  
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
@@ -143,6 +145,10 @@ public class Logic {
     			return executeUndo(command); 
     		case REDO : 
     			return executeRedo(command);
+    		case SET : 
+    			return executeSet(command); 
+    		case DELETEALIAS : 
+    			return executeDeleteAlias(command); 
     		case SAVE : 
     			return executeSave(command);
     		case EXIT :
@@ -720,6 +726,39 @@ public class Logic {
 		String type = lineComponents[INDEX_TYPE]; 
 		String name = lineComponents[INDEX_NAME];
 		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
+	}
+	
+	//TODO set 
+	private String executeSet(Command command){ 
+		try{
+			String newAlias = command.getName(); 
+			String oldAlias = ""; 
+
+			return String.format(MESSAGE_SET, newAlias, oldAlias);
+		}
+//		catch(FileSystemException e){
+//			return e.getMessage(); 
+//		}
+		catch (Exception e) {
+			return MESSAGE_ERROR_UNKNOWN; 
+		} 
+	}
+	
+	//TODO DeleteAlias
+	private String executeDeleteAlias(Command command){ 
+		try{
+			String alias = command.getName(); 
+			storage.deleteFromAliasFile(alias);
+			commandParser.deleteAliasFromHash(alias);
+			return String.format(MESSAGE_DELETE_ALIAS, alias);
+		}
+		catch(FileSystemException e){
+			return e.getMessage(); 
+		}
+		catch (Exception e) {
+			return MESSAGE_ERROR_UNKNOWN; 
+		}
+		 
 	}
 	
 	private String executeSave(Command command) {
