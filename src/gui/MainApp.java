@@ -79,7 +79,7 @@ public class MainApp extends Application {
         		InterfaceController.getLogic().getTabPressHandler());
         
         // Event handling for hotkeys
-        stage.addEventHandler(KeyEvent.KEY_PRESSED, 
+        stage.addEventFilter(KeyEvent.KEY_PRESSED, 
         		InterfaceController.getLogic().getHotKeyHandler());
         
         // Focus handling for the autocomplete popup
@@ -110,7 +110,7 @@ public class MainApp extends Application {
         		InterfaceController.getLogic().getCloseHelpListener());
         
         // Event handling for hotkeys
-        help.addEventHandler(KeyEvent.KEY_PRESSED, 
+        help.addEventFilter(KeyEvent.KEY_PRESSED, 
         		InterfaceController.getLogic().getHelpHotKeyHandler());
     }
 }
