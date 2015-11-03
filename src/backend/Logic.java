@@ -33,6 +33,7 @@ public class Logic {
 	private static final String MESSAGE_ADD_FLOAT_TASK = "Added float \"%s\" to list.";
 	private static final String MESSAGE_ADD_EVENT = "Added event \"%s\" to list. Start: %s at %s End: %s at %s.";
 	private static final String MESSAGE_DELETE_ITEM = "Deleted %s from list.";
+	private static final String MESSAGE_EDIT = "Edited %s \"%s\".";
 	private static final String MESSAGE_EDIT_CONVERSION = "Converted float \"%s\" to %s \"%s\".";
 	private static final String MESSAGE_MARK_DONE = "Done %s";
 	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
@@ -489,11 +490,11 @@ public class Logic {
 		
 		storage.deleteLine(lineNumber); 
 		storage.addFloatingTask(newFloatingTask);
+		String editFeedback = String.format(MESSAGE_EDIT, TYPE_FLOAT, newName);
 	
 		boolean isSaved = saveState(stateBeforeExecutingCommand);
         clearRedo(command);
-        ////TODO format fb msg for edited float 
-        return formFeedbackMsg("edited float", isSaved);
+        return formFeedbackMsg(editFeedback, isSaved);
 	}
 	
 	private String executeEditTask(Command command) throws FileSystemException {
@@ -517,11 +518,11 @@ public class Logic {
 	    		storage.deleteLine(lineNumber); 
 	    		Task editedTask = new Task(newName, isDone, newDeadline); 
 	    		storage.addTask(editedTask);
+	    		String editFeedback = String.format(MESSAGE_EDIT, TYPE_TASK, newName);
 	    		
 	    		boolean isSaved = saveState(stateBeforeExecutingCommand);
 	            clearRedo(command);
-	            //TODO format fb msg for edited task 
-	            return formFeedbackMsg("edited task", isSaved);
+	            return formFeedbackMsg(editFeedback, isSaved);
 	    	}else{ 
         		//assert cmdtype == invalid 
         		String reason = (addEditedTaskCmd.getName() != null)? addEditedTaskCmd.getName() : EMPTYSTRING;
@@ -558,11 +559,11 @@ public class Logic {
         		storage.deleteLine(lineNumber); 
         		Event editedEvent = new Event(newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime); 
         		storage.addEvent(editedEvent);
+        		String editFeedback = String.format(MESSAGE_EDIT, TYPE_EVENT, newName);
         		
         		boolean isSaved = saveState(stateBeforeExecutingCommand);
                 clearRedo(command);
-                //TODO format fb msg for edited event 
-                return formFeedbackMsg("edited event", isSaved);
+                return formFeedbackMsg(editFeedback, isSaved);
         	}else{ 
         		//assert cmdtype == invalid 
         		String reason = (addEditedEventCmd.getName() != null)? addEditedEventCmd.getName() : EMPTYSTRING;
