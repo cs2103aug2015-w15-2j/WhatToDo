@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Hashtable;
 
 import struct.Command;
 import struct.Command.CommandType;
@@ -18,6 +19,9 @@ import struct.State;
 import struct.Task;
 
 public class Logic {
+	
+	private static final int INDEX_ALIAS = 0; 
+	private static final int INDEX_MEANING = 1; 
 
 	private static final int INDEX_TYPE = 0; 
 	private static final int INDEX_NAME = 1; 
@@ -42,6 +46,8 @@ public class Logic {
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
 	private static final String MESSAGE_UNDO = "Executed undo command successfully."; 
 	private static final String MESSAGE_NO_UNDO = "There are no commands to undo.";
+	private static final String MESSAGE_SET = "Set new alias \"%s\" for \"%s\"."; 
+	private static final String MESSAGE_DELETE_ALIAS = "Deleted alias \"%s\"."; 
 	private static final String MESSAGE_EXIT = "Exit";
 	
 	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
@@ -55,7 +61,7 @@ public class Logic {
     
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%d. %s;Start: %s End: %s %s\n";  
+    private static final String DISPLAY_FORMAT_EVENT = "%d. %s;Start: %s         End: %s %s\n";  
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
@@ -104,13 +110,35 @@ public class Logic {
 	//============================================
     
     public Logic() throws FileSystemException {
-			commandParser = new CommandParser();
+			//TODO must memory be initialised before createAliasHashtable()? 
+    		memory = new Memory();
+    		Hashtable<String, String> aliasHashMap = createAliasHashtable(); 
+			commandParser = new CommandParser(aliasHashMap);
 			storage = new Storage();
-			memory = new Memory();
 			filter = new Filter(); 
 			formatter = new Formatter(); 
 			prevCommand = new Command(); 
 	}
+    
+    //TODO - TEST!
+    private Hashtable<String, String> createAliasHashtable(){
+    	Hashtable<String, String> aliasHashtable = new Hashtable<String, String>();
+    	
+    	try{ 
+    		String aliasFileContents = getAliasFileContents();
+    		String[] lineInAliasFile = aliasFileContents.split(NEWLINE); 
+    		for(int i = 0; i < lineInAliasFile.length; i++){
+    			String[] lineFields = lineInAliasFile[i].split(SEMICOLON);
+    			String alias = lineFields[INDEX_ALIAS];
+    			String meaning = lineFields[INDEX_MEANING];
+    			aliasHashtable.put(alias, meaning); 
+    		}
+    	}
+    	catch(Exception e){ 
+    	}
+    	
+    	return aliasHashtable; 
+    }
         
 	//============================================
 	// Public methods
@@ -143,6 +171,10 @@ public class Logic {
     			return executeUndo(command); 
     		case REDO : 
     			return executeRedo(command);
+    		case SET : 
+    			return executeSet(command); 
+    		case DELETEALIAS : 
+    			return executeDeleteAlias(command); 
     		case SAVE : 
     			return executeSave(command);
     		case EXIT :
@@ -248,6 +280,10 @@ public class Logic {
     	}catch (Exception e) {
 			return e.getMessage();
 		} 
+    }
+    
+    public String getAliasFileContents() throws FileSystemException{
+    	return storage.readAliasFile(); 
     }
     
     public String getFilepath() {
@@ -720,6 +756,40 @@ public class Logic {
 		String type = lineComponents[INDEX_TYPE]; 
 		String name = lineComponents[INDEX_NAME];
 		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
+	}
+	
+	//TODO set - test! & undo/redo
+	private String executeSet(Command command){ 
+		try{
+			String newAlias = command.getName(); 
+			String oldAlias = command.getOriginalCommand();
+			storage.addToAliasFile(newAlias, oldAlias);
+			commandParser.setAlias(newAlias, oldAlias);
+			return String.format(MESSAGE_SET, newAlias, oldAlias);
+		}
+		catch(FileSystemException e){
+			return e.getMessage(); 
+		}
+		catch (Exception e) {
+			return MESSAGE_ERROR_UNKNOWN; 
+		} 
+	}
+	
+	//TODO DeleteAlias - test! & undo/redo
+	private String executeDeleteAlias(Command command){ 
+		try{
+			String alias = command.getName(); 
+			storage.deleteFromAliasFile(alias);
+			commandParser.deleteAliasFromHash(alias);
+			return String.format(MESSAGE_DELETE_ALIAS, alias);
+		}
+		catch(FileSystemException e){
+			return e.getMessage(); 
+		}
+		catch (Exception e) {
+			return MESSAGE_ERROR_UNKNOWN; 
+		}
+		 
 	}
 	
 	private String executeSave(Command command) {
