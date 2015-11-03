@@ -26,9 +26,6 @@ public class SearchViewController {
 	 * ================================================================================
 	 */
 
-	// Used for initSearchHeader
-	private static VBox searchHeaderBox;
-
 	// Used for initSearchTaskView
 	private static VBox searchTaskBox, searchTaskContentBox;
 	private static HBox searchTaskHeaderBox;
@@ -78,6 +75,10 @@ public class SearchViewController {
 				startRead = true;
 			} else {
 				if (startRead) {
+					// Filter through the array and reformat the data
+					for (int j = 0; j < resultsSplit.length; j++) {
+						resultsSplit[i] = resultsSplit[i].replace(';', '\n');
+					}
 					eventResults.add(resultsSplit[i]);
 				}
 			}

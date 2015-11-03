@@ -36,8 +36,8 @@ public class AutoComplete {
 	private static ArrayList<Alias> operationCommands;
 	private static ArrayList<Alias> aliasCommands;
 	
+	private static boolean isActivated = false;
 	private static boolean isShowing = false;
-	private static boolean showingBeforeLoseFocus = false;
 	private static int numOfResults = -1;
 	
 	private static final double WIDTH_POPUP = 200;
@@ -76,7 +76,6 @@ public class AutoComplete {
 	
 	private static void initAliasCommands() {
 		aliasCommands = new ArrayList<Alias>();
-		// TODO
 	}
 	
 	private static boolean isSubstring(String input, String target) {
@@ -161,6 +160,10 @@ public class AutoComplete {
 		return isShowing;
 	}
 	
+	public static boolean isActivated() {
+		return isActivated;
+	}
+	
 	private static boolean isShortcutCommand(Alias alias) {
 		boolean isShortcut = false;
 		for (int i = 0; i < shortcutCommands.size(); i++) {
@@ -192,6 +195,8 @@ public class AutoComplete {
 	}
 	
 	public static void updatePopup(String searchTerm) {
+		// Update aliasCommands
+		//updateAliases();
 		
 		// Perform a matching search and get the results
 		ArrayList<Alias> matchedCommands = getMatchingCommands(searchTerm);
@@ -240,6 +245,14 @@ public class AutoComplete {
 	public static void closePopup() {
 		isShowing = false;
 		popup.hide();
+	}
+	
+	public static void setActivation(boolean status) {
+		if (status) {
+			isActivated = true;
+		} else {
+			isActivated = false;
+		}
 	}
 	
 	public static String getSelectedItem() {

@@ -38,6 +38,7 @@ public class LogicController {
 	private static final boolean USER_SEARCH = false;
 	private static final boolean BACKGROUND_SEARCH = true;
 	
+	private static AutoCompleteListener autocompleter;
 	private static Logic logic;
 	private static CommandHistory commandHistory;
 	
@@ -53,6 +54,9 @@ public class LogicController {
 		
 		// Initialize the command history object
 		commandHistory = new CommandHistory();
+		
+		// Initialize the listener for autocomplete
+		autocompleter = new AutoCompleteListener();
 	}
 	
 	public String getFilePath() {
@@ -82,7 +86,12 @@ public class LogicController {
 		
 		// Split the string by newline
 		String[] defEventsSplit = defEvents.split("\n");
-
+		
+		// Filter through the array and reformat the data
+		for (int i = 0; i < defEventsSplit.length; i++) {
+			defEventsSplit[i] = defEventsSplit[i].replace(';', '\n');
+		}
+		
 		return defEventsSplit;
 	}
 	
@@ -104,6 +113,11 @@ public class LogicController {
 		
 		// Split the string by newline
 		String[] allEventsSplit = allEvents.split("\n");
+		
+		// Filter through the array and reformat the data
+		for (int i = 0; i < allEventsSplit.length; i++) {
+			allEventsSplit[i] = allEventsSplit[i].replace(';', '\n');
+		}
 		
 		return allEventsSplit;
 	}
@@ -127,6 +141,11 @@ public class LogicController {
 		// Split the string by newline
 		String[] unresEventsSplit = unresEvents.split("\n");
 		
+		// Filter through the array and reformat the data
+		for (int i = 0; i < unresEventsSplit.length; i++) {
+			unresEventsSplit[i] = unresEventsSplit[i].replace(';', '\n');
+		}
+		
 		return unresEventsSplit;
 	}
 	
@@ -148,6 +167,11 @@ public class LogicController {
 		
 		// Split the string by newline
 		String[] doneEventsSplit = doneEvents.split("\n");
+		
+		// Filter through the array and reformat the data
+		for (int i = 0; i < doneEventsSplit.length; i++) {
+			doneEventsSplit[i] = doneEventsSplit[i].replace(';', '\n');
+		}
 		
 		return doneEventsSplit;
 	}
@@ -374,6 +398,20 @@ public class LogicController {
     	}
     	
     	return modifiedString;
+    }
+    
+    private static void toggleAutoComplete() {
+    	if (!AutoComplete.isActivated()) {
+    		// Initialize autocomplete
+    		AutoComplete.initPopup();
+    		InterfaceController.getTextField().textProperty().addListener(autocompleter);
+    		AutoComplete.setActivation(true);
+    		
+    	} else {
+    		InterfaceController.getTextField().textProperty().removeListener(autocompleter);
+    		AutoComplete.closePopup();
+    		AutoComplete.setActivation(false);
+    	}
     }
     
 	private static void changeView(View view) {
@@ -1008,6 +1046,9 @@ public class LogicController {
 					break;
 				case F3:
 					openConfigLocation();
+					break;
+				case F4:
+					toggleAutoComplete();
 					break;
 				default:
 					break;
