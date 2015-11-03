@@ -110,34 +110,14 @@ public class Logic {
 	//============================================
     
     public Logic() throws FileSystemException {
-			//TODO must memory be initialised before createAliasHashtable()? 
-    		memory = new Memory();
-    		Hashtable<String, String> aliasHashMap = createAliasHashtable(); 
-			commandParser = new CommandParser(aliasHashMap);
-			storage = new Storage();
-			filter = new Filter(); 
-			formatter = new Formatter(); 
-			prevCommand = new Command(); 
-	}
-    
-    //TODO - TEST!
-    private Hashtable<String, String> createAliasHashtable(){
-    	Hashtable<String, String> aliasHashtable = new Hashtable<String, String>();
-    	
-    	try{ 
-    		String aliasFileContents = getAliasFileContents();
-    		String[] lineInAliasFile = aliasFileContents.split(NEWLINE); 
-    		for(int i = 0; i < lineInAliasFile.length; i++){
-    			String[] lineFields = lineInAliasFile[i].split(SEMICOLON);
-    			String alias = lineFields[INDEX_ALIAS];
-    			String meaning = lineFields[INDEX_MEANING];
-    			aliasHashtable.put(alias, meaning); 
-    		}
-    	}
-    	catch(Exception e){ 
-    	}
-    	
-    	return aliasHashtable; 
+		//storage must be initialized before createAliasHashtable()
+    	storage = new Storage();
+   		Hashtable<String, String> aliasHashtable = createAliasHashtable(); 
+		commandParser = new CommandParser(aliasHashtable);
+		memory = new Memory();
+		filter = new Filter(); 
+		formatter = new Formatter(); 
+		prevCommand = new Command(); 
     }
         
 	//============================================
@@ -293,6 +273,32 @@ public class Logic {
     	catch(Exception e){
     		return MESSAGE_ERROR_UNKNOWN;
     	}
+    }
+    
+	//============================================
+	// Private methods for constructor 
+	//============================================
+    
+    //TODO - consider returning a message if there is prob reading alias.txt 
+    private Hashtable<String, String> createAliasHashtable(){
+    	Hashtable<String, String> aliasHashtable = new Hashtable<String, String>();
+    	
+    	try{ 
+    		String aliasFileContents = storage.readAliasFile();
+    		String[] lineInAliasFile = aliasFileContents.split(NEWLINE); 
+    		for(int i = 0; i < lineInAliasFile.length; i++){
+    			String[] lineFields = lineInAliasFile[i].split(SEMICOLON);
+    			String alias = lineFields[INDEX_ALIAS];
+    			String meaning = lineFields[INDEX_MEANING];
+    			
+    			aliasHashtable.put(alias, meaning); 
+    		}
+    	}
+    	catch(Exception e){
+    		
+    	}
+    	
+    	return aliasHashtable; 
     }
     
 	//============================================
