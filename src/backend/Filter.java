@@ -40,6 +40,8 @@ public class Filter {
 		 return resultList; 
 	}
 	
+	//TODO filterOngoingEvents
+	
 	public ArrayList<Integer> filterStatus(String[] linesInFile, String type, boolean isDone){ 
 		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		 

@@ -1,6 +1,8 @@
 package backend;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import struct.Date;
 
@@ -17,9 +19,8 @@ public class Formatter {
 	
 	private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
-    private static final String SEARCH_RESULTS_FLOAT_OR_TASK = "%s%d. %s\n"; 
-    private static final String SEARCH_RESULTS_EVENT = "%s %d. [%s %s - %s %s] %s\n"; 
+    private static final String DISPLAY_RESULTS_FLOAT_OR_TASK_new = "%s%d. %s\n"; 
+    private static final String DISPLAY_FORMAT_EVENT = "%s%d. %s;Start: %s         End: %s %s\n"; 
     
 	private static final String SEMICOLON = ";";
 	private static final String NEWLINE = "\n";
@@ -36,13 +37,14 @@ public class Formatter {
 			String lineName = lineFields[INDEX_NAME];
 			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] + SPACE : EMPTYSTRING;
 			
-			String formattedLine = String.format(SEARCH_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
+			String formattedLine = String.format(DISPLAY_RESULTS_FLOAT_OR_TASK_new, lineIsDone, i+1, lineName);
 			contentBuffer.append(formattedLine); 
 		}
 		
 		return addMsgIfEmpty(contentBuffer); 
 	}
 	
+	//TODO merge formatTask and formatTaskResults into formatTaskWithHeaders 
 	public String formatTask(String[] linesInFile, ArrayList<Integer> result){ 
 		StringBuffer contentBuffer = new StringBuffer();
 		Date prevlineDate = null; 
@@ -77,62 +79,42 @@ public class Formatter {
 			Date lineDate = new Date(lineFields[INDEX_DUEDATE]);
 			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
 			
-			String formattedLine = String.format(SEARCH_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
+			String formattedLine = String.format(DISPLAY_RESULTS_FLOAT_OR_TASK_new, lineIsDone, i+1, lineName);
 			contentBuffer.append(formattedLine); 
 		}
 		
 		return addMsgIfEmpty(contentBuffer); 
 	}
 	
-	public String formatEvent(String[] linesInFile, ArrayList<Integer> result){ 
+	public String formatEventWithHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){ 
 		StringBuffer contentBuffer = new StringBuffer();
-		Date prevlineDate = null; 
+		Date prevStartDate = null; 
 		for(int i : result){ 
 			String line = linesInFile[i]; 
 			String[] lineFields = line.split(SEMICOLON);
 //			String lineType = lineFields[INDEX_TYPE];
 //			assert items is event  
 			String lineName = lineFields[INDEX_NAME];
-			String lineStartDate = lineFields[INDEX_STARTDATE]; 
-			String lineEndDate = lineFields[INDEX_ENDDATE];
-			String lineStartTime = lineFields[INDEX_STARTTIME]; 
-			String lineEndTime = lineFields[INDEX_ENDTIME]; 
+			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] + SPACE : EMPTYSTRING;
+			String lineStartTime = formatTime(lineFields[INDEX_STARTTIME]); 
+			String lineEndTime = formatTime(lineFields[INDEX_ENDTIME]); 
+			Date currEndDate = new Date(lineFields[INDEX_ENDDATE]);
 			
-			Date lineDate = new Date(lineFields[INDEX_STARTDATE]);
-			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
+			Date currStartDate = new Date(lineFields[INDEX_STARTDATE]);
+			prevStartDate = addDateHeader(contentBuffer, currStartDate, prevStartDate); 
 			
-			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, i+1, 
-					lineStartDate, lineStartTime, lineEndDate, lineEndTime, lineName);
+			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, lineIsDone, i+1, 
+					lineName, lineStartTime, currEndDate.formatDateMedium(), lineEndTime);
 			contentBuffer.append(formattedLine); 
 		}
 		
 		return addMsgIfEmpty(contentBuffer); 
 	}
-	
-	public String formatEventResults(String[] linesInFile, ArrayList<Integer> result){ 
-		StringBuffer contentBuffer = new StringBuffer();
-		Date prevlineDate = null; 
-		for(int i : result){ 
-			String line = linesInFile[i]; 
-			String[] lineFields = line.split(SEMICOLON);
-//			String lineType = lineFields[INDEX_TYPE];
-//			assert items is event  
-			String lineName = lineFields[INDEX_NAME];
-			String lineIsDone = lineFields[INDEX_ISDONE];
-			String lineStartDate = lineFields[INDEX_STARTDATE]; 
-			String lineEndDate = lineFields[INDEX_ENDDATE];
-			String lineStartTime = lineFields[INDEX_STARTTIME]; 
-			String lineEndTime = lineFields[INDEX_ENDTIME]; 
-			
-			Date lineDate = new Date(lineFields[INDEX_STARTDATE]);
-			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
-			
-			String formattedLine = String.format(SEARCH_RESULTS_EVENT, lineIsDone, i+1, 
-					lineStartDate, lineStartTime, lineEndDate, lineEndTime, lineName);
-			contentBuffer.append(formattedLine); 
-		}
 		
-		return addMsgIfEmpty(contentBuffer); 
+	//TODO formatEventWithoutHeaders
+	public String formatEventWithoutHeaders(String[] linesInFile, ArrayList<Integer> result){ 
+		
+		return null; 
 	}
 	
     private String addMsgIfEmpty(StringBuffer buffer){
@@ -149,5 +131,14 @@ public class Formatter {
     		sb.append(dateHeader + NEWLINE); 
     	}
     	return currDate;
+    }
+    
+    private String formatTime(String time){
+    	//assert time string is numeric
+    	Calendar cal = Calendar.getInstance(); 
+		cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
+		cal.set(Calendar.MINUTE, Integer.parseInt(time.substring(2)));
+    	SimpleDateFormat sdf = new SimpleDateFormat("h:mm a"); 
+    	return sdf.format(cal.getTime());
     }
 }

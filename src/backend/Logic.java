@@ -1,8 +1,10 @@
 package backend;
 
 import java.nio.file.FileSystemException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
 import struct.Command;
@@ -53,7 +55,7 @@ public class Logic {
     
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
+    private static final String DISPLAY_FORMAT_EVENT = "%d. %s;Start: %s End: %s %s\n";  
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
@@ -238,7 +240,7 @@ public class Logic {
     	try{
     		String[] linesInFile = getLinesInFile();
     		ArrayList<Integer> pastEventIndexes = filter.filterPastUncompleted(linesInFile, TYPE_EVENT); 
-    		String formattedContent = formatter.formatEvent(linesInFile, pastEventIndexes); 
+    		String formattedContent = formatter.formatEventWithHeaders(linesInFile, pastEventIndexes, false); 
     		return formattedContent; 
     	}
     	catch(FileSystemException e){ 
@@ -626,7 +628,7 @@ public class Logic {
     		case TYPE_TASK : 
     			return formatter.formatTaskResults(linesInFile, result); 
     		case TYPE_EVENT : 
-    			return formatter.formatEventResults(linesInFile, result); 
+    			return formatter.formatEventWithHeaders(linesInFile, result, true); 
     		default : 
     			return ""; 
     	}
@@ -783,9 +785,10 @@ public class Logic {
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isOngoingEvent(line)){
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
-    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
-    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
+    					formatTime(lineComponents[INDEX_STARTTIME]), 
+    					(new Date(lineComponents[INDEX_ENDDATE])).formatDateMedium(), 
+    					formatTime(lineComponents[INDEX_ENDTIME]));
     			contentBuffer.append(formatted);
     		}
     	}
@@ -799,9 +802,10 @@ public class Logic {
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isUncompleted(TYPE_EVENT, lineComponents) && lineComponents[INDEX_STARTDATE].equals(date)){
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
-    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
-    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
+    					formatTime(lineComponents[INDEX_STARTTIME]), 
+    					(new Date(lineComponents[INDEX_ENDDATE])).formatDateMedium(), 
+    					formatTime(lineComponents[INDEX_ENDTIME]));
     			contentBuffer.append(formatted);
     		}
     	}
@@ -836,6 +840,15 @@ public class Logic {
     	return buffer.toString().trim();
     }
     
+    private String formatTime(String time){
+    	//assert time string is numeric
+    	Calendar cal = Calendar.getInstance(); 
+		cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
+		cal.set(Calendar.MINUTE, Integer.parseInt(time.substring(2)));
+    	SimpleDateFormat sdf = new SimpleDateFormat("h:mm a"); 
+    	return sdf.format(cal.getTime());
+    }
+    
     //============================================
   	// Private methods for allView
   	//============================================
@@ -849,7 +862,7 @@ public class Logic {
     		case TYPE_TASK : 
     			return formatter.formatTask(linesInFile, result); 
     		case TYPE_EVENT : 
-    			return formatter.formatEvent(linesInFile, result); 
+    			return formatter.formatEventWithHeaders(linesInFile, result, false); 
     		default : 
     			return ""; 
     	}
