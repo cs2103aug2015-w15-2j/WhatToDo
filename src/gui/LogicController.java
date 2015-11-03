@@ -400,7 +400,7 @@ public class LogicController {
     	return modifiedString;
     }
     
-    private static void toggleAutoComplete() {
+    public void toggleAutoComplete() {
     	if (!AutoComplete.isActivated()) {
     		// Initialize autocomplete
     		AutoComplete.initPopup();
@@ -1048,7 +1048,8 @@ public class LogicController {
 					openConfigLocation();
 					break;
 				case F4:
-					toggleAutoComplete();
+					InterfaceController.toggleAutoCompleteIndicator();
+					InterfaceController.getLogic().toggleAutoComplete();
 					break;
 				default:
 					break;
