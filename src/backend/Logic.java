@@ -1,8 +1,10 @@
 package backend;
 
 import java.nio.file.FileSystemException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
 import struct.Command;
@@ -784,7 +786,9 @@ public class Logic {
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isOngoingEvent(line)){
     			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
-    					lineComponents[INDEX_STARTTIME], lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME]);
+    					formatTime(lineComponents[INDEX_STARTTIME]), 
+    					(new Date(lineComponents[INDEX_ENDDATE])).formatDateMedium(), 
+    					formatTime(lineComponents[INDEX_ENDTIME]));
     			contentBuffer.append(formatted);
     		}
     	}
@@ -799,7 +803,9 @@ public class Logic {
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isUncompleted(TYPE_EVENT, lineComponents) && lineComponents[INDEX_STARTDATE].equals(date)){
     			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
-    					lineComponents[INDEX_STARTTIME], lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME]);
+    					formatTime(lineComponents[INDEX_STARTTIME]), 
+    					(new Date(lineComponents[INDEX_ENDDATE])).formatDateMedium(), 
+    					formatTime(lineComponents[INDEX_ENDTIME]));
     			contentBuffer.append(formatted);
     		}
     	}
@@ -832,6 +838,15 @@ public class Logic {
     		buffer.append(DISPLAY_NO_ITEMS);
     	}
     	return buffer.toString().trim();
+    }
+    
+    private String formatTime(String time){
+    	//assert time string is numeric
+    	Calendar cal = Calendar.getInstance(); 
+		cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
+		cal.set(Calendar.MINUTE, Integer.parseInt(time.substring(2)));
+    	SimpleDateFormat sdf = new SimpleDateFormat("h:mm a"); 
+    	return sdf.format(cal.getTime());
     }
     
     //============================================

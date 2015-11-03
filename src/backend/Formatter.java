@@ -1,6 +1,8 @@
 package backend;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import struct.Date;
 
@@ -18,7 +20,7 @@ public class Formatter {
 	private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_RESULTS_FLOAT_OR_TASK_new = "%s%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%s%d. %s;Start: %s End: %s %s\n"; 
+    private static final String DISPLAY_FORMAT_EVENT = "%s%d. %s;Start: %s         End: %s %s\n"; 
     
 	private static final String SEMICOLON = ";";
 	private static final String NEWLINE = "\n";
@@ -86,7 +88,7 @@ public class Formatter {
 	
 	public String formatEventWithHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){ 
 		StringBuffer contentBuffer = new StringBuffer();
-		Date prevlineDate = null; 
+		Date prevStartDate = null; 
 		for(int i : result){ 
 			String line = linesInFile[i]; 
 			String[] lineFields = line.split(SEMICOLON);
@@ -94,15 +96,15 @@ public class Formatter {
 //			assert items is event  
 			String lineName = lineFields[INDEX_NAME];
 			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] + SPACE : EMPTYSTRING;
-			String lineEndDate = lineFields[INDEX_ENDDATE];
-			String lineStartTime = lineFields[INDEX_STARTTIME]; 
-			String lineEndTime = lineFields[INDEX_ENDTIME]; 
+			String lineStartTime = formatTime(lineFields[INDEX_STARTTIME]); 
+			String lineEndTime = formatTime(lineFields[INDEX_ENDTIME]); 
+			Date currEndDate = new Date(lineFields[INDEX_ENDDATE]);
 			
-			Date lineDate = new Date(lineFields[INDEX_STARTDATE]);
-			prevlineDate = addDateHeader(contentBuffer, lineDate, prevlineDate); 
+			Date currStartDate = new Date(lineFields[INDEX_STARTDATE]);
+			prevStartDate = addDateHeader(contentBuffer, currStartDate, prevStartDate); 
 			
 			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, lineIsDone, i+1, 
-					lineName, lineStartTime, lineEndDate, lineEndTime);
+					lineName, lineStartTime, currEndDate.formatDateMedium(), lineEndTime);
 			contentBuffer.append(formattedLine); 
 		}
 		
@@ -129,5 +131,14 @@ public class Formatter {
     		sb.append(dateHeader + NEWLINE); 
     	}
     	return currDate;
+    }
+    
+    private String formatTime(String time){
+    	//assert time string is numeric
+    	Calendar cal = Calendar.getInstance(); 
+		cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
+		cal.set(Calendar.MINUTE, Integer.parseInt(time.substring(2)));
+    	SimpleDateFormat sdf = new SimpleDateFormat("h:mm a"); 
+    	return sdf.format(cal.getTime());
     }
 }
