@@ -38,6 +38,7 @@ public class LogicController {
 	private static final boolean USER_SEARCH = false;
 	private static final boolean BACKGROUND_SEARCH = true;
 	
+	private static AutoCompleteListener autocompleter;
 	private static Logic logic;
 	private static CommandHistory commandHistory;
 	
@@ -53,6 +54,9 @@ public class LogicController {
 		
 		// Initialize the command history object
 		commandHistory = new CommandHistory();
+		
+		// Initialize the listener for autocomplete
+		autocompleter = new AutoCompleteListener();
 	}
 	
 	public String getFilePath() {
@@ -374,6 +378,20 @@ public class LogicController {
     	}
     	
     	return modifiedString;
+    }
+    
+    private static void toggleAutoComplete() {
+    	if (!AutoComplete.isActivated()) {
+    		// Initialize autocomplete
+    		AutoComplete.initPopup();
+    		InterfaceController.getTextField().textProperty().addListener(autocompleter);
+    		AutoComplete.setActivation(true);
+    		
+    	} else {
+    		InterfaceController.getTextField().textProperty().removeListener(autocompleter);
+    		AutoComplete.closePopup();
+    		AutoComplete.setActivation(false);
+    	}
     }
     
 	private static void changeView(View view) {
@@ -1008,6 +1026,9 @@ public class LogicController {
 					break;
 				case F3:
 					openConfigLocation();
+					break;
+				case F4:
+					toggleAutoComplete();
 					break;
 				default:
 					break;

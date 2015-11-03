@@ -777,9 +777,8 @@ public class InterfaceController {
         textField.setOnAction(logicControl.getTextInputHandler());
         textField.addEventFilter(KeyEvent.KEY_PRESSED, logicControl.getKeyPressHandler());
         
-        // Initialize autocomplete
+        // Initialize the popup for the first time
         AutoComplete.initPopup();
-        textField.textProperty().addListener(logicControl.getAutoCompleteListener());
 
         // CSS
         textBox.getStyleClass().add("gradient-regular");
