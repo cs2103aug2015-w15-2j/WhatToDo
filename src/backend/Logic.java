@@ -238,7 +238,7 @@ public class Logic {
     	try{
     		String[] linesInFile = getLinesInFile();
     		ArrayList<Integer> pastEventIndexes = filter.filterPastUncompleted(linesInFile, TYPE_EVENT); 
-    		String formattedContent = formatter.formatEvent(linesInFile, pastEventIndexes); 
+    		String formattedContent = formatter.formatEventWithHeaders(linesInFile, pastEventIndexes, false); 
     		return formattedContent; 
     	}
     	catch(FileSystemException e){ 
@@ -626,7 +626,7 @@ public class Logic {
     		case TYPE_TASK : 
     			return formatter.formatTaskResults(linesInFile, result); 
     		case TYPE_EVENT : 
-    			return formatter.formatEventResults(linesInFile, result); 
+    			return formatter.formatEventWithHeaders(linesInFile, result, true); 
     		default : 
     			return ""; 
     	}
@@ -849,7 +849,7 @@ public class Logic {
     		case TYPE_TASK : 
     			return formatter.formatTask(linesInFile, result); 
     		case TYPE_EVENT : 
-    			return formatter.formatEvent(linesInFile, result); 
+    			return formatter.formatEventWithHeaders(linesInFile, result, false); 
     		default : 
     			return ""; 
     	}
