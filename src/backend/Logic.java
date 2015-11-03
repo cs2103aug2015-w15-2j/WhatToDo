@@ -53,7 +53,7 @@ public class Logic {
     
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%d. [%s %s - %s %s] %s\n"; 
+    private static final String DISPLAY_FORMAT_EVENT = "%d. %s;Start: %s End: %s %s\n";  
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
@@ -783,9 +783,8 @@ public class Logic {
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isOngoingEvent(line)){
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
-    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
-    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
+    					lineComponents[INDEX_STARTTIME], lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME]);
     			contentBuffer.append(formatted);
     		}
     	}
@@ -799,9 +798,8 @@ public class Logic {
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isUncompleted(TYPE_EVENT, lineComponents) && lineComponents[INDEX_STARTDATE].equals(date)){
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1,
-    					lineComponents[INDEX_STARTDATE], lineComponents[INDEX_STARTTIME],
-    					lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME], lineComponents[INDEX_NAME]);
+    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
+    					lineComponents[INDEX_STARTTIME], lineComponents[INDEX_ENDDATE], lineComponents[INDEX_ENDTIME]);
     			contentBuffer.append(formatted);
     		}
     	}
