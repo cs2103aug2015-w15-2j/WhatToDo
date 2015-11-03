@@ -612,7 +612,6 @@ public class CommandParser {
 		}
 		
 		String argument = arguments.get(0);
-		System.out.println(argument);
 		if (argument.matches(REGEX_POSITIVE_INTEGER)) {
 			return deleteIndex(Integer.parseInt(argument));
 		} else {
