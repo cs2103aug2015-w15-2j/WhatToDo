@@ -86,7 +86,12 @@ public class LogicController {
 		
 		// Split the string by newline
 		String[] defEventsSplit = defEvents.split("\n");
-
+		
+		// Filter through the array and reformat the data
+		for (int i = 0; i < defEventsSplit.length; i++) {
+			defEventsSplit[i] = defEventsSplit[i].replace(';', '\n');
+		}
+		
 		return defEventsSplit;
 	}
 	
@@ -108,6 +113,11 @@ public class LogicController {
 		
 		// Split the string by newline
 		String[] allEventsSplit = allEvents.split("\n");
+		
+		// Filter through the array and reformat the data
+		for (int i = 0; i < allEventsSplit.length; i++) {
+			allEventsSplit[i] = allEventsSplit[i].replace(';', '\n');
+		}
 		
 		return allEventsSplit;
 	}
@@ -131,6 +141,11 @@ public class LogicController {
 		// Split the string by newline
 		String[] unresEventsSplit = unresEvents.split("\n");
 		
+		// Filter through the array and reformat the data
+		for (int i = 0; i < unresEventsSplit.length; i++) {
+			unresEventsSplit[i] = unresEventsSplit[i].replace(';', '\n');
+		}
+		
 		return unresEventsSplit;
 	}
 	
@@ -152,6 +167,11 @@ public class LogicController {
 		
 		// Split the string by newline
 		String[] doneEventsSplit = doneEvents.split("\n");
+		
+		// Filter through the array and reformat the data
+		for (int i = 0; i < doneEventsSplit.length; i++) {
+			doneEventsSplit[i] = doneEventsSplit[i].replace(';', '\n');
+		}
 		
 		return doneEventsSplit;
 	}
