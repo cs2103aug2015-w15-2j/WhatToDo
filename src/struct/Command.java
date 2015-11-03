@@ -30,6 +30,7 @@ public class Command {
 	private String endTime;
 	private boolean isStart; 
 	private ArrayList<String> editList;
+	private String originalCommand;
 	
 	//============================================
 	// Constructors
@@ -107,6 +108,10 @@ public class Command {
 		return editList;
 	}
 	
+	public String getOriginalCommand() {
+		return originalCommand;
+	}
+	
 	//============================================
 	// Setters
 	//============================================
@@ -161,5 +166,9 @@ public class Command {
 	
 	public void setEditList(ArrayList<String> editList) {
 		this.editList = editList;
+	}
+	
+	public void setOriginalCommand(String originalCommand) {
+		this.originalCommand = originalCommand;
 	}
 }
