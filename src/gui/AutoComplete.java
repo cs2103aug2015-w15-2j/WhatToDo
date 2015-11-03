@@ -40,6 +40,8 @@ public class AutoComplete {
 	private static boolean isShowing = false;
 	private static int numOfResults = -1;
 	
+	private static final String KEYWORD_ALIAS = "alias";
+	
 	private static final double WIDTH_POPUP = 200;
 	private static final double HEIGHT_POPUP = 150;
 	
@@ -76,6 +78,10 @@ public class AutoComplete {
 	
 	private static void initAliasCommands() {
 		aliasCommands = new ArrayList<Alias>();
+	}
+	
+	private static void updateAliases() {
+		aliasCommands = InterfaceController.getLogic().getAliases();
 	}
 	
 	private static boolean isSubstring(String input, String target) {
@@ -133,7 +139,7 @@ public class AutoComplete {
 				}
 			}
 		}
-		// Check for matches in operationCommands
+		// Check for matches in aliasCommands
 		for (int i = 0; i < aliasCommands.size(); i++) {
 			// Check 1: length of command in array not shorter than searchTerm
 			if (aliasCommands.get(i).getAlias().length() >= searchTerm.length()) {
@@ -196,18 +202,30 @@ public class AutoComplete {
 	
 	public static void updatePopup(String searchTerm) {
 		// Update aliasCommands
-		//updateAliases();
+		updateAliases();
 		
-		// Perform a matching search and get the results
-		ArrayList<Alias> matchedCommands = getMatchingCommands(searchTerm);
-		numOfResults = matchedCommands.size();
-		List<Alias> matchedToSort = matchedCommands;
-		Collections.sort(matchedToSort);
-		
-		// Convert from ArrayList to ObservableList
-		ObservableList<Alias> matchedList = FXCollections.observableArrayList(matchedToSort);
-		popupList.getItems().clear();
-		popupList.setItems(matchedList);
+		if (searchTerm.toLowerCase().equals(KEYWORD_ALIAS)) {
+			// Perform a matching search and get the results
+			List<Alias> matchedToSort = aliasCommands;
+			numOfResults = matchedToSort.size();
+			Collections.sort(matchedToSort);
+
+			// Convert from ArrayList to ObservableList
+			ObservableList<Alias> matchedList = FXCollections.observableArrayList(matchedToSort);
+			popupList.getItems().clear();
+			popupList.setItems(matchedList);
+		} else {
+			// Perform a matching search and get the results
+			ArrayList<Alias> matchedCommands = getMatchingCommands(searchTerm);
+			numOfResults = matchedCommands.size();
+			List<Alias> matchedToSort = matchedCommands;
+			Collections.sort(matchedToSort);
+
+			// Convert from ArrayList to ObservableList
+			ObservableList<Alias> matchedList = FXCollections.observableArrayList(matchedToSort);
+			popupList.getItems().clear();
+			popupList.setItems(matchedList);
+		}
 		
 		// Only show the popup list if there are results
 		if (numOfResults > 0) {
