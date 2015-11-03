@@ -256,6 +256,10 @@ public class Logic {
 		} 
     }
     
+    public String getAliasFileContents() throws FileSystemException{
+    	return storage.readAliasFile(); 
+    }
+    
     public String getFilepath() {
     	try{
     		return storage.getFilePath();
