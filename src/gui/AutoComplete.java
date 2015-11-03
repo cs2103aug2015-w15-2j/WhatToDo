@@ -78,6 +78,10 @@ public class AutoComplete {
 		aliasCommands = new ArrayList<Alias>();
 	}
 	
+	private static void updateAliases() {
+		aliasCommands = InterfaceController.getLogic().getAliases();
+	}
+	
 	private static boolean isSubstring(String input, String target) {
 		
 		if (input.length() > target.length()) {
@@ -196,7 +200,7 @@ public class AutoComplete {
 	
 	public static void updatePopup(String searchTerm) {
 		// Update aliasCommands
-		//updateAliases();
+		updateAliases();
 		
 		// Perform a matching search and get the results
 		ArrayList<Alias> matchedCommands = getMatchingCommands(searchTerm);

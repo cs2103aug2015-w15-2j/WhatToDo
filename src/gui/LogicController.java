@@ -19,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import struct.Alias;
 import struct.Command;
 import struct.View;
 
@@ -341,6 +342,22 @@ public class LogicController {
 		}
 		
 		return count;
+	}
+	
+	public ArrayList<Alias> getAliases() {
+		ArrayList<Alias> newAliases = new ArrayList<Alias>();
+		
+		try {
+			String[] aliasesSplit = logic.getAliasFileContents().split("\n");
+			for (int i = 0; i < aliasesSplit.length; i++) {
+				String[] aliasSplit = aliasesSplit[i].split(";");
+				newAliases.add(new Alias(aliasSplit[0], aliasSplit[1]));
+			}
+		} catch (FileSystemException e) {
+			// Do nothing, return an empty alias list to AutoComplete
+		}
+		
+		return newAliases;
 	}
 	
     public boolean isTitle(String displayData) {
