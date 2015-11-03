@@ -71,6 +71,8 @@
 .element {
 	-fx-background-color: #f0f0f0;
 	-fx-background-image: url("../resources/elementBG.jpg");
+	-fx-border-width: 1px;
+	-fx-border-color: #b0b0b0;
 	/* -fx-effect: dropshadow(gaussian, gray, 3, 0.2, 0, 1); */
 }
 

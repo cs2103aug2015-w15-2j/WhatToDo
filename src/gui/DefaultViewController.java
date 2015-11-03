@@ -104,7 +104,7 @@ public class DefaultViewController {
 
     			// Apply CSS style for regular data field
     			elementBox.getStyleClass().add("element");
-
+    			
     			return elementBox;
     		} else {
     			
