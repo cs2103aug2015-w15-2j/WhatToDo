@@ -24,8 +24,8 @@ import struct.Command;
 import struct.View;
 
 public class LogicController {
-
-	private static final String MESSAGE_ERROR_FILESYSTEM = "Failed to create the file.";
+	
+	protected static final String MESSAGE_ERROR_FILESYSTEM = "Failed to create the file.";
 	protected static final String MESSAGE_EMPTY = "There are no items to display.";
 	private static final String MESSAGE_INVALID_INDEX = "Invalid index number entered.";
 	
@@ -35,6 +35,8 @@ public class LogicController {
 	private static final String CSS_NO_UNDERLINE_ITALIC = CSS_NO_UNDERLINE + "-fx-font-style: italic;";
 	
 	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
+	
+	private static final String NULL_STRING = "";
 	
 	private static final boolean SEARCH_USER = false;
 	private static final boolean SEARCH_BACKGROUND = true;
@@ -348,10 +350,14 @@ public class LogicController {
 		ArrayList<Alias> newAliases = new ArrayList<Alias>();
 		
 		try {
-			String[] aliasesSplit = logic.getAliasFileContents().split("\n");
-			for (int i = 0; i < aliasesSplit.length; i++) {
-				String[] aliasSplit = aliasesSplit[i].split(";");
-				newAliases.add(new Alias(aliasSplit[0], aliasSplit[1]));
+			String aliases = logic.getAliasFileContents();
+			// Check if the there are any aliases set in the file yet
+			if (!aliases.equals(NULL_STRING)) {
+				String[] aliasesSplit = aliases.split("\n");
+				for (int i = 0; i < aliasesSplit.length; i++) {
+					String[] aliasSplit = aliasesSplit[i].split(";");
+					newAliases.add(new Alias(aliasSplit[0], aliasSplit[1]));
+				}
 			}
 		} catch (FileSystemException e) {
 			// Do nothing, return an empty alias list to AutoComplete
@@ -402,7 +408,7 @@ public class LogicController {
         	// Proceed with normal operation
         	// Negative and zero indices are handled by CommandParser
         	textFieldInputSplit[1] = String.valueOf(fileIndex);
-        	modifiedString = "";
+        	modifiedString = NULL_STRING;
         	for (int i = 0; i < textFieldInputSplit.length; i++) {
         		modifiedString += textFieldInputSplit[i] + " ";
         	}
@@ -419,8 +425,6 @@ public class LogicController {
     
     public void toggleAutoComplete() {
     	if (!AutoComplete.isActivated()) {
-    		// Initialize autocomplete
-    		AutoComplete.initPopup();
     		InterfaceController.getTextField().textProperty().addListener(autocompleter);
     		AutoComplete.setActivation(true);
     		
@@ -815,7 +819,7 @@ public class LogicController {
 	
 	private static class TextInputHandler implements EventHandler<ActionEvent> {
 		
-		private String lastSearchCommand = "";
+		private String lastSearchCommand = NULL_STRING;
 		
         @Override
         public void handle(ActionEvent event) {
@@ -830,7 +834,7 @@ public class LogicController {
             commandHistory.resetIndex();
 
             // Clear the textField
-            textField.setText("");
+            textField.setText(NULL_STRING);
 
             // Do a preliminary parse to determine the type of operation
             Command.CommandType operationType = logic.getCommandType(textFieldInput);
@@ -889,12 +893,12 @@ public class LogicController {
             	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
 
             	// Run the last search and update the search view only if the user is in search
-            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() == View.SEARCH) {
             		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
             		InterfaceController.updateMainInterface(View.SEARCH);
             	}
             	// If the user is not in search view, do not switch to search view
-            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() != View.SEARCH) {
             		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
             	}
             	break;
@@ -903,12 +907,12 @@ public class LogicController {
             	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
 
             	// Run the last search and update the search view only if the user is in search
-            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() == View.SEARCH) {
             		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
             		InterfaceController.updateMainInterface(View.SEARCH);
             	}
             	// If the user is not in search view, do not switch to search view
-            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() != View.SEARCH) {
             		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
             	}
             	break;
@@ -917,12 +921,12 @@ public class LogicController {
             	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
 
             	// Run the last search and update the search view only if the user is in search
-            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() == View.SEARCH) {
             		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
             		InterfaceController.updateMainInterface(View.SEARCH);
             	}
             	// If the user is not in search view, do not switch to search view
-            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() != View.SEARCH) {
             		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
             	}
             	break;
@@ -931,12 +935,12 @@ public class LogicController {
             	runCommand(operationType, textFieldInput, SEARCH_USER);
 
             	// Run the last search and update the search view only if the user is in search
-            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() == View.SEARCH) {
+            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() == View.SEARCH) {
             		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
             		InterfaceController.updateMainInterface(View.SEARCH);
             	}
             	// If the user is not in search view, do not switch to search view
-            	if (!lastSearchCommand.equals("") && InterfaceController.getCurrentView() != View.SEARCH) {
+            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() != View.SEARCH) {
             		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
             	}
             	break;
@@ -1341,7 +1345,7 @@ public class LogicController {
     			String oldValue, String newValue) {
     		// Only perform autocompletion when the string is within one word
     		// and is not empty
-    		if (newValue.split(" ").length == 1 && !newValue.equals("")) {
+    		if (newValue.split(" ").length == 1 && !newValue.equals(NULL_STRING)) {
     			AutoComplete.updatePopup(newValue);
     		} else {
     			AutoComplete.closePopup();
