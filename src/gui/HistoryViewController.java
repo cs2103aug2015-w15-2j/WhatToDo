@@ -40,18 +40,21 @@ public class HistoryViewController {
     	
     	Label feedbackLabel = new Label(feedbackMessage);
     	HBox feedbackBox = new HBox(indexBox, feedbackLabel);
-
+		
     	// Set text wrapping for the feedback message
     	feedbackLabel.setWrapText(true);
 
-    	// If is default and no commands entered, do not display background
+    	// If is default and no commands entered, do not display index background
     	if (index != "") {
-    		// Set the margins of the index label within the HBox
-    		HBox.setMargin(feedbackIndex, new Insets(
-    				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    				InterfaceController.MARGIN_TEXT_ELEMENT, 
-    				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    				InterfaceController.MARGIN_TEXT_ELEMENT));
+        	// Get the width of label and resize the line
+    		Text text = new Text(String.valueOf(index));
+    		Scene s = new Scene(new Group(text));
+    		// Override the CSS style to calculate the text width
+    		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
+    				+ "-fx-font-size: 14; ");
+    		text.applyCss();
+    		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
+    		indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
     	}
     	
     	// Set the margins of the feedback label within the HBox
