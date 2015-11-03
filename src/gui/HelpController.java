@@ -38,7 +38,6 @@ public class HelpController {
      */
     
     public static void toggleHelpDialog() {
-    	
     	if (!isHelpOpen) {
     		openHelpDialog();
     	} else {
@@ -52,12 +51,12 @@ public class HelpController {
 		
 		isHelpOpen = true;
 		MainApp.help.show();
+		MainApp.help.requestFocus();
     }
     
     public static void closeHelpDialog() {
 		// Set help button to unselected
 		InterfaceController.changeButtonToUnselected(View.HELP);
-		
 		isHelpOpen = false;
 		MainApp.help.close();
     }

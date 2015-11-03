@@ -957,16 +957,16 @@ public class LogicController {
 					changeView(View.ALL);
 					break;
 				case DIGIT3:
-					changeView(View.HISTORY);
-					break;
-				case DIGIT4:
 					changeView(View.UNRESOLVED);
 					break;
-				case DIGIT5:
+				case DIGIT4:
 					changeView(View.DONE);
 					break;
-				case DIGIT6:
+				case DIGIT5:
 					changeView(View.SEARCH);
+					break;
+				case DIGIT6:
+					changeView(View.HISTORY);
 					break;
 				case DIGIT7:
 					changeView(View.HELP);
@@ -993,19 +993,25 @@ public class LogicController {
 				case NUMPAD7:
 					changeView(View.HELP);
 					break;
-				// For opening text and config files
-				case T:
-					openFileLocation();
-					break;
-				case S:
-					openConfigLocation();
-					break;
 				default:
 					// Do nothing
 					break;
 				}
 			} else {
-				// Do nothing
+				switch (event.getCode()) {
+				case F1:
+					changeView(View.HELP);
+					break;
+				// For opening text and config files
+				case F2:
+					openFileLocation();
+					break;
+				case F3:
+					openConfigLocation();
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}
@@ -1014,6 +1020,7 @@ public class LogicController {
 		
 		@Override
 		public void handle(KeyEvent event) {
+			event.consume();
 			if (event.isControlDown()) {
 				switch (event.getCode()) {
 				// For regular number key
@@ -1028,7 +1035,9 @@ public class LogicController {
 					break;
 				}
 			} else {
-				// Do nothing
+				if (event.getCode() == KeyCode.F1) {
+					changeView(View.HELP);
+				}
 			}
 		}
 	}

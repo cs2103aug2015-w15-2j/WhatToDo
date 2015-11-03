@@ -90,16 +90,39 @@ public class CommandParser {
     private static final String KEYWORD_EDIT_END_DATE = "endd";
     private static final String KEYWORD_EDIT_END_TIME = "endt";
     
+    private static final String ERROR_USER_COMMAND = "Invalid user command!";
+    private static final String ERROR_TASK_NAME = "Task name required!";
+    private static final String ERROR_DEADLINE = "Invalid deadline!";
+    private static final String ERROR_EVENT_FORMAT = "Invalid format for adding event!";
+    private static final String ERROR_START_DATE = "Invalid start date!";
+    private static final String ERROR_START_TIME = "Invalid start time!";
+    private static final String ERROR_END_DATE = "Invalid end date!";
+    private static final String ERROR_END_TIME = "Invalid end time!";
+    private static final String ERROR_START_END_TIME = "Start time later than or equal to end time for single-day event!";
+    private static final String ERROR_START_END_DATE = "Start date later than end date!";    
+    private static final String ERROR_EVENT_NAME = "Event name required!";
+    private static final String ERROR_EVENT_DATE = "Invalid date!";
+    private static final String ERROR_DELETE = "Index/alias command required!";
+    private static final String ERROR_DELETE_INDEX_ALIAS = "Invalid index or alias!";
+    private static final String ERROR_DELETE_ALIAS = "No such alias has been set!";
+    private static final String ERROR_EDIT = "Index required!";
+    private static final String ERROR_INDEX = "Invalid index!";
+    private static final String ERROR_DOUBLE_EDIT_KEYWORD = "Double keywords not accepted!";
+    private static final String ERROR_EDIT_FORMAT = "Invalid edit format!";
+    private static final String ERROR_NAME = "New task/event name required!";
+    private static final String ERROR_SET = "Command and alias required!";
+    private static final String ERROR_SET_FORMAT = "Invalid set format!";
+    private static final String ERROR_SET_COMMAND = "Command specified is not a registered command/keyword!";
+    private static final String ERROR_SET_ALIAS = "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use!";
+    private static final String ERROR_SET_NUMBER = "Positive integers cannot be used as aliases!";
+    private static final String ERROR_SAVE = "Directory required!";
+    private static final String ERROR_NO_ARGUMENTS = "This command does not expect arguments!";
+    
     private static final ArrayList<String> DAYS_ARRAY_LIST = new ArrayList<String>();
     private static final ArrayList<String> DAYS_FULL_ARRAY_LIST = new ArrayList<String>();
     
     private static final ArrayList<String> COMMANDS_ARRAY_LIST = new ArrayList<String>();
     private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
-    
-    public static void main (String[] args) {
-    	Hashtable<String, String> hashmap = new Hashtable<String, String>();
-    	CommandParser parser = new CommandParser(hashmap);
-    }
     
 	public CommandParser() {
         initDaysArrayList();
@@ -192,8 +215,7 @@ public class CommandParser {
                 break;
 
             default :
-            	String errorMsg = "User Command not recgonised!";
-                command = initInvalidCommand(errorMsg);
+                command = initInvalidCommand(ERROR_USER_COMMAND);
         }
         command.setUserInput(userInput);
         return command;
@@ -234,8 +256,7 @@ public class CommandParser {
 		Command command;
 		
 		if (arguments.isEmpty()) {
-			String errorMsg = "Please input the task name!";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_TASK_NAME);
 		} else if (arguments.contains(KEYWORD_DEADLINE)) {
 			command = addTask(arguments);
 		} else if (arguments.contains(KEYWORD_EVENT_TO) && 
@@ -260,12 +281,10 @@ public class CommandParser {
 		String name = getName(nameList);
 		
 		if (date == null) {
-			String errorMsg = "Invalid Date";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_DEADLINE);
 		}
 		if (name == null) {
-			String errorMsg = "Invalid Task Name!";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_TASK_NAME);
 		}
 		
 		Command command = new Command(Command.CommandType.ADD);
@@ -291,8 +310,7 @@ public class CommandParser {
 		if (Math.abs(keywordToIndex - keywordFromIndex) != POSITION_DIFFERENCE_THREE 
 			|| (arguments.size() - keywordToIndex != POSITION_DIFFERENCE_THREE 
 			&& arguments.size() - keywordFromIndex != POSITION_DIFFERENCE_THREE)) {
-			String errorMsg = "Invalid format for adding Event";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_EVENT_FORMAT);
 		}
 		
 		Date startDate = getDate(arguments.get(keywordFromIndex + POSITION_PLUS_ONE));
@@ -302,30 +320,24 @@ public class CommandParser {
 		String name = null;
 		
 		if (startDate == null) {
-			String errorMsg = "Invalid Start Date";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_START_DATE);
 		}
 		if (startTime == null) {
-			String errorMsg = "Invalid Start Time";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_START_TIME);
 		}
 		if (endDate == null) {
-			String errorMsg = "Invalid End Date";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_END_DATE);
 		}
 		if (endTime == null) {
-			String errorMsg = "Invalid End Time";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_END_TIME);
 		}
 		if (startDate.compareTo(endDate) == 0) {
 			if (!areValidTimes(startTime, endTime)) {
-				String errorMsg = "Start Time cannot be later than or equal to End Time for single day Events";
-				return initInvalidCommand(errorMsg);
+				return initInvalidCommand(ERROR_START_END_TIME);
 			}
 		}
 		if (startDate.compareTo(endDate) == 1) {
-			String errorMsg = "Start Date cannot be later than End Date";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_START_END_DATE);
 		}
 		
 		if (keywordToIndex > keywordFromIndex) {
@@ -336,8 +348,7 @@ public class CommandParser {
 			name = getName(nameList);
 		}
 		if (name == null) {
-			String errorMsg = "Invalid Event name";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_EVENT_NAME);
 		}
 		
 		Command command = new Command(Command.CommandType.ADD);
@@ -359,8 +370,7 @@ public class CommandParser {
 		
 		if (maxIndex - minIndex != POSITION_DIFFERENCE_FOUR 
 			|| arguments.size() - maxIndex != POSITION_DIFFERENCE_TWO) {
-			String errorMsg = "Invalid format for adding Event";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_EVENT_FORMAT);
 		}
 		
 		Date date = getDate(arguments.get(keywordOnIndex + POSITION_PLUS_ONE));
@@ -369,25 +379,20 @@ public class CommandParser {
 		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, minIndex);
 		String name = getName(nameList);
 		
+		if (name == null) {
+			return initInvalidCommand(ERROR_EVENT_NAME);
+		}
 		if (date == null) {
-			String errorMsg = "Invalid Date";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_EVENT_DATE);
 		}
 		if (startTime == null) {
-			String errorMsg = "Invalid Start Time";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_START_TIME);
 		}
 		if (endTime == null) {
-			String errorMsg = "Invalid End Time";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_END_TIME);
 		}
 		if (!areValidTimes(startTime, endTime)) {
-			String errorMsg = "Start Time cannot be later than or equal to End Time";
-			return initInvalidCommand(errorMsg);
-		}
-		if (name == null) {
-			String errorMsg = "Invalid Event Name";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_START_END_TIME);
 		}
 		Command command = new Command(Command.CommandType.ADD);
 		command.setDataType(Command.DataType.EVENT);
@@ -597,13 +602,11 @@ public class CommandParser {
 	
 	private Command initDeleteCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Please specify index or alias command to delete";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_DELETE);
 		}
 		
 		if (arguments.size() > 1) {
-			String errorMsg = "Invalid index or alias command";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_DELETE_INDEX_ALIAS);
 		}
 		
 		String argument = arguments.get(0);
@@ -617,8 +620,7 @@ public class CommandParser {
 	
 	private Command deleteAlias(String alias) {
 		 if (!commandAliases.containsKey(alias)) {
-			 String errorMsg = "No such alias set";
-			 return initInvalidCommand(errorMsg);
+			 return initInvalidCommand(ERROR_DELETE_ALIAS);
 		 } else {
 			 Command command = new Command(Command.CommandType.DELETEALIAS);
 			 command.setName(alias);
@@ -654,15 +656,13 @@ public class CommandParser {
 	private Command initEditCommand(ArrayList<String> arguments) {
 		
 		if (arguments.isEmpty()) {
-			String errorMsg = "Please specify something to edit";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_EDIT);
 		}
 		
 		
 		int index = Integer.parseInt(arguments.get(0));
 		if (index < 1) {
-			String errorMsg = "Invalid Index";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_INDEX);
 		}
 		
 		int nameIndex = getKeywordIndex(arguments, KEYWORD_EDIT_NAME);
@@ -677,12 +677,11 @@ public class CommandParser {
 			String repeatedKeyword = repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, 
 					                                  startTimeIndex, endDateIndex, endTimeIndex);
 			String errorMsg = "Double keywords " + repeatedKeyword + " not accepted!";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_DOUBLE_EDIT_KEYWORD);
 		}
 		if (!(deadlineIndex < 0)) {
 			if (!(startDateIndex < 0) || !(startTimeIndex < 0) || !(endDateIndex < 0) || !(endTimeIndex < 0)) {
-				String errorMsg = "Invalid edit format";
-				return initInvalidCommand(errorMsg);
+				return initInvalidCommand(ERROR_EDIT_FORMAT);
 			}
 		}
 		
@@ -690,39 +689,13 @@ public class CommandParser {
 				                                              startTimeIndex, endDateIndex, endTimeIndex);
 		
 		if (indexArrayList.isEmpty()) {
-			String errorMsg = "Invalid edit format";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_EDIT_FORMAT);
 		}
 		
 		Hashtable<Integer, String> indexKeywordHash = getHashtable(nameIndex, deadlineIndex, startDateIndex, 
 				                                                   startTimeIndex, endDateIndex, endTimeIndex);
 		ArrayList<String> editList = getEditList(nameIndex, deadlineIndex, startDateIndex, 
 				                                 startTimeIndex, endDateIndex, endTimeIndex);
-		
-		if (startDateIndex >= 0 && endDateIndex >= 0) {
-			Date startDate = getDate(arguments.get(startDateIndex + 1));
-			Date endDate = getDate(arguments.get(endDateIndex + 1));
-			if (startDate == null) {
-				String errorMsg = "Invalid Start Date";
-				return initInvalidCommand(errorMsg);
-			}
-			if (endDate == null) {
-				String errorMsg = "Invalid End Date";
-				return initInvalidCommand(errorMsg);
-			}
-			if (startDate.compareTo(endDate) == 1) {
-				String errorMsg = "Start Date cannot be later than End Date";
-				return initInvalidCommand(errorMsg);
-			}
-			if (startDate.compareTo(endDate) == 0 && startTimeIndex >= 0 && endTimeIndex >= 0) {
-				String startTime = arguments.get(startTimeIndex + 1);
-				String endTime = arguments.get(endTimeIndex + 1);
-				if (!areValidTimes(startTime, endTime)) {
-					String errorMsg = "Start Time cannot be later than or equal to End Time for single day Event";
-					return initInvalidCommand(errorMsg);
-				}
-			}
-		}
 		
 		Command command = new Command();
 		command.setCommandType(Command.CommandType.EDIT);
@@ -884,8 +857,7 @@ public class CommandParser {
 	
 	private Command editName (Command command, String argument) {
 		if (argument == null) {
-			String errorMsg = "Invalid name";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NAME);
 		}
 		command.setName(argument);
 		return command;
@@ -894,8 +866,7 @@ public class CommandParser {
 	private Command editDeadline(Command command, String argument) {
 		Date deadline = getDate(argument);
 		if (deadline == null) {
-			String errorMsg = "Invalid deadline date";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_DEADLINE);
 		}
 		command.setDueDate(deadline);
 		return command;
@@ -904,8 +875,7 @@ public class CommandParser {
 	private Command editStartDate(Command command, String argument) {
 		Date startDate = getDate(argument);
 		if (startDate == null) {
-			String errorMsg = "Invalid start date";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_START_DATE);
 		}
 		command.setStartDate(startDate);
 		return command;
@@ -914,8 +884,7 @@ public class CommandParser {
 	private Command editStartTime(Command command, String argument) {
 		String startTime = getTime(argument);
 		if (startTime == null) {
-			String errorMsg = "Invalid start time";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_START_TIME);
 		}
 		command.setStartTime(startTime);
 		return command;
@@ -924,8 +893,7 @@ public class CommandParser {
 	private Command editEndDate(Command command, String argument) {
 		Date endDate = getDate(argument);
 		if (endDate == null) {
-			String errorMsg = "Invalid end date";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_END_DATE);
 		}
 		command.setEndDate(endDate);
 		return command;
@@ -934,8 +902,7 @@ public class CommandParser {
 	private Command editEndTime(Command command, String argument) {
 		String endTime = getTime(argument);
 		if (endTime == null) {
-			String errorMsg = "Invalid end time";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_END_TIME);
 		}
 		command.setEndTime(endTime);
 		return command;
@@ -973,8 +940,7 @@ public class CommandParser {
 		int index = getIndex(arguments);
 		
 		if (arguments.size() > 1 || index <= 0) {
-			String errorMsg = "Invalid input of index";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_INDEX);
 		}
 		
 		Command command = new Command(Command.CommandType.DONE);
@@ -989,12 +955,10 @@ public class CommandParser {
 	
 	private Command initSetCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Please specify a command and an alias";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_SET);
 		}
 		if (arguments.get(1) != KEYWORD_SET || arguments.size() != 3) {
-			String errorMsg = "Invalid set format";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_SET_FORMAT);
 		}
 		String commandKeyword = arguments.get(0);
 		String alias = arguments.get(2);
@@ -1019,17 +983,15 @@ public class CommandParser {
 			return STRING_VERIFIED;
 		} else {
 			String errorMsg = commandKeyword + " is not a registered command/keyword";
-			return errorMsg;
+			return ERROR_SET_COMMAND;
 		}
 	}
 	
 	private String verifyAlias(String alias) {
 		if (COMMANDS_ARRAY_LIST.contains(alias)) {
-			String errorMsg = "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use";
-			return errorMsg;
+			return ERROR_SET_ALIAS;
 		} else if (alias.matches(REGEX_POSITIVE_INTEGER)) {
-			String errorMsg = "Positive Integers cannot be used as aliases";
-			return errorMsg;
+			return ERROR_SET_NUMBER;
 		} else {
 			return STRING_VERIFIED;
 		}
@@ -1081,8 +1043,7 @@ public class CommandParser {
 	
 	private Command initSaveCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			String errorMsg = "Directory cannot be empty";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_SAVE);
 		}
 		Command command = new Command(Command.CommandType.SAVE);
 		List<String> directoryList = arguments.subList(0, arguments.size());
@@ -1098,8 +1059,7 @@ public class CommandParser {
 	
 	private Command initUndoCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.UNDO);
 		return command;
@@ -1112,8 +1072,7 @@ public class CommandParser {
 	
 	private Command initRedoCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.REDO);
 		return command;
@@ -1126,8 +1085,7 @@ public class CommandParser {
 	
 	private Command initViewAllCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.ALL);
@@ -1141,8 +1099,7 @@ public class CommandParser {
 	
 	private Command initViewDefCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.DEF);
@@ -1156,8 +1113,7 @@ public class CommandParser {
 	
 	private Command initViewHistCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.HIST);
@@ -1171,8 +1127,7 @@ public class CommandParser {
 	
 	private Command initViewUnresCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.UNRES);
@@ -1186,8 +1141,7 @@ public class CommandParser {
 	
 	private Command initViewHelpCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.HELP);
@@ -1201,8 +1155,7 @@ public class CommandParser {
 	
 	private Command initViewOpenFileCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.OPENFILE);
@@ -1216,8 +1169,7 @@ public class CommandParser {
 	
 	private Command initViewConfigCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.CONFIG);
@@ -1231,8 +1183,7 @@ public class CommandParser {
 	
 	private Command initExitCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			String errorMsg = "This command does not expect arguments";
-			return initInvalidCommand(errorMsg);
+			return initInvalidCommand(ERROR_NO_ARGUMENTS);
 		}
 		return new Command(Command.CommandType.EXIT);
 	}
