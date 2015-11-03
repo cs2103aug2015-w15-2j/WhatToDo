@@ -142,12 +142,13 @@ public class CommandParser {
         ArrayList<String> parameters = splitString(userInput);
         ArrayList<String> convertedParameters = convertParameters(parameters);
         String userCommand = getUserCommand(convertedParameters);
-        ArrayList<String> arguments = getUserArguments(convertedParameters);
+        ArrayList<String> arguments = getUserArguments(parameters);
+        ArrayList<String> convertedArguments = getUserArguments(convertedParameters);
 
         switch (userCommand.toLowerCase()) {
 
             case USER_COMMAND_ADD :
-                command = initAddCommand(arguments);
+                command = initAddCommand(convertedArguments);
                 break;
 
             case USER_COMMAND_DELETE :
@@ -155,63 +156,63 @@ public class CommandParser {
                 break;
 
             case USER_COMMAND_EDIT :
-                command = initEditCommand(arguments);
+                command = initEditCommand(convertedArguments);
                 break;
                 
             case USER_COMMAND_SEARCH :
-            	command = initSearchCommand(arguments);
+            	command = initSearchCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_DONE :
-            	command = initDoneCommand(arguments);
+            	command = initDoneCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_SET :
-            	command = initSetCommand(arguments);
+            	command = initSetCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_SAVE :
-            	command = initSaveCommand(arguments);
+            	command = initSaveCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_UNDO :
-            	command = initUndoCommand(arguments);
+            	command = initUndoCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_REDO :
-            	command = initRedoCommand(arguments);
+            	command = initRedoCommand(convertedArguments);
             	break; 
             	
             case USER_COMMAND_VIEW_ALL :
-            	command = initViewAllCommand(arguments);
+            	command = initViewAllCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_VIEW_DEF :
-            	command = initViewDefCommand(arguments);
+            	command = initViewDefCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_VIEW_HIST :
-            	command = initViewHistCommand(arguments);
+            	command = initViewHistCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_VIEW_UNRES :
-            	command = initViewUnresCommand(arguments);
+            	command = initViewUnresCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_VIEW_HELP :
-            	command = initViewHelpCommand(arguments);
+            	command = initViewHelpCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_VIEW_OPEN_FILE :
-            	command = initViewOpenFileCommand(arguments);
+            	command = initViewOpenFileCommand(convertedArguments);
             	break;
             	
             case USER_COMMAND_VIEW_CONFIG :
-            	command = initViewConfigCommand(arguments);
+            	command = initViewConfigCommand(convertedArguments);
             	break;
                 
             case USER_COMMAND_EXIT :
-                command = initExitCommand(arguments);
+                command = initExitCommand(convertedArguments);
                 break;
 
             default :
@@ -622,8 +623,10 @@ public class CommandParser {
 		 if (!commandAliases.containsKey(alias)) {
 			 return initInvalidCommand(ERROR_DELETE_ALIAS);
 		 } else {
+			 String originalCommand = commandAliases.get(alias);
 			 Command command = new Command(Command.CommandType.DELETEALIAS);
 			 command.setName(alias);
+			 command.setOriginalCommand(originalCommand);
 			 return command;
 		 }
 	}
