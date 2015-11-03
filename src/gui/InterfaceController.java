@@ -63,6 +63,10 @@ public class InterfaceController {
     private static VBox sbHelpBox;
     private static ImageView sbHelpImage;
     
+    // Used for initSideBarACIndicator
+    private static VBox sbACBox;
+    private static ImageView sbACImage;
+    
     // Used for initSideBar
     private static VBox sbBox;
     private static HBox sbBoxWithLine;
@@ -112,6 +116,7 @@ public class InterfaceController {
     protected static final String PATH_HELP = "gui/resources/help.png";
     protected static final String PATH_HELP_SELECTED = "gui/resources/help_selected.png";
     protected static final String PATH_HELP_HOVER = "gui/resources/help_hover.png";
+    protected static final String PATH_AC = "gui/resources/acIndicator.png";
     protected static final String PATH_CONFIG = "gui/resources/config.png";
     protected static final String PATH_TICK = "gui/resources/tick.png";
     
@@ -138,7 +143,12 @@ public class InterfaceController {
     protected static final double MARGIN_SCROLL = 30;
     protected static final double MARGIN_ARBITRARY = 6;
     protected static final double MARGIN_TICK = 10;
+    protected static final double MARGIN_AC_INDICATOR = 13;
 
+    /**
+     * This method updates the filepath shown in the filepath bar by calling
+     * the getFilePath() method in LogicController
+     */
     protected static void updateFilePathBar() {
     	filepathLabel = new Label(logicControl.getFilePath());
     	filepathLabelBox.getChildren().clear();
@@ -153,6 +163,18 @@ public class InterfaceController {
         		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
+    }
+    
+    /**
+     * This method turns the autocomplete indicator in the sidebar
+     * on/off based on whether autocomplete is activated
+     */
+    protected static void toggleAutoCompleteIndicator() {
+    	sbACBox.getChildren().clear();
+    	
+    	if (!AutoComplete.isActivated()) {
+    		sbACBox.getChildren().add(sbACImage);
+    	}
     }
     
     /**
@@ -706,6 +728,14 @@ public class InterfaceController {
         		MouseEvent.MOUSE_PRESSED, 
         		logicControl.getButtonClickHandler(View.HELP));
     }
+    
+    private static void initSideBarACIndicator() {
+    	sbACImage = new ImageView(PATH_AC);
+    	sbACBox = new VBox(sbACImage);
+    	
+    	// Component formatting
+    	sbACBox.setAlignment(Pos.CENTER);
+    }
 
     private static void initSideBar() {
         initSideBarDefButton();
@@ -715,6 +745,8 @@ public class InterfaceController {
         initSideBarSearchButton();
         initSideBarHistoryButton();
         initSideBarHelpButton();
+        Region sbSpacer = new Region();
+        initSideBarACIndicator();
         
         changeButtonToSelected(View.DEFAULT);
 
@@ -724,7 +756,9 @@ public class InterfaceController {
         		sbDoneBox, 
         		sbSearchBox,
         		sbHistBox,
-        		sbHelpBox);
+        		sbHelpBox, 
+        		sbSpacer, 
+        		sbACBox);
         
         sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
 
@@ -749,6 +783,10 @@ public class InterfaceController {
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
         VBox.setMargin(sbHelpBox, new Insets(
         		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+        VBox.setMargin(sbACBox, new Insets(
+        		0, 0, MARGIN_AC_INDICATOR, 0));
+        
+        VBox.setVgrow(sbSpacer, Priority.ALWAYS);
         
         sbBoxWithLine.setMaxWidth(WIDTH_SIDEBAR);
         sbBoxWithLine.setMinWidth(WIDTH_SIDEBAR);
@@ -779,6 +817,7 @@ public class InterfaceController {
         
         // Initialize the popup for the first time
         AutoComplete.initPopup();
+        logicControl.toggleAutoComplete();
 
         // CSS
         textBox.getStyleClass().add("gradient-regular");
