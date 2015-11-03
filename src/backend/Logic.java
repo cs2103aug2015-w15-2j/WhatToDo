@@ -20,6 +20,7 @@ import struct.Task;
 
 public class Logic {
 	
+	private static final int INDEX_COMMAND = 0;
 	private static final int INDEX_ALIAS = 0; 
 	private static final int INDEX_MEANING = 1; 
 
@@ -42,9 +43,9 @@ public class Logic {
 	private static final String MESSAGE_EDIT = "Edited %s \"%s\".";
 	private static final String MESSAGE_EDIT_CONVERSION = "Converted float \"%s\" to %s \"%s\".";
 	private static final String MESSAGE_MARK_DONE = "Done %s";
-	private static final String MESSAGE_REDO = "Executed redo command successfully."; 
+	private static final String MESSAGE_REDO = "Redid a \"%s\" command."; 
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
-	private static final String MESSAGE_UNDO = "Executed undo command successfully."; 
+	private static final String MESSAGE_UNDO = "Undid a \"%s\" command."; 
 	private static final String MESSAGE_NO_UNDO = "There are no commands to undo.";
 	private static final String MESSAGE_SET = "Set new alias \"%s\" for \"%s\"."; 
 	private static final String MESSAGE_DELETE_ALIAS = "Deleted alias \"%s\"."; 
@@ -96,6 +97,7 @@ public class Logic {
     private static final String NEWLINE = "\n";
     private static final String SEMICOLON = ";";
     private static final String EMPTYSTRING = "";
+    private static final String REGEX_WHITESPACES = "[\\s;]+"; 
     
     private CommandParser commandParser; 
     private Storage storage;
@@ -687,7 +689,8 @@ public class Logic {
     		
     		storage.overwriteFile(stateAfterUndo.getFileContents());
     		prevCommand = command; 
-        	return String.format(MESSAGE_UNDO);
+    		String userCmdUndid = stateAfterUndo.getUserCommand(); 
+        	return String.format(MESSAGE_UNDO, getCommandStr(userCmdUndid));
     	}
     	catch(FileSystemException e){
     		return e.getMessage();
@@ -708,7 +711,8 @@ public class Logic {
         	
         	storage.overwriteFile(stateAfterRedo.getFileContents());
         	prevCommand = command;
-        	return String.format(MESSAGE_REDO);
+        	String userCmdRedid = stateAfterRedo.getUserCommand(); 
+        	return String.format(MESSAGE_REDO, getCommandStr(userCmdRedid));
     	}
     	catch(FileSystemException e){
     		return e.getMessage();
@@ -755,6 +759,13 @@ public class Logic {
         else{
         	return cmdFeedback + MESSAGE_ERROR_UNDO;
         }
+	}
+	//TODO
+	private String getCommandStr(String userString){
+		String[] lineComponents = userString.split(REGEX_WHITESPACES);
+		return lineComponents[INDEX_COMMAND]; 
+//		String name = lineComponents[INDEX_NAME];
+//		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
 	}
 	
 	private String formatLine(String line){
