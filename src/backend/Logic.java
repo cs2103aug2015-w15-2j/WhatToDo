@@ -36,9 +36,9 @@ public class Logic {
 	private static final String MESSAGE_EDIT = "Edited %s \"%s\".";
 	private static final String MESSAGE_EDIT_CONVERSION = "Converted float \"%s\" to %s \"%s\".";
 	private static final String MESSAGE_MARK_DONE = "Done %s";
-	private static final String MESSAGE_REDO = "Redid command: \"%s\"."; 
+	private static final String MESSAGE_REDO = "Executed redo command successfully."; 
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
-	private static final String MESSAGE_UNDO = "Undid command: \"%s\"."; 
+	private static final String MESSAGE_UNDO = "Executed undo command successfully."; 
 	private static final String MESSAGE_NO_UNDO = "There are no commands to undo.";
 	private static final String MESSAGE_EXIT = "Exit";
 	
@@ -643,7 +643,7 @@ public class Logic {
     		
     		storage.overwriteFile(stateAfterUndo.getFileContents());
     		prevCommand = command; 
-        	return String.format(MESSAGE_UNDO, stateAfterUndo.getUserCommand());
+        	return String.format(MESSAGE_UNDO);
     	}
     	catch(FileSystemException e){
     		return e.getMessage();
@@ -664,7 +664,7 @@ public class Logic {
         	
         	storage.overwriteFile(stateAfterRedo.getFileContents());
         	prevCommand = command;
-        	return String.format(MESSAGE_REDO, stateAfterRedo.getUserCommand());
+        	return String.format(MESSAGE_REDO);
     	}
     	catch(FileSystemException e){
     		return e.getMessage();
