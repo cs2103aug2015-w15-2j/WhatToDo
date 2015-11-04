@@ -395,7 +395,7 @@ public class LogicController {
     
     private static String mapToFileIndex(String textFieldInput) {
     	
-    	String[] textFieldInputSplit = textFieldInput.split(" ");
+    	String[] textFieldInputSplit = textFieldInput.split("[\\s;]+");
     	String modifiedString = textFieldInput;
     	try {
     		int viewIndex = Integer.parseInt(textFieldInputSplit[1]);
