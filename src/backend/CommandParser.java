@@ -662,9 +662,11 @@ public class CommandParser {
 			return initInvalidCommand(ERROR_EDIT);
 		}
 		
-		
-		int index = Integer.parseInt(arguments.get(0));
-		if (index < 1) {
+		String indexString = arguments.get(0);
+		int index;
+		if (indexString.matches(REGEX_POSITIVE_INTEGER)) {
+			index = Integer.parseInt(arguments.get(0));
+		} else {
 			return initInvalidCommand(ERROR_INDEX);
 		}
 		
