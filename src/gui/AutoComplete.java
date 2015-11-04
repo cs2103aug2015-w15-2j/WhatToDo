@@ -294,6 +294,22 @@ public class AutoComplete {
 	public static void setX(double coord) {
 		popup.setX(coord +
 				InterfaceController.WIDTH_SIDEBAR + 
+				InterfaceController.MARGIN_TEXT_FIELD +
+				6);
+	}
+	
+	public static void setY(double coord) {
+		popup.setY(coord + 
+				MainApp.stage.getHeight() - 
+				InterfaceController.HEIGHT_FEEDBACK - 
+				InterfaceController.HEIGHT_TEXT_FIELD - 
+				InterfaceController.HEIGHT_HORIZ_LINE - 
+				HEIGHT_POPUP);
+	}
+	/* For OSX
+	public static void setX(double coord) {
+		popup.setX(coord +
+				InterfaceController.WIDTH_SIDEBAR + 
 				InterfaceController.MARGIN_TEXT_FIELD);
 	}
 	
@@ -305,6 +321,7 @@ public class AutoComplete {
 				InterfaceController.HEIGHT_HORIZ_LINE - 
 				HEIGHT_POPUP);
 	}
+	*/
 }
 
 
