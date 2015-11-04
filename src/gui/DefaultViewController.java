@@ -133,19 +133,7 @@ public class DefaultViewController {
     // Private methods, used to initialize various sub components of the interface
     // ================================================================================
     
-    /**
-     * This method takes in an input String and creates a HBox with all the required
-     * data formatted correctly to be inserted into one of the task/event windows.
-     * 
-     * @param displayData
-     * 		      The task/event data to be displayed in the window
-     * @param numOfElements
-     * 		      The total number of tasks/events. Used for formatting the index box
-     * @param index
-     * 		      The index of the particular task/event
-     * @return A HBox with all the task/event data formatted for insertion into the 
-     * 		   scroll pane
-     */
+
     private static HBox initDisplayElement(String displayData, int numOfElements, int index) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field

@@ -2,25 +2,19 @@ package gui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
-
+import javafx.scene.text.Text;
 import struct.View;
 
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystemException;
+import java.util.regex.Pattern;
 
 public class InterfaceController {
 
@@ -94,7 +88,11 @@ public class InterfaceController {
     private static LogicController logicControl;  
     private static View currentView;
     
-    // file paths for button images
+    // ======================================================================
+    // Constants and fixed Strings used for program operations
+    // ======================================================================
+    
+    // File paths for all images used
     protected static final String PATH_DEFAULT = "gui/resources/home.png";
     protected static final String PATH_DEFAULT_SELECTED = "gui/resources/home_selected.png";
     protected static final String PATH_DEFAULT_HOVER = "gui/resources/home_hover.png";
@@ -145,137 +143,10 @@ public class InterfaceController {
     protected static final double MARGIN_TICK = 10;
     protected static final double MARGIN_AC_INDICATOR = 13;
 
-    /**
-     * This method updates the filepath shown in the filepath bar by calling
-     * the getFilePath() method in LogicController
-     */
-    protected static void updateFilePathBar() {
-    	filepathLabel = new Label(logicControl.getFilePath());
-    	filepathLabelBox.getChildren().clear();
-    	filepathLabelBox.getChildren().add(filepathLabel);
-        
-    	HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
-    	
-    	// Event handlers for mouse interaction
-        filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, logicControl.getPathHoverHandler(filepathLabel));
-        filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
-        filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
-    }
-    
-    /**
-     * This method turns the autocomplete indicator in the sidebar
-     * on/off based on whether autocomplete is activated
-     */
-    protected static void toggleAutoCompleteIndicator() {
-    	sbACBox.getChildren().clear();
-    	
-    	if (!AutoComplete.isActivated()) {
-    		sbACBox.getChildren().add(sbACImage);
-    	}
-    }
-    
-    /**
-     * This method switches the button image to its corresponding selected
-     * state
-     * 
-     * @param view
-     *            The view which button is to be changed
-     */
-    protected static void changeButtonToSelected(View view) {
-    	switch (view) {
-    	case DEFAULT:
-    		sbDefImage = new ImageView(PATH_DEFAULT_SELECTED);
-    		sbDefBox.getChildren().clear();
-    		sbDefBox.getChildren().add(sbDefImage);
-    		break;
-    	case ALL:
-    		sbAllImage = new ImageView(PATH_ALL_SELECTED);
-    		sbAllBox.getChildren().clear();
-    		sbAllBox.getChildren().add(sbAllImage);
-    		break;
-    	case HISTORY:
-    		sbHistImage = new ImageView(PATH_HIST_SELECTED);
-    		sbHistBox.getChildren().clear();
-    		sbHistBox.getChildren().add(sbHistImage);
-    		break;
-    	case UNRESOLVED:
-    		sbUnresImage = new ImageView(PATH_UNRESOLVED_SELECTED);
-    		sbUnresBox.getChildren().clear();
-    		sbUnresBox.getChildren().add(sbUnresImage);
-    		break;
-    	case DONE:
-    		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
-    		sbDoneBox.getChildren().clear();
-    		sbDoneBox.getChildren().add(sbDoneImage);
-    		break;
-    	case SEARCH:
-    		sbSearchImage = new ImageView(PATH_SEARCH_SELECTED);
-    		sbSearchBox.getChildren().clear();
-    		sbSearchBox.getChildren().add(sbSearchImage);
-    		break;
-    	case HELP:
-    		sbHelpImage = new ImageView(PATH_HELP_SELECTED);
-    		sbHelpBox.getChildren().clear();
-    		sbHelpBox.getChildren().add(sbHelpImage);
-    		break;
-    	default:
-    		// Do nothing
-    		break;
-    	}
-    }
-    
-    /**
-     * This method switches the button image to its corresponding unselected
-     * state
-     * 
-     * @param view
-     *            The view which button is to be changed
-     */
-    protected static void changeButtonToUnselected(View view) {
-    	switch (view) {
-    	case DEFAULT:
-    		sbDefImage = new ImageView(PATH_DEFAULT);
-    		sbDefBox.getChildren().clear();
-    		sbDefBox.getChildren().add(sbDefImage);
-    		break;
-    	case ALL:
-    		sbAllImage = new ImageView(PATH_ALL);
-    		sbAllBox.getChildren().clear();
-    		sbAllBox.getChildren().add(sbAllImage);
-    		break;
-    	case HISTORY:
-    		sbHistImage = new ImageView(PATH_HIST);
-    		sbHistBox.getChildren().clear();
-    		sbHistBox.getChildren().add(sbHistImage);
-    		break;
-    	case UNRESOLVED:
-    		sbUnresImage = new ImageView(PATH_UNRESOLVED);
-    		sbUnresBox.getChildren().clear();
-    		sbUnresBox.getChildren().add(sbUnresImage);
-    		break;
-    	case DONE:
-    		sbDoneImage = new ImageView(PATH_DONE);
-    		sbDoneBox.getChildren().clear();
-    		sbDoneBox.getChildren().add(sbDoneImage);
-    		break;
-    	case SEARCH:
-    		sbSearchImage = new ImageView(PATH_SEARCH);
-    		sbSearchBox.getChildren().clear();
-    		sbSearchBox.getChildren().add(sbSearchImage);
-    		break;
-    	case HELP:
-    		sbHelpImage = new ImageView(PATH_HELP);
-    		sbHelpBox.getChildren().clear();
-    		sbHelpBox.getChildren().add(sbHelpImage);
-    		break;
-    	default:
-    		// Do nothing
-    		break;
-    	}
-    }
+    // ===============================================================
+    // Protected methods to initialize, update and close the main 
+    // interface
+    // ===============================================================
     
     /**
      * This method initializes all the components of the interface except for 
@@ -288,22 +159,10 @@ public class InterfaceController {
     	// Initial view set to ALL, 
     	// just a dummy state other than DEFAULT
     	currentView = View.ALL;
-    	
         logicControl = new LogicController();
         ViewIndexMap.initAllMaps();
-
-        initFilePathBar();
-        initSideBar();
-        initFeedbackBar();
-        initTextField();
-        
-        DefaultViewController.initDefView();
-        SummaryViewController.initSummaryView();
-        AllViewController.initAllView();
-        HistoryViewController.initHistView();
-        UnresolvedViewController.initUnresView();
-        DoneViewController.initDoneView();
-        SearchViewController.initSearchView();
+        initSubComponents();
+        initViewComponents();
         
         // Initial view will be empty
         viewBox = new HBox();
@@ -315,7 +174,6 @@ public class InterfaceController {
         		viewLine, 
         		feedbackBoxWithLine, 
         		textBox);
-        
         contentBoxWithSideBar = new HBox(sbBoxWithLine, contentBoxNoSideBar);
         mainBox = new VBox(contentBoxWithSideBar);
         mainScene = new Scene(mainBox);
@@ -438,14 +296,179 @@ public class InterfaceController {
     	}
     }
     
-    /**
-     * This method closes the application window
-     */
     protected static void closeMainInterface() {
     	currentView = View.EXIT;
     	MainApp.stage.close();
     }
     
+    // ===============================================================
+    // Protected methods to update and modify certain UI elements
+    // from other GUI components
+    // ===============================================================
+    
+    /**
+     * This method updates the filepath shown in the filepath bar by calling
+     * the getFilePath() method in LogicController
+     */
+    protected static void updateFilePathBar() {
+    	filepathLabel = new Label(logicControl.getFilePath());
+    	filepathLabelBox.getChildren().clear();
+    	filepathLabelBox.getChildren().add(filepathLabel);
+        
+    	HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
+    	
+    	// Event handlers for mouse interaction
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, logicControl.getPathHoverHandler(filepathLabel));
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
+        filepathLabel.addEventHandler(
+        		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
+    }
+
+    /**
+     * This method turns the autocomplete indicator in the sidebar
+     * on/off based on whether autocomplete is activated
+     */
+    protected static void toggleAutoCompleteIndicator() {
+    	sbACBox.getChildren().clear();
+    	
+    	if (!AutoComplete.isActivated()) {
+    		sbACBox.getChildren().add(sbACImage);
+    	}
+    }
+    
+    /**
+     * This method switches the button image to its corresponding selected
+     * state
+     * 
+     * @param view
+     *            The view which button is to be changed
+     */
+    protected static void changeButtonToSelected(View view) {
+    	switch (view) {
+    	case DEFAULT:
+    		sbDefImage = new ImageView(PATH_DEFAULT_SELECTED);
+    		sbDefBox.getChildren().clear();
+    		sbDefBox.getChildren().add(sbDefImage);
+    		break;
+    	case ALL:
+    		sbAllImage = new ImageView(PATH_ALL_SELECTED);
+    		sbAllBox.getChildren().clear();
+    		sbAllBox.getChildren().add(sbAllImage);
+    		break;
+    	case HISTORY:
+    		sbHistImage = new ImageView(PATH_HIST_SELECTED);
+    		sbHistBox.getChildren().clear();
+    		sbHistBox.getChildren().add(sbHistImage);
+    		break;
+    	case UNRESOLVED:
+    		sbUnresImage = new ImageView(PATH_UNRESOLVED_SELECTED);
+    		sbUnresBox.getChildren().clear();
+    		sbUnresBox.getChildren().add(sbUnresImage);
+    		break;
+    	case DONE:
+    		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
+    		sbDoneBox.getChildren().clear();
+    		sbDoneBox.getChildren().add(sbDoneImage);
+    		break;
+    	case SEARCH:
+    		sbSearchImage = new ImageView(PATH_SEARCH_SELECTED);
+    		sbSearchBox.getChildren().clear();
+    		sbSearchBox.getChildren().add(sbSearchImage);
+    		break;
+    	case HELP:
+    		sbHelpImage = new ImageView(PATH_HELP_SELECTED);
+    		sbHelpBox.getChildren().clear();
+    		sbHelpBox.getChildren().add(sbHelpImage);
+    		break;
+    	default:
+    		// Do nothing
+    		break;
+    	}
+    }
+    
+    /**
+     * This method switches the button image to its corresponding unselected
+     * state
+     * 
+     * @param view
+     *            The view which button is to be changed
+     */
+    protected static void changeButtonToUnselected(View view) {
+    	switch (view) {
+    	case DEFAULT:
+    		sbDefImage = new ImageView(PATH_DEFAULT);
+    		sbDefBox.getChildren().clear();
+    		sbDefBox.getChildren().add(sbDefImage);
+    		break;
+    	case ALL:
+    		sbAllImage = new ImageView(PATH_ALL);
+    		sbAllBox.getChildren().clear();
+    		sbAllBox.getChildren().add(sbAllImage);
+    		break;
+    	case HISTORY:
+    		sbHistImage = new ImageView(PATH_HIST);
+    		sbHistBox.getChildren().clear();
+    		sbHistBox.getChildren().add(sbHistImage);
+    		break;
+    	case UNRESOLVED:
+    		sbUnresImage = new ImageView(PATH_UNRESOLVED);
+    		sbUnresBox.getChildren().clear();
+    		sbUnresBox.getChildren().add(sbUnresImage);
+    		break;
+    	case DONE:
+    		sbDoneImage = new ImageView(PATH_DONE);
+    		sbDoneBox.getChildren().clear();
+    		sbDoneBox.getChildren().add(sbDoneImage);
+    		break;
+    	case SEARCH:
+    		sbSearchImage = new ImageView(PATH_SEARCH);
+    		sbSearchBox.getChildren().clear();
+    		sbSearchBox.getChildren().add(sbSearchImage);
+    		break;
+    	case HELP:
+    		sbHelpImage = new ImageView(PATH_HELP);
+    		sbHelpBox.getChildren().clear();
+    		sbHelpBox.getChildren().add(sbHelpImage);
+    		break;
+    	default:
+    		// Do nothing
+    		break;
+    	}
+    }
+    
+    
+    /**
+     * This method takes in an input String and creates a HBox with all the required
+     * data formatted correctly to be inserted into one of the task/event windows.
+     * 
+     * @param displayData
+     * 		      The task/event data to be displayed in the window
+     * @param numOfElements
+     * 		      The total number of tasks/events. Used for formatting the index box
+     * @param index
+     * 		      The view index of the particular task/event
+     * @param isTask
+     * 			  A boolean flag indicating whether the data to be input is a task
+     * @return A HBox with the correct task/event data type(title, empty, data) 
+     * 		   formatted for insertion into the scroll pane
+     */
+    protected static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
+    	// If is a date or title element
+    	if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
+    		return initTitleOrDateElement(displayData);
+    	} else {
+    		// Determine whether the element data is an element or a null response
+    		String[] displayDataSplit = displayData.split(Pattern.quote("."));
+    		// If no items to display
+    		if (displayDataSplit.length == 1) {
+    			return initNoResultElement(displayData);
+    		} else {
+    			return initDataElement(displayData, numOfElements, index, isTask, displayDataSplit);
+    		}
+    	}
+    }
     
     // ===============================================================
     // Getters for JavaFX components required for LogicController
@@ -477,7 +500,8 @@ public class InterfaceController {
     	return filepathLine;
     }
     
-    // Getters for buttons for mouse event handlers
+    // Getters for buttons to allow access to the EventHandlers
+    // in LogicController
     protected static VBox getHomeButton() {
     	return sbDefBox;
     }
@@ -523,27 +547,246 @@ public class InterfaceController {
     }
     
     // ======================================================================
-    // Private methods, used for initialization of individual components
+    // Private methods for initializing element components of all the views
+    // Used in initDisplayElement()
     // ======================================================================
     
+    /**
+     * This method creates a HBox and formats it for a task/event data String
+     * 
+     * @param displayData
+     * 		      The task/event data to be displayed in the window
+     * @param numOfElements
+     * 		      The total number of tasks/events. Used for formatting the index box
+     * @param index
+     * 		      The view index of the particular task/event
+     * @param isTask
+     * 		      A boolean flag indicating whether the data to be input is a task
+     * @param displayDataSplit
+     * 		      A String[] of displayData split by a period(.). Used in 
+     * 			  initDisplayElement() for branching, reused to avoid recomputation
+     * @return A HBox with only the task/event data formatted for insertion into the
+     * 		   scroll pane
+     */
+	private static HBox initDataElement(String displayData, int numOfElements, int index, boolean isTask,
+			String[] displayDataSplit) {
+		
+		Label elementIndex = new Label(String.valueOf(index));
+		Label elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
+		HBox indexBox = new HBox(elementIndex);
+		HBox elementBox = new HBox(indexBox, elementLabel);
+		
+		// After removing the index, store it in the index map
+		ViewIndexMap.addToAllMap(Integer.parseInt(displayDataSplit[0]));
+
+		// Component formatting
+		formatIndexElement(numOfElements, elementIndex, indexBox);
+		formatLabelElement(elementLabel);
+		
+		// CSS
+		elementBox.getStyleClass().add("element");
+		elementIndex.getStyleClass().add("element-index-label");
+		
+		if (isTask) {
+			indexBox.getStyleClass().add("element-index-task");
+		} else {
+			indexBox.getStyleClass().add("element-index-event");
+		}
+		return elementBox;
+	}
+	
+	/**
+	 * This method creates a HBox and formats it for an empty result String
+	 * ("There are no results to display.")
+	 * 
+	 * @param displayData
+	 * 		      The task/event data to be displayed in the window
+	 * @return A HBox with the empty result String formatted for insertion into the
+	 * 		   scroll pane
+	 */
+	private static HBox initNoResultElement(String displayData) {
+		Label elementLabel = new Label(displayData);
+		HBox elementBox = new HBox(elementLabel);
+		
+		formatLabelElement(elementLabel);
+
+		// Apply CSS style for regular data field
+		elementBox.getStyleClass().add("element");
+		return elementBox;
+	}
+
+	/**
+	 * This method creates a HBox and formats it for a date or title String
+	 * ("FLOAT", "SAT, 10 OCT 2015" etc...)
+	 * 
+	 * @param displayData
+	 * 		      The task/event data to be displayed in the window
+	 * @return A HBox with the date or title String formatted for insertion into the
+	 * 		   scroll pane
+	 */
+	private static HBox initTitleOrDateElement(String displayData) {
+		Label elementLabel = new Label(displayData.toUpperCase());
+		HBox elementBox = new HBox(elementLabel);
+		Line elementLine = new Line(0, 0, InterfaceController.WIDTH_DEFAULT, 0);
+		elementBox.getChildren().add(elementLine);
+		
+		formatTitleOrDateElement(elementLabel, elementBox, elementLine);
+		
+		// CSS
+		elementLine.getStyleClass().add("line");
+		elementBox.getStyleClass().add("element-title");
+		return elementBox;
+	}
+
+	/**
+	 * This method formats the individual components of a HBox containing the
+	 * index of the task/event
+	 * 
+	 * @param numOfElements
+	 * 		      The total number of tasks/events. Used for formatting the index box
+	 * @param elementIndex
+	 * 		      The view index of the particular task/event
+	 * @param indexBox
+	 * 		      The HBox containing the index to be formatted
+	 */
+	private static void formatIndexElement(int numOfElements, Label elementIndex, HBox indexBox) {
+		setFitToMaxWidth(indexBox, numOfElements);
+		indexBox.setAlignment(Pos.CENTER);
+		HBox.setMargin(elementIndex, new Insets(
+				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+				InterfaceController.MARGIN_TEXT_ELEMENT, 
+				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+				InterfaceController.MARGIN_TEXT_ELEMENT));
+	}
+	
+	/**
+	 * This method formats the individual components of a HBox containing the
+	 * task/event data
+	 * 
+	 * @param elementLabel
+	 * 		      The Label containing the task/event data to be formatted
+	 */
+	private static void formatLabelElement(Label elementLabel) {
+		elementLabel.setWrapText(true);
+		HBox.setMargin(elementLabel, new Insets(
+				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+				InterfaceController.MARGIN_TEXT_ELEMENT, 
+				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+				InterfaceController.MARGIN_TEXT_ELEMENT));
+	}
+
+	/**
+	 * This method formats the individual components of a HBox containing the 
+	 * title or date element of the task/event
+	 * 
+	 * @param elementLabel
+	 * 		      The Label containing the task/event data to be formatted
+	 * @param elementBox
+	 * 		      The HBox containing the elementLabel
+	 * @param elementLine
+	 * 		      The Line which is appended to the elementLabel in the 
+	 * 		      elementBox as a vertical separator
+	 */
+	private static void formatTitleOrDateElement(Label elementLabel, HBox elementBox, Line elementLine) {
+		setFitLineToWidth(elementLabel, elementBox, elementLine);
+		elementBox.setAlignment(Pos.CENTER_LEFT);
+		HBox.setMargin(elementLabel, new Insets(
+				0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+				0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT));
+	}
+
+	/**
+	 * This method calculates the maximum width used by the current largest index
+	 * and sets the indexBox to that width to ensure consistency
+	 * 
+	 * @param indexBox
+	 * 		      The HBox containing the index to be formatted
+	 * @param numOfElements
+	 * 		      The total number of tasks/events. Used for formatting the index box
+	 */
+	private static void setFitToMaxWidth(HBox indexBox, int numOfElements) {
+		Text text = new Text(String.valueOf(numOfElements));
+		Scene s = new Scene(new Group(text));
+		// Override the CSS style to calculate the text width
+		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
+				+ "-fx-font-size: 16; ");
+		text.applyCss();
+		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
+		indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
+	}
+	
+	/**
+	 * This method calculates the correct length of the separator line elementLine
+	 * to fit the line length to width of the scroll pane
+	 * 
+	 * @param elementLabel
+	 * 		      The Label containing the task/event data to be formatted
+	 * @param elementBox
+	 * 		      The HBox containing the elementLabel
+	 * @param elementLine
+	 * 		      The Line which is appended to the elementLabel in the 
+	 * 		      elementBox as a vertical separator
+	 */
+	private static void setFitLineToWidth(Label elementLabel, HBox elementBox, Line elementLine) {
+		Text text = new Text(elementLabel.getText());
+		Scene s = new Scene(new Group(text));
+		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
+				+ "-fx-font-size: 16; "
+				+ "-fx-font-weight: bold;");
+		text.applyCss();
+		// The arbitrary margin exists because text in a container is not perfectly 
+		// aligned to the dimensions of its container
+		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
+		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(
+				textWidth + InterfaceController.MARGIN_ARBITRARY));
+	}
+	
+    // ======================================================================
+    // Private methods for initializing components of the main interface
+	// Used in initMainInterface()
+    // ======================================================================
+
+	/**
+	 * Initializes all the views by calling the relevant initializers in all
+	 * the view controllers
+	 */
+	private static void initViewComponents() {
+		DefaultViewController.initDefView();
+        SummaryViewController.initSummaryView();
+        AllViewController.initAllView();
+        HistoryViewController.initHistView();
+        UnresolvedViewController.initUnresView();
+        DoneViewController.initDoneView();
+        SearchViewController.initSearchView();
+	}
+
+	/**
+	 * Initializes sub components of the main interface
+	 * (filepathBar, sideBar, feedbackBar, textField)
+	 */
+	private static void initSubComponents() {
+		initFilePathBar();
+        initSideBar();
+        initFeedbackBar();
+        initTextField();
+	}
+	
     private static void initFilePathBar() {
         filepathLabel = new Label(logicControl.getFilePath());
         filepathLabelBox = new HBox(filepathLabel);
-        
         filepathLine = new Line(0, 0, WIDTH_DEFAULT, 0);
         filepathConfig = new ImageView(PATH_CONFIG);
         filepathConfigBox = new HBox(filepathConfig);
-        
         Region filepathBuffer = new Region();
+        filepathBox = new HBox(filepathBuffer, filepathLabelBox, filepathConfigBox);
+        filepathBoxWithLine = new VBox(filepathBox, filepathLine);
+        
+        // Component formatting
         filepathBuffer.setMaxSize(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
         		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
         filepathBuffer.setMinSize(HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
         		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE);
         
-        filepathBox = new HBox(filepathBuffer, filepathLabelBox, filepathConfigBox);
-        filepathBoxWithLine = new VBox(filepathBox, filepathLine);
-        
-        // Component formatting
         HBox.setHgrow(filepathLabelBox, Priority.ALWAYS);
         
         HBox.setMargin(filepathLabel, new Insets(
@@ -560,242 +803,24 @@ public class InterfaceController {
         
         // Event handlers for mouse interactions
         filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, logicControl.getPathHoverHandler(filepathLabel));
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
+        		MouseEvent.MOUSE_CLICKED, 
+        		logicControl.getPathClickHandler());
         filepathConfigBox.addEventHandler(
-        		MouseEvent.MOUSE_CLICKED, logicControl.getConfigClickHandler());
+        		MouseEvent.MOUSE_CLICKED, 
+        		logicControl.getConfigClickHandler());
 
         // CSS
         filepathLine.getStyleClass().add("line");
         filepathBox.getStyleClass().add("display-bar");
         filepathBox.getStyleClass().add("gradient-regular");
     }
-
-    private static void initSideBarDefButton() {
-        sbDefImage = new ImageView(PATH_DEFAULT);
-        sbDefBox = new VBox(sbDefImage);
-
-        sbDefBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-        sbDefBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
-
-        sbDefBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-        sbDefBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
-        
-        // Event handlers for mouse interactions
-        sbDefBox.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(View.DEFAULT));
-        sbDefBox.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(View.DEFAULT));
-        sbDefBox.addEventHandler(
-        		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(View.DEFAULT));
-    }
     
-    private static void initSideBarAllButton() {
-    	sbAllImage = new ImageView(PATH_ALL);
-    	sbAllBox = new VBox(sbAllImage);
-
-    	sbAllBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbAllBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
-
-    	sbAllBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-    	sbAllBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
-    	
-        // Event handlers for mouse interactions
-        sbAllBox.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(View.ALL));
-        sbAllBox.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(View.ALL));
-        sbAllBox.addEventHandler(
-        		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(View.ALL));
-    }
-    
-    private static void initSideBarUnresButton() {
-    	sbUnresImage = new ImageView(PATH_UNRESOLVED);
-    	sbUnresBox = new VBox(sbUnresImage);
-
-    	sbUnresBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbUnresBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
-
-    	sbUnresBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-    	sbUnresBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
-    	
-        // Event handlers for mouse interactions
-    	sbUnresBox.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(View.UNRESOLVED));
-    	sbUnresBox.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(View.UNRESOLVED));
-    	sbUnresBox.addEventHandler(
-        		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(View.UNRESOLVED));
-    }
-    
-    private static void initSideBarDoneButton() {
-    	sbDoneImage = new ImageView(PATH_DONE);
-    	sbDoneBox = new VBox(sbDoneImage);
-
-    	sbDoneBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbDoneBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
-
-    	sbDoneBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-    	sbDoneBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
-    	
-        // Event handlers for mouse interactions
-    	sbDoneBox.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(View.DONE));
-    	sbDoneBox.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(View.DONE));
-    	sbDoneBox.addEventHandler(
-        		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(View.DONE));
-    }
-    
-    private static void initSideBarSearchButton() {
-    	sbSearchImage = new ImageView(PATH_SEARCH);
-    	sbSearchBox = new VBox(sbSearchImage);
-
-    	sbSearchBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbSearchBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
-
-    	sbSearchBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-    	sbSearchBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
-    	
-        // Event handlers for mouse interactions
-    	sbSearchBox.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(View.SEARCH));
-    	sbSearchBox.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(View.SEARCH));
-    	sbSearchBox.addEventHandler(
-        		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(View.SEARCH));
-    }
-    
-    
-    private static void initSideBarHistoryButton() {
-    	sbHistImage = new ImageView(PATH_HIST);
-    	sbHistBox = new VBox(sbHistImage);
-    	
-    	sbHistBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbHistBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
-
-    	sbHistBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-    	sbHistBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
-    	
-        // Event handlers for mouse interactions
-    	sbHistBox.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(View.HISTORY));
-    	sbHistBox.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(View.HISTORY));
-    	sbHistBox.addEventHandler(
-        		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(View.HISTORY));
-    }
-    
-    private static void initSideBarHelpButton() {
-    	sbHelpImage = new ImageView(PATH_HELP);
-    	sbHelpBox = new VBox(sbHelpImage);
-
-    	sbHelpBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
-    	sbHelpBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
-
-    	sbHelpBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
-    	sbHelpBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
-    	
-        // Event handlers for mouse interactions
-    	sbHelpBox.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(View.HELP));
-    	sbHelpBox.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(View.HELP));
-    	sbHelpBox.addEventHandler(
-        		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(View.HELP));
-    }
-    
-    private static void initSideBarACIndicator() {
-    	sbACImage = new ImageView(PATH_AC);
-    	sbACBox = new VBox(sbACImage);
-    	
-    	// Component formatting
-    	sbACBox.setAlignment(Pos.CENTER);
-    }
-
-    private static void initSideBar() {
-        initSideBarDefButton();
-        initSideBarAllButton();
-        initSideBarUnresButton();
-        initSideBarDoneButton();
-        initSideBarSearchButton();
-        initSideBarHistoryButton();
-        initSideBarHelpButton();
-        Region sbSpacer = new Region();
-        initSideBarACIndicator();
-        
-        changeButtonToSelected(View.DEFAULT);
-
-        sbBox = new VBox(sbDefBox, 
-        		sbAllBox, 
-        		sbUnresBox,
-        		sbDoneBox, 
-        		sbSearchBox,
-        		sbHistBox,
-        		sbHelpBox, 
-        		sbSpacer, 
-        		sbACBox);
-        
-        sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
-
-        sbBoxWithLine = new HBox(sbBox, sbLine);
-
-        // Component formatting
-        VBox.setMargin(sbDefBox, new Insets(
-        		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
-        		MARGIN_COMPONENT, 
-        		MARGIN_BUTTON, 
-        		MARGIN_COMPONENT));
-        
-        VBox.setMargin(sbAllBox, new Insets(
-        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
-        VBox.setMargin(sbHistBox, new Insets(
-        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
-        VBox.setMargin(sbUnresBox, new Insets(
-        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
-        VBox.setMargin(sbDoneBox, new Insets(
-        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
-        VBox.setMargin(sbSearchBox, new Insets(
-        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
-        VBox.setMargin(sbHelpBox, new Insets(
-        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
-        VBox.setMargin(sbACBox, new Insets(
-        		0, 0, MARGIN_AC_INDICATOR, 0));
-        
-        VBox.setVgrow(sbSpacer, Priority.ALWAYS);
-        
-        sbBoxWithLine.setMaxWidth(WIDTH_SIDEBAR);
-        sbBoxWithLine.setMinWidth(WIDTH_SIDEBAR);
-
-        // CSS
-        sbLine.getStyleClass().add("line");
-        sbBoxWithLine.getStyleClass().add("sidebar");
-    }
-
     private static void initTextField() {
         textField = new TextField();
         textField.requestFocus();
@@ -849,4 +874,171 @@ public class InterfaceController {
         feedbackBox.getStyleClass().add("display-bar");
         feedbackBox.getStyleClass().add("gradient-regular");
     }
+    
+    private static void initSideBar() {
+        initAllSideBarButtons();
+        Region sbSpacer = new Region();
+        initSideBarACIndicator();
+        
+        changeButtonToSelected(View.DEFAULT);
+
+        sbBox = new VBox(sbDefBox, 
+        		sbAllBox, 
+        		sbUnresBox,
+        		sbDoneBox, 
+        		sbSearchBox,
+        		sbHistBox,
+        		sbHelpBox, 
+        		sbSpacer, 
+        		sbACBox);
+        sbLine = new Line(0, 0, 0, WIDTH_DEFAULT_BUTTON);
+        sbBoxWithLine = new HBox(sbBox, sbLine);
+
+        // Component formatting
+        VBox.setVgrow(sbSpacer, Priority.ALWAYS);
+        sbBoxWithLine.setMaxWidth(WIDTH_SIDEBAR);
+        sbBoxWithLine.setMinWidth(WIDTH_SIDEBAR);
+
+        // CSS
+        sbLine.getStyleClass().add("line");
+        sbBoxWithLine.getStyleClass().add("sidebar");
+    }
+    
+    // ======================================================================
+    // Private methods for initializing buttons in the sidebar
+    // ======================================================================
+    
+    /** 
+     * Initializes all the buttons in the sidebar by calling all the private
+     * button initializers
+     */
+	private static void initAllSideBarButtons() {
+		initSideBarDefButton();
+        initSideBarAllButton();
+        initSideBarUnresButton();
+        initSideBarDoneButton();
+        initSideBarSearchButton();
+        initSideBarHistoryButton();
+        initSideBarHelpButton();
+	}
+	
+	
+	private static void initSideBarDefButton() {
+        sbDefImage = new ImageView(PATH_DEFAULT);
+        sbDefBox = new VBox(sbDefImage);
+
+        setButtonDimensions(sbDefBox);
+        setButtonHandler(sbDefBox, View.DEFAULT);
+        
+        VBox.setMargin(sbDefBox, new Insets(
+        		HEIGHT_FILEPATH - HEIGHT_HORIZ_LINE, 
+        		MARGIN_COMPONENT, 
+        		MARGIN_BUTTON, 
+        		MARGIN_COMPONENT));
+    }
+    
+    private static void initSideBarAllButton() {
+    	sbAllImage = new ImageView(PATH_ALL);
+    	sbAllBox = new VBox(sbAllImage);
+
+        setButtonDimensions(sbAllBox);
+        setButtonHandler(sbAllBox, View.ALL);
+        VBox.setMargin(sbAllBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+    }
+    
+    private static void initSideBarUnresButton() {
+    	sbUnresImage = new ImageView(PATH_UNRESOLVED);
+    	sbUnresBox = new VBox(sbUnresImage);
+
+        setButtonDimensions(sbUnresBox);
+        setButtonHandler(sbUnresBox, View.UNRESOLVED);
+        VBox.setMargin(sbUnresBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+    }
+    
+    private static void initSideBarDoneButton() {
+    	sbDoneImage = new ImageView(PATH_DONE);
+    	sbDoneBox = new VBox(sbDoneImage);
+
+        setButtonDimensions(sbDoneBox);
+        setButtonHandler(sbDoneBox, View.DONE);
+        VBox.setMargin(sbDoneBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+    }
+    
+    private static void initSideBarSearchButton() {
+    	sbSearchImage = new ImageView(PATH_SEARCH);
+    	sbSearchBox = new VBox(sbSearchImage);
+
+        setButtonDimensions(sbSearchBox);
+        setButtonHandler(sbSearchBox, View.SEARCH);
+        VBox.setMargin(sbSearchBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+    }
+    
+    
+    private static void initSideBarHistoryButton() {
+    	sbHistImage = new ImageView(PATH_HIST);
+    	sbHistBox = new VBox(sbHistImage);
+    	
+        setButtonDimensions(sbHistBox);
+        setButtonHandler(sbHistBox, View.HISTORY);
+        VBox.setMargin(sbHistBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+    }
+    
+    private static void initSideBarHelpButton() {
+    	sbHelpImage = new ImageView(PATH_HELP);
+    	sbHelpBox = new VBox(sbHelpImage);
+
+        setButtonDimensions(sbHelpBox);
+        setButtonHandler(sbHelpBox, View.HELP);
+        VBox.setMargin(sbHelpBox, new Insets(
+        		0, MARGIN_COMPONENT, MARGIN_BUTTON, MARGIN_COMPONENT));
+    }
+    
+    private static void initSideBarACIndicator() {
+    	sbACImage = new ImageView(PATH_AC);
+    	sbACBox = new VBox(sbACImage);
+    	
+    	sbACBox.setAlignment(Pos.CENTER);
+        VBox.setMargin(sbACBox, new Insets(
+        		0, 0, MARGIN_AC_INDICATOR, 0));
+    }
+    
+    /**
+     * This method sets the button dimensions to the constant defined 
+     * for buttons
+     * 
+     * @param buttonBox
+     * 		      The VBox containing the button
+     */	
+	private static void setButtonDimensions(VBox buttonBox) {
+		buttonBox.setMaxWidth(WIDTH_DEFAULT_BUTTON);
+		buttonBox.setMinWidth(WIDTH_DEFAULT_BUTTON);
+		buttonBox.setMaxHeight(WIDTH_DEFAULT_BUTTON);
+		buttonBox.setMinHeight(WIDTH_DEFAULT_BUTTON);
+	}
+	
+	/**
+	 * This method attaches EventHandlers to the buttons to be able to
+	 * handle mouse clicks and hover events
+	 * 
+	 * @param buttonBox
+	 * 		      The VBox containing the button
+	 * @param view
+	 * 		      The View of which to associate the button operation with
+	 */
+	private static void setButtonHandler(VBox buttonBox, View view) {
+		buttonBox.addEventHandler(
+        		MouseEvent.MOUSE_ENTERED, 
+        		logicControl.getButtonHoverHandler(view));
+		buttonBox.addEventHandler(
+        		MouseEvent.MOUSE_EXITED, 
+        		logicControl.getButtonHoverHandler(view));
+		buttonBox.addEventHandler(
+        		MouseEvent.MOUSE_PRESSED, 
+        		logicControl.getButtonClickHandler(view));
+	}
 }

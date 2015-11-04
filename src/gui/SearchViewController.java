@@ -85,136 +85,6 @@ public class SearchViewController {
 		}
 		return eventResults;
 	}
-	
-	private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
-		if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
-
-			Label elementLabel = new Label(displayData.toUpperCase());
-			HBox elementBox = new HBox(elementLabel);
-
-			// Create a divider line and add it to the elementBox
-			Line elementLine = new Line(0, 0, InterfaceController.WIDTH_DEFAULT, 0);
-			elementBox.getChildren().add(elementLine);
-
-			// Get the width of label and resize the line
-			Text text = new Text(elementLabel.getText());
-			Scene s = new Scene(new Group(text));
-			// Override the CSS style to calculate the text width
-			text.setStyle("-fx-font-family: \"Myriad Pro\"; "
-					+ "-fx-font-size: 16; "
-					+ "-fx-font-weight: bold;");
-			text.applyCss();
-
-    		// Align the elements in the HBox
-    		elementBox.setAlignment(Pos.CENTER_LEFT);
-    		
-    		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(
-        			0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT));
-        	
-			// Apply the binding to (element box width - text width - arbitrary margin)
-			// The arbitrary margin exists because text in a container is not perfectly 
-			// aligned to the dimensions of its container
-			double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-			elementLine.endXProperty().bind(elementBox.widthProperty().subtract(
-					textWidth + InterfaceController.MARGIN_ARBITRARY));
-
-			// Apply CSS style for regular data field
-        	elementLine.getStyleClass().add("line");
-    		elementBox.getStyleClass().add("element-title");
-			
-			return elementBox;
-
-		} else {
-			// If there are no results
-			if (InterfaceController.getLogic().isEmpty(displayData) || displayData.equals("FLOAT")) {
-				Label elementLabel = new Label(displayData);
-				elementLabel.setWrapText(true);
-				
-				HBox elementBox = new HBox(elementLabel);
-
-    			HBox.setMargin(elementLabel, new Insets(
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT));
-    			
-    			// Apply CSS style for regular data field
-    			elementBox.getStyleClass().add("element");
-    			
-				return elementBox;
-
-			} else {
-				Label elementIndex = new Label(String.valueOf(index));
-				
-				HBox indexBox = new HBox(elementIndex);
-				indexBox.setAlignment(Pos.CENTER);
-
-				String[] displayDataSplit = displayData.split(Pattern.quote("."));
-				String excludedString = displayDataSplit[0] + "."; 
-				String elementString = displayData.replaceFirst(excludedString, "").trim();
-				String fileIndex = displayDataSplit[0].substring(5);
-				
-				// After removing the index, store it in the index map
-				ViewIndexMap.addToSearchMap(Integer.parseInt(fileIndex));
-				
-				Label elementLabel = new Label(elementString);
-				HBox labelBox = new HBox(elementLabel);
-				elementLabel.setWrapText(true);
-				HBox.setHgrow(labelBox, Priority.ALWAYS);
-				
-        		// Get the width of label and resize the line
-        		Text text = new Text(String.valueOf(numOfElements));
-        		Scene s = new Scene(new Group(text));
-        		// Override the CSS style to calculate the text width
-        		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
-        				+ "-fx-font-size: 16; ");
-        		text.applyCss();
-        		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-    			indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
-
-				// Initialize the tick icon
-				ImageView elementTick = new ImageView(InterfaceController.PATH_TICK);
-				HBox tickBox = new HBox(elementTick);
-				tickBox.setAlignment(Pos.CENTER);
-				HBox.setMargin(elementTick, new Insets(0, InterfaceController.MARGIN_TICK, 0, 0));
-				
-    			HBox elementBox = new HBox(indexBox, labelBox, tickBox);
-    			
-    			if (!InterfaceController.getLogic().isCompleted(displayData)) {
-    				elementTick.getStyleClass().add("search-element-todo");
-    			}
-
-    			// Set the margins of the element index label within the HBox
-    			HBox.setMargin(elementIndex, new Insets(
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT));
-    			
-    			// Set the margins of the element node label within the HBox
-    			HBox.setMargin(elementLabel, new Insets(
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT));
-    			
-    			// Apply CSS style for regular data field
-    			elementBox.getStyleClass().add("element");
-    			elementIndex.getStyleClass().add("element-index-label");
-    			
-    			if (isTask) {
-        			indexBox.getStyleClass().add("element-index-task");
-    			} else {
-        			indexBox.getStyleClass().add("element-index-event");
-    			}
-    			
-				return elementBox;
-			}
-
-		}
-	}
 
 	private static void initSearchTaskView(ArrayList<String> taskResults, int numOfElements) {
 
@@ -226,7 +96,7 @@ public class SearchViewController {
 
 		// Loop for the floats
 		for (int i = 0; i < taskResults.size(); i++) {
-			HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, i + 1, true);
+			HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, i + 1, true);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
@@ -279,7 +149,7 @@ public class SearchViewController {
 
 		// Loop for the floats
 		for (int i = 0; i < eventResults.size(); i++) {
-			HBox tempBox = initDisplayElement(eventResults.get(i), numOfElements, i + 1, false);
+			HBox tempBox = InterfaceController.initDisplayElement(eventResults.get(i), numOfElements, i + 1, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchEventContentBox.getChildren().add(tempBox);
@@ -370,7 +240,7 @@ public class SearchViewController {
 		// Only print the empty message if there are zero results
 		int numOfResults = 1;
 		if (taskResults.size() == 3 && InterfaceController.getLogic().isEmpty(taskResults.get(2))) {
-			HBox tempBox = initDisplayElement(taskResults.get(2), numOfElements, numOfResults, true);
+			HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(2), numOfElements, numOfResults, true);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
@@ -378,7 +248,7 @@ public class SearchViewController {
 			// If there are no results for floating tasks
 			if (InterfaceController.getLogic().isEmpty(taskResults.get(taskResults.size() - 1))) {
 				for (int i = 0; i < taskResults.size(); i++) {
-					HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
+					HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 					VBox.setMargin(tempBox, new Insets(
 							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 					searchTaskContentBox.getChildren().add(tempBox);
@@ -390,7 +260,7 @@ public class SearchViewController {
 			} else {
 				for (int i = 0; i < taskResults.size(); i++) {
 					if (!InterfaceController.getLogic().isEmpty(taskResults.get(i))) {
-						HBox tempBox = initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
+						HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
 						VBox.setMargin(tempBox, new Insets(
 								0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 						searchTaskContentBox.getChildren().add(tempBox);
@@ -404,7 +274,7 @@ public class SearchViewController {
 		}
 		// Print the event results
 		for (int i = 0; i < eventResults.size(); i++) {
-			HBox tempBox = initDisplayElement(eventResults.get(i), numOfElements, numOfResults, false);
+			HBox tempBox = InterfaceController.initDisplayElement(eventResults.get(i), numOfElements, numOfResults, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
         	searchEventContentBox.getChildren().add(tempBox);

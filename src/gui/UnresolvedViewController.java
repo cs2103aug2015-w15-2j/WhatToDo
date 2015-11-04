@@ -37,129 +37,6 @@ public class UnresolvedViewController {
     protected static final String HEADER_UNRESOLVED_TASKS = "UNRESOLVED TASKS";
     protected static final String HEADER_UNRESOLVED_EVENTS = "UNRESOLVED EVENTS";
     
-    private static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
-    	// Apply different CSS styles and formatting depending on whether it 
-    	// contains a data field or a title field
-    	if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
-    		
-    		Label elementLabel = new Label(displayData.toUpperCase());
-        	HBox elementBox = new HBox(elementLabel);
-    		
-    		// Create a divider line and add it to the elementBox
-    		Line elementLine = new Line(0, 0, InterfaceController.WIDTH_DEFAULT, 0);
-    		elementBox.getChildren().add(elementLine);
-    		
-    		// Get the width of label and resize the line
-    		Text text = new Text(elementLabel.getText());
-    		Scene s = new Scene(new Group(text));
-    		// Override the CSS style to calculate the text width
-    		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
-    				+ "-fx-font-size: 16; "
-    				+ "-fx-font-weight: bold;");
-    		text.applyCss();
-    		
-    		// Apply the binding to (element box width - text width - arbitrary margin)
-    		// The arbitrary margin exists because text in a container is not perfectly 
-    		// aligned to the dimensions of its container
-    		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-    		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(
-    				textWidth + InterfaceController.MARGIN_ARBITRARY));
-    		
-    		// Align the elements in the HBox
-    		elementBox.setAlignment(Pos.CENTER_LEFT);
-    		
-    		// Set the margins of the element node label within the HBox
-        	HBox.setMargin(elementLabel, new Insets(
-        			0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-        			0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT));
-        	
-        	// Apply CSS style for titles
-        	elementLine.getStyleClass().add("line");
-    		elementBox.getStyleClass().add("element-title");
-    		
-    		return elementBox;
-    		
-    	} else {
-    		// Determine whether the element data is an element or a null response
-    		String[] displayDataSplit = displayData.split(Pattern.quote("."));
-    		
-    		Label elementLabel, elementIndex;
-    		HBox elementBox;
-
-    		// For a null response (There are no items to display)
-    		if (displayDataSplit.length == 1) {
-    			
-    			elementLabel = new Label(displayData);
-    			elementBox = new HBox(elementLabel);
-    			
-    			// Set text wrapping for the display data
-    			elementLabel.setWrapText(true);
-
-    			// Set the margins of the element node label within the HBox
-    			HBox.setMargin(elementLabel, new Insets(
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT));
-
-    			// Apply CSS style for regular data field
-    			elementBox.getStyleClass().add("element");
-
-    			return elementBox;
-    		} else {
-    			
-    			elementIndex = new Label(String.valueOf(index));
-    			elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
-    			HBox indexBox = new HBox(elementIndex);
-    			indexBox.setAlignment(Pos.CENTER);
-    			
-				// After removing the index, store it in the index map
-				ViewIndexMap.addToUnresMap(Integer.parseInt(displayDataSplit[0]));
-				
-        		// Get the width of label and resize the line
-        		Text text = new Text(String.valueOf(numOfElements));
-        		Scene s = new Scene(new Group(text));
-        		// Override the CSS style to calculate the text width
-        		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
-        				+ "-fx-font-size: 16; ");
-        		text.applyCss();
-        		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-    			indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
-    			
-    			elementBox = new HBox(indexBox, elementLabel);
-    			
-    			// Set text wrapping for the display data
-    			elementLabel.setWrapText(true);
-
-    			// Set the margins of the element index label within the HBox
-    			HBox.setMargin(elementIndex, new Insets(
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT));
-    			
-    			// Set the margins of the element node label within the HBox
-    			HBox.setMargin(elementLabel, new Insets(
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    					InterfaceController.MARGIN_TEXT_ELEMENT));
-    			
-    			// Apply CSS style for regular data field
-    			elementBox.getStyleClass().add("element");
-    			elementIndex.getStyleClass().add("element-index-label");
-    			
-    			if (isTask) {
-        			indexBox.getStyleClass().add("element-index-task");
-    			} else {
-        			indexBox.getStyleClass().add("element-index-event");
-    			}
-    			
-    			return elementBox;
-    		}
-    	}
-    }
-
     private static void initUnresTaskView(String[] tasks) {
 
     	Label unresTaskHeader = new Label(HEADER_UNRESOLVED_TASKS);
@@ -173,7 +50,7 @@ public class UnresolvedViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, 1, true);
+        	HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, 1, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresTaskContentBox.getChildren().add(tempBox);
@@ -228,7 +105,7 @@ public class UnresolvedViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events[i], numOfElements, 1, false);
+        	HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, 1, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresEventContentBox.getChildren().add(tempBox);
@@ -317,7 +194,7 @@ public class UnresolvedViewController {
     	int numOfResults = 1;
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults, true);
+        	HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, numOfResults, true);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresTaskContentBox.getChildren().add(tempBox);
@@ -330,7 +207,7 @@ public class UnresolvedViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults, false);
+        	HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, numOfResults, false);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresEventContentBox.getChildren().add(tempBox);
