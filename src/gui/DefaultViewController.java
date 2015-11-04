@@ -151,7 +151,7 @@ public class DefaultViewController {
     	// contains a data field or a title field
     	if (InterfaceController.getLogic().isTitle(displayData)) {
     		
-    		Label elementLabel = new Label(displayData);
+    		Label elementLabel = new Label(displayData.toUpperCase());
         	HBox elementBox = new HBox(elementLabel);
     		
     		// Create a divider line and add it to the elementBox
