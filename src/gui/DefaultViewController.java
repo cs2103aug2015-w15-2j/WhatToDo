@@ -16,10 +16,9 @@ import java.util.regex.Pattern;
 
 public class DefaultViewController {
 
-	 /* ================================================================================
-     * JavaFX controls used in the general interface
-     * ================================================================================
-     */
+	 // ================================================================================
+     // JavaFX controls used in the general interface
+     // ================================================================================
 	
 	// Used for initDefTaskView
     private static VBox defTaskBox, defTaskContentBox;
@@ -37,6 +36,116 @@ public class DefaultViewController {
     protected static final String HEADER_DEF_TASKS = "UPCOMING TASKS: SOON";
     protected static final String HEADER_DEF_EVENTS = "UPCOMING EVENTS: SOON";
     
+    /**
+     * This method initializes all the interface components for the default view,
+     * primary the task window and the event window
+     */
+    public static void initDefView() {
+
+        initDefTaskView(InterfaceController.getLogic().getDefTasks());
+        initDefEventView(InterfaceController.getLogic().getDefEvents());
+        
+        defScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
+        
+        InterfaceController.defBox = new HBox(defTaskBox, defScrollLine, defEventBox);
+        
+        // Set the preferred viewport width of the two scroll panes to be half
+        // of the entire view pane
+        defTaskScroll.prefViewportWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        defEventScroll.prefViewportWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        
+        // Fix the width of the scroll panes to prevent resize of the inner labels
+        defTaskScroll.maxWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        defEventScroll.maxWidthProperty().bind(
+        		InterfaceController.defBox.widthProperty().divide(2));
+        
+        // CSS
+        defScrollLine.getStyleClass().add("line");
+    }
+    
+    /**
+     * This method updates the default view with data from the text file
+     * 
+     * Called by:
+     * 	1. 	runCommand() in LogicController to update the view every time an 
+     * 		operation is performed
+     * 	2. 	updateMainInterface() in InterfaceController to update the view when
+     * 		a view change command is issued (button/hotkey/text command)
+     */
+    public static void updateDefView() {
+    	
+    	// Clear the previous content already displayed
+        defTaskContentBox.getChildren().clear();
+        defEventContentBox.getChildren().clear();
+        ViewIndexMap.resetDefMap();
+        
+        // Get the results of the file from logic
+        String[] tasks = InterfaceController.getLogic().getDefTasks();
+        String[] events = InterfaceController.getLogic().getDefEvents();
+        
+        int numOfElements = InterfaceController.getLogic().getDefElementsCount();
+        
+        // Run the loop through the entire task list
+        int numOfResults = 1;
+        for (int i = 0; i < tasks.length; i++) {
+        	// Use a temporary component for formatting
+        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults);
+        	VBox.setMargin(tempBox, new Insets(
+        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+            defTaskContentBox.getChildren().add(tempBox);
+			// Only increment the counter if an element is added
+			if (InterfaceController.getLogic().isNonEmptyElement(tasks[i])) {
+				numOfResults++;
+			}
+        }
+        
+        // Run the loop through the entire task list
+        for (int i = 0; i < events.length; i++) {
+        	// Use a temporary component for formatting
+        	HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults);
+        	VBox.setMargin(tempBox, new Insets(
+        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+            defEventContentBox.getChildren().add(tempBox);
+			// Only increment the counter if an element is added
+			if (InterfaceController.getLogic().isNonEmptyElement(events[i])) {
+				numOfResults++;
+			}
+        }
+    }
+    
+    // ================================================================================
+    // Getters for getLogic() to access required JavaFX components
+    // ================================================================================
+    
+    /**
+     * This method returns the line separator between the task and event views 
+     * 
+     * @return The Line object separating the task and event views.
+     */
+    public static Line getDefScrollLine() {
+    	return defScrollLine;
+    }
+    
+    // ================================================================================
+    // Private methods, used to initialize various sub components of the interface
+    // ================================================================================
+    
+    /**
+     * This method takes in an input String and creates a HBox with all the required
+     * data formatted correctly to be inserted into one of the task/event windows.
+     * 
+     * @param displayData
+     * 		      The task/event data to be displayed in the window
+     * @param numOfElements
+     * 		      The total number of tasks/events. Used for formatting the index box
+     * @param index
+     * 		      The index of the particular task/event
+     * @return A HBox with all the task/event data formatted for insertion into the 
+     * 		   scroll pane
+     */
     private static HBox initDisplayElement(String displayData, int numOfElements, int index) {
     	// Apply different CSS styles and formatting depending on whether it 
     	// contains a data field or a title field
@@ -157,6 +266,13 @@ public class DefaultViewController {
     	}
     }
 
+    /**
+     * This method initializes the task view for the default view
+     * 
+     * @param tasks
+     * 		      A String[] of tasks returned from LogicController's
+     * 			  getDefTasks()
+     */
     private static void initDefTaskView(String[] tasks) {
 
     	Label defTaskHeader = new Label(HEADER_DEF_TASKS);
@@ -212,6 +328,13 @@ public class DefaultViewController {
         defTaskHeaderBox.getStyleClass().add("box-title");
     }
 
+    /**
+     * This method initializes the event view for the default view
+     * 
+     * @param events
+     * 		      A String[] of tasks returned from LogicController's
+     * 			  getDefEvents()
+     */
     private static void initDefEventView(String[] events) {
 
     	Label defEventHeader = new Label(HEADER_DEF_EVENTS);
@@ -266,81 +389,5 @@ public class DefaultViewController {
         // CSS
         defEventHeader.getStyleClass().add("box-title-label");
         defEventHeaderBox.getStyleClass().add("box-title");
-    }
-
-    public static void initDefView() {
-
-        initDefTaskView(InterfaceController.getLogic().getDefTasks());
-        initDefEventView(InterfaceController.getLogic().getDefEvents());
-        
-        defScrollLine = new Line(0, 0, 0, InterfaceController.WIDTH_DEFAULT_BUTTON);
-        
-        InterfaceController.defBox = new HBox(defTaskBox, defScrollLine, defEventBox);
-        
-        // Set the preferred viewport width of the two scroll panes to be half
-        // of the entire view pane
-        defTaskScroll.prefViewportWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
-        defEventScroll.prefViewportWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
-        
-        // Fix the width of the scroll panes to prevent resize of the inner labels
-        defTaskScroll.maxWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
-        defEventScroll.maxWidthProperty().bind(
-        		InterfaceController.defBox.widthProperty().divide(2));
-        
-        // CSS
-        defScrollLine.getStyleClass().add("line");
-    }
-    
-    public static void updateDefView() {
-    	
-    	// Clear the previous content already displayed
-        defTaskContentBox.getChildren().clear();
-        defEventContentBox.getChildren().clear();
-        ViewIndexMap.resetDefMap();
-        
-        // Get the results of the file from logic
-        String[] tasks = InterfaceController.getLogic().getDefTasks();
-        String[] events = InterfaceController.getLogic().getDefEvents();
-        
-        int numOfElements = InterfaceController.getLogic().getDefElementsCount();
-        
-        // Run the loop through the entire task list
-        int numOfResults = 1;
-        for (int i = 0; i < tasks.length; i++) {
-        	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(tasks[i], numOfElements, numOfResults);
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defTaskContentBox.getChildren().add(tempBox);
-			// Only increment the counter if an element is added
-			if (InterfaceController.getLogic().isNonEmptyElement(tasks[i])) {
-				numOfResults++;
-			}
-        }
-        
-        // Run the loop through the entire task list
-        for (int i = 0; i < events.length; i++) {
-        	// Use a temporary component for formatting
-        	HBox tempBox = initDisplayElement(events[i], numOfElements, numOfResults);
-        	VBox.setMargin(tempBox, new Insets(
-        			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-            defEventContentBox.getChildren().add(tempBox);
-			// Only increment the counter if an element is added
-			if (InterfaceController.getLogic().isNonEmptyElement(events[i])) {
-				numOfResults++;
-			}
-        }
-    }
-    
-    /* ================================================================================
-     * Getters for getLogic()ler to access required JavaFX components
-     * ================================================================================
-     */
-    
-    public static Line getDefScrollLine() {
-    	return defScrollLine;
     }
 }
