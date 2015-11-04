@@ -163,7 +163,7 @@ public class DefaultViewController {
     		Scene s = new Scene(new Group(text));
     		// Override the CSS style to calculate the text width
     		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
-    				+ "-fx-font-size: 14; "
+    				+ "-fx-font-size: 16; "
     				+ "-fx-font-weight: bold;");
     		text.applyCss();
     		
@@ -232,7 +232,7 @@ public class DefaultViewController {
         		Scene s = new Scene(new Group(text));
         		// Override the CSS style to calculate the text width
         		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
-        				+ "-fx-font-size: 14; ");
+        				+ "-fx-font-size: 16; ");
         		text.applyCss();
         		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
     			indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
