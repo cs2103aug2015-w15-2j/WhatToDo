@@ -26,7 +26,7 @@ public class HelpController {
 
     	helpScroll = new ScrollPane(helpImage);
     	helpScroll.setFitToWidth(true);
-    	helpScroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+    	helpScroll.setVbarPolicy(ScrollBarPolicy.NEVER);
     	helpScroll.setHbarPolicy(ScrollBarPolicy.NEVER);
     	
     	MainApp.helpScene = new Scene(helpScroll);

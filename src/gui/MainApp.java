@@ -22,7 +22,7 @@ public class MainApp extends Application {
     protected static final double MIN_WINDOW_HEIGHT = 700;
     protected static final double MIN_WINDOW_WIDTH = 1000;
     
-    protected static final double WIDTH_HELP_DIALOG = 600;
+    protected static final double WIDTH_HELP_DIALOG = 800;
     protected static final double HEIGHT_HELP_DIALOG = 800;
     
     private static final String TITLE_STAGE = "WhatToDo";
