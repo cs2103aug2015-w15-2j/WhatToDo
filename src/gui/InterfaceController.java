@@ -118,6 +118,9 @@ public class InterfaceController {
     protected static final String PATH_CONFIG = "gui/resources/config.png";
     protected static final String PATH_TICK = "gui/resources/tick.png";
     
+    protected static final String STATUS_TODO = "todo";
+    protected static final String STATUS_DONE = "done";
+    
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
     protected static final double WIDTH_DEFAULT_BUTTON = 50;
@@ -454,7 +457,8 @@ public class InterfaceController {
      * @return A HBox with the correct task/event data type(title, empty, data) 
      * 		   formatted for insertion into the scroll pane
      */
-    protected static HBox initDisplayElement(String displayData, int numOfElements, int index, boolean isTask) {
+    protected static HBox initDisplayElement(String displayData, int numOfElements, 
+    		int index, boolean isTask, View targetView) {
     	// If is a date or title element
     	if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
     		return initTitleOrDateElement(displayData);
@@ -465,7 +469,8 @@ public class InterfaceController {
     		if (displayDataSplit.length == 1) {
     			return initNoResultElement(displayData);
     		} else {
-    			return initDataElement(displayData, numOfElements, index, isTask, displayDataSplit);
+    			return initDataElement(displayData, numOfElements, index, 
+    					isTask, displayDataSplit, targetView);
     		}
     	}
     }
@@ -552,7 +557,8 @@ public class InterfaceController {
     // ======================================================================
     
     /**
-     * This method creates a HBox and formats it for a task/event data String
+     * This method calls the correct initDataElement() method based on whether
+     * the task/event data is marked with a status field or not
      * 
      * @param displayData
      * 		      The task/event data to be displayed in the window
@@ -568,32 +574,27 @@ public class InterfaceController {
      * @return A HBox with only the task/event data formatted for insertion into the
      * 		   scroll pane
      */
-	private static HBox initDataElement(String displayData, int numOfElements, int index, boolean isTask,
-			String[] displayDataSplit) {
-		
-		Label elementIndex = new Label(String.valueOf(index));
-		Label elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
-		HBox indexBox = new HBox(elementIndex);
-		HBox elementBox = new HBox(indexBox, elementLabel);
-		
+    private static HBox initDataElement(String displayData, int numOfElements, 
+			int index, boolean isTask, String[] displayDataSplit, View targetView) {
+    	
 		// After removing the index, store it in the index map
-		ViewIndexMap.addToAllMap(Integer.parseInt(displayDataSplit[0]));
-
-		// Component formatting
-		formatIndexElement(numOfElements, elementIndex, indexBox);
-		formatLabelElement(elementLabel);
-		
-		// CSS
-		elementBox.getStyleClass().add("element");
-		elementIndex.getStyleClass().add("element-index-label");
-		
-		if (isTask) {
-			indexBox.getStyleClass().add("element-index-task");
+		if (isStatusField(displayDataSplit[0].split(" ")[0])) {
+			ViewIndexMap.add(targetView, Integer.parseInt(displayDataSplit[0].substring(5)));
 		} else {
-			indexBox.getStyleClass().add("element-index-event");
+			ViewIndexMap.add(targetView, Integer.parseInt(displayDataSplit[0]));
 		}
-		return elementBox;
-	}
+		
+    	// Do a comparison on displayDataSplit to check if the returned data
+    	// contains the "todo" or "done" field that requires indicator
+    	String statusData = displayData.split(" ")[0];
+    	if (statusData.equals(STATUS_DONE)) {
+    		return initDataElementWithStatus(
+    				displayData, numOfElements, index, isTask, displayDataSplit);
+    	} else {
+    		return initDataElementNoStatus(
+    				displayData, numOfElements, index, isTask, displayDataSplit);
+    	}
+    }
 	
 	/**
 	 * This method creates a HBox and formats it for an empty result String
@@ -606,9 +607,10 @@ public class InterfaceController {
 	 */
 	private static HBox initNoResultElement(String displayData) {
 		Label elementLabel = new Label(displayData);
-		HBox elementBox = new HBox(elementLabel);
+		HBox labelBox = new HBox(elementLabel);
+		HBox elementBox = new HBox(labelBox);
 		
-		formatLabelElement(elementLabel);
+		formatLabelElement(elementLabel, labelBox);
 
 		// Apply CSS style for regular data field
 		elementBox.getStyleClass().add("element");
@@ -638,6 +640,94 @@ public class InterfaceController {
 		return elementBox;
 	}
 
+    /**
+     * This method creates a HBox and formats it for a task/event data String
+     * 
+     * @param displayData
+     * 		      The task/event data to be displayed in the window
+     * @param numOfElements
+     * 		      The total number of tasks/events. Used for formatting the index box
+     * @param index
+     * 		      The view index of the particular task/event
+     * @param isTask
+     * 		      A boolean flag indicating whether the data to be input is a task
+     * @param displayDataSplit
+     * 		      A String[] of displayData split by a period(.). Used in 
+     * 			  initDisplayElement() for branching, reused to avoid recomputation
+     * @return A HBox with only the task/event data formatted for insertion into the
+     * 		   scroll pane
+     */
+	private static HBox initDataElementNoStatus(String displayData, int numOfElements, 
+			int index, boolean isTask, String[] displayDataSplit) {
+		
+		Label elementIndex = new Label(String.valueOf(index));
+		Label elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
+		HBox indexBox = new HBox(elementIndex);
+		HBox labelBox = new HBox(elementLabel);
+		HBox elementBox = new HBox(indexBox, labelBox);
+
+		// Component formatting
+		formatIndexElement(numOfElements, elementIndex, indexBox);
+		formatLabelElement(elementLabel, labelBox);
+		
+		// CSS
+		elementBox.getStyleClass().add("element");
+		elementIndex.getStyleClass().add("element-index-label");
+		
+		if (isTask) {
+			indexBox.getStyleClass().add("element-index-task");
+		} else {
+			indexBox.getStyleClass().add("element-index-event");
+		}
+		return elementBox;
+	}
+	
+    /**
+     * This method creates a HBox and formats it for a task/event data String. This method
+     * will also append a tick to the end of the label to indicate completed status
+     * 
+     * @param displayData
+     * 		      The task/event data to be displayed in the window
+     * @param numOfElements
+     * 		      The total number of tasks/events. Used for formatting the index box
+     * @param index
+     * 		      The view index of the particular task/event
+     * @param isTask
+     * 		      A boolean flag indicating whether the data to be input is a task
+     * @param displayDataSplit
+     * 		      A String[] of displayData split by a period(.). Used in 
+     * 			  initDisplayElement() for branching, reused to avoid recomputation
+     * @return A HBox with only the task/event data formatted for insertion into the
+     * 		   scroll pane
+     */
+	private static HBox initDataElementWithStatus(String displayData, int numOfElements, 
+			int index, boolean isTask, String[] displayDataSplit) {
+		
+		Label elementIndex = new Label(String.valueOf(index));
+		Label elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
+		ImageView elementTick = new ImageView(PATH_TICK);
+		HBox indexBox = new HBox(elementIndex);
+		HBox labelBox = new HBox(elementLabel);
+		HBox tickBox = new HBox(elementTick);
+		HBox elementBox = new HBox(indexBox, labelBox, tickBox);
+
+		// Component formatting
+		formatIndexElement(numOfElements, elementIndex, indexBox);
+		formatLabelElement(elementLabel, labelBox);
+		formatTickElement(elementTick, tickBox);
+		
+		// CSS
+		elementBox.getStyleClass().add("element");
+		elementIndex.getStyleClass().add("element-index-label");
+		
+		if (isTask) {
+			indexBox.getStyleClass().add("element-index-task");
+		} else {
+			indexBox.getStyleClass().add("element-index-event");
+		}
+		return elementBox;
+	}
+	
 	/**
 	 * This method formats the individual components of a HBox containing the
 	 * index of the task/event
@@ -665,9 +755,12 @@ public class InterfaceController {
 	 * 
 	 * @param elementLabel
 	 * 		      The Label containing the task/event data to be formatted
+	 * @param labelBox
+	 * 		      The HBox containing the elementLabel
 	 */
-	private static void formatLabelElement(Label elementLabel) {
+	private static void formatLabelElement(Label elementLabel, HBox labelBox) {
 		elementLabel.setWrapText(true);
+		HBox.setHgrow(labelBox, Priority.ALWAYS);
 		HBox.setMargin(elementLabel, new Insets(
 				InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
 				InterfaceController.MARGIN_TEXT_ELEMENT, 
@@ -695,6 +788,20 @@ public class InterfaceController {
 				0, InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT));
 	}
 
+	/**
+	 * This method formats the individual components of a HBox containing the
+	 * tick indicating completed status of a task/event
+	 * 
+	 * @param elementTick
+	 * 		      The ImageView containing the tick image to be formatted
+	 * @param tickBox
+	 * 			  The HBox containing the elementTick
+	 */
+	private static void formatTickElement(ImageView elementTick, HBox tickBox) {
+		tickBox.setAlignment(Pos.CENTER);
+		HBox.setMargin(elementTick, new Insets(0, MARGIN_TICK, 0, MARGIN_TICK));
+	}
+	
 	/**
 	 * This method calculates the maximum width used by the current largest index
 	 * and sets the indexBox to that width to ensure consistency
@@ -739,6 +846,18 @@ public class InterfaceController {
 		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
 		elementLine.endXProperty().bind(elementBox.widthProperty().subtract(
 				textWidth + InterfaceController.MARGIN_ARBITRARY));
+	}
+	
+	/**
+	 * This method returns whether an input string contains a status field in the
+	 * data ("todo" or "done")
+	 * 
+	 * @param data
+	 * 		      The String to check if it matches either status field
+	 * @return true if data equals to either "done" or "todo", false otherwise
+	 */
+	private static boolean isStatusField(String data) {
+		return data.equals(STATUS_DONE) || data.equals(STATUS_TODO);
 	}
 	
     // ======================================================================

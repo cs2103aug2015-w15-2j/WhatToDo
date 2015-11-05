@@ -14,6 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import struct.View;
 
 public class DoneViewController {
 
@@ -50,7 +51,7 @@ public class DoneViewController {
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
         	int numOfElements = InterfaceController.getLogic().getDoneElementsCount();
-        	HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, 1, true);
+        	HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, 1, true, View.DONE);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             doneTaskContentBox.getChildren().add(tempBox);
@@ -104,7 +105,7 @@ public class DoneViewController {
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
         	int numOfElements = InterfaceController.getLogic().getDoneElementsCount();
-        	HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, 1, false);
+        	HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, 1, false, View.DONE);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             doneEventContentBox.getChildren().add(tempBox);
@@ -193,7 +194,7 @@ public class DoneViewController {
     	// Only print the empty message if there are zero results
     	int numOfResults = 1;
     	if (tasks.length == 3 && InterfaceController.getLogic().isEmpty(tasks[2])) {
-    		HBox tempBox = InterfaceController.initDisplayElement(tasks[2], numOfElements, numOfResults, true);
+    		HBox tempBox = InterfaceController.initDisplayElement(tasks[2], numOfElements, numOfResults, true, View.DONE);
     		VBox.setMargin(tempBox, new Insets(
     				0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     		doneTaskContentBox.getChildren().add(tempBox);
@@ -201,7 +202,7 @@ public class DoneViewController {
     		// If there are no results for floating tasks
     		if (InterfaceController.getLogic().isEmpty(tasks[tasks.length - 1])) {
     			for (int i = 0; i < tasks.length; i++) {
-    				HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, numOfResults, true);
+    				HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, numOfResults, true, View.DONE);
     				VBox.setMargin(tempBox, new Insets(
     						0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     				doneTaskContentBox.getChildren().add(tempBox);
@@ -213,7 +214,7 @@ public class DoneViewController {
     		} else {
     			for (int i = 0; i < tasks.length; i++) {
     				if (!InterfaceController.getLogic().isEmpty(tasks[i])) {
-    					HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, numOfResults, true);
+    					HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, numOfResults, true, View.DONE);
     					VBox.setMargin(tempBox, new Insets(
     							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     					doneTaskContentBox.getChildren().add(tempBox);
@@ -227,7 +228,7 @@ public class DoneViewController {
     	}
     	// Print the event results
     	for (int i = 0; i < events.length; i++) {
-    		HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, numOfResults, false);
+    		HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, numOfResults, false, View.DONE);
     		VBox.setMargin(tempBox, new Insets(
     				0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     		doneEventContentBox.getChildren().add(tempBox);

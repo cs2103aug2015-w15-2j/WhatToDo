@@ -17,6 +17,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import struct.View;
 
 public class SearchViewController {
 
@@ -96,7 +97,7 @@ public class SearchViewController {
 
 		// Loop for the floats
 		for (int i = 0; i < taskResults.size(); i++) {
-			HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, i + 1, true);
+			HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, i + 1, true, View.SEARCH);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
@@ -149,7 +150,7 @@ public class SearchViewController {
 
 		// Loop for the floats
 		for (int i = 0; i < eventResults.size(); i++) {
-			HBox tempBox = InterfaceController.initDisplayElement(eventResults.get(i), numOfElements, i + 1, false);
+			HBox tempBox = InterfaceController.initDisplayElement(eventResults.get(i), numOfElements, i + 1, false, View.SEARCH);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchEventContentBox.getChildren().add(tempBox);
@@ -240,7 +241,7 @@ public class SearchViewController {
 		// Only print the empty message if there are zero results
 		int numOfResults = 1;
 		if (taskResults.size() == 3 && InterfaceController.getLogic().isEmpty(taskResults.get(2))) {
-			HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(2), numOfElements, numOfResults, true);
+			HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(2), numOfElements, numOfResults, true, View.SEARCH);
 			VBox.setMargin(tempBox, new Insets(
 					0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 			searchTaskContentBox.getChildren().add(tempBox);
@@ -248,7 +249,7 @@ public class SearchViewController {
 			// If there are no results for floating tasks
 			if (InterfaceController.getLogic().isEmpty(taskResults.get(taskResults.size() - 1))) {
 				for (int i = 0; i < taskResults.size(); i++) {
-					HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
+					HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true, View.SEARCH);
 					VBox.setMargin(tempBox, new Insets(
 							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 					searchTaskContentBox.getChildren().add(tempBox);
@@ -260,7 +261,7 @@ public class SearchViewController {
 			} else {
 				for (int i = 0; i < taskResults.size(); i++) {
 					if (!InterfaceController.getLogic().isEmpty(taskResults.get(i))) {
-						HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true);
+						HBox tempBox = InterfaceController.initDisplayElement(taskResults.get(i), numOfElements, numOfResults, true, View.SEARCH);
 						VBox.setMargin(tempBox, new Insets(
 								0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
 						searchTaskContentBox.getChildren().add(tempBox);
@@ -274,7 +275,7 @@ public class SearchViewController {
 		}
 		// Print the event results
 		for (int i = 0; i < eventResults.size(); i++) {
-			HBox tempBox = InterfaceController.initDisplayElement(eventResults.get(i), numOfElements, numOfResults, false);
+			HBox tempBox = InterfaceController.initDisplayElement(eventResults.get(i), numOfElements, numOfResults, false, View.SEARCH);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
         	searchEventContentBox.getChildren().add(tempBox);

@@ -2,6 +2,8 @@ package gui;
 
 import java.util.ArrayList;
 
+import struct.View;
+
 public class ViewIndexMap {
 
 	// Each of the individual elements is the file index of the ith
@@ -34,14 +36,6 @@ public class ViewIndexMap {
 	// Getters to access the individual view maps
 	// ============================================================
 	
-	/**
-	 * This method returns the fileIndex associated with the input index
-	 * for the default view
-	 * 
-	 * @param viewIndex
-	 * 		      The index as seen by the user displayed by the view
-	 * @return The index of the element within the text file
-	 */
 	public static int getFromDefMap(int viewIndex) {
 		if (viewIndex >= defMap.size()) {
 			return -1;
@@ -52,14 +46,6 @@ public class ViewIndexMap {
 		}
 	}
 	
-	/**
-	 * This method returns the fileIndex associated with the input index
-	 * for the all view
-	 * 
-	 * @param viewIndex
-	 * 		      The index as seen by the user displayed by the view
-	 * @return The index of the element within the text file
-	 */
 	public static int getFromAllMap(int viewIndex) {
 		if (viewIndex >= allMap.size()) {
 			return -1;
@@ -70,15 +56,7 @@ public class ViewIndexMap {
 		}
 	}
 	
-	/**
-	 * This method returns the fileIndex associated with the input index
-	 * for the search
-	 * 
-	 * @param viewIndex
-	 * 		      The index as seen by the user displayed by the view
-	 * @return The index of the element within the text file
-	 */
-	public static int getFromSearchMap(int viewIndex) {
+	static int getFromSearchMap(int viewIndex) {
 		if (viewIndex >= searchMap.size()) {
 			return -1;
 		} else if (viewIndex <= 0) {
@@ -87,16 +65,8 @@ public class ViewIndexMap {
 			return searchMap.get(viewIndex);
 		}
 	}
-	
-	/**
-	 * This method returns the fileIndex associated with the input index
-	 * for the unresolved view
-	 * 
-	 * @param viewIndex
-	 * 		      The index as seen by the user displayed by the view
-	 * @return The index of the element within the text file
-	 */
-	public static int getFromUnresMap(int viewIndex) {
+
+	static int getFromUnresMap(int viewIndex) {
 		if (viewIndex >= unresMap.size()) {
 			return -1;
 		} else if (viewIndex <= 0) {
@@ -106,14 +76,6 @@ public class ViewIndexMap {
 		}
 	}
 	
-	/**
-	 * This method returns the fileIndex associated with the input index
-	 * for the done view
-	 * 
-	 * @param viewIndex
-	 * 		      The index as seen by the user displayed by the view
-	 * @return The index of the element within the text file
-	 */
 	public static int getFromDoneMap(int viewIndex) {
 		if (viewIndex >= doneMap.size()) {
 			return -1;
@@ -172,6 +134,37 @@ public class ViewIndexMap {
 	
 	public static void addToDoneMap(int fileIndex) {
 		doneMap.add(fileIndex);
+	}
+	
+	/**
+	 * This method calls the correct add() method based on input view
+	 * 
+	 * @param targetView
+	 * 		      The View to add the file index to
+	 * @param fileIndex
+	 * 		      The index on the element within the file
+	 */
+	public static void add(View targetView, int fileIndex) {
+		switch (targetView) {
+		case DEFAULT:
+			addToDefMap(fileIndex);
+			break;
+		case ALL:
+			addToAllMap(fileIndex);
+			break;
+		case UNRESOLVED:
+			addToUnresMap(fileIndex);
+			break;
+		case SEARCH:
+			addToSearchMap(fileIndex);
+			break;
+		case DONE:
+			addToDoneMap(fileIndex);
+			break;
+		default:
+			// Should not enter
+			break;
+		}
 	}
 	
 	public static void setDefMap(int viewIndex, int fileIndex) {

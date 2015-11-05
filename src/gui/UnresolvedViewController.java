@@ -13,6 +13,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import struct.View;
 
 public class UnresolvedViewController {
 
@@ -50,7 +51,7 @@ public class UnresolvedViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, 1, true);
+        	HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, 1, true, View.UNRESOLVED);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresTaskContentBox.getChildren().add(tempBox);
@@ -105,7 +106,7 @@ public class UnresolvedViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, 1, false);
+        	HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, 1, false, View.UNRESOLVED);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresEventContentBox.getChildren().add(tempBox);
@@ -194,7 +195,7 @@ public class UnresolvedViewController {
     	int numOfResults = 1;
         for (int i = 0; i < tasks.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, numOfResults, true);
+        	HBox tempBox = InterfaceController.initDisplayElement(tasks[i], numOfElements, numOfResults, true, View.UNRESOLVED);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresTaskContentBox.getChildren().add(tempBox);
@@ -207,7 +208,7 @@ public class UnresolvedViewController {
         // Run the loop through the entire task list
         for (int i = 0; i < events.length; i++) {
         	// Use a temporary component for formatting
-        	HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, numOfResults, false);
+        	HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, numOfResults, false, View.UNRESOLVED);
         	VBox.setMargin(tempBox, new Insets(
         			0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
             unresEventContentBox.getChildren().add(tempBox);

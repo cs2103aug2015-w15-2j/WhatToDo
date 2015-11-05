@@ -160,6 +160,14 @@ public class LogicController {
 		// Split the string by newline
 		String[] doneTasksSplit = doneTasks.split("\n");
 		
+		// Prefix a "done" to the returned data
+		for (int i = 0; i < doneTasksSplit.length; i++) {
+			if (isNonEmptyElement(doneTasksSplit[i])) {
+				doneTasksSplit[i] = InterfaceController.STATUS_DONE + 
+						" " + doneTasksSplit[i];
+			}
+		}
+		
 		return doneTasksSplit;
 	}
 	
@@ -173,6 +181,10 @@ public class LogicController {
 		
 		// Filter through the array and reformat the data
 		for (int i = 0; i < doneEventsSplit.length; i++) {
+			if (isNonEmptyElement(doneEventsSplit[i])) {
+				doneEventsSplit[i] = InterfaceController.STATUS_DONE + 
+						" " + doneEventsSplit[i];
+			}
 			doneEventsSplit[i] = doneEventsSplit[i].replace(';', '\n');
 		}
 		
