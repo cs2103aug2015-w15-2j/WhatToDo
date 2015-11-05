@@ -520,6 +520,13 @@ public class Storage {
 		}
 	}
 	
+	/**
+	 * Adds a line alias->actual command mapping to the alias file in config folder.
+	 * 
+	 * @param aliasLine              user-specified alias.
+	 * @param actualCommandType      actual command type to be mapped to.
+	 * @throws FileSystemException   when error in writing to file.
+	 */
 	public void addToAliasFile(String aliasLine, String actualCommandType) throws FileSystemException {
 		try {
 			updateAliasFile(aliasLine, actualCommandType); 
@@ -528,6 +535,14 @@ public class Storage {
 		}
 	}
 	
+	/**
+	 * Deletes a line with specified alias, removing the mapping too from alias file in
+	 * config folder. This method will not do anything if specified alias is not found in
+	 * file.
+	 * 
+	 * @param aliasLine              user-specified alias.
+	 * @throws FileSystemException   when error in writing to file.
+	 */
 	public void deleteFromAliasFile(String aliasLine) throws FileSystemException {
 		try {
 			removeFromAliasFile(aliasLine); 
@@ -536,13 +551,19 @@ public class Storage {
 		}
 	}
 	
+	/**
+	 * Displays the entire content of the alias file.
+	 * 
+	 * @return                        the contents of alias file as a String.
+	 * @throws FileSystemException    when error in reading file.
+	 */
 	public String readAliasFile() throws FileSystemException {
 		try {
 			String fileContents = displayAliasFile(); 
 			
 			return fileContents;
 		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
+			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
 		}
 	}
 
@@ -557,21 +578,19 @@ public class Storage {
 		String lineToAdd = String.format(FORMAT_ALIAS, aliasLine, actualCommandType);
 		fileContents.add(lineToAdd);
 
-		int lastLine = fileContents.size() - PARAM_LESS_ONE;
-		
-		PrintWriter configWriter = new PrintWriter(ALIAS_FILE_PATH);
-
-		for (int i = PARAM_START_LOOP_ZERO; i < lastLine; i++) {
-			configWriter.println(fileContents.get(i));
-		}
-		configWriter.print(fileContents.get(lastLine));
-		
-		configWriter.close();
+		writeContentsToAliasFile(fileContents);
 	}
 	
 	private void removeFromAliasFile(String aliasLine) throws IOException {
 		ArrayList<String> fileContents = readAliasFileToArrayList();
 		
+		removeAliasFromArrayList(aliasLine, fileContents);
+		
+		writeContentsToAliasFile(fileContents);
+	}
+
+	private void removeAliasFromArrayList(String aliasLine,
+			ArrayList<String> fileContents) {
 		for (int i = PARAM_START_LOOP_ZERO; i < fileContents.size(); i++) {
 			String aliasFromFile = getFirstWord(fileContents.get(i));
 			if (aliasFromFile.equals(aliasLine)) {
@@ -579,10 +598,11 @@ public class Storage {
 				break;
 			}
 		}
+	}
 
-		int lastLine = fileContents.size() - PARAM_LESS_ONE;
-		
+	private void writeContentsToAliasFile(ArrayList<String> fileContents) throws FileNotFoundException {
 		PrintWriter configWriter = new PrintWriter(ALIAS_FILE_PATH);
+		int lastLine = fileContents.size() - PARAM_LESS_ONE;
 
 		if (lastLine == PARAM_DOES_NOT_EXIST) {
 			configWriter.print(EMPTY_STRING);
@@ -599,8 +619,7 @@ public class Storage {
 	}
 	
 	private String displayAliasFile() throws IOException {
-		FileReader fileToBeRead = new FileReader(ALIAS_FILE_PATH);
-		BufferedReader aliasFileReader = new BufferedReader(fileToBeRead);
+		BufferedReader aliasFileReader = initializeAliasReader();
 		
 		StringBuilder fileContents = new StringBuilder();
 		
@@ -622,8 +641,7 @@ public class Storage {
 	
 	private ArrayList<String> readAliasFileToArrayList()
 			throws IOException {
-		FileReader fileToBeRead = new FileReader(ALIAS_FILE_PATH);
-		BufferedReader aliasFileReader = new BufferedReader(fileToBeRead);
+		BufferedReader aliasFileReader = initializeAliasReader();
 		
 		ArrayList<String> fileContents = new ArrayList<String>();
 		
@@ -650,15 +668,20 @@ public class Storage {
 		
 		String lineToFind = fileContents.get(lineNumber - PARAM_OFFSET);
 		
+		String attribute = getAttributeFromLine(type, lineToFind);
+		
+		return attribute;
+	}
+
+	private String getAttributeFromLine(int type, String lineToFind) {
+		String attribute;
 		int numParameters = countParameters(lineToFind);
 		
-		String attribute;
 		if (numParameters > type && type >= PARAM_FIRST_WORD) {
 			attribute = getSpecificWord(type, lineToFind);
 		} else {
 			attribute = null;
 		}
-		
 		return attribute;
 	}
 
@@ -1516,6 +1539,13 @@ public class Storage {
 		FileReader fileToBeRead = new FileReader(filePath);
 		fileReader = new BufferedReader(fileToBeRead);
 	}
+	
+	private BufferedReader initializeAliasReader() throws FileNotFoundException {
+		FileReader fileToBeRead = new FileReader(ALIAS_FILE_PATH);
+		BufferedReader aliasFileReader = new BufferedReader(fileToBeRead);
+		
+		return aliasFileReader;
+	}
 
 	private void initialiseWriter() throws FileNotFoundException {
 		fileWriter = new PrintWriter(filePath);
@@ -1528,6 +1558,8 @@ public class Storage {
 		int lastLine = fileContents.size() - PARAM_LESS_ONE;
 
 		if (lastLine == PARAM_DOES_NOT_EXIST) {
+			fileWriter.print(EMPTY_STRING);
+			fileWriter.close();
 			return;
 		}
 
@@ -1546,10 +1578,6 @@ public class Storage {
 		String[] linesToWrite = textToWrite.split(NEWLINE);
 
 		int lastLine = linesToWrite.length - PARAM_LESS_ONE;
-
-		if (lastLine == PARAM_DOES_NOT_EXIST) {
-			return;
-		}
 
 		for (int i = PARAM_START_LOOP_ZERO; i < lastLine; i++) {
 			fileWriter.println(linesToWrite[i]);
