@@ -90,33 +90,33 @@ public class CommandParser {
     private static final String KEYWORD_EDIT_END_DATE = "endd";
     private static final String KEYWORD_EDIT_END_TIME = "endt";
     
-    private static final String ERROR_USER_COMMAND = "Invalid user command!";
-    private static final String ERROR_TASK_NAME = "Task name required!";
-    private static final String ERROR_DEADLINE = "Invalid deadline!";
-    private static final String ERROR_EVENT_FORMAT = "Invalid format for adding event!";
-    private static final String ERROR_START_DATE = "Invalid start date!";
-    private static final String ERROR_START_TIME = "Invalid start time!";
-    private static final String ERROR_END_DATE = "Invalid end date!";
-    private static final String ERROR_END_TIME = "Invalid end time!";
-    private static final String ERROR_START_END_TIME = "Start time later than or equal to end time for single-day event!";
-    private static final String ERROR_START_END_DATE = "Start date later than end date!";    
-    private static final String ERROR_EVENT_NAME = "Event name required!";
-    private static final String ERROR_EVENT_DATE = "Invalid date!";
-    private static final String ERROR_DELETE = "Index/alias command required!";
-    private static final String ERROR_DELETE_INDEX_ALIAS = "Invalid index or alias!";
-    private static final String ERROR_DELETE_ALIAS = "No such alias has been set!";
-    private static final String ERROR_EDIT = "Index required!";
-    private static final String ERROR_INDEX = "Invalid index!";
-    private static final String ERROR_DOUBLE_EDIT_KEYWORD = "Double keywords not accepted!";
-    private static final String ERROR_EDIT_FORMAT = "Invalid edit format!";
-    private static final String ERROR_NAME = "New task/event name required!";
-    private static final String ERROR_SET = "Command and alias required!";
-    private static final String ERROR_SET_FORMAT = "Invalid set format!";
-    private static final String ERROR_SET_COMMAND = "Command specified is not a registered command/keyword!";
-    private static final String ERROR_SET_ALIAS = "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use!";
-    private static final String ERROR_SET_NUMBER = "Positive integers cannot be used as aliases!";
-    private static final String ERROR_SAVE = "Directory required!";
-    private static final String ERROR_NO_ARGUMENTS = "This command does not expect arguments!";
+    private static final String ERROR_USER_COMMAND = "Invalid user command.";
+    private static final String ERROR_TASK_NAME = "Task name required.";
+    private static final String ERROR_DEADLINE = "Invalid deadline.";
+    private static final String ERROR_EVENT_FORMAT = "Invalid format for adding event.";
+    private static final String ERROR_START_DATE = "Invalid start date.";
+    private static final String ERROR_START_TIME = "Invalid start time.";
+    private static final String ERROR_END_DATE = "Invalid end date.";
+    private static final String ERROR_END_TIME = "Invalid end time.";
+    private static final String ERROR_START_END_TIME = "Start time later than or equal to end time for single-day event.";
+    private static final String ERROR_START_END_DATE = "Start date later than end date.";    
+    private static final String ERROR_EVENT_NAME = "Event name required.";
+    private static final String ERROR_EVENT_DATE = "Invalid date.";
+    private static final String ERROR_DELETE = "Index/alias command required.";
+    private static final String ERROR_DELETE_INDEX_ALIAS = "Invalid index or alias.";
+    private static final String ERROR_DELETE_ALIAS = "No such alias has been set.";
+    private static final String ERROR_EDIT = "Index required.";
+    private static final String ERROR_INDEX = "Invalid index.";
+    private static final String ERROR_DOUBLE_EDIT_KEYWORD = "Double keywords not accepted.";
+    private static final String ERROR_EDIT_FORMAT = "Invalid edit format.";
+    private static final String ERROR_NAME = "New task/event name required.";
+    private static final String ERROR_SET = "Command and alias required.";
+    private static final String ERROR_SET_FORMAT = "Invalid set format.";
+    private static final String ERROR_SET_COMMAND = "Command specified is not a registered command/keyword.";
+    private static final String ERROR_SET_ALIAS = "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use.";
+    private static final String ERROR_SET_NUMBER = "Positive integers cannot be used as aliases.";
+    private static final String ERROR_SAVE = "Directory required.";
+    private static final String ERROR_NO_ARGUMENTS = "This command does not expect arguments.";
     
     private static final ArrayList<String> DAYS_ARRAY_LIST = new ArrayList<String>();
     private static final ArrayList<String> DAYS_FULL_ARRAY_LIST = new ArrayList<String>();
@@ -962,7 +962,7 @@ public class CommandParser {
 		if (arguments.isEmpty()) {
 			return initInvalidCommand(ERROR_SET);
 		}
-		if (!arguments.get(1).equals(KEYWORD_SET)|| arguments.size() != 3) {
+		if (arguments.size() != 3 || !arguments.get(1).equals(KEYWORD_SET)) {
 			return initInvalidCommand(ERROR_SET_FORMAT);
 		}
 		String commandKeyword = arguments.get(2);
