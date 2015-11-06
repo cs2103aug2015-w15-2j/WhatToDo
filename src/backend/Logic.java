@@ -171,8 +171,8 @@ public class Logic {
     	try{
     		String[] linesInFile = getLinesInFile();
         	String floatContent = getAllStatus(linesInFile, TYPE_FLOAT, false); 
-            String todayContent = getTaskContent(linesInFile, Date.todayDateShort()); 
-            String tomorrowContent = getTaskContent(linesInFile, Date.tomorrowDateShort()); 
+            String todayContent = getDateContent(linesInFile, TYPE_TASK, Date.todayDate()); 
+            String tomorrowContent = getDateContent(linesInFile, TYPE_TASK, Date.tomorrowDate());
            
             return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, Date.todayDateLong(), todayContent, 
             		Date.tomorrowDateLong(), tomorrowContent, floatContent).trim();
@@ -834,6 +834,19 @@ public class Logic {
     		return new String[0];
     	}else{
     		return fileContents.split(NEWLINE);
+    	}
+    }
+    
+    private String getDateContent(String[] linesInFile ,String type, Date date){
+    	ArrayList<Integer> result = filter.filterDate(linesInFile, type, date); 
+    	//TODO REFACTOR THIS SHIT
+    	switch(type){  
+    		case TYPE_TASK : 
+    			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result, false); 
+    		case TYPE_EVENT : 
+    			return formatter.formatEventWithoutHeaders(linesInFile, result); 
+    		default : 
+    			return ""; 
     	}
     }
     
