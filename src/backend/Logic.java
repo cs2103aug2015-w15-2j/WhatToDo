@@ -850,20 +850,10 @@ public class Logic {
     }
     
     private String getOngoingEventContent(String[] linesInFile){ 
-    	StringBuffer contentBuffer = new StringBuffer();
+    	ArrayList<Integer> ongoingEventIndexes = filter.filterOngoingEvents(linesInFile);
+    	String formattedList = formatter.formatEventWithoutHeaders(linesInFile, ongoingEventIndexes);
     	
-    	for(int index = 0; index < linesInFile.length; index++){
-    		String line = linesInFile[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		if(isOngoingEvent(line)){
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
-    					formatTime(lineComponents[INDEX_STARTTIME]), 
-    					(new Date(lineComponents[INDEX_ENDDATE])).formatDateMedium(), 
-    					formatTime(lineComponents[INDEX_ENDTIME]));
-    			contentBuffer.append(formatted);
-    		}
-    	}
-    	return addMsgIfEmpty(contentBuffer);
+    	return formattedList; 
     }
 
     private boolean isUncompleted(String type, String[] lineComponents){
