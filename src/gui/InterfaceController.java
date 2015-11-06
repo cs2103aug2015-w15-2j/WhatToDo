@@ -121,6 +121,16 @@ public class InterfaceController {
     protected static final String STATUS_TODO = "todo";
     protected static final String STATUS_DONE = "done";
     
+    // Feedback messages
+	protected static final String MESSAGE_ERROR_FILESYSTEM = "Failed to create the file.";
+	protected static final String MESSAGE_EMPTY = "There are no items to display.";
+	protected static final String MESSAGE_INVALID_INDEX = "Invalid index number entered.";
+	
+	protected static final String CSS_UNDERLINE = "-fx-underline: true;";
+	protected static final String CSS_NO_UNDERLINE = "-fx-underline: false;";
+	protected static final String CSS_UNDERLINE_ITALIC = CSS_UNDERLINE + "-fx-font-style: italic;";
+	protected static final String CSS_NO_UNDERLINE_ITALIC = CSS_NO_UNDERLINE + "-fx-font-style: italic;";
+    
     // Dimension variables used for sizing JavaFX components
     protected static final double WIDTH_DEFAULT = 100;
     protected static final double WIDTH_DEFAULT_BUTTON = 50;
