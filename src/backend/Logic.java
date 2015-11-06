@@ -190,8 +190,8 @@ public class Logic {
     	try{
     		String[] linesInFile = getLinesInFile();
         	String onGoingContent = getOngoingEventContent(linesInFile); 
-            String todayContent = getEventContent(linesInFile, Date.todayDateShort()); 
-            String tomorrowContent = getEventContent(linesInFile, Date.tomorrowDateShort()); 
+            String todayContent = getDateContent(linesInFile, TYPE_EVENT, Date.todayDate());
+            String tomorrowContent = getDateContent(linesInFile, TYPE_EVENT, Date.todayDate()); 
             	
             return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, onGoingContent, Date.todayDateLong(), todayContent, 
             		Date.tomorrowDateLong(), tomorrowContent).trim();
@@ -856,23 +856,6 @@ public class Logic {
     		String line = linesInFile[index].trim(); 
     		String[] lineComponents = line.split(SEMICOLON);
     		if(isOngoingEvent(line)){
-    			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
-    					formatTime(lineComponents[INDEX_STARTTIME]), 
-    					(new Date(lineComponents[INDEX_ENDDATE])).formatDateMedium(), 
-    					formatTime(lineComponents[INDEX_ENDTIME]));
-    			contentBuffer.append(formatted);
-    		}
-    	}
-    	return addMsgIfEmpty(contentBuffer);
-    }
-    
-    private String getEventContent(String[] linesInFile, String date){ 
-    	StringBuffer contentBuffer = new StringBuffer();
-    	
-    	for(int index = 0; index < linesInFile.length; index++){
-    		String line = linesInFile[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		if(isUncompleted(TYPE_EVENT, lineComponents) && lineComponents[INDEX_STARTDATE].equals(date)){
     			String formatted = String.format(DISPLAY_FORMAT_EVENT, index+1, lineComponents[INDEX_NAME],
     					formatTime(lineComponents[INDEX_STARTTIME]), 
     					(new Date(lineComponents[INDEX_ENDDATE])).formatDateMedium(), 
