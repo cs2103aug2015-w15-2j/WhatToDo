@@ -25,30 +25,25 @@ import struct.View;
 
 public class LogicController {
 	
-	protected static final String MESSAGE_ERROR_FILESYSTEM = "Failed to create the file.";
-	protected static final String MESSAGE_EMPTY = "There are no items to display.";
-	private static final String MESSAGE_INVALID_INDEX = "Invalid index number entered.";
-	
-	private static final String CSS_UNDERLINE = "-fx-underline: true;";
-	private static final String CSS_NO_UNDERLINE = "-fx-underline: false;";
-	private static final String CSS_UNDERLINE_ITALIC = CSS_UNDERLINE + "-fx-font-style: italic;";
-	private static final String CSS_NO_UNDERLINE_ITALIC = CSS_NO_UNDERLINE + "-fx-font-style: italic;";
-	
-	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
-	
+	private static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
 	private static final String NULL_STRING = "";
 	
 	private static final boolean SEARCH_USER = false;
 	private static final boolean SEARCH_BACKGROUND = true;
 	
+	// Class instances within one LogicController instance
 	private static AutoCompleteListener autocompleter;
 	private static Logic logic;
 	private static CommandHistory commandHistory;
 	
 	private static boolean mapIndexOutOfBounds = false;
 	
-	public LogicController() {
-		
+	/**
+	 * This method is the constructor for a LogicController object.
+	 * Possibly catches a FileSystemException from Storage caught by Logic and
+	 * passed on to UI.
+	 */
+	protected LogicController() {
 		try {
 			logic = new Logic();
 		} catch (FileSystemException e) {
@@ -57,36 +52,54 @@ public class LogicController {
 		
 		// Initialize the command history object
 		commandHistory = new CommandHistory();
-		
 		// Initialize the listener for autocomplete
 		autocompleter = new AutoCompleteListener();
 	}
 	
-	public String getFilePath() {
-		
+    // ======================================================================
+    // Protected methods called by other GUI classes that require some
+	// processing of data or Logic methods
+    // ======================================================================
+	
+	/**
+	 * This method returns the current filepath of the text file being written
+	 * to by the application
+	 * 
+	 * @return A String containing the filepath of whattodo.txt, or an error
+	 * 		   message if the file cannot be found/written
+	 */
+	protected String getFilePath() {
 		if (logic != null) {
 			return logic.getFilepath();
 		} else {
-			return MESSAGE_ERROR_FILESYSTEM;
+			return InterfaceController.MESSAGE_ERROR_FILESYSTEM;
 		}
 	}
 	
+	/**
+	 * This method returns default tasks filtered by Logic in a String[]
+	 * for easier formatting by DefaultViewController
+	 * 
+	 * @return A String[] of default task data from the text file
+	 */
 	public String[] getDefTasks() {
-		
 		// Get the string from logic
 		String defTasks = logic.taskDefaultView();
-		
 		// Split the string by newline
 		String[] defTasksSplit = defTasks.split("\n");
 		
 		return defTasksSplit;
 	}
 	
+	/**
+	 * This method returns default events filtered by Logic in a String[]
+	 * for easier formatting by DefaultViewController
+	 * 
+	 * @return A String[] of default event data from the text file
+	 */
 	public String[] getDefEvents() {
-		
 		// Get the string from logic
 		String defEvents = logic.eventDefaultView();
-		
 		// Split the string by newline
 		String[] defEventsSplit = defEvents.split("\n");
 		
@@ -98,22 +111,30 @@ public class LogicController {
 		return defEventsSplit;
 	}
 	
+	/**
+	 * This method returns all uncompleted tasks filtered by Logic in a 
+	 * String[] for easier formatting by AllViewController
+	 * 
+	 * @return A String[] of all uncompleted task data from the text file
+	 */
 	public String[] getAllTasks() {
-		
 		// Get the String from logic
 		String allTasks = logic.taskAllView(false);
-		
 		// Split the string by newline
 		String[] allTasksSplit = allTasks.split("\n");
 		
 		return allTasksSplit;
 	}
 	
+	/**
+	 * This method returns all uncompleted events filtered by Logic in a 
+	 * String[] for easier formatting by AllViewController
+	 * 
+	 * @return A String[] of all uncompleted event data from the text file
+	 */
 	public String[] getAllEvents() {
-		
 		// Get the String from logic
 		String allEvents = logic.eventAllView(false);
-		
 		// Split the string by newline
 		String[] allEventsSplit = allEvents.split("\n");
 		
@@ -125,22 +146,30 @@ public class LogicController {
 		return allEventsSplit;
 	}
 	
+	/**
+	 * This method returns all unresolved tasks filtered by Logic in a 
+	 * String[] for easier formatting by UnresolvedViewController
+	 * 
+	 * @return A String[] of all unresolved task data from the text file
+	 */
 	public String[] getUnresTasks() {
-		
 		// Get the String from logic
 		String unresTasks = logic.taskPastUncompletedView();
-		
 		// Split the string by newline
 		String[] unresTasksSplit = unresTasks.split("\n");
 		
 		return unresTasksSplit;
 	}
 	
+	/**
+	 * This method returns all unresolved events filtered by Logic in a 
+	 * String[] for easier formatting by UnresolvedViewController
+	 * 
+	 * @return A String[] of all unresolved event data from the text file
+	 */
 	public String[] getUnresEvents() {
-		
 		// Get the String from logic
 		String unresEvents = logic.eventPastUncompletedView();
-
 		// Split the string by newline
 		String[] unresEventsSplit = unresEvents.split("\n");
 		
@@ -152,11 +181,15 @@ public class LogicController {
 		return unresEventsSplit;
 	}
 	
+	/**
+	 * This method returns all completed tasks filtered by Logic in a 
+	 * String[] for easier formatting by DoneViewController
+	 * 
+	 * @return A String[] of all completed task data from the text file
+	 */
 	public String[] getDoneTasks() {
-		
 		// Get the String from logic
 		String doneTasks = logic.taskAllView(true);
-		
 		// Split the string by newline
 		String[] doneTasksSplit = doneTasks.split("\n");
 		
@@ -171,11 +204,15 @@ public class LogicController {
 		return doneTasksSplit;
 	}
 	
+	/**
+	 * This method returns all completed events filtered by Logic in a 
+	 * String[] for easier formatting by DoneViewController
+	 * 
+	 * @return A String[] of all completed event data from the text file
+	 */
 	public String[] getDoneEvents() {
-		
 		// Get the String from logic
 		String doneEvents = logic.eventAllView(true);
-		
 		// Split the string by newline
 		String[] doneEventsSplit = doneEvents.split("\n");
 		
@@ -191,6 +228,13 @@ public class LogicController {
 		return doneEventsSplit;
 	}
     
+	/**
+	 * This method calculates all values required for the summary view and
+	 * stores them in a size 5 array in order of display in summary view
+	 * 
+	 * @return An int[] of size 5, each index storing the number required for
+	 * 		   each element of the summary view
+	 */
 	public int[] getSummaryCount() {
 		
 		String[] defTasks = InterfaceController.getLogic().getDefTasks();
@@ -198,33 +242,30 @@ public class LogicController {
 		int[] summary = {0, 0, 0, 0, 0};
 		int currentIndex = 0;
 		
-		// First count for tasks and update the count array
-		for (int i = 0; i < defTasks.length; i++) {
-			String temp = defTasks[i];
-			if (isTitle(temp)) {
-				// Switch array index to increment the right counter
-				temp = temp.split(" ")[0];
-				switch(temp) {
-				case "TODAY":
-					currentIndex = 0;
-					break;
-				case "TOMORROW":
-					currentIndex = 0;
-					break;
-				case "FLOAT":
-					currentIndex = 2;
-					break;
-				default:
-					break;
-				}
-			} else {
-				// Increment the counter in the currentIndex
-				if (temp.split(Pattern.quote(".")).length > 1) {
-					summary[currentIndex]++;
-				}
-			}
-		}
+		currentIndex = getTaskSummaryCount(defTasks, summary, currentIndex);
+		currentIndex = getEventSummaryCount(defEvents, summary, currentIndex);
+		// Count the unresolved tasks and events as well
+		summary[4] = getUnresElementsCount();
 		
+		return summary;
+	}
+
+	/**
+	 * This method calculates
+	 * 1. The number of events due within the next two days
+	 * 2. The number of events that are currently ongoing
+	 * and then updates the array summary with the data
+	 * 
+	 * @param defEvents
+	 * 		      A String[] of all the event data from the default view
+	 * @param summary
+	 * 		      The int[] that stores all the counts for the summary view
+	 * @param currentIndex
+	 * 		 	  The index of the summary array that is to be modified
+	 * @return The index of in the summary array where the method ended 
+	 * 		   operation at
+	 */
+	private int getEventSummaryCount(String[] defEvents, int[] summary, int currentIndex) {
 		// Count for events and update the count array
 		for (int i = 0; i < defEvents.length; i++) {
 			String temp = defEvents[i];
@@ -251,15 +292,61 @@ public class LogicController {
 				}
 			}
 		}
-		
-		// Count the unresolved tasks and events as well
-		summary[4] = getUnresElementsCount();
-		
-		return summary;
+		return currentIndex;
+	}
+
+	/**
+	 * This method calculates
+	 * 1. The number of tasks due within the next two days
+	 * 2. The number of tasks that are without a deadline (floating)
+	 * and then updates the array summary with the data
+	 * 
+	 * @param defEvents
+	 * 		      A String[] of all the task data from the default view
+	 * @param summary
+	 * 		      The int[] that stores all the counts for the summary view
+	 * @param currentIndex
+	 * 		 	  The index of the summary array that is to be modified
+	 * @return The index of in the summary array where the method ended 
+	 * 		   operation at
+	 */
+	private int getTaskSummaryCount(String[] defTasks, int[] summary, int currentIndex) {
+		// First count for tasks and update the count array
+		for (int i = 0; i < defTasks.length; i++) {
+			String temp = defTasks[i];
+			if (isTitle(temp)) {
+				// Switch array index to increment the right counter
+				temp = temp.split(" ")[0];
+				switch(temp) {
+				case "TODAY":
+					currentIndex = 0;
+					break;
+				case "TOMORROW":
+					currentIndex = 0;
+					break;
+				case "FLOAT":
+					currentIndex = 2;
+					break;
+				default:
+					break;
+				}
+			} else {
+				// Increment the counter in the currentIndex
+				if (temp.split(Pattern.quote(".")).length > 1) {
+					summary[currentIndex]++;
+				}
+			}
+		}
+		return currentIndex;
 	}
 	
+	/**
+	 * This method counts the number of elements there are in the default view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the default view
+	 */
 	public int getDefElementsCount() {
-		
 		int count = 0;
 		
 		String[] temp = InterfaceController.getLogic().getDefTasks();
@@ -274,12 +361,16 @@ public class LogicController {
 				count++;
 			}
 		}
-		
 		return count;
 	}
 	
+	/**
+	 * This method counts the number of elements there are in the all view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the all view
+	 */
 	public int getAllElementsCount() {
-		
 		int count = 0;
 		
 		String[] temp = InterfaceController.getLogic().getAllTasks();
@@ -294,10 +385,15 @@ public class LogicController {
 				count++;
 			}
 		}
-		
 		return count;
 	}
 	
+	/**
+	 * This method counts the number of elements there are in the search view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the search view
+	 */
 	public int getSearchElementsCount(ArrayList<String> taskResults, 
 			ArrayList<String> eventResults) {
 		
@@ -308,18 +404,21 @@ public class LogicController {
 				count++;
 			}
 		}
-		
 		for (int i = 0; i < eventResults.size(); i++) {
 			if (isNonEmptyElement(eventResults.get(i))) {
 				count++;
 			}
 		}
-		
 		return count;
 	}
 	
+	/**
+	 * This method counts the number of elements there are in the unresolved view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the unresolved view
+	 */
 	public int getUnresElementsCount() {
-		
 		int count = 0;
 		
 		String[] temp = InterfaceController.getLogic().getUnresTasks();
@@ -334,10 +433,15 @@ public class LogicController {
 				count++;
 			}
 		}
-		
 		return count;
 	}
 	
+	/**
+	 * This method counts the number of elements there are in the done view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the done view
+	 */
 	public int getDoneElementsCount() {
 		
 		int count = 0;
@@ -386,19 +490,19 @@ public class LogicController {
     }
     
 	public boolean isEmpty(String displayData) {
-		return displayData.equals(LogicController.MESSAGE_EMPTY);
+		return displayData.equals(InterfaceController.MESSAGE_EMPTY);
 	}
     
     public boolean isTitleOrDate(String displayData) {
     	// Use the definition that a date or title does not have a period in it
     	// whereas an element will definitely have a period after its index
     	return displayData.split(Pattern.quote(".")).length == 1 && 
-    			!displayData.equals(MESSAGE_EMPTY);
+    			!displayData.equals(InterfaceController.MESSAGE_EMPTY);
     }
     
     public boolean isNonEmptyElement(String displayData) {
     	return !isTitleOrDate(displayData) && 
-				!displayData.equals(LogicController.MESSAGE_EMPTY);
+				!displayData.equals(InterfaceController.MESSAGE_EMPTY);
     }
     
 	public boolean isCompleted(String displayData) {
@@ -689,7 +793,7 @@ public class LogicController {
 					(operationType == Command.CommandType.DELETE || 
 					operationType == Command.CommandType.DONE || 
 					operationType == Command.CommandType.EDIT)) {
-				returnMessage = MESSAGE_INVALID_INDEX;
+				returnMessage = InterfaceController.MESSAGE_INVALID_INDEX;
 			}
 			// Add the returnMessage to the feedback bar and history view
 			InterfaceController.getFeedbackLabel().setText(returnMessage);
@@ -1276,10 +1380,10 @@ public class LogicController {
     	@Override
     	public void handle(MouseEvent event) {
     		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
-    			filepathLabel.setStyle(CSS_UNDERLINE);
+    			filepathLabel.setStyle(InterfaceController.CSS_UNDERLINE);
     		}
     		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
-    			filepathLabel.setStyle(CSS_NO_UNDERLINE);
+    			filepathLabel.setStyle(InterfaceController.CSS_NO_UNDERLINE);
     		}
     	}
     }
@@ -1303,12 +1407,12 @@ public class LogicController {
     	@Override
     	public void handle(MouseEvent event) {
     		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
-    			allUnresAttention.setStyle(CSS_UNDERLINE);
-    			allUnresAttention.setStyle(CSS_UNDERLINE_ITALIC);
+    			allUnresAttention.setStyle(InterfaceController.CSS_UNDERLINE);
+    			allUnresAttention.setStyle(InterfaceController.CSS_UNDERLINE_ITALIC);
     		}
     		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
-    			allUnresAttention.setStyle(CSS_NO_UNDERLINE);
-    			allUnresAttention.setStyle(CSS_NO_UNDERLINE_ITALIC);
+    			allUnresAttention.setStyle(InterfaceController.CSS_NO_UNDERLINE);
+    			allUnresAttention.setStyle(InterfaceController.CSS_NO_UNDERLINE_ITALIC);
     		}
     	}
     }

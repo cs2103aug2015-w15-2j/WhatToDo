@@ -24,7 +24,7 @@
 }
 
 .text {
-    -fx-font-smoothing-type: lcd;
+    -fx-font-smoothing-type: gray;
     -fx-font-family: "Myriad Pro";
     -fx-opacity: 0.9;
 }
