@@ -33,7 +33,7 @@ public class Filter {
 		 
 		 for(int i = 0; i < linesInFile.length; i++){ 
 			 String line = linesInFile[i]; 
-			 if(isType(type, line) && isOnDate(date, line)){
+			 if(isType(type, line) && isReqStatus(false, line) && isOnDate(date, line)){
 				 resultList.add(i); 
 			 }
 		 } 
@@ -106,16 +106,7 @@ public class Filter {
 		
 		return resultList; 
 	}
-	
-	//TODO match query with quotes 
-	public String matchQuery(String query){
 		
-		//remove trailing quotes at the start and end 
-		//use .contains
-		
-		return "stringmatches"; 
-	}
-	
 	//============================================
 	// Private methods 
 	//============================================

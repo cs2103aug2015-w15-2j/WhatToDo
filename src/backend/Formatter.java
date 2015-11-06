@@ -111,10 +111,26 @@ public class Formatter {
 		return addMsgIfEmpty(contentBuffer); 
 	}
 		
-	//TODO formatEventWithoutHeaders
+	//TODO formatEventWithoutHeaders - test 
 	public String formatEventWithoutHeaders(String[] linesInFile, ArrayList<Integer> result){ 
+		StringBuffer contentBuffer = new StringBuffer(); 
+		for(int i : result){ 
+			String line = linesInFile[i]; 
+			String[] lineFields = line.split(SEMICOLON);
+//			String lineType = lineFields[INDEX_TYPE];
+//			assert items is event  
+			String lineName = lineFields[INDEX_NAME];
+			String lineIsDone = EMPTYSTRING;
+			String lineStartTime = formatTime(lineFields[INDEX_STARTTIME]); 
+			String lineEndTime = formatTime(lineFields[INDEX_ENDTIME]); 
+			Date currEndDate = new Date(lineFields[INDEX_ENDDATE]);
+			
+			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, lineIsDone, i+1, 
+					lineName, lineStartTime, currEndDate.formatDateMedium(), lineEndTime);
+			contentBuffer.append(formattedLine); 	
+		}
 		
-		return null; 
+		return addMsgIfEmpty(contentBuffer); 
 	}
 	
     private String addMsgIfEmpty(StringBuffer buffer){

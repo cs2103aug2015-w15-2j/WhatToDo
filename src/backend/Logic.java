@@ -166,7 +166,7 @@ public class Logic {
             	return handleInvalid(command);
     	}	
     }
-    
+    //TODO def view mtds - call filter and formatter mtds 
     public String taskDefaultView(){
     	try{
     		String[] linesInFile = getLinesInFile();
