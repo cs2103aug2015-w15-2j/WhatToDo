@@ -170,7 +170,7 @@ public class Logic {
     public String taskDefaultView(){
     	try{
     		String[] linesInFile = getLinesInFile();
-        	String floatContent = getAllUncompletedFloat(linesInFile); 
+        	String floatContent = getAllStatus(linesInFile, TYPE_FLOAT, false); 
             String todayContent = getTaskContent(linesInFile, Date.todayDateShort()); 
             String tomorrowContent = getTaskContent(linesInFile, Date.tomorrowDateShort()); 
            
@@ -835,20 +835,6 @@ public class Logic {
     	}else{
     		return fileContents.split(NEWLINE);
     	}
-    }
-    
-    private String getAllUncompletedFloat(String[] linesInFile){ 
-    	StringBuffer floatContentBuffer = new StringBuffer();
-    	
-    	for(int index = 0; index < linesInFile.length; index++){
-    		String line = linesInFile[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		if(isUncompleted(TYPE_FLOAT, lineComponents)){
-    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
-    			floatContentBuffer.append(formatted);
-    		}
-    	}
-    	return addMsgIfEmpty(floatContentBuffer);
     }
     
     private String getTaskContent(String[] linesInFile, String date){  
