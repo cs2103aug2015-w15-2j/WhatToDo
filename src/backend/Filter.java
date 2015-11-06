@@ -10,11 +10,12 @@ public class Filter {
 	private static final int INDEX_NAME = 1; 
 	private static final int INDEX_ISDONE = 2; 
 	private static final int INDEX_DUEDATE = 3;
+	private static final int INDEX_STARTDATE = 3; 
 	private static final int INDEX_ENDDATE = 5; 
 	
 //    private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
-//    private static final String TYPE_EVENT = "event";
+    private static final String TYPE_EVENT = "event";
 	
 	private static final String DONE = "done"; 
 	
@@ -40,7 +41,29 @@ public class Filter {
 		 return resultList; 
 	}
 	
-	//TODO filterOngoingEvents
+	//TODO filterOngoingEvents - call and test in Logic
+	public ArrayList<Integer> filterOngoingEvents(String[] linesInFile){ 
+		ArrayList<Integer> resultList = new ArrayList<Integer>(); 
+		
+		for(int i = 0; i < linesInFile.length; i++){ 
+			String line = linesInFile[i];
+			if(isType(TYPE_EVENT, line) && isReqStatus(false, line) && isOngoing(line)){
+				resultList.add(i);
+			}
+		}
+		
+		return resultList; 
+	}
+	
+	private boolean isOngoing(String line){
+		String[] lineFields = line.split(SEMICOLON);
+		Date todayDate = Date.todayDate(); 
+		Date startDate = new Date(lineFields[INDEX_STARTDATE]);
+		Date endDate = new Date(lineFields[INDEX_ENDDATE]);
+		
+		return startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) >= 0; 
+	}
+	
 	
 	public ArrayList<Integer> filterStatus(String[] linesInFile, String type, boolean isDone){ 
 		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
