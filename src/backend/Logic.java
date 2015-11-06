@@ -240,7 +240,7 @@ public class Logic {
     	try{
     		String[] linesInFile = getLinesInFile();
     		ArrayList<Integer> pastTaskIndexes = filter.filterPastUncompleted(linesInFile, TYPE_TASK); 
-    		String formattedContent = formatter.formatTask(linesInFile, pastTaskIndexes); 
+    		String formattedContent = formatter.formatTaskWithHeaders(linesInFile, pastTaskIndexes, false); 
     		return formattedContent; 
     	}
     	catch(FileSystemException e){ 
@@ -670,7 +670,7 @@ public class Logic {
     		case TYPE_FLOAT : 
     			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result, true);
     		case TYPE_TASK : 
-    			return formatter.formatTaskResults(linesInFile, result); 
+    			return formatter.formatTaskWithHeaders(linesInFile, result, true);
     		case TYPE_EVENT : 
     			return formatter.formatEventWithHeaders(linesInFile, result, true); 
     		default : 
@@ -916,7 +916,7 @@ public class Logic {
         	Date todayDate = Date.todayDate();
         	
         	return (type.equals(TYPE_EVENT) && isDone.equals(TODO) 
-        			&& startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) > 0); 
+        			&& startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) >= 0); 
     	}
     }
     
@@ -947,7 +947,7 @@ public class Logic {
     		case TYPE_FLOAT : 
     			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result,false); 
     		case TYPE_TASK : 
-    			return formatter.formatTask(linesInFile, result); 
+    			return formatter.formatTaskWithHeaders(linesInFile, result, false);
     		case TYPE_EVENT : 
     			return formatter.formatEventWithHeaders(linesInFile, result, false); 
     		default : 
