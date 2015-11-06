@@ -1,10 +1,8 @@
 package backend;
 
 import java.nio.file.FileSystemException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
 
@@ -60,8 +58,6 @@ public class Logic {
     private static final String MESSAGE_ERROR_EDIT_INVALID_EDIT = "Invalid edit. %s"; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
-    private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%d. %s;Start: %s         End: %s %s\n";  
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
@@ -90,7 +86,6 @@ public class Logic {
     private static final String TYPE_TASK = "task";
     private static final String TYPE_EVENT = "event";
     
-    private static final String TODO = "todo"; 
     private static final String DONE = "done"; 
     
     private static final String NEWLINE = "\n";
@@ -854,43 +849,6 @@ public class Logic {
     	String formattedList = formatter.formatEventWithoutHeaders(linesInFile, ongoingEventIndexes);
     	
     	return formattedList; 
-    }
-
-    private boolean isUncompleted(String type, String[] lineComponents){
-    	return lineComponents[INDEX_ISDONE].equals(TODO) && lineComponents[INDEX_TYPE].equals(type); 
-    }
-     
-    private boolean isOngoingEvent(String lineInFile){
-    	String line = lineInFile.trim(); 
-    	String[] lineComponents = line.split(SEMICOLON);
-    	if(lineComponents.length < 6){
-    		return false; 
-    	}else{
-    		String type = lineComponents[INDEX_TYPE];
-    		String isDone = lineComponents[INDEX_ISDONE];
-        	Date startDate = new Date(lineComponents[INDEX_STARTDATE]);
-        	Date endDate = new Date(lineComponents[INDEX_ENDDATE]);
-        	Date todayDate = Date.todayDate();
-        	
-        	return (type.equals(TYPE_EVENT) && isDone.equals(TODO) 
-        			&& startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) >= 0); 
-    	}
-    }
-    
-    private String addMsgIfEmpty(StringBuffer buffer){
-    	if(buffer.length() == 0){ 
-    		buffer.append(DISPLAY_NO_ITEMS);
-    	}
-    	return buffer.toString().trim();
-    }
-    
-    private String formatTime(String time){
-    	//assert time string is numeric
-    	Calendar cal = Calendar.getInstance(); 
-		cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
-		cal.set(Calendar.MINUTE, Integer.parseInt(time.substring(2)));
-    	SimpleDateFormat sdf = new SimpleDateFormat("h:mm a"); 
-    	return sdf.format(cal.getTime());
     }
     
     //============================================
