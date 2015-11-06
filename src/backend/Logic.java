@@ -61,7 +61,6 @@ public class Logic {
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
     private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
-    private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%d. %s;Start: %s         End: %s %s\n";  
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
@@ -848,20 +847,6 @@ public class Logic {
     		default : 
     			return ""; 
     	}
-    }
-    
-    private String getTaskContent(String[] linesInFile, String date){  
-    	StringBuffer contentBuffer = new StringBuffer();
-    			
-    	for(int index = 0; index < linesInFile.length; index++){
-    		String line = linesInFile[index].trim(); 
-    		String[] lineComponents = line.split(SEMICOLON);
-    		if(isUncompleted(TYPE_TASK, lineComponents) && lineComponents[INDEX_DUEDATE].equals(date)){
-    			String formatted = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, index+1, lineComponents[INDEX_NAME]);
-    			contentBuffer.append(formatted);
-    		}
-    	}
-    	return addMsgIfEmpty(contentBuffer);
     }
     
     private String getOngoingEventContent(String[] linesInFile){ 
