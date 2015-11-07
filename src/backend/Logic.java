@@ -18,6 +18,11 @@ import struct.Task;
 
 public class Logic {
 	
+    private static final int CONVERSION_NOT_REQ = 0; 
+    private static final int CONVERSION_INVALID = -1; 
+    private static final int CONVERSION_TO_TASK = 1; 
+    private static final int CONVERSION_TO_EVENT = 2; 
+	
 	private static final int INDEX_COMMAND = 0;
 	private static final int INDEX_ALIAS = 0; 
 	private static final int INDEX_MEANING = 1; 
@@ -30,7 +35,7 @@ public class Logic {
 	private static final int INDEX_STARTTIME = 4; 
 	private static final int INDEX_ENDDATE = 5; 
 	private static final int INDEX_ENDTIME = 6; 
-	
+		
     private static final String COMMAND_FORMAT_ADD_TASK = "add %s by %s"; 
     private static final String COMMAND_FORMAT_ADD_EVENT = "add %s from %s %s to %s %s";
 
@@ -76,12 +81,7 @@ public class Logic {
     private static final ArrayList<String> ATTRIBUTE_LIST_FLOAT_TO_EVENT = 
     		new ArrayList<String>(Arrays.asList(KEYWORD_EDIT_START_DATE, KEYWORD_EDIT_START_TIME, 
     				                            KEYWORD_EDIT_END_DATE, KEYWORD_EDIT_END_TIME));
-    
-    private static final int CONVERSION_NOT_REQ = 0; 
-    private static final int CONVERSION_INVALID = -1; 
-    private static final int CONVERSION_TO_TASK = 1; 
-    private static final int CONVERSION_TO_EVENT = 2; 
-    
+       
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
     private static final String TYPE_EVENT = "event";
@@ -186,7 +186,7 @@ public class Logic {
     		String[] linesInFile = getLinesInFile();
         	String onGoingContent = getOngoingEventContent(linesInFile); 
             String todayContent = getDateContent(linesInFile, TYPE_EVENT, Date.todayDate());
-            String tomorrowContent = getDateContent(linesInFile, TYPE_EVENT, Date.todayDate()); 
+            String tomorrowContent = getDateContent(linesInFile, TYPE_EVENT, Date.tomorrowDate()); 
             	
             return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, onGoingContent, Date.todayDateLong(), todayContent, 
             		Date.tomorrowDateLong(), tomorrowContent).trim();
@@ -769,7 +769,7 @@ public class Logic {
 		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
 	}
 	
-	//TODO set - test! & undo/redo
+	//TODO set - undo/redo
 	private String executeSet(Command command){ 
 		try{
 			String newAlias = command.getName(); 
@@ -786,7 +786,7 @@ public class Logic {
 		} 
 	}
 	
-	//TODO DeleteAlias - test! & undo/redo
+	//TODO DeleteAlias - undo/redo
 	private String executeDeleteAlias(Command command){ 
 		try{
 			String alias = command.getName(); 
