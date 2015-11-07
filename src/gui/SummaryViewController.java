@@ -34,7 +34,8 @@ public class SummaryViewController {
 	// Used for initAllUnres
 	private static Label allUnresCount, allUnresLabel, allUnresAttention, allUnresClear;
 	private static ImageView allUnresIcon;
-	private static HBox allUnresCountBox, allUnresLabelBox, allUnresNotifyBox, allUnresIconBox, allUnresBox;
+	private static HBox allUnresCountBox, allUnresLabelBox, allUnresNotifyBox,
+	allUnresIconBox, allUnresBox;
 	
 	// Used for initSummaryView
 	private static VBox summaryBox;
@@ -57,8 +58,127 @@ public class SummaryViewController {
 	
 	private static boolean isShowing = false;
 	
-	private static void initTaskTwoDays(int count, double maxWidth) {
+    /**
+     * This method initializes all the interface components for the default view,
+     * primarily the five display bars
+     */
+	protected static void initSummaryView() {
+		int[] summary = InterfaceController.getLogic().getSummaryCount();
+		double maxWidth = getCountMaxWidth(summary);
 		
+		initTaskTwoDays(summary[0], maxWidth);
+		initEventTwoDays(summary[1], maxWidth);
+		initTaskFloat(summary[2], maxWidth);
+		initEventOngoing(summary[3], maxWidth);
+		initAllUnres(summary[4], maxWidth);
+		
+		Region space1 = new Region();
+		Region space2 = new Region();
+		Region space3 = new Region();
+		Region space4 = new Region();
+		Region space5 = new Region();
+		Region space6 = new Region();
+		
+		summaryBox = new VBox(space1, taskTwoDaysBox, 
+				space2, eventTwoDaysBox, 
+				space3, taskFloatBox, 
+				space4, eventOngoingBox, 
+				space5, allUnresBox, 
+				space6);
+		InterfaceController.summaryBox = summaryBox;
+		
+		// Component formatting
+		formatSummaryBox();
+		
+		VBox.setVgrow(space1, Priority.ALWAYS);
+		VBox.setVgrow(space2, Priority.ALWAYS);
+		VBox.setVgrow(space3, Priority.ALWAYS);
+		VBox.setVgrow(space4, Priority.ALWAYS);
+		VBox.setVgrow(space5, Priority.ALWAYS);
+		VBox.setVgrow(space6, Priority.ALWAYS);
+	}
+	
+    /**
+     * This method updates the summary view with data from the text file
+     * 
+     * Called by:
+     * 	1. 	runCommand() in LogicController to update the view every time an 
+     * 		operation is performed
+     * 	2. 	updateMainInterface() in InterfaceController to update the view when
+     * 		a view change command is issued (button/hotkey/text command)
+     */
+	protected static void updateSummaryView() {
+		int[] summary = InterfaceController.getLogic().getSummaryCount();
+		
+		// Clear the old data
+		taskTwoDaysCountBox.getChildren().clear();
+		eventTwoDaysCountBox.getChildren().clear();
+		taskFloatCountBox.getChildren().clear();
+		eventOngoingCountBox.getChildren().clear();
+		allUnresCountBox.getChildren().clear();
+		
+		taskTwoDaysCount = new Label(String.valueOf(summary[0]));
+		eventTwoDaysCount = new Label(String.valueOf(summary[1]));
+		taskFloatCount = new Label(String.valueOf(summary[2]));
+		eventOngoingCount = new Label(String.valueOf(summary[3]));
+		allUnresCount = new Label(String.valueOf(summary[4]));
+		
+		// Update the icon depending on the new value of unresolved tasks
+		initUnresIcon(summary[4]);
+		allUnresIconBox.getChildren().clear();
+		allUnresIconBox.getChildren().add(allUnresIcon);
+		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT_HORIZ, 0, 0));
+		
+		updateUnresNotifyBox(summary[4]);
+		
+		// Insert the new data
+		taskTwoDaysCountBox.getChildren().add(taskTwoDaysCount);
+		eventTwoDaysCountBox.getChildren().add(eventTwoDaysCount);
+		taskFloatCountBox.getChildren().add(taskFloatCount);
+		eventOngoingCountBox.getChildren().add(eventOngoingCount);
+		allUnresCountBox.getChildren().add(allUnresCount);
+		
+		// Component formatting
+		HBox.setMargin(taskTwoDaysCount, new Insets(
+				MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		HBox.setMargin(eventTwoDaysCount, new Insets(
+				MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		HBox.setMargin(taskFloatCount, new Insets(
+				MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		HBox.setMargin(eventOngoingCount, new Insets(
+				MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		HBox.setMargin(allUnresCount, new Insets(
+				MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
+		
+		// CSS
+		taskTwoDaysCount.getStyleClass().add("summary-box-count");
+		eventTwoDaysCount.getStyleClass().add("summary-box-count");
+		taskFloatCount.getStyleClass().add("summary-box-count");
+		eventOngoingCount.getStyleClass().add("summary-box-count");
+		allUnresCount.getStyleClass().add("summary-box-count");
+	}
+	
+	// ========================================
+	// Getters and setters for isShowing
+	// ========================================
+	
+	protected static boolean isShowing() {
+		return isShowing;
+	}
+	
+	protected static void startShowing() {
+		isShowing = true;
+	}
+	
+	protected static void stopShowing() {
+		isShowing = false;
+	}
+	
+    // ================================================================================
+    // Private methods, used to initialize various sub components of the interface
+    // ================================================================================
+	
+	private static void initTaskTwoDays(int count, double maxWidth) {
 		taskTwoDaysCount = new Label(String.valueOf(count));
 		taskTwoDaysLabel = new Label(HEADER_TASK_TWO_DAYS);
 		
@@ -84,7 +204,6 @@ public class SummaryViewController {
 	}
 	
 	private static void initEventTwoDays(int count, double maxWidth) {
-		
 		eventTwoDaysCount = new Label(String.valueOf(count));
 		eventTwoDaysLabel = new Label(HEADER_EVENT_TWO_DAYS);
 		
@@ -110,7 +229,6 @@ public class SummaryViewController {
 	}
 	
 	private static void initTaskFloat(int count, double maxWidth) {
-		
 		taskFloatCount = new Label(String.valueOf(count));
 		taskFloatLabel = new Label(HEADER_TASK_FLOAT);
 		
@@ -136,7 +254,6 @@ public class SummaryViewController {
 	}
 	
 	private static void initEventOngoing(int count, double maxWidth) {
-		
 		eventOngoingCount = new Label(String.valueOf(count));
 		eventOngoingLabel = new Label(HEADER_EVENT_ONGOING);
 		
@@ -161,30 +278,22 @@ public class SummaryViewController {
 		eventOngoingCountBox.getStyleClass().add("summary-box-count-box");
 	}
 	
-	private static void initUnresIcon(int count) {
-		if (count == 0) {
-			allUnresIcon = new ImageView(PATH_UNRES_TICK);
-		} else {
-			allUnresIcon = new ImageView(PATH_UNRES_ALERT);
-		}
-	}
-	
-	private static void initUnresNotifyBox(int count) {
-		if (count == 0) {
-			allUnresNotifyBox = new HBox(allUnresClear);
-		} else {
-			allUnresNotifyBox = new HBox(allUnresAttention);
-		}
-	}
-	
 	private static void initAllUnres(int count, double maxWidth) {
-		
 		allUnresCount = new Label(String.valueOf(count));
 		allUnresLabel = new Label(HEADER_ALL_UNRES);
 		allUnresAttention = new Label(HEADER_ALL_UNRES_ATTENTION);
 		allUnresClear = new Label(HEADER_ALL_UNRES_CLEAR);
 		initUnresIcon(count);
 		
+		allUnresCountBox = new HBox(allUnresCount);
+		allUnresLabelBox = new HBox(allUnresLabel);
+		allUnresIconBox = new HBox(allUnresIcon);
+		initUnresNotifyBox(count);
+		
+		allUnresBox = new HBox(allUnresLabelBox, allUnresNotifyBox, 
+				allUnresIconBox, allUnresCountBox);
+		
+		// Add event handling for mouse clicks
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_ENTERED, 
 				InterfaceController.getLogic().getUnresHoverHandler(allUnresAttention));
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_EXITED, 
@@ -192,10 +301,7 @@ public class SummaryViewController {
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_CLICKED, 
 				InterfaceController.getLogic().getUnresClickHandler());
 		
-		allUnresCountBox = new HBox(allUnresCount);
-		allUnresLabelBox = new HBox(allUnresLabel);
-		allUnresIconBox = new HBox(allUnresIcon);
-		initUnresNotifyBox(count);
+		// Component formatting
 		allUnresCountBox.setAlignment(Pos.CENTER);
 		allUnresLabelBox.setAlignment(Pos.CENTER_LEFT);
 		allUnresIconBox.setAlignment(Pos.CENTER);
@@ -207,8 +313,6 @@ public class SummaryViewController {
 		HBox.setMargin(allUnresClear, new Insets(0, 0, 0, MARGIN_SUMMARY_COUNT_HORIZ));
 		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT_HORIZ, 0, 0));
 		HBox.setHgrow(allUnresNotifyBox, Priority.ALWAYS);
-		
-		allUnresBox = new HBox(allUnresLabelBox, allUnresNotifyBox, allUnresIconBox, allUnresCountBox);
 		
 		// CSS
 		allUnresBox.getStyleClass().add("summary-box");
@@ -228,10 +332,48 @@ public class SummaryViewController {
 		allUnresNotifyBox.getStyleClass().add("summary-box-notify-box");
 	}
 	
-	public static void initSummaryView() {
-		
-		int[] summary = InterfaceController.getLogic().getSummaryCount();
-		
+    // ================================================================================
+    // Private methods, used to initialize and update the unresolved bar
+    // ================================================================================
+	
+	private static void initUnresIcon(int count) {
+		if (count == 0) {
+			allUnresIcon = new ImageView(PATH_UNRES_TICK);
+		} else {
+			allUnresIcon = new ImageView(PATH_UNRES_ALERT);
+		}
+	}
+	
+	private static void initUnresNotifyBox(int count) {
+		if (count == 0) {
+			allUnresNotifyBox = new HBox(allUnresClear);
+		} else {
+			allUnresNotifyBox = new HBox(allUnresAttention);
+		}
+	}
+	
+	private static void updateUnresNotifyBox(int count) {
+		allUnresNotifyBox.getChildren().clear();
+		if (count == 0) {
+			allUnresNotifyBox.getChildren().add(allUnresClear);
+		} else {
+			allUnresNotifyBox.getChildren().add(allUnresAttention);
+		}
+	}
+	
+    // ================================================================================
+    // Misc private methods used to perform calculations and formatting
+    // ================================================================================
+	
+	/**
+	 * This method returns the width of the largest number that will be displayed 
+	 * in the summary view
+	 * 
+	 * @param summary
+	 * 			  The array of values to be used in the summary view
+	 * @return The width of the largest number to be used in the summary view
+	 */
+	private static double getCountMaxWidth(int[] summary) {
 		// Obtain the largest value within summary
 		int maxValue = summary[0];
 		for (int i = 1; i < 5; i++) {
@@ -244,27 +386,13 @@ public class SummaryViewController {
 				+ "-fx-font-size: 48;");
 		text.applyCss();
 		double maxWidth = text.getLayoutBounds().getWidth() + 2 * MARGIN_SUMMARY_COUNT_HORIZ;
-		
-		initTaskTwoDays(summary[0], maxWidth);
-		initEventTwoDays(summary[1], maxWidth);
-		initTaskFloat(summary[2], maxWidth);
-		initEventOngoing(summary[3], maxWidth);
-		initAllUnres(summary[4], maxWidth);
-		
-		Region space1 = new Region();
-		Region space2 = new Region();
-		Region space3 = new Region();
-		Region space4 = new Region();
-		Region space5 = new Region();
-		Region space6 = new Region();
-		
-		summaryBox = new VBox(space1, taskTwoDaysBox, 
-				space2, eventTwoDaysBox, 
-				space3, taskFloatBox, 
-				space4, eventOngoingBox, 
-				space5, allUnresBox, 
-				space6);
-		
+		return maxWidth;
+	}
+
+	/**
+	 * This method formats all five HBoxes used in the summary view during initialization
+	 */
+	private static void formatSummaryBox() {
 		HBox.setHgrow(taskTwoDaysBox, Priority.ALWAYS);
 		HBox.setHgrow(eventTwoDaysBox, Priority.ALWAYS);
 		HBox.setHgrow(taskFloatBox, Priority.ALWAYS);
@@ -276,88 +404,5 @@ public class SummaryViewController {
 		VBox.setMargin(taskFloatBox, new Insets(0, MARGIN_SUMMARY_BOX, 0, MARGIN_SUMMARY_BOX));
 		VBox.setMargin(eventOngoingBox, new Insets(0, MARGIN_SUMMARY_BOX, 0, MARGIN_SUMMARY_BOX));
 		VBox.setMargin(allUnresBox, new Insets(0, MARGIN_SUMMARY_BOX, 0, MARGIN_SUMMARY_BOX));
-		
-		InterfaceController.summaryBox = summaryBox;
-		
-		VBox.setVgrow(space1, Priority.ALWAYS);
-		VBox.setVgrow(space2, Priority.ALWAYS);
-		VBox.setVgrow(space3, Priority.ALWAYS);
-		VBox.setVgrow(space4, Priority.ALWAYS);
-		VBox.setVgrow(space5, Priority.ALWAYS);
-		VBox.setVgrow(space6, Priority.ALWAYS);
-	}
-	
-	private static void updateUnresNotifyBox(int count) {
-		allUnresNotifyBox.getChildren().clear();
-		if (count == 0) {
-			allUnresNotifyBox.getChildren().add(allUnresClear);
-		} else {
-			allUnresNotifyBox.getChildren().add(allUnresAttention);
-		}
-	}
-	
-	public static void updateSummaryView() {
-		
-		// Clear the old data
-		taskTwoDaysCountBox.getChildren().clear();
-		eventTwoDaysCountBox.getChildren().clear();
-		taskFloatCountBox.getChildren().clear();
-		eventOngoingCountBox.getChildren().clear();
-		allUnresCountBox.getChildren().clear();
-		
-		// Get the updated data
-		int[] summary = InterfaceController.getLogic().getSummaryCount();
-		
-		// Update the current labels
-		taskTwoDaysCount = new Label(String.valueOf(summary[0]));
-		eventTwoDaysCount = new Label(String.valueOf(summary[1]));
-		taskFloatCount = new Label(String.valueOf(summary[2]));
-		eventOngoingCount = new Label(String.valueOf(summary[3]));
-		allUnresCount = new Label(String.valueOf(summary[4]));
-		
-		HBox.setMargin(taskTwoDaysCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
-		HBox.setMargin(eventTwoDaysCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
-		HBox.setMargin(taskFloatCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
-		HBox.setMargin(eventOngoingCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
-		HBox.setMargin(allUnresCount, new Insets(MARGIN_SUMMARY_COUNT_VERT, 0, MARGIN_SUMMARY_COUNT_VERT, 0));
-		
-		// Update the icon depending on the new value of unresolved tasks
-		initUnresIcon(summary[4]);
-		allUnresIconBox.getChildren().clear();
-		allUnresIconBox.getChildren().add(allUnresIcon);
-		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT_HORIZ, 0, 0));
-		
-		// Update the notification text
-		updateUnresNotifyBox(summary[4]);
-		
-		// Insert the new data
-		taskTwoDaysCountBox.getChildren().add(taskTwoDaysCount);
-		eventTwoDaysCountBox.getChildren().add(eventTwoDaysCount);
-		taskFloatCountBox.getChildren().add(taskFloatCount);
-		eventOngoingCountBox.getChildren().add(eventOngoingCount);
-		allUnresCountBox.getChildren().add(allUnresCount);
-		
-		// CSS
-		taskTwoDaysCount.getStyleClass().add("summary-box-count");
-		eventTwoDaysCount.getStyleClass().add("summary-box-count");
-		taskFloatCount.getStyleClass().add("summary-box-count");
-		eventOngoingCount.getStyleClass().add("summary-box-count");
-		allUnresCount.getStyleClass().add("summary-box-count");
-	}
-	
-	// ========================================
-	// Getters and setters for isShowing
-	// ========================================
-	
-	public static boolean isShowing() {
-		return isShowing;
-	}
-	
-	public static void startShowing() {
-		isShowing = true;
-	}
-	
-	public static void stopShowing() {
-		isShowing = false;
 	}
 }

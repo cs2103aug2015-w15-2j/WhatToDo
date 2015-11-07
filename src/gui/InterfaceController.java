@@ -320,6 +320,96 @@ public class InterfaceController {
     // ===============================================================
     
     /**
+     * This method updates the various task content of the various views with
+     * updated data
+     * 
+     * @param tasks
+     * 		      The updated array of task data to be displayed in the view
+     * @param numOfElements
+     * 		      The total number of tasks/events. Used for formatting the index box
+     * @param index
+     * 			  The view index of the particular task/event 
+     * @param targetView
+     * 			  The View of which the updated task list will be displayed in
+     * @param contentBox
+     * 		      The VBox that contains the list of task data to be displayed
+     * @return The index of the last element to be added
+     */
+	protected static int updateTasks(String[] tasks, int numOfElements, 
+			int index, View targetView, VBox contentBox) {
+		
+    	// Only print the empty message if there are zero results
+		if (tasks.length == 3 && InterfaceController.getLogic().isEmpty(tasks[2])) {
+    		HBox tempBox = InterfaceController.initDisplayElement(
+    				tasks[2], numOfElements, index, true, targetView);
+    		VBox.setMargin(tempBox, new Insets(
+    				0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+    		contentBox.getChildren().add(tempBox);
+    	} else {
+    		// If there are no results for floating tasks
+    		if (InterfaceController.getLogic().isEmpty(tasks[tasks.length - 1])) {
+    			for (int i = 0; i < tasks.length; i++) {
+    				HBox tempBox = InterfaceController.initDisplayElement(
+    						tasks[i], numOfElements, index, true, targetView);
+    				VBox.setMargin(tempBox, new Insets(
+    						0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+    				contentBox.getChildren().add(tempBox);
+    				// Only increment the counter if an element is added
+    				if (InterfaceController.getLogic().isNonEmptyElement(tasks[i])) {
+    					index++;
+    				}
+    			}
+    		} else {
+    			for (int i = 0; i < tasks.length; i++) {
+    				if (!InterfaceController.getLogic().isEmpty(tasks[i])) {
+    					HBox tempBox = InterfaceController.initDisplayElement(
+    							tasks[i], numOfElements, index, true, targetView);
+    					VBox.setMargin(tempBox, new Insets(
+    							0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+    					contentBox.getChildren().add(tempBox);
+    					// Only increment the counter if an element is added
+    					if (InterfaceController.getLogic().isNonEmptyElement(tasks[i])) {
+    						index++;
+    					}
+    				}
+    			}
+    		}
+    	}
+		return index;
+	}
+	
+    /**
+     * This method updates the various event content of the various views with
+     * updated data
+     * 
+     * @param events
+     * 		      The updated array of event data to be displayed in the view
+     * @param numOfElements
+     * 		      The total number of tasks/events. Used for formatting the index box
+     * @param index
+     * 			  The view index of the particular task/event 
+     * @param targetView
+     * 			  The View of which the updated event list will be displayed in
+     * @param contentBox
+     * 		      The VBox that contains the list of event data to be displayed
+     * @return The index of the last element to be added
+     */
+	protected static int updateEvents(String[] events, int numOfElements, 
+			int index, View targetView, VBox contentBox) {
+		
+    	for (int i = 0; i < events.length; i++) {
+    		HBox tempBox = InterfaceController.initDisplayElement(events[i], numOfElements, index, false, targetView);
+    		VBox.setMargin(tempBox, new Insets(
+    				0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
+    		contentBox.getChildren().add(tempBox);
+    		if (InterfaceController.getLogic().isNonEmptyElement(events[i])) {
+    			index++;
+    		}
+    	}
+		return index;
+	}
+	
+    /**
      * This method updates the filepath shown in the filepath bar by calling
      * the getFilePath() method in LogicController
      */
@@ -599,10 +689,10 @@ public class InterfaceController {
     	String statusData = displayData.split(" ")[0];
     	if (statusData.equals(STATUS_DONE)) {
     		return initDataElementWithStatus(
-    				displayData, numOfElements, index, isTask, displayDataSplit);
+    				displayData, numOfElements, index, isTask, displayDataSplit, targetView);
     	} else {
     		return initDataElementNoStatus(
-    				displayData, numOfElements, index, isTask, displayDataSplit);
+    				displayData, numOfElements, index, isTask, displayDataSplit, targetView);
     	}
     }
 	
@@ -668,7 +758,7 @@ public class InterfaceController {
      * 		   scroll pane
      */
 	private static HBox initDataElementNoStatus(String displayData, int numOfElements, 
-			int index, boolean isTask, String[] displayDataSplit) {
+			int index, boolean isTask, String[] displayDataSplit, View targetView) {
 		
 		Label elementIndex = new Label(String.valueOf(index));
 		Label elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
@@ -684,7 +774,9 @@ public class InterfaceController {
 		elementBox.getStyleClass().add("element");
 		elementIndex.getStyleClass().add("element-index-label");
 		
-		if (isTask) {
+		if (targetView == View.DEFAULT) {
+			indexBox.getStyleClass().add("element-index");
+		} else if (isTask) {
 			indexBox.getStyleClass().add("element-index-task");
 		} else {
 			indexBox.getStyleClass().add("element-index-event");
@@ -711,7 +803,7 @@ public class InterfaceController {
      * 		   scroll pane
      */
 	private static HBox initDataElementWithStatus(String displayData, int numOfElements, 
-			int index, boolean isTask, String[] displayDataSplit) {
+			int index, boolean isTask, String[] displayDataSplit, View targetView) {
 		
 		Label elementIndex = new Label(String.valueOf(index));
 		Label elementLabel = new Label(displayData.replaceFirst(displayDataSplit[0] + ".", "").trim());
@@ -730,7 +822,9 @@ public class InterfaceController {
 		elementBox.getStyleClass().add("element");
 		elementIndex.getStyleClass().add("element-index-label");
 		
-		if (isTask) {
+		if (targetView == View.DEFAULT) {
+			indexBox.getStyleClass().add("element-index");
+		} else if (isTask) {
 			indexBox.getStyleClass().add("element-index-task");
 		} else {
 			indexBox.getStyleClass().add("element-index-event");

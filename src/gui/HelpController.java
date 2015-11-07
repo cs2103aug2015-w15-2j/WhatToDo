@@ -14,17 +14,21 @@ public class HelpController {
     
     private static boolean isHelpOpen;
     
-    protected static final String PATH_HELP_DIALOG = "gui/resources/help_dialog.jpg";
+    private static final String PATH_HELP_DIALOG = "gui/resources/help_dialog.jpg";
     
+    /**
+     * This method initializes all the interface components for the help window
+     */
     public static void initHelpScene() {
-    	
     	isHelpOpen = false;
     	
     	helpImage = new ImageView(PATH_HELP_DIALOG);
+    	helpScroll = new ScrollPane(helpImage);
+    	
+    	// Component formatting
     	helpImage.setFitWidth(MainApp.WIDTH_HELP_DIALOG);
     	helpImage.setPreserveRatio(true);
 
-    	helpScroll = new ScrollPane(helpImage);
     	helpScroll.setFitToWidth(true);
     	helpScroll.setVbarPolicy(ScrollBarPolicy.NEVER);
     	helpScroll.setHbarPolicy(ScrollBarPolicy.NEVER);
@@ -32,12 +36,11 @@ public class HelpController {
     	MainApp.helpScene = new Scene(helpScroll);
     }
     
-    /* ================================================================================
-     * Public methods to control the help dialog window
-     * ================================================================================
-     */
+	// ================================================================================
+    // Protected methods use to control the visibility of the help dialog
+    // ================================================================================
     
-    public static void toggleHelpDialog() {
+    protected static void toggleHelpDialog() {
     	if (!isHelpOpen) {
     		openHelpDialog();
     	} else {
@@ -45,16 +48,15 @@ public class HelpController {
     	}
     }
     
-    public static void openHelpDialog() {
+    protected static void openHelpDialog() {
 		// Set help button to selected
 		InterfaceController.changeButtonToSelected(View.HELP);
-		
 		isHelpOpen = true;
 		MainApp.help.show();
 		MainApp.help.requestFocus();
     }
     
-    public static void closeHelpDialog() {
+    protected static void closeHelpDialog() {
 		// Set help button to unselected
 		InterfaceController.changeButtonToUnselected(View.HELP);
 		isHelpOpen = false;

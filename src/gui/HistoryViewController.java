@@ -1,7 +1,5 @@
 package gui;
 
-import java.util.ArrayList;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -11,16 +9,14 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import struct.View;
 
 public class HistoryViewController {
 
-	/* ================================================================================
-     * JavaFX controls used in the general interface
-     * ================================================================================
-     */
+	// ================================================================================
+    // JavaFX controls used in the default interface
+    // ================================================================================
 	
 	// Used for initAllTaskView
     private static VBox histBox, histContentBox;
@@ -31,105 +27,52 @@ public class HistoryViewController {
     private static final String MESSAGE_EMPTY_HIST = "No operations performed yet.";
     
     private static int messageIndex = 0;
-    
-    private static HBox initDisplayElement(String index, String feedbackMessage) {
 
-    	Label feedbackIndex = new Label(index);
-    	HBox indexBox = new HBox(feedbackIndex);
-    	indexBox.setAlignment(Pos.CENTER);
-    	
-    	Label feedbackLabel = new Label(feedbackMessage);
-    	HBox feedbackBox = new HBox(indexBox, feedbackLabel);
-		
-    	// Set text wrapping for the feedback message
-    	feedbackLabel.setWrapText(true);
-
-    	// If is default and no commands entered, do not display index background
-    	if (index != "") {
-        	// Get the width of label and resize the line
-    		Text text = new Text(String.valueOf(index));
-    		Scene s = new Scene(new Group(text));
-    		// Override the CSS style to calculate the text width
-    		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
-    				+ "-fx-font-size: 16; ");
-    		text.applyCss();
-    		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
-    		indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
-    	}
-    	
-    	// Set the margins of the feedback label within the HBox
-    	HBox.setMargin(feedbackLabel, new Insets(
-    			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    			InterfaceController.MARGIN_TEXT_ELEMENT, 
-    			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
-    			InterfaceController.MARGIN_TEXT_ELEMENT));
-
-    	// Apply CSS style for regular data field
-    	feedbackBox.getStyleClass().add("element");
-    	indexBox.getStyleClass().add("element-index-history");
-    	feedbackIndex.getStyleClass().add("element-index-label");
-    	
-    	return feedbackBox;
-    }
-
-    public static void initHistView() {
-    	
+    /**
+     * This method initializes all the interface components for the history view
+     */
+    protected static void initHistView() {
     	Label histHeader = new Label(HEADER_HISTORY);
         histHeaderBox = new HBox(histHeader);
         histHeaderBox.setAlignment(Pos.CENTER);
         
         // History view is empty when first initialized,
         // add one message for no operations performed yet
-        HBox initialBox = initDisplayElement("", MESSAGE_EMPTY_HIST);
+        HBox initialBox = initHistoryElement("", MESSAGE_EMPTY_HIST);
         VBox.setMargin(initialBox, new Insets(
         		0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
         
         histContentBox = new VBox(initialBox);
+        histScroll = new ScrollPane(histContentBox);
+        histBox = new VBox(histHeaderBox, histScroll);
+        InterfaceController.histBox = new HBox(histBox);
         
-        // Set the scroll pane to automatically scroll to the end
         histContentBox.heightProperty().addListener(
         		InterfaceController.getLogic().
         		getScrollListener(View.HISTORY));
         
-        histScroll = new ScrollPane(histContentBox);
-        histScroll.setFitToWidth(true);
-        
-        histBox = new VBox(histHeaderBox, histScroll);
-        
-        histBox.setAlignment(Pos.CENTER);
-        
-        // Set margins for the header label
+        // Component formatting
         HBox.setMargin(histHeader, new Insets(
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0, 
         		InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 0));
         
-        // Set margins for the header
         // Reducing the margin by line width to compensate for the added vertical
         // separator in the default and all views
         VBox.setMargin(histHeaderBox, new Insets(
         		0, InterfaceController.MARGIN_SCROLL - InterfaceController.WIDTH_VERT_LINE, 
         		0, InterfaceController.MARGIN_SCROLL));
         
-        // Set margins for the scroll pane
         VBox.setMargin(histScroll, new Insets(
         		InterfaceController.MARGIN_COMPONENT, 
         		InterfaceController.MARGIN_SCROLL - InterfaceController.WIDTH_VERT_LINE, 
         		0, 
         		InterfaceController.MARGIN_SCROLL));
         
-        // Set the alignment of the header image to be in the center
         histBox.setAlignment(Pos.CENTER);
-        
-        // Set the height of the scroll pane to grow with window height
+        histBox.setAlignment(Pos.CENTER);
         VBox.setVgrow(histScroll, Priority.ALWAYS);
-        
-        // Set the scrollbar policy of the scroll pane
+        histScroll.setFitToWidth(true);
         histScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        
-        // Update the history view in InterfaceController
-        InterfaceController.histBox = new HBox(histBox);
-        
-        // Set the preferred viewport width for the history scroll pane
         histScroll.prefViewportWidthProperty().bind(InterfaceController.histBox.widthProperty());
         
         // CSS
@@ -137,30 +80,96 @@ public class HistoryViewController {
         histHeaderBox.getStyleClass().add("box-title-history");
     }
     
-    public static void updateHistView(String feedbackMessage) {
-    	
-        // Increment the message index
+    /**
+     * This method updates the history view by adding the feedback message to the view
+     * 
+     * @param feedbackMessage
+     * 			  The feedback message returned from executeCommand()
+     */
+    protected static void updateHistView(String feedbackMessage) {
         messageIndex++;
         
         // Use a temporary component for formatting
-        HBox tempBox = initDisplayElement(String.valueOf(messageIndex), feedbackMessage);
-        VBox.setMargin(tempBox, new Insets(
-        		0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
-        
-        // Replace the initial message if this message is the first to be added
+        HBox tempBox = initHistoryElement(String.valueOf(messageIndex), feedbackMessage);
         if (messageIndex == 1) {
         	histContentBox.getChildren().clear();
         }
-        
         histContentBox.getChildren().add(tempBox);
+        
+        // Component formatting
+        VBox.setMargin(tempBox, new Insets(
+        		0, 0, InterfaceController.MARGIN_TEXT_ELEMENT_SEPARATOR, 0));
     }
     
-    /* ================================================================================
-     * Getters for getLogic()ler to access required JavaFX components
-     * ================================================================================
-     */
+    // ================================================================================
+    // Getters for logicControl to access required JavaFX components
+    // ================================================================================
     
-    public static ScrollPane getHistScroll() {
+    protected static ScrollPane getHistScroll() {
     	return histScroll;
     }
+    
+    // ================================================================================
+    // Private methods, used to initialize various sub components of the interface
+    // ================================================================================
+    
+    /**
+     * This method creates a HBox containing a history view element
+     * 
+     * @param index
+     * 		      The index of the element to be created
+     * @param feedbackMessage
+     * 			  The feedback message returned from Logic's executeCommand() method
+     * 			  to be added into the history
+     * @return A formatted HBox containing the history data
+     */
+    private static HBox initHistoryElement(String index, String feedbackMessage) {
+    	Label feedbackIndex = new Label(index);
+    	HBox indexBox = new HBox(feedbackIndex);
+    	Label feedbackLabel = new Label(feedbackMessage);
+    	HBox feedbackBox = new HBox(indexBox, feedbackLabel);
+
+    	// Component formatting
+    	if (index != "") {
+        	// If is default and no commands entered, do not display index background
+        	setToMaxWidth(index, indexBox);
+    	}
+    	
+    	feedbackLabel.setWrapText(true);
+    	indexBox.setAlignment(Pos.CENTER);
+    	
+    	HBox.setMargin(feedbackLabel, new Insets(
+    			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    			InterfaceController.MARGIN_TEXT_ELEMENT, 
+    			InterfaceController.MARGIN_TEXT_ELEMENT_HEIGHT, 
+    			InterfaceController.MARGIN_TEXT_ELEMENT));
+
+    	// CSS
+    	feedbackBox.getStyleClass().add("element");
+    	indexBox.getStyleClass().add("element-index-history");
+    	feedbackIndex.getStyleClass().add("element-index-label");
+    	
+    	return feedbackBox;
+    }
+
+	/**
+	 * This method calculates the maximum width used by the current largest index
+	 * and sets the indexBox to that width to ensure consistency
+	 * 
+	 * @param index
+	 * 			  The view index to be inserted into indexBox
+	 * @param indexBox
+	 * 		      The HBox containing the index to be formatted
+	 */
+	private static void setToMaxWidth(String index, HBox indexBox) {
+		// Get the width of label and resize the line
+		Text text = new Text(String.valueOf(index));
+		Scene s = new Scene(new Group(text));
+		// Override the CSS style to calculate the text width
+		text.setStyle("-fx-font-family: \"Myriad Pro\"; "
+				+ "-fx-font-size: 16; ");
+		text.applyCss();
+		double textWidth = Math.ceil(text.getLayoutBounds().getWidth());
+		indexBox.setMinWidth(textWidth + 2 * InterfaceController.MARGIN_TEXT_ELEMENT);
+	}
 }
