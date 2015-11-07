@@ -131,6 +131,9 @@ public class Storage {
 	 *             when encounter error in reading file.
 	 */
 	public void addTask(Task newTask) throws FileSystemException {
+		assert(newTask.getName() != EMPTY_STRING);
+		assert(newTask.getDeadline().formatDateShort() != EMPTY_STRING);
+		
 		try {
 			addTaskToFile(newTask);
 		} catch (IOException exception) {
@@ -142,15 +145,17 @@ public class Storage {
 	 * Adds a floating task to the text file (to-do list). Floating tasks in the
 	 * file will be sorted in alphabetical order.
 	 * 
-	 * @param taskToAdd
+	 * @param newFloatingTask
 	 *            the FloatingTask object to be added to file.
 	 * @throws FileSystemException
 	 *             when encounter error in reading file.
 	 */
-	public void addFloatingTask(FloatingTask taskToAdd)
+	public void addFloatingTask(FloatingTask newFloatingTask)
 			throws FileSystemException {
+		assert(newFloatingTask.getName() != EMPTY_STRING);
+		
 		try {
-			addFloatTaskToFile(taskToAdd);
+			addFloatTaskToFile(newFloatingTask);
 		} catch (IOException exception) {
 			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
 		}
@@ -166,6 +171,12 @@ public class Storage {
 	 *             when encounter error in reading file.
 	 */
 	public void addEvent(Event newEvent) throws FileSystemException {
+		assert(newEvent.getName() != EMPTY_STRING);
+		assert(newEvent.getEventStartDate().formatDateShort() != EMPTY_STRING);
+		assert(newEvent.getEventEndDate().formatDateShort() != EMPTY_STRING);
+		assert(newEvent.getEventStartTime() != EMPTY_STRING);
+		assert(newEvent.getEventEndTime() != EMPTY_STRING);
+		
 		try {
 			addEventToFile(newEvent);
 		} catch (IOException exception) {
@@ -362,6 +373,9 @@ public class Storage {
 	 * @throws FileSystemException   when error in writing to file.
 	 */
 	public void addToAliasFile(String aliasLine, String actualCommandType) throws FileSystemException {
+		assert(aliasLine.indexOf(TEXT_FILE_DIVIDER) == -1);
+		assert(actualCommandType.indexOf(TEXT_FILE_DIVIDER) == -1);
+		
 		try {
 			updateAliasFile(aliasLine, actualCommandType); 
 		} catch (IOException exception) {
@@ -378,6 +392,8 @@ public class Storage {
 	 * @throws FileSystemException   when error in writing to file.
 	 */
 	public void deleteFromAliasFile(String aliasLine) throws FileSystemException {
+		assert(aliasLine.indexOf(TEXT_FILE_DIVIDER) == -1);
+		
 		try {
 			removeFromAliasFile(aliasLine); 
 		} catch (IOException exception) {

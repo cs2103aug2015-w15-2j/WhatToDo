@@ -1,9 +1,16 @@
+/**
+ * This class tests the methods in Storage.java
+ * 
+ * @@author A0124238L
+ */
+
 package test;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.nio.file.FileSystemException;
 
 import backend.Storage;
@@ -15,6 +22,7 @@ import struct.Task;
 public class StorageTest {
 
 	@Test
+	// Tests if tasks are sorted properly.
 	public void testAddTask() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
@@ -30,9 +38,7 @@ public class StorageTest {
 		storage.addTask(new Task("wintermelon", false, new Date("010116")));
 		storage.addTask(new Task("kiwi", false, new Date("251215")));
 
-		// Test if tasks are sorted properly.
-		assertEquals(
-				"task;animal;todo;010115\ntask;avocado;todo;010115\ntask;apple;todo;251115\n"
+		assertEquals("task;animal;todo;010115\ntask;avocado;todo;010115\ntask;apple;todo;251115\n"
 						+ "task;orange;todo;261115\ntask;guava;todo;101215\ntask;pear;todo;241215\n"
 						+ "task;banana;todo;251215\ntask;kiwi;todo;251215\ntask;watermelon;todo;010116\n"
 						+ "task;wintermelon;todo;010116\n", storage.display());
@@ -42,6 +48,7 @@ public class StorageTest {
 	}
 
 	@Test
+	// Tests if Floating Task are sorted properly.
 	public void testAddFloatingTask() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
@@ -75,6 +82,7 @@ public class StorageTest {
 	}
 
 	@Test
+	// Tests if events are sorted properly.
 	public void testAddEvent() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
@@ -133,7 +141,7 @@ public class StorageTest {
 		storage.addEvent(new Event("event time", false, new Date("101015"),
 				new Date("101015"), "1700", "2359"));
 
-		// This is a boundary case for line 1.
+		// This is a boundary case for deleting first line.
 		assertEquals("float;float task;todo", storage.deleteLine(1));
 		assertEquals(
 				"task;i am a task;todo;121212\nevent;event time;todo;101015;1700;101015;2359\n",
@@ -146,6 +154,7 @@ public class StorageTest {
 
 		// This is a boundary case for delete only item left.
 		assertEquals("task;i am a task;todo;121212", storage.deleteLine(1));
+		
 		// This is a boundary case for display nothing.
 		assertEquals("", storage.display());
 
@@ -154,38 +163,38 @@ public class StorageTest {
 	}
 
 	@Test(expected = FileSystemException.class)
+	// Tests if deleting line 0 will throw exception
 	public void testDeleteZero() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
 
-		// For test only.
 		storage.addFloatingTask(new FloatingTask("dummy", false));
 
-		// This is a boundary case for '0' partition.
+		// This is a boundary case for delete line 0 (invalid)
 		storage.deleteLine(0);
 	}
 
 	@Test(expected = FileSystemException.class)
+	// Tests if deleting negative line numbers will throw exception
 	public void testDeleteNegative() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
 
-		// For test only.
 		storage.addFloatingTask(new FloatingTask("dummy2", false));
 
-		// This is a boundary case for negative partition.
+		// This is a boundary case for deleting negative numbers
 		storage.deleteLine(-1);
 	}
 
 	@Test(expected = FileSystemException.class)
+	// Tests if deleting line numbers beyond number of items will throw exception
 	public void testDeleteTooLarge() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
 
-		// For test only.
 		storage.addFloatingTask(new FloatingTask("dummy", false));
 
-		// This is a boundary case for line overflow partition.
+		// This is a boundary case for deleting line numbers beyond number of items.
 		storage.deleteLine(2);
 	}
 
@@ -200,7 +209,7 @@ public class StorageTest {
 				new Date("211215"), "1800", "2300"));
 		storage.addFloatingTask(new FloatingTask("buy a painting", false));
 
-		// This is a boundary case for line 1.
+		// This is a boundary case for first line.
 		assertEquals("float", storage.findTypeInLine(1));
 
 		// This is a boundary case for last line.
@@ -220,42 +229,44 @@ public class StorageTest {
 	}
 
 	@Test(expected = FileSystemException.class)
+	// Tests if finding line numbers beyond number of items will throw exception
 	public void testFindTypeInLineTooLarge() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
 
-		// For test only.
 		storage.addFloatingTask(new FloatingTask("dummy", false));
 
-		// This is a boundary case for line overflow partition.
+		// This is a boundary case for finding line numbers beyond number of items
 		storage.findTypeInLine(2);
 	}
 
 	@Test(expected = FileSystemException.class)
+	// Tests if finding line number 0 will throw exception
 	public void testFindTypeInLineZero() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
 
-		// For test only.
 		storage.addFloatingTask(new FloatingTask("dummy", false));
 
-		// This is a boundary case for '0' partition.
+		// This is a boundary case for finding line 0
 		storage.findTypeInLine(0);
 	}
 
 	@Test(expected = FileSystemException.class)
+	// Tests if finding negative line numbers will throw exception
 	public void testFindTypeInLineNegative() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
 
-		// For test only.
 		storage.addFloatingTask(new FloatingTask("dummy", false));
 
-		// This is a boundary case for negative partition.
+		// This is a boundary case for finding negative numbers
 		storage.findTypeInLine(-1);
 	}
 
+	// @@author A0124238L-unused
 	@Test
+	// This is a test for the unused method.
 	public void testConvertFloatToTask() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
@@ -278,6 +289,7 @@ public class StorageTest {
 	}
 
 	@Test
+	// This is a test for the unused method.
 	public void testConvertFloatToEvent() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
@@ -300,8 +312,7 @@ public class StorageTest {
 		storage.overwriteFile("");
 	}
 
-	
-
+	// @@author A0124238L
 	@Test
 	public void testMarkAsDone() throws FileSystemException {
 		Storage storage = new Storage();
@@ -335,6 +346,8 @@ public class StorageTest {
 	}
 
 	@Test
+	// Tests if the correct exceptions with corresponding messages are thrown,
+	// when marking already completed items as done.
 	public void testMarkAsDoneExceptions() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
@@ -383,6 +396,7 @@ public class StorageTest {
 				new Date("111015"), "1700", "2359"));
 		storage.addFloatingTask(new FloatingTask("float task", false));
 
+		// General Case for floating task
 		assertEquals("float", storage.getAttribute(1, 0));
 		assertEquals("float task", storage.getAttribute(1, 1));
 		assertEquals("todo", storage.getAttribute(1, 2));
@@ -391,15 +405,17 @@ public class StorageTest {
 		assertEquals(null, storage.getAttribute(1, 3));
 		assertEquals(null, storage.getAttribute(1, -1));
 		
+		// General Case for task
 		assertEquals("task", storage.getAttribute(2, 0));
 		assertEquals("i am a task", storage.getAttribute(2, 1));
 		assertEquals("todo", storage.getAttribute(2, 2));
 		assertEquals("121212", storage.getAttribute(2, 3));
 		
-		// These are boundary cases where type = 4 and -1 for float task.
+		// These are boundary cases where type = 4 and -1 for task.
 		assertEquals(null, storage.getAttribute(2, 4));
 		assertEquals(null, storage.getAttribute(2, -1));
 		
+		// General Case for event
 		assertEquals("event", storage.getAttribute(3, 0));
 		assertEquals("event time", storage.getAttribute(3, 1));
 		assertEquals("todo", storage.getAttribute(3, 2));
@@ -408,7 +424,7 @@ public class StorageTest {
 		assertEquals("111015", storage.getAttribute(3, 5));
 		assertEquals("2359", storage.getAttribute(3, 6));
 		
-		// These are boundary cases where type = 7 and -1 for float task.
+		// These are boundary cases where type = 7 and -1 for event.
 		assertEquals(null, storage.getAttribute(3, 7));
 		assertEquals(null, storage.getAttribute(3, -1));
 
@@ -417,6 +433,7 @@ public class StorageTest {
 	}
 	
 	@Test
+	// Test the methods for Alias File
 	public void testAlias() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
@@ -425,20 +442,37 @@ public class StorageTest {
 		storage.addToAliasFile("remove", "delete"); 
 		storage.addToAliasFile("plus", "add");
 		storage.deleteFromAliasFile("insert"); 
+		
+		// Test if add and delete works.
 		assertEquals("remove;delete\nplus;add\n",storage.readAliasFile());
+		
 		storage.deleteFromAliasFile("plus");
 		storage.deleteFromAliasFile("remove");
+		
+		// Test if boundary case of empty file is displaying correctly.
 		assertEquals("",storage.readAliasFile());
+		
 		storage.addToAliasFile("wakaka", "done");
 		assertEquals("wakaka;done\n",storage.readAliasFile());
 		storage.deleteFromAliasFile("wakaka");
 		assertEquals("",storage.readAliasFile());
 	}
 	
-	 /*
-	 * @Test public void testEditEventStartTime() { fail("Not yet implemented");
-	 * }
-	 * 
-	 * @Test public void testEditEventEndTime() { fail("Not yet implemented"); }
-	 */
+	@Test
+	// Tests that changing file path will let program run normally.
+	public void testChangeFilePath() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+		
+		storage.addTask(new Task("sample task", false, new Date("121212")));
+		storage.changeFileStorageLocation("src" + File.separator + "test" + File.separator);
+		
+		assertEquals("task;sample task;todo;121212\n", storage.display());
+		
+		storage.changeFileStorageLocation("");
+		assertEquals("task;sample task;todo;121212\n", storage.display());	
+		
+		// Clear File for next test.
+		storage.overwriteFile("");
+	}
 }
