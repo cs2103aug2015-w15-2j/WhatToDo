@@ -38,6 +38,10 @@ public class LogicController {
 	
 	private static boolean mapIndexOutOfBounds = false;
 	
+    // ======================================================================
+    // LogicController constructor
+    // ======================================================================
+	
 	/**
 	 * This method is the constructor for a LogicController object.
 	 * Possibly catches a FileSystemException from Storage caught by Logic and
@@ -82,7 +86,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of default task data from the text file
 	 */
-	public String[] getDefTasks() {
+	protected String[] getDefTasks() {
 		// Get the string from logic
 		String defTasks = logic.taskDefaultView();
 		// Split the string by newline
@@ -97,7 +101,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of default event data from the text file
 	 */
-	public String[] getDefEvents() {
+	protected String[] getDefEvents() {
 		// Get the string from logic
 		String defEvents = logic.eventDefaultView();
 		// Split the string by newline
@@ -117,7 +121,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all uncompleted task data from the text file
 	 */
-	public String[] getAllTasks() {
+	protected String[] getAllTasks() {
 		// Get the String from logic
 		String allTasks = logic.taskAllView(false);
 		// Split the string by newline
@@ -132,7 +136,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all uncompleted event data from the text file
 	 */
-	public String[] getAllEvents() {
+	protected String[] getAllEvents() {
 		// Get the String from logic
 		String allEvents = logic.eventAllView(false);
 		// Split the string by newline
@@ -152,7 +156,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all unresolved task data from the text file
 	 */
-	public String[] getUnresTasks() {
+	protected String[] getUnresTasks() {
 		// Get the String from logic
 		String unresTasks = logic.taskPastUncompletedView();
 		// Split the string by newline
@@ -167,7 +171,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all unresolved event data from the text file
 	 */
-	public String[] getUnresEvents() {
+	protected String[] getUnresEvents() {
 		// Get the String from logic
 		String unresEvents = logic.eventPastUncompletedView();
 		// Split the string by newline
@@ -187,7 +191,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all completed task data from the text file
 	 */
-	public String[] getDoneTasks() {
+	protected String[] getDoneTasks() {
 		// Get the String from logic
 		String doneTasks = logic.taskAllView(true);
 		// Split the string by newline
@@ -210,7 +214,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all completed event data from the text file
 	 */
-	public String[] getDoneEvents() {
+	protected String[] getDoneEvents() {
 		// Get the String from logic
 		String doneEvents = logic.eventAllView(true);
 		// Split the string by newline
@@ -235,7 +239,7 @@ public class LogicController {
 	 * @return An int[] of size 5, each index storing the number required for
 	 * 		   each element of the summary view
 	 */
-	public int[] getSummaryCount() {
+	protected int[] getSummaryCount() {
 		
 		String[] defTasks = InterfaceController.getLogic().getDefTasks();
 		String[] defEvents = InterfaceController.getLogic().getDefEvents();
@@ -249,7 +253,593 @@ public class LogicController {
 		
 		return summary;
 	}
+	
+	/**
+	 * This method counts the number of elements there are in the default view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the default view
+	 */
+	protected int getDefElementsCount() {
+		int count = 0;
+		
+		String[] temp = InterfaceController.getLogic().getDefTasks();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		temp = InterfaceController.getLogic().getDefEvents();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	/**
+	 * This method counts the number of elements there are in the all view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the all view
+	 */
+	protected int getAllElementsCount() {
+		int count = 0;
+		
+		String[] temp = InterfaceController.getLogic().getAllTasks();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		temp = InterfaceController.getLogic().getAllEvents();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	/**
+	 * This method counts the number of elements there are in the search view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the search view
+	 */
+	protected int getSearchElementsCount(ArrayList<String> taskResults, 
+			ArrayList<String> eventResults) {
+		
+		int count = 0;
+		
+		for (int i = 0; i < taskResults.size(); i++) {
+			if (isNonEmptyElement(taskResults.get(i))) {
+				count++;
+			}
+		}
+		for (int i = 0; i < eventResults.size(); i++) {
+			if (isNonEmptyElement(eventResults.get(i))) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	/**
+	 * This method counts the number of elements there are in the unresolved view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the unresolved view
+	 */
+	protected int getUnresElementsCount() {
+		int count = 0;
+		
+		String[] temp = InterfaceController.getLogic().getUnresTasks();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		temp = InterfaceController.getLogic().getUnresEvents();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	/**
+	 * This method counts the number of elements there are in the done view
+	 * (exclusive of title/date/empty elements)
+	 * 
+	 * @return The number of elements in the done view
+	 */
+	protected int getDoneElementsCount() {
+		int count = 0;
+		
+		String[] temp = InterfaceController.getLogic().getDoneTasks();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		temp = InterfaceController.getLogic().getDoneEvents();
+		for (int i = 0; i < temp.length; i++) {
+			if (isNonEmptyElement(temp[i])) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	/**
+	 * This method gets the list of added Aliases by calling Logic's getAliasFileContents()
+	 * method, and then converting the returned Strings into the Alias type and storing them
+	 * in an array
+	 * 
+	 * @return An Alias[] of aliases read from alias.txt
+	 */
+	protected ArrayList<Alias> getAliases() {
+		ArrayList<Alias> newAliases = new ArrayList<Alias>();
+		
+		try {
+			String aliases = logic.getAliasFileContents();
+			// Check if the there are any aliases set in the file yet
+			if (!aliases.equals(NULL_STRING)) {
+				String[] aliasesSplit = aliases.split("\n");
+				for (int i = 0; i < aliasesSplit.length; i++) {
+					String[] aliasSplit = aliasesSplit[i].split(";");
+					newAliases.add(new Alias(aliasSplit[0], aliasSplit[1]));
+				}
+			}
+		} catch (FileSystemException e) {
+			// Do nothing, return an empty alias list to AutoComplete
+		}
+		
+		return newAliases;
+	}
+	
+    // ======================================================================
+    // Boolean methods which are used in other GUI classes to check for 
+	// certain conditions which the data must meet
+    // ======================================================================
+	
+	/**
+	 * This method checks if the data is a title, meaning it is a header for a
+	 * section that is not a date ("FLOAT", "TODAY" etc)
+	 * 
+	 * @param displayData
+	 * 		      The line of data read in as a String
+	 * @return true if displayData matches either of the title keywords, false
+	 * 		   otherwise
+	 */
+	protected boolean isTitle(String displayData) {
+    	
+    	String firstWord = displayData.split(" ")[0];
+    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
+    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
+    }
+    
+    /**
+     * This method checks if the data is an empty message, output when there are
+     * no results ("There are no results to display.")
+     * 
+     * @param displayData
+     * 		      The line of data read in as a String
+     * @return true if displayData matches the empty message response, false
+     * 		   otherwise
+     */
+	protected boolean isEmpty(String displayData) {
+		return displayData.equals(InterfaceController.MESSAGE_EMPTY);
+	}
+    
+	/**
+	 * This method checks if the data is either a title or a date, meaning it
+	 * does not contain task/event data
+	 * 
+	 * @param displayData
+	 *  		  The line of data read in as a String
+	 * @return true if displayData matches either a title or a date, false
+	 * 		   otherwise
+	 */
+	protected boolean isTitleOrDate(String displayData) {
+    	// Use the definition that a date or title does not have a period in it
+    	// whereas an element will definitely have a period after its index
+    	return displayData.split(Pattern.quote(".")).length == 1 && 
+    			!displayData.equals(InterfaceController.MESSAGE_EMPTY);
+    }
+    
+    /**
+     * This method checks if the data is a String which contains data, and
+     * that the data is not an empty message
+     * 
+     * @param displayData
+     * 		      The line of data read in as a String
+     * @return true if displayData is not a title, date or empty element, false
+     * 		   otherwise
+     */
+	protected boolean isNonEmptyElement(String displayData) {
+    	return !isTitleOrDate(displayData) && 
+				!displayData.equals(InterfaceController.MESSAGE_EMPTY);
+    }
+    
+    /**
+     * This method checks if a particular task/event has been marked as completed
+     * 
+     * @param displayData
+     * 		      The line of data read in as a String
+     * @return true if the data has been marked as done, false otherwise
+     */
+	protected boolean isCompleted(String displayData) {
+		return displayData.split(" ")[0].equals("done");
+	}
+    
+    // ======================================================================
+    // Additional operations used to change certain program features
+    // ======================================================================
+    
+    /**
+     * This method toggles the activation status of the autocomplete feature by
+     * adding/deleting the listener depending on the activation status
+     */
+    protected void toggleAutoComplete() {
+    	if (!AutoComplete.isActivated()) {
+    		InterfaceController.getTextField().textProperty().addListener(autocompleter);
+    		AutoComplete.setActivation(true);
+    	} else {
+    		InterfaceController.getTextField().textProperty().removeListener(autocompleter);
+    		AutoComplete.closePopup();
+    		AutoComplete.setActivation(false);
+    	}
+    }
+	
+    /**
+     * This method opens the text file currently set by the application for writing.
+     * This text file is opened in the user's default associated application
+     */
+    protected static void openFileLocation() {
+		try {
+			HistoryViewController.updateHistView("Opening file...");
+			InterfaceController.getFeedbackLabel().setText("Opening file...");
+			Desktop.getDesktop().open(
+					new File(InterfaceController.getLogic().getFilePath()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    /**
+     * This method opens the configuration file currently used by the application
+     * for storing settings.
+     * This text file is opened in the user's default associated application
+     */
+    protected static void openConfigLocation() {
+    	try {
+    		HistoryViewController.updateHistView("Opening config...");
+    		InterfaceController.getFeedbackLabel().setText("Opening config...");
+    		Desktop.getDesktop().open(new File(PATH_CONFIG_FILE));
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    // ======================================================================
+    // Private methods for running commands and switching views accessible 
+    // only within LogicController
+    // ======================================================================
+    
+    /**
+     * This method takes in an input target View to switch to, and then either
+     * 1. Swaps to it if currentView != target view
+     * 2. Do nothing if currentView == target view
+     * 
+     * @param view
+     * 		      The target View to switch to
+     */
+	private static void changeView(View view) {
+		
+		switch(InterfaceController.getCurrentView()) {
+	    // currentView == DEFAULT
+        case DEFAULT:
+        	switch (view) {
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
+        		break;
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
+        		break;
+        	case UNRESOLVED:
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		break;
+        	case DONE:
+        		InterfaceController.updateMainInterface(View.DONE);
+        		break;
+        	case SEARCH:
+        		InterfaceController.updateMainInterface(View.SEARCH);
+        		break;
+        	case HELP:
+        		HelpController.toggleHelpDialog();
+        		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
+        	default:
+        		// Do nothing if already in this view
+            	break;
+        	}
+        	break;
+    	// currentView == ALL
+        case ALL:
+        	switch (view) {
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
+        		break;
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
+        		break;
+        	case UNRESOLVED:
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		break;
+        	case DONE:
+        		InterfaceController.updateMainInterface(View.DONE);
+        		break;
+        	case SEARCH:
+        		InterfaceController.updateMainInterface(View.SEARCH);
+        		break;
+        	case HELP:
+        		HelpController.toggleHelpDialog();
+        		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
+        	default:
+        		// Do nothing if already in this view
+        		break;
+        	}
+        	break;
+    	// currentView == HISTORY
+        case HISTORY:
+        	switch (view) {
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
+        		break;
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
+        		break;
+        	case UNRESOLVED:
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		break;
+        	case DONE:
+        		InterfaceController.updateMainInterface(View.DONE);
+        		break;
+        	case SEARCH:
+        		InterfaceController.updateMainInterface(View.SEARCH);
+        		break;
+        	case HELP:
+        		HelpController.toggleHelpDialog();
+        		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
+        	default:
+        		// Do nothing if already in this view
+        		break;
+        	}
+        	break;
+    	// currentView == UNRESOLVED
+        case UNRESOLVED:
+        	switch (view) {
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
+        		break;
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
+        		break;
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
+        		break;
+        	case DONE:
+        		InterfaceController.updateMainInterface(View.DONE);
+        		break;
+        	case SEARCH:
+        		InterfaceController.updateMainInterface(View.SEARCH);
+        		break;
+        	case HELP:
+        		HelpController.toggleHelpDialog();
+        		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
+        	default:
+        		// Do nothing if already in this view
+        		break;
+        	}
+        	break;
+    	// currentView == DONE
+        case DONE:
+        	switch (view) {
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
+        		break;
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
+        		break;
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
+        		break;
+        	case UNRESOLVED:
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		break;
+        	case SEARCH:
+        		InterfaceController.updateMainInterface(View.SEARCH);
+        		break;
+        	case HELP:
+        		HelpController.toggleHelpDialog();
+        		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
+        	default:
+        		// Do nothing if already in this view
+        		break;
+        	}
+        	break;
+    	// currentView == SEARCH
+        case SEARCH:
+        	switch (view) {
+        	case DEFAULT:
+        		InterfaceController.updateMainInterface(View.DEFAULT);
+        		break;
+        	case ALL:
+        		InterfaceController.updateMainInterface(View.ALL);
+        		break;
+        	case HISTORY:
+        		InterfaceController.updateMainInterface(View.HISTORY);
+        		break;
+        	case UNRESOLVED:
+        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+        		break;
+        	case DONE:
+        		InterfaceController.updateMainInterface(View.DONE);
+        		break;
+        	case HELP:
+        		HelpController.toggleHelpDialog();
+        		break;
+        	case SUMMARY:
+        		InterfaceController.updateMainInterface(View.SUMMARY);
+        		break;
+        	case EXIT:
+        		InterfaceController.closeMainInterface();
+        		break;
+        	default:
+        		// Do nothing if already in this view
+        		break;
+        	}
+        	break;
 
+        default: // do nothing, should not enter
+        	break;
+        }
+	}
+	
+	/**
+	 * This method runs the user entered command by calling Logic's executeCommand()
+	 * method and getting the return message
+	 * 
+	 * @param operationType
+	 * 		      The type of operation being entered by the user (ADD, EDIT, DELETE..)
+	 * @param textFieldInput
+	 * 		      The input String entered by the user into the text field
+	 * @param isBackgroundUpdate
+	 * 		      A boolean flag indicating whether the current operation is a background
+	 * 			  update being run by a SEARCH command
+	 */
+	private static void runCommand(Command.CommandType operationType, 
+			String textFieldInput, boolean isBackgroundUpdate) {
+		// Execute the command
+		String returnMessage = logic.executeCommand(textFieldInput);
+		
+		if (operationType == Command.CommandType.SEARCH) {
+			// Do not update the feedback bar and history view if the search operation
+			// is a background update of the last search term
+			if (!isBackgroundUpdate) {
+				String searchTerm = returnMessage.split("\n")[0];
+				// Add the search terms to the feedback bar and history view
+				InterfaceController.getFeedbackLabel().setText(searchTerm);
+				HistoryViewController.updateHistView(searchTerm);
+			}
+			
+			SearchViewController.updateSearchView(returnMessage);
+		} else {
+			// Modify the return message first if it is incorrect and is an operation
+			// that uses indices (delete, done, edit)
+			if (mapIndexOutOfBounds && 
+					(operationType == Command.CommandType.DELETE || 
+					operationType == Command.CommandType.DONE || 
+					operationType == Command.CommandType.EDIT)) {
+				returnMessage = InterfaceController.MESSAGE_INVALID_INDEX;
+			}
+			// Add the returnMessage to the feedback bar and history view
+			InterfaceController.getFeedbackLabel().setText(returnMessage);
+			HistoryViewController.updateHistView(returnMessage);
+		}
+
+		// Update the necessary views
+		DefaultViewController.updateDefView();
+		AllViewController.updateAllView();
+		UnresolvedViewController.updateUnresView();
+		DoneViewController.updateDoneView();
+		InterfaceController.updateFilePathBar();
+		SummaryViewController.updateSummaryView();
+	}
+	
+	/**
+	 * This method modifies the String input by a user by extracting the view 
+	 * index of delete, done and edit operations, mapping it to the file index, 
+	 * and then replacing it before passing it to the Logic component
+	 * 
+	 * @param textFieldInput
+	 * 		      The input String that was entered by the user into the text 
+	 * 			  field
+	 * @return A String with the view index entered by the user replaced by the
+	 * 		   file index
+	 */
+    private static String mapToFileIndex(String textFieldInput) {
+    	
+    	String[] textFieldInputSplit = textFieldInput.split("[\\s;]+");
+    	String modifiedString = textFieldInput;
+    	try {
+    		int viewIndex = Integer.parseInt(textFieldInputSplit[1]);
+        	int fileIndex = ViewIndexMap.get(viewIndex);
+        	
+        	// Check if the index has exceeded the allowable size of the array
+        	// -1 should be returned by ViewIndexMap.get()
+        	mapIndexOutOfBounds = fileIndex == -1 && viewIndex != -1;
+        	
+        	// Proceed with normal operation
+        	// Negative and zero indices are handled by CommandParser
+        	textFieldInputSplit[1] = String.valueOf(fileIndex);
+        	modifiedString = NULL_STRING;
+        	for (int i = 0; i < textFieldInputSplit.length; i++) {
+        		modifiedString += textFieldInputSplit[i] + " ";
+        	}
+        	// Remove the extra space appended by the for loop
+        	modifiedString = modifiedString.substring(0, modifiedString.length() - 1);
+    	} catch (NumberFormatException e) {
+    		// User did not enter an integer and hence exception is thrown
+    		// Do not modify the string and pass through to CommandParser to reject
+    		mapIndexOutOfBounds = true;
+    	}
+    	
+    	return modifiedString;
+    }
+    
+    // ======================================================================
+    // Misc private methods used for calculations and other methods
+    // ======================================================================
+    
 	/**
 	 * This method calculates
 	 * 1. The number of events due within the next two days
@@ -292,6 +882,7 @@ public class LogicController {
 				}
 			}
 		}
+		
 		return currentIndex;
 	}
 
@@ -337,604 +928,126 @@ public class LogicController {
 				}
 			}
 		}
+		
 		return currentIndex;
 	}
 	
 	/**
-	 * This method counts the number of elements there are in the default view
-	 * (exclusive of title/date/empty elements)
+	 * This method sets the caret position to the end of the line of text
 	 * 
-	 * @return The number of elements in the default view
+	 * @param text
+	 * 		      The line of text to set the caret position of
 	 */
-	public int getDefElementsCount() {
-		int count = 0;
-		
-		String[] temp = InterfaceController.getLogic().getDefTasks();
-		for (int i = 0; i < temp.length; i++) {
-			if (isNonEmptyElement(temp[i])) {
-				count++;
+	private static void setCaretToEnd(String text) {
+		// Required for positionCaret to work correctly
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				InterfaceController.getTextField().positionCaret(text.length());
 			}
-		}
-		temp = InterfaceController.getLogic().getDefEvents();
-		for (int i = 0; i < temp.length; i++) {
-			if (isNonEmptyElement(temp[i])) {
-				count++;
-			}
-		}
-		return count;
+		});
 	}
 	
-	/**
-	 * This method counts the number of elements there are in the all view
-	 * (exclusive of title/date/empty elements)
-	 * 
-	 * @return The number of elements in the all view
-	 */
-	public int getAllElementsCount() {
-		int count = 0;
-		
-		String[] temp = InterfaceController.getLogic().getAllTasks();
-		for (int i = 0; i < temp.length; i++) {
-			if (isNonEmptyElement(temp[i])) {
-				count++;
-			}
-		}
-		temp = InterfaceController.getLogic().getAllEvents();
-		for (int i = 0; i < temp.length; i++) {
-			if (isNonEmptyElement(temp[i])) {
-				count++;
-			}
-		}
-		return count;
-	}
+    // ======================================================================
+    // Getters to allow GUI components in InterfaceController to access the
+    // private EventHandler and ChangeListener classes
+    // ======================================================================
 	
-	/**
-	 * This method counts the number of elements there are in the search view
-	 * (exclusive of title/date/empty elements)
-	 * 
-	 * @return The number of elements in the search view
-	 */
-	public int getSearchElementsCount(ArrayList<String> taskResults, 
-			ArrayList<String> eventResults) {
-		
-		int count = 0;
-		
-		for (int i = 0; i < taskResults.size(); i++) {
-			if (isNonEmptyElement(taskResults.get(i))) {
-				count++;
-			}
-		}
-		for (int i = 0; i < eventResults.size(); i++) {
-			if (isNonEmptyElement(eventResults.get(i))) {
-				count++;
-			}
-		}
-		return count;
-	}
-	
-	/**
-	 * This method counts the number of elements there are in the unresolved view
-	 * (exclusive of title/date/empty elements)
-	 * 
-	 * @return The number of elements in the unresolved view
-	 */
-	public int getUnresElementsCount() {
-		int count = 0;
-		
-		String[] temp = InterfaceController.getLogic().getUnresTasks();
-		for (int i = 0; i < temp.length; i++) {
-			if (isNonEmptyElement(temp[i])) {
-				count++;
-			}
-		}
-		temp = InterfaceController.getLogic().getUnresEvents();
-		for (int i = 0; i < temp.length; i++) {
-			if (isNonEmptyElement(temp[i])) {
-				count++;
-			}
-		}
-		return count;
-	}
-	
-	/**
-	 * This method counts the number of elements there are in the done view
-	 * (exclusive of title/date/empty elements)
-	 * 
-	 * @return The number of elements in the done view
-	 */
-	public int getDoneElementsCount() {
-		
-		int count = 0;
-		
-		String[] temp = InterfaceController.getLogic().getDoneTasks();
-		for (int i = 0; i < temp.length; i++) {
-			if (isNonEmptyElement(temp[i])) {
-				count++;
-			}
-		}
-		temp = InterfaceController.getLogic().getDoneEvents();
-		for (int i = 0; i < temp.length; i++) {
-			if (isNonEmptyElement(temp[i])) {
-				count++;
-			}
-		}
-		
-		return count;
-	}
-	
-	public ArrayList<Alias> getAliases() {
-		ArrayList<Alias> newAliases = new ArrayList<Alias>();
-		
-		try {
-			String aliases = logic.getAliasFileContents();
-			// Check if the there are any aliases set in the file yet
-			if (!aliases.equals(NULL_STRING)) {
-				String[] aliasesSplit = aliases.split("\n");
-				for (int i = 0; i < aliasesSplit.length; i++) {
-					String[] aliasSplit = aliasesSplit[i].split(";");
-					newAliases.add(new Alias(aliasSplit[0], aliasSplit[1]));
-				}
-			}
-		} catch (FileSystemException e) {
-			// Do nothing, return an empty alias list to AutoComplete
-		}
-		
-		return newAliases;
-	}
-	
-    public boolean isTitle(String displayData) {
-    	
-    	String firstWord = displayData.split(" ")[0];
-    	return firstWord.equals("FLOAT") || firstWord.equals("TODAY") || 
-    			firstWord.equals("TOMORROW") || firstWord.equals("ONGOING");
-    }
-    
-	public boolean isEmpty(String displayData) {
-		return displayData.equals(InterfaceController.MESSAGE_EMPTY);
-	}
-    
-    public boolean isTitleOrDate(String displayData) {
-    	// Use the definition that a date or title does not have a period in it
-    	// whereas an element will definitely have a period after its index
-    	return displayData.split(Pattern.quote(".")).length == 1 && 
-    			!displayData.equals(InterfaceController.MESSAGE_EMPTY);
-    }
-    
-    public boolean isNonEmptyElement(String displayData) {
-    	return !isTitleOrDate(displayData) && 
-				!displayData.equals(InterfaceController.MESSAGE_EMPTY);
-    }
-    
-	public boolean isCompleted(String displayData) {
-		return displayData.split(" ")[0].equals("done");
-	}
-    
-    private static String mapToFileIndex(String textFieldInput) {
-    	
-    	String[] textFieldInputSplit = textFieldInput.split("[\\s;]+");
-    	String modifiedString = textFieldInput;
-    	try {
-    		int viewIndex = Integer.parseInt(textFieldInputSplit[1]);
-        	int fileIndex = ViewIndexMap.get(viewIndex);
-        	
-        	// Check if the index has exceeded the allowable size of the array
-        	// -1 should be returned by ViewIndexMap.get()
-        	mapIndexOutOfBounds = fileIndex == -1 && viewIndex != -1;
-        	
-        	// Proceed with normal operation
-        	// Negative and zero indices are handled by CommandParser
-        	textFieldInputSplit[1] = String.valueOf(fileIndex);
-        	modifiedString = NULL_STRING;
-        	for (int i = 0; i < textFieldInputSplit.length; i++) {
-        		modifiedString += textFieldInputSplit[i] + " ";
-        	}
-        	// Remove the extra space appended by the for loop
-        	modifiedString = modifiedString.substring(0, modifiedString.length() - 1);
-    	} catch (NumberFormatException e) {
-    		// User did not enter an integer and hence exception is thrown
-    		// Do not modify the string and pass through to CommandParser to reject
-    		mapIndexOutOfBounds = true;
-    	}
-    	
-    	return modifiedString;
-    }
-    
-    public void toggleAutoComplete() {
-    	if (!AutoComplete.isActivated()) {
-    		InterfaceController.getTextField().textProperty().addListener(autocompleter);
-    		AutoComplete.setActivation(true);
-    		
-    	} else {
-    		InterfaceController.getTextField().textProperty().removeListener(autocompleter);
-    		AutoComplete.closePopup();
-    		AutoComplete.setActivation(false);
-    	}
-    }
-    
-	private static void changeView(View view) {
-		
-		switch(InterfaceController.getCurrentView()) {
-        /* ================================================================================
-         * Default view
-         * ================================================================================
-         */
-        case DEFAULT:
-        	switch (view) {
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-            	break;
-        	}
-        	break;
-        /* ================================================================================
-         * All view
-         * ================================================================================
-         */
-        case ALL:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-        /* ================================================================================
-         * History view
-         * ================================================================================
-         */
-        case HISTORY:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-        /* ================================================================================
-         * Unresolved view
-         * ================================================================================
-         */
-        case UNRESOLVED:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-        /* ================================================================================
-         * Done view
-         * ================================================================================
-         */
-        case DONE:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-        /* ================================================================================
-         * Search view
-         * ================================================================================
-         */
-        case SEARCH:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-
-        default: // do nothing, should not enter
-        	break;
-        }
-	}
-
-	private static void runCommand(Command.CommandType operationType, String textFieldInput, boolean isBackgroundUpdate) {
-		
-		// Execute the command
-		String returnMessage = logic.executeCommand(textFieldInput);
-		
-		if (operationType == Command.CommandType.SEARCH) {
-			// Do not update the feedback bar and history view if the search operation
-			// is a background update of the last search term
-			if (!isBackgroundUpdate) {
-				String searchTerm = returnMessage.split("\n")[0];
-				// Add the search terms to the feedback bar and history view
-				InterfaceController.getFeedbackLabel().setText(searchTerm);
-				HistoryViewController.updateHistView(searchTerm);
-			}
-			
-			SearchViewController.updateSearchView(returnMessage);
-		} else {
-			// Modify the return message first if it is incorrect and is an operation
-			// that uses indices (delete, done, edit)
-			if (mapIndexOutOfBounds && 
-					(operationType == Command.CommandType.DELETE || 
-					operationType == Command.CommandType.DONE || 
-					operationType == Command.CommandType.EDIT)) {
-				returnMessage = InterfaceController.MESSAGE_INVALID_INDEX;
-			}
-			// Add the returnMessage to the feedback bar and history view
-			InterfaceController.getFeedbackLabel().setText(returnMessage);
-			HistoryViewController.updateHistView(returnMessage);
-		}
-
-		// Update the necessary views
-		DefaultViewController.updateDefView();
-		AllViewController.updateAllView();
-		UnresolvedViewController.updateUnresView();
-		DoneViewController.updateDoneView();
-		InterfaceController.updateFilePathBar();
-		SummaryViewController.updateSummaryView();
-	}
-	
-    /**
-     * This method opens the text file currently set by the application for writing.
-     * This text file is opened in the user's default associated application
-     */
-    protected static void openFileLocation() {
-		try {
-			HistoryViewController.updateHistView("Opening file...");
-			InterfaceController.getFeedbackLabel().setText("Opening file...");
-			Desktop.getDesktop().open(
-					new File(InterfaceController.getLogic().getFilePath()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
-    
-    /**
-     * This method opens the configuration file currently used by the application
-     * for storing settings and aliases.
-     * This text file is opened in the user's default associated application
-     */
-    protected static void openConfigLocation() {
-    	try {
-    		HistoryViewController.updateHistView("Opening config...");
-    		InterfaceController.getFeedbackLabel().setText("Opening config...");
-    		Desktop.getDesktop().open(new File(PATH_CONFIG_FILE));
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	}
-    }
-    
-	/* ================================================================================
-     * Getters to allow InterfaceController to access the private handling classes
-     * ================================================================================
-     */
-	
-	public TextInputHandler getTextInputHandler() {
+    // EventHandlers
+	protected TextInputHandler getTextInputHandler() {
 		return new TextInputHandler();
 	}
 	
-	public KeyPressHandler getKeyPressHandler() {
+	protected KeyPressHandler getKeyPressHandler() {
 		return new KeyPressHandler();
 	}
 	
-	public TabPressHandler getTabPressHandler() {
+	protected TabPressHandler getTabPressHandler() {
 		return new TabPressHandler();
 	}
 	
-	public HotKeyHandler getHotKeyHandler() {
+	protected HotKeyHandler getHotKeyHandler() {
 		return new HotKeyHandler();
 	}
 	
-	public HelpHotKeyHandler getHelpHotKeyHandler() {
+	protected HelpHotKeyHandler getHelpHotKeyHandler() {
 		return new HelpHotKeyHandler();
 	}
 	
-	public ButtonHoverHandler getButtonHoverHandler(View buttonType) {
+	protected ButtonHoverHandler getButtonHoverHandler(View buttonType) {
 		return new ButtonHoverHandler(buttonType);
 	}
 	
-	public ButtonClickHandler getButtonClickHandler(View buttonType) {
+	protected ButtonClickHandler getButtonClickHandler(View buttonType) {
 		return new ButtonClickHandler(buttonType);
 	}
 	
-	public PathHoverHandler getPathHoverHandler(Label filepathLabel) {
+	protected PathHoverHandler getPathHoverHandler(Label filepathLabel) {
 		return new PathHoverHandler(filepathLabel);
 	}
 	
-	public PathClickHandler getPathClickHandler() {
+	protected PathClickHandler getPathClickHandler() {
 		return new PathClickHandler();
 	}
 	
-	public UnresHoverHandler getUnresHoverHandler(Label allUnresAttention) {
+	protected UnresHoverHandler getUnresHoverHandler(Label allUnresAttention) {
 		return new UnresHoverHandler(allUnresAttention);
 	}
 	
-	public UnresClickHandler getUnresClickHandler() {
+	protected UnresClickHandler getUnresClickHandler() {
 		return new UnresClickHandler();
 	}
 	
-	public ConfigClickHandler getConfigClickHandler() {
+	protected ConfigClickHandler getConfigClickHandler() {
 		return new ConfigClickHandler();
 	}
 	
-	public AutoCompleteSelectHandler getAutoCompleteSelectHandler() {
+	protected AutoCompleteSelectHandler getAutoCompleteSelectHandler() {
 		return new AutoCompleteSelectHandler();
 	}
 	
-	public AutoCompleteListener getAutoCompleteListener() {
+	// ChangeListeners
+	protected AutoCompleteListener getAutoCompleteListener() {
 		return new AutoCompleteListener();
 	}
 	
-	public LostFocusListener getLostFocusListener() {
+	protected LostFocusListener getLostFocusListener() {
 		return new LostFocusListener();
 	}
 	
-	public CloseHelpListener getCloseHelpListener() {
+	protected CloseHelpListener getCloseHelpListener() {
 		return new CloseHelpListener();
 	}
 	
-	public ScrollListener getScrollListener(View scrollpane) {
+	protected ScrollListener getScrollListener(View scrollpane) {
 		return new ScrollListener(scrollpane);
 	}
 	
-	public WidthPositionListener getWidthPositionListener() {
+	protected WidthPositionListener getWidthPositionListener() {
 		return new WidthPositionListener();
 	}
 	
-	public HeightPositionListener getHeightPositionListener() {
+	protected HeightPositionListener getHeightPositionListener() {
 		return new HeightPositionListener();
 	}
 	
-	public HeightListener getHeightListener() {
+	protected HeightListener getHeightListener() {
 		return new HeightListener();
 	}
 	
-	public WidthListener getWidthListener() {
+	protected WidthListener getWidthListener() {
 		return new WidthListener();
 	}
 	
-	/* ================================================================================
-     * Private event handlers for InterfaceController
-     * ================================================================================
-     */	
+    // ======================================================================
+    // Private EventHandler and ChangeListener class definitions
+    // ======================================================================
 	
+	/**
+	 * This class implements a handler for the text field to perform certain
+	 * operations upon pressing the ENTER key
+	 */
 	private static class TextInputHandler implements EventHandler<ActionEvent> {
-		
 		private String lastSearchCommand = NULL_STRING;
 		
         @Override
@@ -942,14 +1055,12 @@ public class LogicController {
 
         	// Get the text field from InterfaceController
         	TextField textField = InterfaceController.getTextField();
-        	
             String textFieldInput = textField.getText();
             
             // Add the input into command history
             commandHistory.add(textFieldInput);
             commandHistory.resetIndex();
 
-            // Clear the textField
             textField.setText(NULL_STRING);
 
             // Do a preliminary parse to determine the type of operation
@@ -998,7 +1109,6 @@ public class LogicController {
             	// Store the last search command to run the search again dynamically
             	// upon the user's next operation
             	lastSearchCommand = textFieldInput;
-            	// Run the command
             	runCommand(operationType, textFieldInput, SEARCH_USER);
             	changeView(View.SEARCH);
             	break;
@@ -1007,64 +1117,50 @@ public class LogicController {
             case DELETE:
             	// Run the command
             	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
-
-            	// Run the last search and update the search view only if the user is in search
-            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() == View.SEARCH) {
-            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-            		InterfaceController.updateMainInterface(View.SEARCH);
-            	}
-            	// If the user is not in search view, do not switch to search view
-            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() != View.SEARCH) {
-            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-            	}
+            	runBackgroundUpdate();
             	break;
             case EDIT:
             	// Run the command
             	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
-
-            	// Run the last search and update the search view only if the user is in search
-            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() == View.SEARCH) {
-            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-            		InterfaceController.updateMainInterface(View.SEARCH);
-            	}
-            	// If the user is not in search view, do not switch to search view
-            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() != View.SEARCH) {
-            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-            	}
+            	runBackgroundUpdate();
             	break;
             case DONE:
             	// Run the command
             	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
-
-            	// Run the last search and update the search view only if the user is in search
-            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() == View.SEARCH) {
-            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-            		InterfaceController.updateMainInterface(View.SEARCH);
-            	}
-            	// If the user is not in search view, do not switch to search view
-            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() != View.SEARCH) {
-            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-            	}
+            	runBackgroundUpdate();
             	break;
             default:
             	// Run the command
             	runCommand(operationType, textFieldInput, SEARCH_USER);
-
-            	// Run the last search and update the search view only if the user is in search
-            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() == View.SEARCH) {
-            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-            		InterfaceController.updateMainInterface(View.SEARCH);
-            	}
-            	// If the user is not in search view, do not switch to search view
-            	if (!lastSearchCommand.equals(NULL_STRING) && InterfaceController.getCurrentView() != View.SEARCH) {
-            		runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-            	}
+            	runBackgroundUpdate();
             	break;
             }
 
         }
+
+        /**
+         * This method runs the background update to SEARCH view and automatically swaps
+         * updates the view if the user is already in SEARCH view
+         */
+		private void runBackgroundUpdate() {
+			// Run the last search and update the search view only if the user is in search
+			if (!lastSearchCommand.equals(NULL_STRING) && 
+					InterfaceController.getCurrentView() == View.SEARCH) {
+				runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
+				InterfaceController.updateMainInterface(View.SEARCH);
+			}
+			// If the user is not in search view, do not switch to search view
+			if (!lastSearchCommand.equals(NULL_STRING) && 
+					InterfaceController.getCurrentView() != View.SEARCH) {
+				runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
+			}
+		}
     }
 	
+	/** 
+	 * This class implements a handler for key presses in the text field to run
+	 * the CommandHistory methods when the user presses a UP or DOWN key
+	 */
 	private static class KeyPressHandler implements EventHandler<KeyEvent> {
         @Override
         public void handle(KeyEvent event) {
@@ -1074,13 +1170,7 @@ public class LogicController {
         		if (!AutoComplete.isShowing()) {
         			String prevCommand = commandHistory.getPrevious();
         			InterfaceController.getTextField().setText(prevCommand);
-        			// Required for positionCaret to work correctly
-        			Platform.runLater(new Runnable() {
-        				@Override
-        				public void run() {
-        					InterfaceController.getTextField().positionCaret(prevCommand.length());
-        				}
-        			});
+        			setCaretToEnd(prevCommand);
         		}
         	}
             // If down key pressed
@@ -1089,20 +1179,17 @@ public class LogicController {
         		if (!AutoComplete.isShowing()) {
         			String nextCommand = commandHistory.getNext();
         			InterfaceController.getTextField().setText(nextCommand);
-        			// Required for positionCaret to work correctly
-        			Platform.runLater(new Runnable() {
-        				@Override
-        				public void run() {
-        					InterfaceController.getTextField().positionCaret(nextCommand.length());
-        				}
-        			});
+        			setCaretToEnd(nextCommand);
         		}
             }
         }
     }
 	
+	/**
+	 * This class implements a handler for the TAB key in the main stage in MainApp
+	 * to control the display of the summary view
+	 */
 	private static class TabPressHandler implements EventHandler<KeyEvent> {
-		
 		@Override
 		public void handle(KeyEvent event) {
 			// Display the summary view
@@ -1118,8 +1205,11 @@ public class LogicController {
 		}
 	}
 
+	/** 
+	 * This class implements a handler for all instances of hotkey combinations
+	 * in MainApp's main stage
+	 */
 	private static class HotKeyHandler implements EventHandler<KeyEvent> {
-
 		@Override
 		public void handle(KeyEvent event) {
 			if (event.isControlDown()) {
@@ -1195,8 +1285,11 @@ public class LogicController {
 		}
 	}
 	
+	/**
+	 * This class implements a handler for hotkeys registered by the help
+	 * stage in MainApp instead of the regular stage
+	 */
 	private class HelpHotKeyHandler implements EventHandler<KeyEvent> {
-		
 		@Override
 		public void handle(KeyEvent event) {
 			event.consume();
@@ -1221,8 +1314,11 @@ public class LogicController {
 		}
 	}
     
+	/**
+	 * This class implements a handler that changes the button images when
+	 * a mouse is hovered over the button
+	 */
     private class ButtonHoverHandler implements EventHandler<MouseEvent> {
-    	
     	private View buttonType;
     	
     	ButtonHoverHandler(View buttonType) {
@@ -1350,8 +1446,11 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a handler for the buttons when a mouse click is
+     * registered by the mouse
+     */
     private static class ButtonClickHandler implements EventHandler<MouseEvent> {
-    	
     	View buttonType;
     	
     	ButtonClickHandler(View buttonType) {
@@ -1369,8 +1468,10 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a handler which underlines the filepath when hovered over
+     */
     private static class PathHoverHandler implements EventHandler<MouseEvent> {
-    	
     	Label filepathLabel;
     	
     	PathHoverHandler(Label filepathLabel) {
@@ -1388,16 +1489,21 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a handler for registering mouse clicks in the filepath bar
+     */
     private static class PathClickHandler implements EventHandler<MouseEvent> {
-    	
     	@Override
     	public void handle(MouseEvent event) {
     		openFileLocation();
     	}
     }
     
+    /**
+     * This class implements a handler that underlines the prompt text in the summary 
+     * view regarding unresolved tasks
+     */
     private static class UnresHoverHandler implements EventHandler<MouseEvent> {
-    	
     	Label allUnresAttention;
     	
     	UnresHoverHandler(Label allUnresAttention) {
@@ -1417,6 +1523,10 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a handler that registers mouse clicks on the prompt text
+     * and performs a view switch when clicked
+     */
     private static class UnresClickHandler implements EventHandler<MouseEvent> {
     	@Override
     	public void handle(MouseEvent event) {
@@ -1425,36 +1535,39 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a handler that registers mouse clicks on the config
+     * button in the filepath bar
+     */
     private static class ConfigClickHandler implements EventHandler<MouseEvent> {
-    	
     	@Override
     	public void handle(MouseEvent event) {
     		openConfigLocation();
     	}
     }
     
+    /**
+     * This class implements a handler in the autocomplete popup that registers
+     * ENTER keypresses when the user wishes to select a particular keyword suggested
+     * by autocomplete
+     */
     private static class AutoCompleteSelectHandler implements EventHandler<KeyEvent> {
-    	
     	@Override
     	public void handle(KeyEvent event) {
     		if (event.getCode() == KeyCode.ENTER) {
-    			
     			InterfaceController.getTextField().setText(AutoComplete.getSelectedItem());
-    			
-    			// Position the caret
-    			Platform.runLater(new Runnable() {
-    				@Override
-    				public void run() {
-    					String text = InterfaceController.getTextField().getText();
-    					InterfaceController.getTextField().positionCaret(text.length());
-    				}
-    			});
-    			
+				String text = InterfaceController.getTextField().getText();
+    			setCaretToEnd(text);
     			AutoComplete.closePopup();
     		}
     	}
     }
     
+    /**
+     * This method implements a listener that displays and updates the autocomplete
+     * popup in real time based on the current input that is being entered by the 
+     * user
+     */
     private static class AutoCompleteListener implements ChangeListener<String> {
     	@Override
     	public void changed(ObservableValue<? extends String> observable, 
@@ -1469,8 +1582,11 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a listener for the main stage that decides whether
+     * to keep the autocomplete listener open when focus on the main stage is lost
+     */
     private static class LostFocusListener implements ChangeListener<Boolean> {
-    	
     	boolean showingBeforeLostFocus = false;
     	
     	@Override
@@ -1488,8 +1604,12 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a listener for the help stage to detect if the window
+     * has been closed with a mouse click, and respond with the correct method call
+     * to compensate (set isShowing status and toggling the button)
+     */
     private static class CloseHelpListener implements ChangeListener<Boolean> {
-    	
     	@Override
     	public void changed(ObservableValue<? extends Boolean> observable, 
     			Boolean oldValue, Boolean newValue) {
@@ -1501,8 +1621,11 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a listener for the scroll pane in the history view that
+     * automatically scrolls the window to the most recently added element at the bottom
+     */
     private static class ScrollListener implements ChangeListener<Number> {
-    	
     	View scrollpane;
     	
     	ScrollListener(View scrollpane) {
@@ -1525,8 +1648,11 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a listener for the autocomplete popup that adjusts its
+     * horizontal position based on the location of the window
+     */
     private static class WidthPositionListener implements ChangeListener<Number> {
-    	
     	@Override
     	public void changed(ObservableValue<? extends Number> observable, 
     			Number oldValue, Number newValue) {
@@ -1534,8 +1660,11 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a listener for the autocomplete popup that adjusts its
+     * vertical position based on the location of the window
+     */
     private static class HeightPositionListener implements ChangeListener<Number> {
-    	
     	@Override
     	public void changed(ObservableValue<? extends Number> observable, 
     			Number oldValue, Number newValue) {
@@ -1543,8 +1672,11 @@ public class LogicController {
     	}
     }
     
+    /**
+     * This class implements a listener for the main window to resize all of its
+     * internal components when the overall height changes
+     */
     private static class HeightListener implements ChangeListener<Number> {
-
     	@Override
     	public void changed(ObservableValue<? extends Number> observable,
     			Number oldValue, Number newValue) {
@@ -1566,8 +1698,11 @@ public class LogicController {
     	}
     }
 
+    /**
+     * This class implements a listener for the main window to resize all of its
+     * internal components when the overall width changes
+     */
     private static class WidthListener implements ChangeListener<Number> {
-
     	@Override
     	public void changed(ObservableValue<? extends Number> observable,
     			Number oldValue, Number newValue) {
