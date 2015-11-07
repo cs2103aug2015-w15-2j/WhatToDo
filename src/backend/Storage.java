@@ -2,7 +2,7 @@
  * This class reads, writes and manipulates the text data in the text file which
  * stores the to-do list of the user.
  * 
- * @@author Lam Zhen Zong, Nicholas
+ * @@author A0124238L
  */
 
 package backend;
@@ -38,9 +38,6 @@ public class Storage {
 	private static final String MESSAGE_ERROR_WRITE_FILE = "Error encountered when writing to file.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS = "Cannot find line %d in text file.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_FLOAT = "Line %d is not a floating task!";
-	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK = "Line %d is not a task!";
-	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT = "Line %d is not an event!";
-	private static final String MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE = "Event start date/time is not earlier than end date/time.";
 	private static final String MESSAGE_ERROR_ALREADY_DONE = "Error encountered: the %s \"%s\" has already been completed.";
 
 	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH = "File location specified is invalid.";
@@ -64,7 +61,6 @@ public class Storage {
 	private static final int PARAM_LESS_ONE = 1;
 	private static final int PARAM_DOES_NOT_EXIST = -1;
 	private static final int PARAM_FIRST_WORD = 0;
-	private static final int PARAM_SECOND_WORD = 1;
 	private static final int PARAM_COMPARE_TO = 0;
 
 	// Used to offset difference in 1-based and 0-based counting.
@@ -216,171 +212,6 @@ public class Storage {
 	}
 
 	/**
-	 * Replaces task/event name in text file of given line number. (1-based
-	 * counting)
-	 * 
-	 * @param lineNumber
-	 *            line number in text file to be replaced.
-	 * @param newName
-	 *            new event/task name to replace old name with.
-	 * @return the old replaced task/event name at specified line number.
-	 * @throws FileSystemException
-	 *             when line number less than 0 or more than number of lines
-	 *             present in text file, or when error in reading file.
-	 */
-	public String editName(int lineNumber, String newName)
-			throws FileSystemException {
-		try {
-			String lineToReplace = replaceName(lineNumber, newName);
-
-			return lineToReplace;
-		} catch (IllegalArgumentException exception) {
-			throw new FileSystemException(exception.getMessage());
-		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
-		}
-	}
-
-	/**
-	 * Replaces task deadline in text file of given line number. (1-based
-	 * counting)
-	 * 
-	 * @param lineNumber
-	 *            line number in text file to be replaced.
-	 * @param newDeadline
-	 *            new task deadline to replace old deadline with.
-	 * @return the deadline at specified line number before being replaced.
-	 * @throws FileSystemException
-	 *             when line number less than 0 or more than number of lines
-	 *             present in text file, or when error in reading file, or when
-	 *             the object at line number is not a task.
-	 */
-	public String editTaskDeadline(int lineNumber, Date newDeadline)
-			throws FileSystemException {
-		try {
-			String lineToReplace = replaceTaskDeadline(lineNumber, newDeadline);
-
-			return lineToReplace;
-		} catch (IllegalArgumentException exception) {
-			throw new FileSystemException(exception.getMessage());
-		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
-		}
-	}
-
-	/**
-	 * Replaces event start date in text file of given line number. (1-based
-	 * counting)
-	 * 
-	 * @param lineNumber
-	 *            line number in text file to be replaced.
-	 * @param newDate
-	 *            new event start date to replace old start date with.
-	 * @return event start date at specified line number before replacing.
-	 * @throws FileSystemException
-	 *             when line number less than 0 or more than number of lines
-	 *             present in text file, or when error in reading file, or when
-	 *             the object at line number is not an event, or when event
-	 *             start later than event end.
-	 */
-	public String editEventStartDate(int lineNumber, Date newDate)
-			throws FileSystemException {
-		try {
-			String lineToReplace = replaceEventStartDate(lineNumber, newDate);
-
-			return lineToReplace;
-		} catch (IllegalArgumentException exception) {
-			throw new FileSystemException(exception.getMessage());
-		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
-		}
-	}
-
-	/**
-	 * Replaces event end date in text file of given line number. (1-based
-	 * counting)
-	 * 
-	 * @param lineNumber
-	 *            line number in text file to be replaced.
-	 * @param newDate
-	 *            new event end date to replace old end date with.
-	 * @return event end date at specified line number before replacing.
-	 * @throws FileSystemException
-	 *             when line number less than 0 or more than number of lines
-	 *             present in text file, or when error in reading file, or when
-	 *             the object at line number is not an event, or when event
-	 *             start later than event end.
-	 */
-	public String editEventEndDate(int lineNumber, Date newDate)
-			throws FileSystemException {
-		try {
-			String lineToReplace = replaceEventEndDate(lineNumber, newDate);
-
-			return lineToReplace;
-		} catch (IllegalArgumentException exception) {
-			throw new FileSystemException(exception.getMessage());
-		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
-		}
-	}
-
-	/**
-	 * Replaces event start time in text file of given line number. (1-based
-	 * counting)
-	 * 
-	 * @param lineNumber
-	 *            line number in text file to be replaced.
-	 * @param newTime
-	 *            new event start time to replace old start time with.
-	 * @return event start time at specified line number before replacing.
-	 * @throws FileSystemException
-	 *             when line number less than 0 or more than number of lines
-	 *             present in text file, or when error in reading file, or when
-	 *             the object at line number is not an event, or when event
-	 *             start later than event end.
-	 */
-	public String editEventStartTime(int lineNumber, String newTime)
-			throws FileSystemException {
-		try {
-			String lineToReplace = replaceEventStartTime(lineNumber, newTime);
-
-			return lineToReplace;
-		} catch (IllegalArgumentException exception) {
-			throw new FileSystemException(exception.getMessage());
-		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
-		}
-	}
-
-	/**
-	 * Replaces event end time in text file of given line number. (1-based
-	 * counting)
-	 * 
-	 * @param lineNumber
-	 *            line number in text file to be replaced.
-	 * @param newTime
-	 *            new event end time to replace old end time with.
-	 * @return event end time at specified line number before replacing.
-	 * @throws FileSystemException
-	 *             when line number less than 0 or more than number of lines
-	 *             present in text file, or when error in reading file, or when
-	 *             the object at line number is not an event, or when event
-	 *             start later than event end.
-	 */
-	public String editEventEndTime(int lineNumber, String newTime)
-			throws FileSystemException {
-		try {
-			String lineToReplace = replaceEventEndTime(lineNumber, newTime);
-
-			return lineToReplace;
-		} catch (IllegalArgumentException exception) {
-			throw new FileSystemException(exception.getMessage());
-		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
-		}
-	}
-
-	/**
 	 * Overwrites the entire text file with given string input.
 	 * 
 	 * @param textToWrite
@@ -443,6 +274,8 @@ public class Storage {
 		}
 	}
 	
+	//@@author A0124238L-unused
+	// Reason: These 2 operations/methods have been handled by Logic instead.
 	/**
 	 * Converts floating task at specified line number into a task with specified deadline.
 	 * The newly converted task will be considered undone regardless of its status as a floating
@@ -498,6 +331,7 @@ public class Storage {
 		}
 	}
 	
+	//@@author A0124238L
 	/**
 	 * Retrieves the attribute at specified line number of specified type.
 	 * 
@@ -623,6 +457,13 @@ public class Storage {
 		
 		StringBuilder fileContents = new StringBuilder();
 		
+		formatAliasContentsAsString(aliasFileReader, fileContents);
+		
+		return fileContents.toString();
+	}
+
+	private void formatAliasContentsAsString(BufferedReader aliasFileReader,
+			StringBuilder fileContents) throws IOException {
 		while (true) {
 			String lineRead = aliasFileReader.readLine();
 
@@ -635,8 +476,6 @@ public class Storage {
 		}
 		
 		aliasFileReader.close();
-		
-		return fileContents.toString();
 	}
 	
 	private ArrayList<String> readAliasFileToArrayList()
@@ -677,12 +516,20 @@ public class Storage {
 		String attribute;
 		int numParameters = countParameters(lineToFind);
 		
-		if (numParameters > type && type >= PARAM_FIRST_WORD) {
+		if (hasValidType(type, numParameters)) {
 			attribute = getSpecificWord(type, lineToFind);
 		} else {
 			attribute = null;
 		}
 		return attribute;
+	}
+
+	private boolean hasValidType(int type, int numParameters) {
+		if (numParameters > type && type >= PARAM_FIRST_WORD) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private void addFloatTaskToFile(FloatingTask newFloatTask)
@@ -704,6 +551,7 @@ public class Storage {
 
 		while (true) {
 			String lineRead = fileReader.readLine();
+			
 			if (isEndOfFile(lineRead)) {
 				if (!hasAddedLine) {
 					fileContents.add(lineToAdd);
@@ -712,24 +560,35 @@ public class Storage {
 			} else if (hasAddedLine) {
 				fileContents.add(lineRead);
 			} else {
-				String typeOfLineRead = getFirstWord(lineRead);
-
-				if (!typeOfLineRead.equals(STRING_FLOAT_TASK)) {
-					fileContents.add(lineToAdd);
-					fileContents.add(lineRead);
-					hasAddedLine = true;
-				} else {
-					FloatingTask currentReadTask = new FloatingTask(lineRead);
-					if (currentReadTask.compareTo(newFloatTask) < PARAM_COMPARE_TO) {
-						fileContents.add(lineRead);
-					} else {
-						fileContents.add(lineToAdd);
-						fileContents.add(lineRead);
-						hasAddedLine = true;
-					}
-				}
+				hasAddedLine = processAddLineForFloat(newFloatTask, fileContents, lineToAdd, lineRead);
 			}
 		}
+	}
+
+	private boolean processAddLineForFloat(FloatingTask newFloatTask,
+			ArrayList<String> fileContents, String lineToAdd, String lineRead) {
+		boolean hasAddedLine = false;
+		String typeOfLineRead = getFirstWord(lineRead);
+
+		if (!typeOfLineRead.equals(STRING_FLOAT_TASK)) {
+			insertLine(fileContents, lineToAdd, lineRead);
+			hasAddedLine = true;
+		} else {
+			FloatingTask currentReadTask = new FloatingTask(lineRead);
+			if (currentReadTask.compareTo(newFloatTask) < PARAM_COMPARE_TO) {
+				fileContents.add(lineRead);
+			} else {
+				insertLine(fileContents, lineToAdd, lineRead);
+				hasAddedLine = true;
+			}
+		}
+		return hasAddedLine;
+	}
+
+	private void insertLine(ArrayList<String> fileContents, String lineToAdd,
+			String lineRead) {
+		fileContents.add(lineToAdd);
+		fileContents.add(lineRead);
 	}
 
 	private void addTaskToFile(Task newTask) throws IOException {
@@ -746,11 +605,11 @@ public class Storage {
 	private void addTaskToCorrectPlace(Task newTask,
 			ArrayList<String> fileContents) throws IOException {
 		boolean hasAddedLine = false;
-
 		String lineToAdd = newTask.toString();
 
 		while (true) {
 			String lineRead = fileReader.readLine();
+			
 			if (isEndOfFile(lineRead)) {
 				if (!hasAddedLine) {
 					fileContents.add(lineToAdd);
@@ -759,25 +618,31 @@ public class Storage {
 			} else if (hasAddedLine) {
 				fileContents.add(lineRead);
 			} else {
-				String typeOfLineRead = getFirstWord(lineRead);
-				if (typeOfLineRead.equals(STRING_FLOAT_TASK)) {
-					fileContents.add(lineRead);
-				} else if (typeOfLineRead.equals(STRING_TASK)) {
-					Task currentReadTask = new Task(lineRead);
-					if (newTask.compareTo(currentReadTask) > PARAM_COMPARE_TO) {
-						fileContents.add(lineRead);
-					} else {
-						fileContents.add(lineToAdd);
-						fileContents.add(lineRead);
-						hasAddedLine = true;
-					}
-				} else {
-					fileContents.add(lineToAdd);
-					fileContents.add(lineRead);
-					hasAddedLine = true;
-				}
+				hasAddedLine = processAddLineForTask(newTask, fileContents, lineToAdd, lineRead);
 			}
 		}
+	}
+
+	private boolean processAddLineForTask(Task newTask,
+			ArrayList<String> fileContents, String lineToAdd, String lineRead) {
+		boolean hasAddedLine = false;
+		String typeOfLineRead = getFirstWord(lineRead);
+		
+		if (typeOfLineRead.equals(STRING_FLOAT_TASK)) {
+			fileContents.add(lineRead);
+		} else if (typeOfLineRead.equals(STRING_TASK)) {
+			Task currentReadTask = new Task(lineRead);
+			if (newTask.compareTo(currentReadTask) > PARAM_COMPARE_TO) {
+				fileContents.add(lineRead);
+			} else {
+				insertLine(fileContents, lineToAdd, lineRead);
+				hasAddedLine = true;
+			}
+		} else {
+			insertLine(fileContents, lineToAdd, lineRead);
+			hasAddedLine = true;
+		}
+		return hasAddedLine;
 	}
 
 	private void addEventToFile(Event newEvent) throws IOException {
@@ -793,11 +658,11 @@ public class Storage {
 	private void addEventToCorrectPlace(Event newEvent,
 			ArrayList<String> fileContents) throws IOException {
 		boolean hasAddedLine = false;
-
 		String lineToAdd = newEvent.toString();
 
 		while (true) {
 			String lineRead = fileReader.readLine();
+			
 			if (isEndOfFile(lineRead)) {
 				if (!hasAddedLine) {
 					fileContents.add(lineToAdd);
@@ -806,21 +671,28 @@ public class Storage {
 			} else if (hasAddedLine) {
 				fileContents.add(lineRead);
 			} else {
-				String typeOfLineRead = getFirstWord(lineRead);
-				if (!typeOfLineRead.equals(STRING_EVENT)) {
-					fileContents.add(lineRead);
-				} else {
-					Event currentReadEvent = new Event(lineRead);
-					if (newEvent.compareTo(currentReadEvent) > PARAM_COMPARE_TO) {
-						fileContents.add(lineRead);
-					} else {
-						fileContents.add(lineToAdd);
-						fileContents.add(lineRead);
-						hasAddedLine = true;
-					}
-				}
+				hasAddedLine = processAddLineForEvent(newEvent, fileContents, lineToAdd, lineRead);
 			}
 		}
+	}
+
+	private boolean processAddLineForEvent(Event newEvent,
+			ArrayList<String> fileContents, String lineToAdd, String lineRead) {
+		boolean hasAddedLine = false;
+		String typeOfLineRead = getFirstWord(lineRead);
+		
+		if (!typeOfLineRead.equals(STRING_EVENT)) {
+			fileContents.add(lineRead);
+		} else {
+			Event currentReadEvent = new Event(lineRead);
+			if (newEvent.compareTo(currentReadEvent) > PARAM_COMPARE_TO) {
+				fileContents.add(lineRead);
+			} else {
+				insertLine(fileContents, lineToAdd, lineRead);
+				hasAddedLine = true;
+			}
+		}
+		return hasAddedLine;
 	}
 
 	private String deleteLineFromFile(int lineNumber) throws IOException,
@@ -836,248 +708,6 @@ public class Storage {
 		writeContentsToFile(fileContents);
 
 		return lineToDelete;
-	}
-
-	// To refactor and improve
-	private String replaceName(int lineNumber, String newName)
-			throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
-
-		addFileContentsToArrayList(fileContents);
-
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-
-		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
-		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		String nameBeforeEdit = getSecondWord(lineToBeEdited);
-
-		if (typeToBeEdited.equals(STRING_TASK)) {
-			Task editedTask = new Task(lineToBeEdited);
-
-			editedTask.setName(newName);
-
-			deleteLineFromFile(lineNumber);
-			addTaskToFile(editedTask);
-		} else if (typeToBeEdited.equals(STRING_EVENT)) {
-			Event editedEvent = new Event(lineToBeEdited);
-
-			editedEvent.setName(newName);
-
-			deleteLineFromFile(lineNumber);
-			addEventToFile(editedEvent);
-		} else if (typeToBeEdited.equals(STRING_FLOAT_TASK)) {
-			FloatingTask editedFloat = new FloatingTask(lineToBeEdited);
-
-			editedFloat.setName(newName);
-
-			deleteLineFromFile(lineNumber);
-			addFloatTaskToFile(editedFloat);
-		} else {
-			throw new IOException();
-		}
-
-		return nameBeforeEdit;
-	}
-
-	// To refactor and improve
-	private String replaceTaskDeadline(int lineNumber, Date newDeadline)
-			throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
-
-		addFileContentsToArrayList(fileContents);
-
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-
-		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
-		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		String oldDeadline;
-
-		if (typeToBeEdited.equals(STRING_TASK)) {
-			Task editedTask = new Task(lineToBeEdited);
-
-			oldDeadline = editedTask.getDeadline().formatDateShort();
-			editedTask.setDeadline(newDeadline);
-
-			deleteLineFromFile(lineNumber);
-			addTaskToFile(editedTask);
-		} else {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS_TASK, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		return oldDeadline;
-	}
-
-	// To refactor and improve
-	private String replaceEventStartDate(int lineNumber, Date newStartDate)
-			throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
-
-		addFileContentsToArrayList(fileContents);
-
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-
-		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
-		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		String oldStartDate;
-
-		if (typeToBeEdited.equals(STRING_EVENT)) {
-			Event editedEvent = new Event(lineToBeEdited);
-
-			if (!isValidStartAndEnd(newStartDate,
-					editedEvent.getEventStartTime(),
-					editedEvent.getEventEndDate(),
-					editedEvent.getEventEndTime())) {
-				throw new IllegalArgumentException(
-						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
-			}
-
-			oldStartDate = editedEvent.getEventStartDate().formatDateShort();
-			editedEvent.setEventStartDate(newStartDate);
-
-			deleteLineFromFile(lineNumber);
-			addEventToFile(editedEvent);
-		} else {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		return oldStartDate;
-	}
-
-	// To refactor and improve
-	private String replaceEventStartTime(int lineNumber, String newStartTime)
-			throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
-
-		addFileContentsToArrayList(fileContents);
-
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-
-		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
-		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		String oldStartTime;
-
-		if (typeToBeEdited.equals(STRING_EVENT)) {
-			Event editedEvent = new Event(lineToBeEdited);
-
-			if (!isValidStartAndEnd(editedEvent.getEventStartDate(),
-					newStartTime, editedEvent.getEventEndDate(),
-					editedEvent.getEventEndTime())) {
-				throw new IllegalArgumentException(
-						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
-			}
-
-			oldStartTime = editedEvent.getEventStartTime();
-			editedEvent.setEventStartTime(newStartTime);
-
-			deleteLineFromFile(lineNumber);
-			addEventToFile(editedEvent);
-		} else {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		return oldStartTime;
-	}
-
-	// To refactor and improve
-	private String replaceEventEndDate(int lineNumber, Date newEndDate)
-			throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
-
-		addFileContentsToArrayList(fileContents);
-
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-
-		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
-		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		String oldEndDate;
-
-		if (typeToBeEdited.equals(STRING_EVENT)) {
-			Event editedEvent = new Event(lineToBeEdited);
-
-			if (!isValidStartAndEnd(editedEvent.getEventStartDate(),
-					editedEvent.getEventStartTime(), newEndDate,
-					editedEvent.getEventEndTime())) {
-				throw new IllegalArgumentException(
-						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
-			}
-
-			oldEndDate = editedEvent.getEventEndDate().formatDateShort();
-			editedEvent.setEventEndDate(newEndDate);
-
-			deleteLineFromFile(lineNumber);
-			addEventToFile(editedEvent);
-		} else {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		return oldEndDate;
-	}
-
-	// To refactor and improve
-	private String replaceEventEndTime(int lineNumber, String newEndTime)
-			throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
-
-		addFileContentsToArrayList(fileContents);
-
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-
-		String lineToBeEdited = fileContents.get(lineNumber - PARAM_OFFSET);
-		String typeToBeEdited = getFirstWord(lineToBeEdited);
-		String oldEndTime;
-
-		if (typeToBeEdited.equals(STRING_EVENT)) {
-			Event editedEvent = new Event(lineToBeEdited);
-
-			if (!isValidStartAndEnd(editedEvent.getEventStartDate(),
-					editedEvent.getEventStartTime(),
-					editedEvent.getEventEndDate(), newEndTime)) {
-				throw new IllegalArgumentException(
-						MESSAGE_ERROR_INVALID_EVENT_DATE_RANGE);
-			}
-
-			oldEndTime = editedEvent.getEventEndTime();
-			editedEvent.setEventEndTime(newEndTime);
-
-			deleteLineFromFile(lineNumber);
-			addEventToFile(editedEvent);
-		} else {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS_EVENT, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		return oldEndTime;
-	}
-
-	private boolean isValidStartAndEnd(Date startDate, String startTime,
-			Date endDate, String endTime) {
-		if (startDate.compareTo(endDate) > PARAM_COMPARE_TO) {
-			return false;
-		} else if (startDate.compareTo(endDate) == PARAM_COMPARE_TO) {
-			return isValidTimeRange(startTime, endTime);
-		} else {
-			return true;
-		}
-	}
-	
-	private boolean isValidTimeRange(String startTimeString, String endTimeString) {
-		int endTime = Integer.parseInt(endTimeString);
-		int startTime = Integer.parseInt(startTimeString);
-		
-		if (endTime >= startTime) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 	
 	private String findItemTypeFromFile(int lineNumber) throws IOException, IllegalArgumentException {
@@ -1102,6 +732,8 @@ public class Storage {
 		}
 	}
 	
+	//@@author A0124238L-unused
+	// Reason: These 2 operations/methods have been handled by Logic instead.
 	private String changeFloatToTask(int lineNumber, Date deadline)
 			throws IOException, IllegalArgumentException {
 		ArrayList<String> fileContents = new ArrayList<String>();
@@ -1160,6 +792,7 @@ public class Storage {
 		return lineToBeChanged;
 	}
 
+	//@@author A0124238L
 	private void addFileContentsToArrayList(ArrayList<String> fileContents)
 			throws IOException {
 		initialiseReader();
@@ -1219,7 +852,6 @@ public class Storage {
 		fileReader.close();
 	}
 
-	// To refactor and improve
 	private String markAsCompleted(int lineNumber) throws IOException,
 			IllegalArgumentException {
 		ArrayList<String> fileContents = new ArrayList<String>();
@@ -1232,72 +864,96 @@ public class Storage {
 		String typeToMarkDone = getFirstWord(lineToMarkDone);
 
 		if (typeToMarkDone.equals(STRING_TASK)) {
-			Task choosenTask = new Task(lineToMarkDone);
-
-			if (choosenTask.isDone()) {
-				String errorMessage = String.format(MESSAGE_ERROR_ALREADY_DONE,
-						typeToMarkDone, choosenTask.getName());
-				throw new IllegalArgumentException(errorMessage);
-			}
-
-			choosenTask.setDone(true);
-
-			deleteLineFromFile(lineNumber);
-			addTaskToFile(choosenTask);
-
-			return lineToMarkDone;
+			String lineBeforeMarkDone = markTaskAsComplete(lineNumber, lineToMarkDone,
+					typeToMarkDone);
+			
+			return lineBeforeMarkDone;
 		} else if (typeToMarkDone.equals(STRING_EVENT)) {
-			Event choosenEvent = new Event(lineToMarkDone);
-
-			if (choosenEvent.isDone()) {
-				String errorMessage = String.format(MESSAGE_ERROR_ALREADY_DONE,
-						typeToMarkDone, choosenEvent.getName());
-				throw new IllegalArgumentException(errorMessage);
-			}
-
-			choosenEvent.setDone(true);
-
-			deleteLineFromFile(lineNumber);
-			addEventToFile(choosenEvent);
-
-			return lineToMarkDone;
+			String lineBeforeMarkDone = markEventAsComplete(lineNumber, lineToMarkDone,
+					typeToMarkDone);
+			
+			return lineBeforeMarkDone;
 		} else if (typeToMarkDone.equals(STRING_FLOAT_TASK)) {
-			FloatingTask choosenFloat = new FloatingTask(lineToMarkDone);
-
-			if (choosenFloat.isDone()) {
-				String errorMessage = String.format(MESSAGE_ERROR_ALREADY_DONE,
-						typeToMarkDone, choosenFloat.getName());
-				throw new IllegalArgumentException(errorMessage);
-			}
-
-			choosenFloat.setDone(true);
-
-			deleteLineFromFile(lineNumber);
-			addFloatTaskToFile(choosenFloat);
-
-			return lineToMarkDone;
+			String lineBeforeMarkDone = markFloatAsComplete(lineNumber, lineToMarkDone,
+					typeToMarkDone);
+			
+			return lineBeforeMarkDone;
 		} else {
 			throw new IOException();
 		}
 	}
 
+	private String markFloatAsComplete(int lineNumber, String lineToMarkDone,
+			String typeToMarkDone) throws IOException {
+		FloatingTask choosenFloat = new FloatingTask(lineToMarkDone);
+
+		if (choosenFloat.isDone()) {
+			String errorMessage = String.format(MESSAGE_ERROR_ALREADY_DONE,
+					typeToMarkDone, choosenFloat.getName());
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		choosenFloat.setDone(true);
+
+		deleteLineFromFile(lineNumber);
+		addFloatTaskToFile(choosenFloat);
+
+		return lineToMarkDone;
+	}
+
+	private String markEventAsComplete(int lineNumber, String lineToMarkDone,
+			String typeToMarkDone) throws IOException {
+		Event choosenEvent = new Event(lineToMarkDone);
+
+		if (choosenEvent.isDone()) {
+			String errorMessage = String.format(MESSAGE_ERROR_ALREADY_DONE,
+					typeToMarkDone, choosenEvent.getName());
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		choosenEvent.setDone(true);
+
+		deleteLineFromFile(lineNumber);
+		addEventToFile(choosenEvent);
+
+		return lineToMarkDone;
+	}
+
+	private String markTaskAsComplete(int lineNumber, String lineToMarkDone,
+			String typeToMarkDone) throws IOException {
+		Task choosenTask = new Task(lineToMarkDone);
+
+		if (choosenTask.isDone()) {
+			String errorMessage = String.format(MESSAGE_ERROR_ALREADY_DONE,
+					typeToMarkDone, choosenTask.getName());
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		choosenTask.setDone(true);
+
+		deleteLineFromFile(lineNumber);
+		addTaskToFile(choosenTask);
+
+		return lineToMarkDone;
+	}
+
 	private boolean isEndOfFile(String lineRead) {
 		return lineRead == null;
 	}
-
+	
 	private String changeFilePath(String newLocation) {
-		int situation;
+		int changePathSituation;
 
 		try {
 			closeStreamsIfOpen();
-			situation = checkSituation(newLocation);
+			changePathSituation = checkChangePathSituation(newLocation);
 		} catch (IOException exception) {
 			return MESSAGE_ERROR_CHANGING_FILE_PATH_UNKNOWN;
 		}
 
 		String feedback;
 
-		switch (situation) {
+		switch (changePathSituation) {
 			case SITUATION_SAME_FILE:
 				return MESSAGE_SAME_FILE;
 			case SITUATION_MOVE_FILE:
@@ -1367,7 +1023,7 @@ public class Storage {
 		}
 	}
 
-	private int checkSituation(String newPathLocation) throws IOException {
+	private int checkChangePathSituation(String newPathLocation) throws IOException {
 		String newCompletePath = String.format(COLLATED_FILE_PATH_FORMAT,
 				newPathLocation, FILE_NAME);
 
@@ -1427,10 +1083,6 @@ public class Storage {
 
 	private String getFirstWord(String text) {
 		return getSpecificWord(PARAM_FIRST_WORD, text);
-	}
-	
-	private String getSecondWord(String text) {
-		return getSpecificWord(PARAM_SECOND_WORD, text);
 	}
 	
 	private String getSpecificWord(int wordNumber, String text) {
