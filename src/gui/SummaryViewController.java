@@ -295,11 +295,11 @@ public class SummaryViewController {
 		
 		// Add event handling for mouse clicks
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_ENTERED, 
-				InterfaceController.getLogic().getUnresHoverHandler(allUnresAttention));
+				Handlers.getUnresHoverHandler(allUnresAttention));
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_EXITED, 
-				InterfaceController.getLogic().getUnresHoverHandler(allUnresAttention));
+				Handlers.getUnresHoverHandler(allUnresAttention));
 		allUnresAttention.addEventHandler(MouseEvent.MOUSE_CLICKED, 
-				InterfaceController.getLogic().getUnresClickHandler());
+				Handlers.getUnresClickHandler());
 		
 		// Component formatting
 		allUnresCountBox.setAlignment(Pos.CENTER);

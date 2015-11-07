@@ -48,8 +48,7 @@ public class HistoryViewController {
         InterfaceController.histBox = new HBox(histBox);
         
         histContentBox.heightProperty().addListener(
-        		InterfaceController.getLogic().
-        		getScrollListener(View.HISTORY));
+        		Listeners.getScrollListener(View.HISTORY));
         
         // Component formatting
         HBox.setMargin(histHeader, new Insets(

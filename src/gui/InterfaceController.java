@@ -197,8 +197,8 @@ public class InterfaceController {
         VBox.setVgrow(contentBoxWithSideBar, Priority.ALWAYS);
         
         // Set resize listeners for the main scene
-        mainScene.heightProperty().addListener(logicControl.getHeightListener());
-        mainScene.widthProperty().addListener(logicControl.getWidthListener());
+        mainScene.heightProperty().addListener(Listeners.getHeightListener());
+        mainScene.widthProperty().addListener(Listeners.getWidthListener());
 
         // CSS
         viewLine.getStyleClass().add("line");
@@ -422,11 +422,11 @@ public class InterfaceController {
     	
     	// Event handlers for mouse interaction
         filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_ENTERED, logicControl.getPathHoverHandler(filepathLabel));
+        		MouseEvent.MOUSE_ENTERED, Handlers.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_EXITED, logicControl.getPathHoverHandler(filepathLabel));
+        		MouseEvent.MOUSE_EXITED, Handlers.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
-        		MouseEvent.MOUSE_CLICKED, logicControl.getPathClickHandler());
+        		MouseEvent.MOUSE_CLICKED, Handlers.getPathClickHandler());
     }
 
     /**
@@ -1027,16 +1027,16 @@ public class InterfaceController {
         // Event handlers for mouse interactions
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getPathHoverHandler(filepathLabel));
+        		Handlers.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getPathHoverHandler(filepathLabel));
+        		Handlers.getPathHoverHandler(filepathLabel));
         filepathLabel.addEventHandler(
         		MouseEvent.MOUSE_CLICKED, 
-        		logicControl.getPathClickHandler());
+        		Handlers.getPathClickHandler());
         filepathConfigBox.addEventHandler(
         		MouseEvent.MOUSE_CLICKED, 
-        		logicControl.getConfigClickHandler());
+        		Handlers.getConfigClickHandler());
 
         // CSS
         filepathLine.getStyleClass().add("line");
@@ -1060,8 +1060,8 @@ public class InterfaceController {
         textField.setMaxHeight(HEIGHT_TEXT_FIELD);
         
         // Event handling for operations
-        textField.setOnAction(logicControl.getTextInputHandler());
-        textField.addEventFilter(KeyEvent.KEY_PRESSED, logicControl.getKeyPressHandler());
+        textField.setOnAction(Handlers.getTextInputHandler());
+        textField.addEventFilter(KeyEvent.KEY_PRESSED, Handlers.getKeyPressHandler());
         
         // Initialize the popup for the first time
         AutoComplete.initPopup();
@@ -1256,12 +1256,12 @@ public class InterfaceController {
 	private static void setButtonHandler(VBox buttonBox, View view) {
 		buttonBox.addEventHandler(
         		MouseEvent.MOUSE_ENTERED, 
-        		logicControl.getButtonHoverHandler(view));
+        		Handlers.getButtonHoverHandler(view));
 		buttonBox.addEventHandler(
         		MouseEvent.MOUSE_EXITED, 
-        		logicControl.getButtonHoverHandler(view));
+        		Handlers.getButtonHoverHandler(view));
 		buttonBox.addEventHandler(
         		MouseEvent.MOUSE_PRESSED, 
-        		logicControl.getButtonClickHandler(view));
+        		Handlers.getButtonClickHandler(view));
 	}
 }

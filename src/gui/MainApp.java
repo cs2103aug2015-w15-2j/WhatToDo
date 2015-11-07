@@ -76,21 +76,21 @@ public class MainApp extends Application {
         
         // Event handling for the summary view
         stage.addEventFilter(KeyEvent.KEY_PRESSED, 
-        		InterfaceController.getLogic().getTabPressHandler());
+        		Handlers.getTabPressHandler());
         
         // Event handling for hotkeys
         stage.addEventFilter(KeyEvent.KEY_PRESSED, 
-        		InterfaceController.getLogic().getHotKeyHandler());
+        		Handlers.getHotKeyHandler());
         
         // Focus handling for the autocomplete popup
         stage.focusedProperty().addListener(
-        		InterfaceController.getLogic().getLostFocusListener());
+        		Listeners.getLostFocusListener());
         
         // Reposition listeners for the autocomplete popup
         stage.xProperty().addListener(
-        		InterfaceController.getLogic().getWidthPositionListener());
+        		Listeners.getWidthPositionListener());
         stage.yProperty().addListener(
-        		InterfaceController.getLogic().getHeightPositionListener());
+        		Listeners.getHeightPositionListener());
     }
     
     // Initializes the help Scene, window title, default window dimensions
@@ -107,10 +107,10 @@ public class MainApp extends Application {
         // Change listener for when window is closed by user click
         // Performs a strict window close instead of window toggle which loops infinitely
         help.showingProperty().addListener(
-        		InterfaceController.getLogic().getCloseHelpListener());
+        		Listeners.getCloseHelpListener());
         
         // Event handling for hotkeys
         help.addEventFilter(KeyEvent.KEY_PRESSED, 
-        		InterfaceController.getLogic().getHelpHotKeyHandler());
+        		Handlers.getHelpHotKeyHandler());
     }
 }

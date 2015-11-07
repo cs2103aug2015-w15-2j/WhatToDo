@@ -25,14 +25,11 @@ import struct.View;
 
 public class LogicController {
 	
-	private static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
-	private static final String NULL_STRING = "";
-	
-	private static final boolean SEARCH_USER = false;
-	private static final boolean SEARCH_BACKGROUND = true;
+	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
+	protected static final String NULL_STRING = "";
 	
 	// Class instances within one LogicController instance
-	private static AutoCompleteListener autocompleter;
+	private static Listeners.AutoCompleteListener autocompleter;
 	private static Logic logic;
 	private static CommandHistory commandHistory;
 	
@@ -57,7 +54,23 @@ public class LogicController {
 		// Initialize the command history object
 		commandHistory = new CommandHistory();
 		// Initialize the listener for autocomplete
-		autocompleter = new AutoCompleteListener();
+		autocompleter = Listeners.getAutoCompleteListener();
+	}
+	
+	/**
+	 * Getter for the CommandHistory object to work with Handlers class
+	 * @return the CommandHistory object
+	 */
+	protected static CommandHistory getHistory() {
+		return commandHistory;
+	}
+	
+	/**
+	 * Getter for the Logic object to work with the Handlers class
+	 * @return the Logic object
+	 */
+	protected static Logic getLogic() {
+		return logic;
 	}
 	
     // ======================================================================
@@ -504,7 +517,7 @@ public class LogicController {
      * This method opens the text file currently set by the application for writing.
      * This text file is opened in the user's default associated application
      */
-    protected static void openFileLocation() {
+    protected void openFileLocation() {
 		try {
 			HistoryViewController.updateHistView("Opening file...");
 			InterfaceController.getFeedbackLabel().setText("Opening file...");
@@ -520,7 +533,7 @@ public class LogicController {
      * for storing settings.
      * This text file is opened in the user's default associated application
      */
-    protected static void openConfigLocation() {
+    protected void openConfigLocation() {
     	try {
     		HistoryViewController.updateHistView("Opening config...");
     		InterfaceController.getFeedbackLabel().setText("Opening config...");
@@ -543,7 +556,7 @@ public class LogicController {
      * @param view
      * 		      The target View to switch to
      */
-	private static void changeView(View view) {
+	protected void changeView(View view) {
 		
 		switch(InterfaceController.getCurrentView()) {
 	    // currentView == DEFAULT
@@ -756,7 +769,7 @@ public class LogicController {
 	 * 		      A boolean flag indicating whether the current operation is a background
 	 * 			  update being run by a SEARCH command
 	 */
-	private static void runCommand(Command.CommandType operationType, 
+	protected void runCommand(Command.CommandType operationType, 
 			String textFieldInput, boolean isBackgroundUpdate) {
 		// Execute the command
 		String returnMessage = logic.executeCommand(textFieldInput);
@@ -806,7 +819,7 @@ public class LogicController {
 	 * @return A String with the view index entered by the user replaced by the
 	 * 		   file index
 	 */
-    private static String mapToFileIndex(String textFieldInput) {
+	protected String mapToFileIndex(String textFieldInput) {
     	
     	String[] textFieldInputSplit = textFieldInput.split("[\\s;]+");
     	String modifiedString = textFieldInput;
@@ -836,6 +849,22 @@ public class LogicController {
     	return modifiedString;
     }
     
+	/**
+	 * This method sets the caret position to the end of the line of text
+	 * 
+	 * @param text
+	 * 		      The line of text to set the caret position of
+	 */
+	protected void setCaretToEnd(String text) {
+		// Required for positionCaret to work correctly
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				InterfaceController.getTextField().positionCaret(text.length());
+			}
+		});
+	}
+	
     // ======================================================================
     // Misc private methods used for calculations and other methods
     // ======================================================================
@@ -931,790 +960,4 @@ public class LogicController {
 		
 		return currentIndex;
 	}
-	
-	/**
-	 * This method sets the caret position to the end of the line of text
-	 * 
-	 * @param text
-	 * 		      The line of text to set the caret position of
-	 */
-	private static void setCaretToEnd(String text) {
-		// Required for positionCaret to work correctly
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				InterfaceController.getTextField().positionCaret(text.length());
-			}
-		});
-	}
-	
-    // ======================================================================
-    // Getters to allow GUI components in InterfaceController to access the
-    // private EventHandler and ChangeListener classes
-    // ======================================================================
-	
-    // EventHandlers
-	protected TextInputHandler getTextInputHandler() {
-		return new TextInputHandler();
-	}
-	
-	protected KeyPressHandler getKeyPressHandler() {
-		return new KeyPressHandler();
-	}
-	
-	protected TabPressHandler getTabPressHandler() {
-		return new TabPressHandler();
-	}
-	
-	protected HotKeyHandler getHotKeyHandler() {
-		return new HotKeyHandler();
-	}
-	
-	protected HelpHotKeyHandler getHelpHotKeyHandler() {
-		return new HelpHotKeyHandler();
-	}
-	
-	protected ButtonHoverHandler getButtonHoverHandler(View buttonType) {
-		return new ButtonHoverHandler(buttonType);
-	}
-	
-	protected ButtonClickHandler getButtonClickHandler(View buttonType) {
-		return new ButtonClickHandler(buttonType);
-	}
-	
-	protected PathHoverHandler getPathHoverHandler(Label filepathLabel) {
-		return new PathHoverHandler(filepathLabel);
-	}
-	
-	protected PathClickHandler getPathClickHandler() {
-		return new PathClickHandler();
-	}
-	
-	protected UnresHoverHandler getUnresHoverHandler(Label allUnresAttention) {
-		return new UnresHoverHandler(allUnresAttention);
-	}
-	
-	protected UnresClickHandler getUnresClickHandler() {
-		return new UnresClickHandler();
-	}
-	
-	protected ConfigClickHandler getConfigClickHandler() {
-		return new ConfigClickHandler();
-	}
-	
-	protected AutoCompleteSelectHandler getAutoCompleteSelectHandler() {
-		return new AutoCompleteSelectHandler();
-	}
-	
-	// ChangeListeners
-	protected AutoCompleteListener getAutoCompleteListener() {
-		return new AutoCompleteListener();
-	}
-	
-	protected LostFocusListener getLostFocusListener() {
-		return new LostFocusListener();
-	}
-	
-	protected CloseHelpListener getCloseHelpListener() {
-		return new CloseHelpListener();
-	}
-	
-	protected ScrollListener getScrollListener(View scrollpane) {
-		return new ScrollListener(scrollpane);
-	}
-	
-	protected WidthPositionListener getWidthPositionListener() {
-		return new WidthPositionListener();
-	}
-	
-	protected HeightPositionListener getHeightPositionListener() {
-		return new HeightPositionListener();
-	}
-	
-	protected HeightListener getHeightListener() {
-		return new HeightListener();
-	}
-	
-	protected WidthListener getWidthListener() {
-		return new WidthListener();
-	}
-	
-    // ======================================================================
-    // Private EventHandler and ChangeListener class definitions
-    // ======================================================================
-	
-	/**
-	 * This class implements a handler for the text field to perform certain
-	 * operations upon pressing the ENTER key
-	 */
-	private static class TextInputHandler implements EventHandler<ActionEvent> {
-		private String lastSearchCommand = NULL_STRING;
-		
-        @Override
-        public void handle(ActionEvent event) {
-
-        	// Get the text field from InterfaceController
-        	TextField textField = InterfaceController.getTextField();
-            String textFieldInput = textField.getText();
-            
-            // Add the input into command history
-            commandHistory.add(textFieldInput);
-            commandHistory.resetIndex();
-
-            textField.setText(NULL_STRING);
-
-            // Do a preliminary parse to determine the type of operation
-            Command.CommandType operationType = logic.getCommandType(textFieldInput);
-            
-            // Perform branching based on the operation type
-            switch (operationType) {
-            case VIEW:
-            	// Run another parse of the command to get the destination view
-            	switch(logic.getViewType(textFieldInput)) {
-                case DEF:
-                	changeView(View.DEFAULT);
-                	break;
-                case ALL:
-                	changeView(View.ALL);
-                	break;
-                case HIST:
-                	changeView(View.HISTORY);
-                	break;
-                case UNRES:
-                	changeView(View.UNRESOLVED);
-                	break;
-                case SEARCH:
-                	changeView(View.SEARCH);
-                	break;
-                case DONE:
-                	changeView(View.DONE);
-                	break;
-                case HELP:
-                	changeView(View.HELP);
-                	break;
-                case OPENFILE:
-                	openFileLocation();
-                	break;
-                case CONFIG:
-                	openConfigLocation();
-                	break;
-                default:
-                	break;
-            	}
-            	break;
-            case EXIT:
-            	changeView(View.EXIT);
-            	break;
-            case SEARCH:
-            	// Store the last search command to run the search again dynamically
-            	// upon the user's next operation
-            	lastSearchCommand = textFieldInput;
-            	runCommand(operationType, textFieldInput, SEARCH_USER);
-            	changeView(View.SEARCH);
-            	break;
-            // Only modify the user command for these operations by editing the 
-            // index from ViewIndexMap
-            case DELETE:
-            	// Run the command
-            	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
-            	runBackgroundUpdate();
-            	break;
-            case EDIT:
-            	// Run the command
-            	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
-            	runBackgroundUpdate();
-            	break;
-            case DONE:
-            	// Run the command
-            	runCommand(operationType, mapToFileIndex(textFieldInput), SEARCH_USER);
-            	runBackgroundUpdate();
-            	break;
-            default:
-            	// Run the command
-            	runCommand(operationType, textFieldInput, SEARCH_USER);
-            	runBackgroundUpdate();
-            	break;
-            }
-
-        }
-
-        /**
-         * This method runs the background update to SEARCH view and automatically swaps
-         * updates the view if the user is already in SEARCH view
-         */
-		private void runBackgroundUpdate() {
-			// Run the last search and update the search view only if the user is in search
-			if (!lastSearchCommand.equals(NULL_STRING) && 
-					InterfaceController.getCurrentView() == View.SEARCH) {
-				runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-				InterfaceController.updateMainInterface(View.SEARCH);
-			}
-			// If the user is not in search view, do not switch to search view
-			if (!lastSearchCommand.equals(NULL_STRING) && 
-					InterfaceController.getCurrentView() != View.SEARCH) {
-				runCommand(Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
-			}
-		}
-    }
-	
-	/** 
-	 * This class implements a handler for key presses in the text field to run
-	 * the CommandHistory methods when the user presses a UP or DOWN key
-	 */
-	private static class KeyPressHandler implements EventHandler<KeyEvent> {
-        @Override
-        public void handle(KeyEvent event) {
-        	// If up key pressed
-        	if (event.getCode() == KeyCode.UP) {
-        		// Only register keypress when autocomplete is now showing
-        		if (!AutoComplete.isShowing()) {
-        			String prevCommand = commandHistory.getPrevious();
-        			InterfaceController.getTextField().setText(prevCommand);
-        			setCaretToEnd(prevCommand);
-        		}
-        	}
-            // If down key pressed
-        	if (event.getCode() == KeyCode.DOWN) {
-        		// Only register keypress when autocomplete is not showing
-        		if (!AutoComplete.isShowing()) {
-        			String nextCommand = commandHistory.getNext();
-        			InterfaceController.getTextField().setText(nextCommand);
-        			setCaretToEnd(nextCommand);
-        		}
-            }
-        }
-    }
-	
-	/**
-	 * This class implements a handler for the TAB key in the main stage in MainApp
-	 * to control the display of the summary view
-	 */
-	private static class TabPressHandler implements EventHandler<KeyEvent> {
-		@Override
-		public void handle(KeyEvent event) {
-			// Display the summary view
-			if (event.getCode() == KeyCode.TAB) {
-				if (!SummaryViewController.isShowing()) {
-					SummaryViewController.startShowing();
-					changeView(View.SUMMARY);
-				} else {
-					SummaryViewController.stopShowing();
-					InterfaceController.updateMainInterface(InterfaceController.getCurrentView());
-				}
-			}
-		}
-	}
-
-	/** 
-	 * This class implements a handler for all instances of hotkey combinations
-	 * in MainApp's main stage
-	 */
-	private static class HotKeyHandler implements EventHandler<KeyEvent> {
-		@Override
-		public void handle(KeyEvent event) {
-			if (event.isControlDown()) {
-				switch (event.getCode()) {
-				// For regular number keys
-				case DIGIT1:
-					changeView(View.DEFAULT);
-					break;
-				case DIGIT2:
-					changeView(View.ALL);
-					break;
-				case DIGIT3:
-					changeView(View.UNRESOLVED);
-					break;
-				case DIGIT4:
-					changeView(View.DONE);
-					break;
-				case DIGIT5:
-					changeView(View.SEARCH);
-					break;
-				case DIGIT6:
-					changeView(View.HISTORY);
-					break;
-				case DIGIT7:
-					changeView(View.HELP);
-					break;
-				// For users with a number pad
-				case NUMPAD1:
-					changeView(View.DEFAULT);
-					break;
-				case NUMPAD2:
-					changeView(View.ALL);
-					break;
-				case NUMPAD3:
-					changeView(View.HISTORY);
-					break;
-				case NUMPAD4:
-					changeView(View.UNRESOLVED);
-					break;
-				case NUMPAD5:
-					changeView(View.DONE);
-					break;
-				case NUMPAD6:
-					changeView(View.SEARCH);
-					break;
-				case NUMPAD7:
-					changeView(View.HELP);
-					break;
-				default:
-					// Do nothing
-					break;
-				}
-			} else {
-				switch (event.getCode()) {
-				case F1:
-					changeView(View.HELP);
-					break;
-				// For opening text and config files
-				case F2:
-					openFileLocation();
-					break;
-				case F3:
-					openConfigLocation();
-					break;
-				case F4:
-					InterfaceController.toggleAutoCompleteIndicator();
-					InterfaceController.getLogic().toggleAutoComplete();
-					break;
-				default:
-					break;
-				}
-			}
-		}
-	}
-	
-	/**
-	 * This class implements a handler for hotkeys registered by the help
-	 * stage in MainApp instead of the regular stage
-	 */
-	private class HelpHotKeyHandler implements EventHandler<KeyEvent> {
-		@Override
-		public void handle(KeyEvent event) {
-			event.consume();
-			if (event.isControlDown()) {
-				switch (event.getCode()) {
-				// For regular number key
-				case DIGIT7:
-					changeView(View.HELP);
-					break;
-				case NUMPAD7:
-					changeView(View.HELP);
-					break;
-				default:
-					// Do nothing
-					break;
-				}
-			} else {
-				if (event.getCode() == KeyCode.F1) {
-					changeView(View.HELP);
-				}
-			}
-		}
-	}
-    
-	/**
-	 * This class implements a handler that changes the button images when
-	 * a mouse is hovered over the button
-	 */
-    private class ButtonHoverHandler implements EventHandler<MouseEvent> {
-    	private View buttonType;
-    	
-    	ButtonHoverHandler(View buttonType) {
-    		this.buttonType = buttonType;
-    	}
-    	
-    	@Override
-    	public void handle(MouseEvent event) {
-    		// For handling mouse hovers
-    		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
-    			ImageView hover;
-    			switch(buttonType) {
-    			case DEFAULT:
-    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
-    					hover = new ImageView(InterfaceController.PATH_DEFAULT_HOVER);
-    					InterfaceController.getHomeButton().getChildren().clear();
-    					InterfaceController.getHomeButton().getChildren().add(hover);
-    				}
-    				break;
-    			case ALL:
-    				if (InterfaceController.getCurrentView() != View.ALL) {
-    					hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
-    					InterfaceController.getAllButton().getChildren().clear();
-    					InterfaceController.getAllButton().getChildren().add(hover);
-    				}
-    				break;
-    			case HISTORY:
-    				if (InterfaceController.getCurrentView() != View.HISTORY) {
-    					hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
-    					InterfaceController.getHistButton().getChildren().clear();
-    					InterfaceController.getHistButton().getChildren().add(hover);
-    				}
-    				break;
-    			case UNRESOLVED:
-    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
-    					hover = new ImageView(InterfaceController.PATH_UNRESOLVED_HOVER);
-    					InterfaceController.getUnresButton().getChildren().clear();
-    					InterfaceController.getUnresButton().getChildren().add(hover);
-    				}
-    				break;
-    			case DONE:
-    				if (InterfaceController.getCurrentView() != View.DONE) {
-    					hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
-    					InterfaceController.getDoneButton().getChildren().clear();
-    					InterfaceController.getDoneButton().getChildren().add(hover);
-    				}
-    				break;
-    			case SEARCH:
-    				if (InterfaceController.getCurrentView() != View.SEARCH) {
-    					hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
-    					InterfaceController.getSearchButton().getChildren().clear();
-    					InterfaceController.getSearchButton().getChildren().add(hover);
-    				}
-    				break;
-    			case HELP:
-    				// Do not change the button if help dialog is showing
-    				if (!MainApp.help.isShowing()) {
-    					hover = new ImageView(InterfaceController.PATH_HELP_HOVER);
-    					InterfaceController.getHelpButton().getChildren().clear();
-    					InterfaceController.getHelpButton().getChildren().add(hover);
-    				}
-    				break;
-    			default:
-    				break;
-    			}
-    		}
-    		// For handling mouse not hovering
-    		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
-    			ImageView hover;
-    			switch(buttonType) {
-    			case DEFAULT:
-    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
-    					hover = new ImageView(InterfaceController.PATH_DEFAULT);
-    					InterfaceController.getHomeButton().getChildren().clear();
-    					InterfaceController.getHomeButton().getChildren().add(hover);
-    				}
-    				break;
-    			case ALL:
-    				if (InterfaceController.getCurrentView() != View.ALL) {
-    					hover = new ImageView(InterfaceController.PATH_ALL);
-    					InterfaceController.getAllButton().getChildren().clear();
-    					InterfaceController.getAllButton().getChildren().add(hover);
-    				}
-    				break;
-    			case HISTORY:
-    				if (InterfaceController.getCurrentView() != View.HISTORY) {
-    					hover = new ImageView(InterfaceController.PATH_HIST);
-    					InterfaceController.getHistButton().getChildren().clear();
-    					InterfaceController.getHistButton().getChildren().add(hover);
-    				}
-    				break;
-    			case UNRESOLVED:
-    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
-    					hover = new ImageView(InterfaceController.PATH_UNRESOLVED);
-    					InterfaceController.getUnresButton().getChildren().clear();
-    					InterfaceController.getUnresButton().getChildren().add(hover);
-    				}
-    				break;
-    			case DONE:
-    				if (InterfaceController.getCurrentView() != View.DONE) {
-    					hover = new ImageView(InterfaceController.PATH_DONE);
-    					InterfaceController.getDoneButton().getChildren().clear();
-    					InterfaceController.getDoneButton().getChildren().add(hover);
-    				}
-    				break;
-    			case SEARCH:
-    				if (InterfaceController.getCurrentView() != View.SEARCH) {
-    					hover = new ImageView(InterfaceController.PATH_SEARCH);
-    					InterfaceController.getSearchButton().getChildren().clear();
-    					InterfaceController.getSearchButton().getChildren().add(hover);
-    				}
-    				break;
-    			case HELP:
-    				// Do not change the button if help dialog is showing
-    				if (!MainApp.help.isShowing()) {
-    					hover = new ImageView(InterfaceController.PATH_HELP);
-    					InterfaceController.getHelpButton().getChildren().clear();
-    					InterfaceController.getHelpButton().getChildren().add(hover);
-    				}
-    				break;
-    			default:
-    				break;
-    			}
-    		}
-    	}
-    }
-    
-    /**
-     * This class implements a handler for the buttons when a mouse click is
-     * registered by the mouse
-     */
-    private static class ButtonClickHandler implements EventHandler<MouseEvent> {
-    	View buttonType;
-    	
-    	ButtonClickHandler(View buttonType) {
-    		this.buttonType = buttonType;
-    	}
-    	
-    	@Override
-    	public void handle(MouseEvent event) {
-    		// When a user clicks a button without pressing TAB to exit the summary view
-    		// Sets the isShowing value in SummaryViewController
-    		if (SummaryViewController.isShowing()) {
-    			SummaryViewController.stopShowing();
-    		}
-    		changeView(buttonType);
-    	}
-    }
-    
-    /**
-     * This class implements a handler which underlines the filepath when hovered over
-     */
-    private static class PathHoverHandler implements EventHandler<MouseEvent> {
-    	Label filepathLabel;
-    	
-    	PathHoverHandler(Label filepathLabel) {
-    		this.filepathLabel = filepathLabel;
-    	}
-    	
-    	@Override
-    	public void handle(MouseEvent event) {
-    		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
-    			filepathLabel.setStyle(InterfaceController.CSS_UNDERLINE);
-    		}
-    		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
-    			filepathLabel.setStyle(InterfaceController.CSS_NO_UNDERLINE);
-    		}
-    	}
-    }
-    
-    /**
-     * This class implements a handler for registering mouse clicks in the filepath bar
-     */
-    private static class PathClickHandler implements EventHandler<MouseEvent> {
-    	@Override
-    	public void handle(MouseEvent event) {
-    		openFileLocation();
-    	}
-    }
-    
-    /**
-     * This class implements a handler that underlines the prompt text in the summary 
-     * view regarding unresolved tasks
-     */
-    private static class UnresHoverHandler implements EventHandler<MouseEvent> {
-    	Label allUnresAttention;
-    	
-    	UnresHoverHandler(Label allUnresAttention) {
-    		this.allUnresAttention = allUnresAttention;
-    	}
-    	
-    	@Override
-    	public void handle(MouseEvent event) {
-    		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
-    			allUnresAttention.setStyle(InterfaceController.CSS_UNDERLINE);
-    			allUnresAttention.setStyle(InterfaceController.CSS_UNDERLINE_ITALIC);
-    		}
-    		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
-    			allUnresAttention.setStyle(InterfaceController.CSS_NO_UNDERLINE);
-    			allUnresAttention.setStyle(InterfaceController.CSS_NO_UNDERLINE_ITALIC);
-    		}
-    	}
-    }
-    
-    /**
-     * This class implements a handler that registers mouse clicks on the prompt text
-     * and performs a view switch when clicked
-     */
-    private static class UnresClickHandler implements EventHandler<MouseEvent> {
-    	@Override
-    	public void handle(MouseEvent event) {
-    		SummaryViewController.stopShowing();
-    		InterfaceController.updateMainInterface(View.UNRESOLVED);
-    	}
-    }
-    
-    /**
-     * This class implements a handler that registers mouse clicks on the config
-     * button in the filepath bar
-     */
-    private static class ConfigClickHandler implements EventHandler<MouseEvent> {
-    	@Override
-    	public void handle(MouseEvent event) {
-    		openConfigLocation();
-    	}
-    }
-    
-    /**
-     * This class implements a handler in the autocomplete popup that registers
-     * ENTER keypresses when the user wishes to select a particular keyword suggested
-     * by autocomplete
-     */
-    private static class AutoCompleteSelectHandler implements EventHandler<KeyEvent> {
-    	@Override
-    	public void handle(KeyEvent event) {
-    		if (event.getCode() == KeyCode.ENTER) {
-    			InterfaceController.getTextField().setText(AutoComplete.getSelectedItem());
-				String text = InterfaceController.getTextField().getText();
-    			setCaretToEnd(text);
-    			AutoComplete.closePopup();
-    		}
-    	}
-    }
-    
-    /**
-     * This method implements a listener that displays and updates the autocomplete
-     * popup in real time based on the current input that is being entered by the 
-     * user
-     */
-    private static class AutoCompleteListener implements ChangeListener<String> {
-    	@Override
-    	public void changed(ObservableValue<? extends String> observable, 
-    			String oldValue, String newValue) {
-    		// Only perform autocompletion when the string is within one word
-    		// and is not empty
-    		if (newValue.split(" ").length == 1 && !newValue.equals(NULL_STRING)) {
-    			AutoComplete.updatePopup(newValue);
-    		} else {
-    			AutoComplete.closePopup();
-    		}
-    	}
-    }
-    
-    /**
-     * This class implements a listener for the main stage that decides whether
-     * to keep the autocomplete listener open when focus on the main stage is lost
-     */
-    private static class LostFocusListener implements ChangeListener<Boolean> {
-    	boolean showingBeforeLostFocus = false;
-    	
-    	@Override
-    	public void changed(ObservableValue<? extends Boolean> observable, 
-    			Boolean oldValue, Boolean newValue) {
-    		        	
-    		if (!newValue) {
-    			showingBeforeLostFocus = AutoComplete.isShowing();
-    			AutoComplete.closePopup();
-    		} else {
-    			if (showingBeforeLostFocus) {
-    				AutoComplete.showPopup();
-    			}
-    		}
-    	}
-    }
-    
-    /**
-     * This class implements a listener for the help stage to detect if the window
-     * has been closed with a mouse click, and respond with the correct method call
-     * to compensate (set isShowing status and toggling the button)
-     */
-    private static class CloseHelpListener implements ChangeListener<Boolean> {
-    	@Override
-    	public void changed(ObservableValue<? extends Boolean> observable, 
-    			Boolean oldValue, Boolean newValue) {
-    		// If the help window was closed by user's mouse click
-    		if (newValue == false) {
-    			// Do not toggle to avoid resetting the help open/close state
-    			HelpController.closeHelpDialog();
-    		}
-    	}
-    }
-    
-    /**
-     * This class implements a listener for the scroll pane in the history view that
-     * automatically scrolls the window to the most recently added element at the bottom
-     */
-    private static class ScrollListener implements ChangeListener<Number> {
-    	View scrollpane;
-    	
-    	ScrollListener(View scrollpane) {
-    		this.scrollpane = scrollpane;
-    	}
-    	
-    	@Override
-    	public void changed(ObservableValue<? extends Number> observable, 
-    			Number oldValue, Number newValue) {
-    		
-    		// Set the v-value of the scroll pane to the height of the content box
-    		switch (scrollpane) {
-    		case HISTORY:
-    			HistoryViewController.getHistScroll().setVvalue((Double)newValue);
-    			break;
-    		default:
-    			// Ignore, should not enter
-    			break;
-    		}
-    	}
-    }
-    
-    /**
-     * This class implements a listener for the autocomplete popup that adjusts its
-     * horizontal position based on the location of the window
-     */
-    private static class WidthPositionListener implements ChangeListener<Number> {
-    	@Override
-    	public void changed(ObservableValue<? extends Number> observable, 
-    			Number oldValue, Number newValue) {
-    		AutoComplete.setX((double)newValue);
-    	}
-    }
-    
-    /**
-     * This class implements a listener for the autocomplete popup that adjusts its
-     * vertical position based on the location of the window
-     */
-    private static class HeightPositionListener implements ChangeListener<Number> {
-    	@Override
-    	public void changed(ObservableValue<? extends Number> observable, 
-    			Number oldValue, Number newValue) {
-    		AutoComplete.setY((double)newValue);
-    	}
-    }
-    
-    /**
-     * This class implements a listener for the main window to resize all of its
-     * internal components when the overall height changes
-     */
-    private static class HeightListener implements ChangeListener<Number> {
-    	@Override
-    	public void changed(ObservableValue<? extends Number> observable,
-    			Number oldValue, Number newValue) {
-
-    		// Set the height of the sidebar separator to window height
-    		InterfaceController.getSbLine().setEndY((Double)newValue);
-
-    		// Set the height of the scroll pane separator to
-    		// window height - height of the filepath bar(31) -
-    		// height of feedback bar(31) - height of text bar(40) - 
-    		// height of viewLine(1)
-    		DefaultViewController.getDefScrollLine().setEndY((Double)newValue - 
-    				InterfaceController.HEIGHT_FILEPATH - 
-    				InterfaceController.HEIGHT_FEEDBACK - 
-    				InterfaceController.HEIGHT_TEXT_BOX - 
-    				InterfaceController.HEIGHT_HORIZ_LINE);
-    		
-    		AutoComplete.setY(MainApp.stage.getY());
-    	}
-    }
-
-    /**
-     * This class implements a listener for the main window to resize all of its
-     * internal components when the overall width changes
-     */
-    private static class WidthListener implements ChangeListener<Number> {
-    	@Override
-    	public void changed(ObservableValue<? extends Number> observable,
-    			Number oldValue, Number newValue) {
-
-    		// Set the width of the feedback, filepath and view box separators to
-    		// window width - size of sidebar(50) - width of line(1)
-    		InterfaceController.getFeedbackLine().setEndX(
-    				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);
-    		InterfaceController.getViewLine().setEndX(
-    				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);
-    		InterfaceController.getFilepathLine().setEndX(
-    				(Double)newValue - InterfaceController.WIDTH_SIDEBAR);
-    	}
-    }
 }
