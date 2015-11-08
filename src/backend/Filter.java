@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import struct.Date;
 
+//@@author A0127051U
 public class Filter {
 	
 	private static final int INDEX_TYPE = 0; 
@@ -26,8 +27,9 @@ public class Filter {
 	//============================================
 	// Public methods
 	//============================================
+	
+	//TODO add assertions where applicable
 		
-	//TODO call filterDate in def view 
 	public ArrayList<Integer> filterDate(String[] linesInFile, String type, Date date){ 
 		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		 
@@ -41,7 +43,6 @@ public class Filter {
 		 return resultList; 
 	}
 	
-	//TODO filterOngoingEvents - call and test in Logic
 	public ArrayList<Integer> filterOngoingEvents(String[] linesInFile){ 
 		ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		
@@ -54,16 +55,6 @@ public class Filter {
 		
 		return resultList; 
 	}
-	
-	private boolean isOngoing(String line){
-		String[] lineFields = line.split(SEMICOLON);
-		Date todayDate = Date.todayDate(); 
-		Date startDate = new Date(lineFields[INDEX_STARTDATE]);
-		Date endDate = new Date(lineFields[INDEX_ENDDATE]);
-		
-		return startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) >= 0; 
-	}
-	
 	
 	public ArrayList<Integer> filterStatus(String[] linesInFile, String type, boolean isDone){ 
 		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
@@ -135,6 +126,15 @@ public class Filter {
 		else{
 			return !isCompleted(line); 
 		}
+	}
+	
+	private boolean isOngoing(String line){
+		String[] lineFields = line.split(SEMICOLON);
+		Date todayDate = Date.todayDate(); 
+		Date startDate = new Date(lineFields[INDEX_STARTDATE]);
+		Date endDate = new Date(lineFields[INDEX_ENDDATE]);
+		
+		return startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) >= 0; 
 	}
 	
 	private boolean isCompleted(String line){ 

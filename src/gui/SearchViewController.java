@@ -31,7 +31,6 @@ public class SearchViewController {
 	// Used for initSearchView
 	private static Line searchScrollLine;
 
-	private static final String HEADER_SEARCH = "RESULTS FOR:";
 	private static final String HEADER_SEARCH_TASKS = "TASKS";
 	private static final String HEADER_SEARCH_EVENTS = "EVENTS";
 

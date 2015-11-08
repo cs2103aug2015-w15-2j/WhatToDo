@@ -16,6 +16,7 @@ import struct.FloatingTask;
 import struct.State;
 import struct.Task;
 
+//@@author A0127051U
 public class Logic {
 	
     private static final int CONVERSION_NOT_REQ = 0; 
@@ -45,7 +46,7 @@ public class Logic {
 	private static final String MESSAGE_DELETE_ITEM = "Deleted %s from list.";
 	private static final String MESSAGE_EDIT = "Edited %s \"%s\".";
 	private static final String MESSAGE_EDIT_CONVERSION = "Converted float \"%s\" to %s \"%s\".";
-	private static final String MESSAGE_MARK_DONE = "Done %s";
+	private static final String MESSAGE_MARK_DONE = "Done %s.";
 	private static final String MESSAGE_REDO = "Redid a \"%s\" command."; 
 	private static final String MESSAGE_NO_REDO = "There are no commands to redo.";
 	private static final String MESSAGE_UNDO = "Undid a \"%s\" command."; 
@@ -58,8 +59,8 @@ public class Logic {
     private static final String MESSAGE_ERROR_INVALID_COMMAND = "\"%s\" is an invalid command. %s"; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_ERROR_EDIT = "Error encountered when editing item."; 
-	private static final String MESSAGE_ERROR_EDIT_INSUFFICIENT_ARGS = "Not enough arguments for conversion"; 
-    private static final String MESSAGE_ERROR_EDIT_INVALID_CONVERSION = "A %s cannot be converted to an %s";
+	private static final String MESSAGE_ERROR_EDIT_INSUFFICIENT_ARGS = "Not enough arguments for conversion."; 
+    private static final String MESSAGE_ERROR_EDIT_INVALID_CONVERSION = "A %s cannot be converted to a %s.";
     private static final String MESSAGE_ERROR_EDIT_INVALID_EDIT = "Invalid edit. %s"; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
@@ -754,12 +755,10 @@ public class Logic {
         	return cmdFeedback + MESSAGE_ERROR_UNDO;
         }
 	}
-	//TODO
+
 	private String getCommandStr(String userString){
 		String[] lineComponents = userString.split(REGEX_WHITESPACES);
 		return lineComponents[INDEX_COMMAND]; 
-//		String name = lineComponents[INDEX_NAME];
-//		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
 	}
 	
 	private String formatLine(String line){
@@ -769,7 +768,6 @@ public class Logic {
 		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
 	}
 	
-	//TODO set - undo/redo
 	private String executeSet(Command command){ 
 		try{
 			String newAlias = command.getName(); 
@@ -786,7 +784,6 @@ public class Logic {
 		} 
 	}
 	
-	//TODO DeleteAlias - undo/redo
 	private String executeDeleteAlias(Command command){ 
 		try{
 			String alias = command.getName(); 
@@ -868,6 +865,14 @@ public class Logic {
     		default : 
     			return ""; 
     	}
+    }
+    
+    //============================================
+  	// Public method used in testing only
+  	//============================================
+    
+    public void overwriteFile(String textToWrite) throws FileSystemException{ 
+    	storage.overwriteFile(textToWrite);
     }
        
 }

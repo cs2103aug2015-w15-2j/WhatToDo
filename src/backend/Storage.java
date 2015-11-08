@@ -16,7 +16,6 @@ import java.io.PrintWriter;
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
 
-import struct.Date;
 import struct.FloatingTask;
 import struct.Event;
 import struct.Task;
@@ -26,9 +25,6 @@ public class Storage {
 	private static final String FILE_NAME = "whattodo.txt";
 	private static final String COLLATED_FILE_PATH_FORMAT = "%s"
 			+ File.separator + "%s";
-	private static final String CONFIG_FILE_PATH = "config" + File.separator
-			+ "config.txt";
-	private static final String ALIAS_FILE_PATH = "config" + File.separator + "alias.txt";
 
 	private static final String MESSAGE_CHANGE_STORAGE_SUCCESS = "You are now writing to \"%s\"";
 	private static final String MESSAGE_SAME_FILE = "Your file location remains unchanged.";
@@ -37,7 +33,6 @@ public class Storage {
 	private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
 	private static final String MESSAGE_ERROR_WRITE_FILE = "Error encountered when writing to file.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS = "Cannot find line %d in text file.";
-	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS_FLOAT = "Line %d is not a floating task!";
 	private static final String MESSAGE_ERROR_ALREADY_DONE = "Error encountered: the %s \"%s\" has already been completed.";
 
 	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH = "File location specified is invalid.";
@@ -46,8 +41,6 @@ public class Storage {
 			+ " both old and new file paths. Please delete either one before continuing.";
 
 	private static final String TEXT_FILE_DIVIDER = ";";
-	
-	private static final String FORMAT_ALIAS = "%s" + TEXT_FILE_DIVIDER + "%s";
 
 	private static final String STRING_TASK = "task";
 	private static final String STRING_FLOAT_TASK = "float";
@@ -80,6 +73,9 @@ public class Storage {
 
 	// For writing into file.
 	private PrintWriter fileWriter;
+	
+	// For handling operations within config folder.
+	private ConfigHandler configHandler;
 
 	/**
 	 * Constructor
@@ -88,10 +84,13 @@ public class Storage {
 	 *             when error in creating file.
 	 */
 	public Storage() throws FileSystemException {
-		filePath = getPathFromConfig();
+		initialiseHandler();
+		
+		filePath = configHandler.getPathFromConfig();
 
-		createFile();
-		createAliasFile();
+		createToDoListFile();
+		
+		configHandler.createAliasFile();
 	}
 
 	public String getFilePath() {
@@ -284,65 +283,7 @@ public class Storage {
 			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
 		}
 	}
-	
-	//@@author A0124238L-unused
-	// Reason: These 2 operations/methods have been handled by Logic instead.
-	/**
-	 * Converts floating task at specified line number into a task with specified deadline.
-	 * The newly converted task will be considered undone regardless of its status as a floating
-	 * task. (1-based counting)
-	 * 
-	 * @param lineNumber    line number in text file to be converted.
-	 * @param deadline      given deadline for converted task.
-	 * @return              the text at specified line number before conversion.
-	 * @throws FileSystemException
-	 *             when line number less than 0 or more than number of lines
-	 *             present in text file, or when error in reading file, or when
-	 *             the object at line number is not a floating task.
-	 */
-	public String convertFloatToTask(int lineNumber, Date deadline)
-			throws FileSystemException {
-		try {
-			String lineToConvert = changeFloatToTask(lineNumber, deadline);
 
-			return lineToConvert;
-		} catch (IllegalArgumentException exception) {
-			throw new FileSystemException(exception.getMessage());
-		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
-		}
-	}
-	
-	/**
-	 * Converts floating task at specified line number into an event with specified start date and time
-	 * and end date and time. The newly converted event will be considered undone regardless of its status
-	 * as a floating task. (1-based counting)
-	 * 
-	 * @param lineNumber    line number in text file to be converted.
-	 * @param startDate     given start date for converted event.
-	 * @param startTime     given start time for converted event.
-	 * @param endDate       given end date for converted event.
-	 * @param endTime       given end time for converted event.
-	 * @return              the text at specified line number before conversion.
-	 * @throws FileSystemException
-	 *             when line number less than 0 or more than number of lines
-	 *             present in text file, or when error in reading file, or when
-	 *             the object at line number is not a floating task.
-	 */ 
-	public String convertFloatToEvent(int lineNumber, Date startDate, String startTime, 
-			Date endDate, String endTime) throws FileSystemException {
-		try {
-			String lineToConvert = changeFloatToEvent(lineNumber, startDate, startTime, endDate, endTime);
-
-			return lineToConvert;
-		} catch (IllegalArgumentException exception) {
-			throw new FileSystemException(exception.getMessage());
-		} catch (IOException exception) {
-			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
-		}
-	}
-	
-	//@@author A0124238L
 	/**
 	 * Retrieves the attribute at specified line number of specified type.
 	 * 
@@ -377,7 +318,7 @@ public class Storage {
 		assert(actualCommandType.indexOf(TEXT_FILE_DIVIDER) == -1);
 		
 		try {
-			updateAliasFile(aliasLine, actualCommandType); 
+			configHandler.updateAliasFile(aliasLine, actualCommandType); 
 		} catch (IOException exception) {
 			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
 		}
@@ -395,7 +336,7 @@ public class Storage {
 		assert(aliasLine.indexOf(TEXT_FILE_DIVIDER) == -1);
 		
 		try {
-			removeFromAliasFile(aliasLine); 
+			configHandler.removeFromAliasFile(aliasLine); 
 		} catch (IOException exception) {
 			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
 		}
@@ -409,144 +350,25 @@ public class Storage {
 	 */
 	public String readAliasFile() throws FileSystemException {
 		try {
-			String fileContents = displayAliasFile(); 
+			String fileContents = configHandler.displayAliasFile(); 
 			
 			return fileContents;
 		} catch (IOException exception) {
 			throw new FileSystemException(MESSAGE_ERROR_READ_FILE);
 		}
 	}
+	
+	public void clearAliasFile() throws FileSystemException {
+		try {
+			configHandler.clearAliasFile();
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
+		}
+	}
 
 	/*
 	 * Private Methods Start Here.
 	 */
-	
-	private void updateAliasFile(String aliasLine, String actualCommandType)
-			throws IOException {
-		ArrayList<String> fileContents = readAliasFileToArrayList();
-		
-		String lineToAdd = String.format(FORMAT_ALIAS, aliasLine, actualCommandType);
-		fileContents.add(lineToAdd);
-
-		writeContentsToAliasFile(fileContents);
-	}
-	
-	private void removeFromAliasFile(String aliasLine) throws IOException {
-		ArrayList<String> fileContents = readAliasFileToArrayList();
-		
-		removeAliasFromArrayList(aliasLine, fileContents);
-		
-		writeContentsToAliasFile(fileContents);
-	}
-
-	private void removeAliasFromArrayList(String aliasLine,
-			ArrayList<String> fileContents) {
-		for (int i = PARAM_START_LOOP_ZERO; i < fileContents.size(); i++) {
-			String aliasFromFile = getFirstWord(fileContents.get(i));
-			if (aliasFromFile.equals(aliasLine)) {
-				fileContents.remove(i);
-				break;
-			}
-		}
-	}
-
-	private void writeContentsToAliasFile(ArrayList<String> fileContents) throws FileNotFoundException {
-		PrintWriter configWriter = new PrintWriter(ALIAS_FILE_PATH);
-		int lastLine = fileContents.size() - PARAM_LESS_ONE;
-
-		if (lastLine == PARAM_DOES_NOT_EXIST) {
-			configWriter.print(EMPTY_STRING);
-			configWriter.close();
-			return;
-		}	
-
-		for (int i = PARAM_START_LOOP_ZERO; i < lastLine; i++) {
-			configWriter.println(fileContents.get(i));
-		}
-		configWriter.print(fileContents.get(lastLine));
-		
-		configWriter.close();
-	}
-	
-	private String displayAliasFile() throws IOException {
-		BufferedReader aliasFileReader = initializeAliasReader();
-		
-		StringBuilder fileContents = new StringBuilder();
-		
-		formatAliasContentsAsString(aliasFileReader, fileContents);
-		
-		return fileContents.toString();
-	}
-
-	private void formatAliasContentsAsString(BufferedReader aliasFileReader,
-			StringBuilder fileContents) throws IOException {
-		while (true) {
-			String lineRead = aliasFileReader.readLine();
-
-			if (isEndOfFile(lineRead)) {
-				break;
-			} else {
-				fileContents.append(lineRead);
-				fileContents.append(NEWLINE);
-			}
-		}
-		
-		aliasFileReader.close();
-	}
-	
-	private ArrayList<String> readAliasFileToArrayList()
-			throws IOException {
-		BufferedReader aliasFileReader = initializeAliasReader();
-		
-		ArrayList<String> fileContents = new ArrayList<String>();
-		
-		while (true) {
-			String lineRead = aliasFileReader.readLine();
-
-			if (isEndOfFile(lineRead)) {
-				break;
-			} else {
-				fileContents.add(lineRead);
-			}
-		}
-		
-		aliasFileReader.close();
-		return fileContents;
-	}
-	
-	private String findAttribute(int lineNumber, int type) throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
-		
-		addFileContentsToArrayList(fileContents);
-		
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-		
-		String lineToFind = fileContents.get(lineNumber - PARAM_OFFSET);
-		
-		String attribute = getAttributeFromLine(type, lineToFind);
-		
-		return attribute;
-	}
-
-	private String getAttributeFromLine(int type, String lineToFind) {
-		String attribute;
-		int numParameters = countParameters(lineToFind);
-		
-		if (hasValidType(type, numParameters)) {
-			attribute = getSpecificWord(type, lineToFind);
-		} else {
-			attribute = null;
-		}
-		return attribute;
-	}
-
-	private boolean hasValidType(int type, int numParameters) {
-		if (numParameters > type && type >= PARAM_FIRST_WORD) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
 	private void addFloatTaskToFile(FloatingTask newFloatTask)
 			throws IOException {
@@ -599,12 +421,6 @@ public class Storage {
 			}
 		}
 		return hasAddedLine;
-	}
-
-	private void insertLine(ArrayList<String> fileContents, String lineToAdd,
-			String lineRead) {
-		fileContents.add(lineToAdd);
-		fileContents.add(lineRead);
 	}
 
 	private void addTaskToFile(Task newTask) throws IOException {
@@ -710,6 +526,12 @@ public class Storage {
 		}
 		return hasAddedLine;
 	}
+	
+	private void insertLine(ArrayList<String> fileContents, String lineToAdd,
+			String lineRead) {
+		fileContents.add(lineToAdd);
+		fileContents.add(lineRead);
+	}
 
 	private String deleteLineFromFile(int lineNumber) throws IOException,
 			IllegalArgumentException {
@@ -724,6 +546,40 @@ public class Storage {
 		writeContentsToFile(fileContents);
 
 		return lineToDelete;
+	}
+	
+	private String findAttribute(int lineNumber, int type) throws IOException, IllegalArgumentException {
+		ArrayList<String> fileContents = new ArrayList<String>();
+		
+		addFileContentsToArrayList(fileContents);
+		
+		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
+		
+		String lineToFind = fileContents.get(lineNumber - PARAM_OFFSET);
+		
+		String attribute = getAttributeFromLine(type, lineToFind);
+		
+		return attribute;
+	}
+
+	private String getAttributeFromLine(int type, String lineToFind) {
+		String attribute;
+		int numParameters = countParameters(lineToFind);
+		
+		if (hasValidType(type, numParameters)) {
+			attribute = getSpecificWord(type, lineToFind);
+		} else {
+			attribute = null;
+		}
+		return attribute;
+	}
+
+	private boolean hasValidType(int type, int numParameters) {
+		if (numParameters > type && type >= PARAM_FIRST_WORD) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private String findItemTypeFromFile(int lineNumber) throws IOException, IllegalArgumentException {
@@ -747,68 +603,7 @@ public class Storage {
 			throw new IllegalArgumentException(errorMessage);
 		}
 	}
-	
-	//@@author A0124238L-unused
-	// Reason: These 2 operations/methods have been handled by Logic instead.
-	private String changeFloatToTask(int lineNumber, Date deadline)
-			throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
 
-		addFileContentsToArrayList(fileContents);
-
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-
-		String lineToBeChanged = fileContents.get(lineNumber - PARAM_OFFSET);
-		String typeToBeChanged = getFirstWord(lineToBeChanged);
-
-		if (typeToBeChanged.equals(STRING_FLOAT_TASK)) {
-			FloatingTask taskToBeChanged = new FloatingTask(lineToBeChanged);
-			
-			String taskName = taskToBeChanged.getName();
-			
-			Task newTask = new Task(taskName, false, deadline);
-
-			deleteLineFromFile(lineNumber);
-			addTaskToFile(newTask);
-		} else {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS_FLOAT, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		return lineToBeChanged;
-	}
-	
-	private String changeFloatToEvent(int lineNumber, Date startDate, String startTime,
-			Date endDate, String endTime) throws IOException, IllegalArgumentException {
-		ArrayList<String> fileContents = new ArrayList<String>();
-
-		addFileContentsToArrayList(fileContents);
-
-		throwIllegalArgExceptionIfInvalid(lineNumber, fileContents);
-
-		String lineToBeChanged = fileContents.get(lineNumber - PARAM_OFFSET);
-		String typeToBeChanged = getFirstWord(lineToBeChanged);
-
-		if (typeToBeChanged.equals(STRING_FLOAT_TASK)) {
-			FloatingTask taskToBeChanged = new FloatingTask(lineToBeChanged);
-			
-			String taskName = taskToBeChanged.getName();
-			
-			Event newEvent = new Event(taskName, false, startDate, endDate, startTime, endTime);
-
-			deleteLineFromFile(lineNumber);
-			addEventToFile(newEvent);
-		} else {
-			String errorMessage = String.format(
-					MESSAGE_ERROR_INVALID_LINE_ACCESS_FLOAT, lineNumber);
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		return lineToBeChanged;
-	}
-
-	//@@author A0124238L
 	private void addFileContentsToArrayList(ArrayList<String> fileContents)
 			throws IOException {
 		initialiseReader();
@@ -880,26 +675,22 @@ public class Storage {
 		String typeToMarkDone = getFirstWord(lineToMarkDone);
 
 		if (typeToMarkDone.equals(STRING_TASK)) {
-			String lineBeforeMarkDone = markTaskAsComplete(lineNumber, lineToMarkDone,
+			markTaskAsComplete(lineNumber, lineToMarkDone,
 					typeToMarkDone);
-			
-			return lineBeforeMarkDone;
 		} else if (typeToMarkDone.equals(STRING_EVENT)) {
-			String lineBeforeMarkDone = markEventAsComplete(lineNumber, lineToMarkDone,
+			markEventAsComplete(lineNumber, lineToMarkDone,
 					typeToMarkDone);
-			
-			return lineBeforeMarkDone;
 		} else if (typeToMarkDone.equals(STRING_FLOAT_TASK)) {
-			String lineBeforeMarkDone = markFloatAsComplete(lineNumber, lineToMarkDone,
+			markFloatAsComplete(lineNumber, lineToMarkDone,
 					typeToMarkDone);
-			
-			return lineBeforeMarkDone;
 		} else {
 			throw new IOException();
 		}
+		
+		return lineToMarkDone;
 	}
 
-	private String markFloatAsComplete(int lineNumber, String lineToMarkDone,
+	private void markFloatAsComplete(int lineNumber, String lineToMarkDone,
 			String typeToMarkDone) throws IOException {
 		FloatingTask choosenFloat = new FloatingTask(lineToMarkDone);
 
@@ -913,29 +704,9 @@ public class Storage {
 
 		deleteLineFromFile(lineNumber);
 		addFloatTaskToFile(choosenFloat);
-
-		return lineToMarkDone;
 	}
 
-	private String markEventAsComplete(int lineNumber, String lineToMarkDone,
-			String typeToMarkDone) throws IOException {
-		Event choosenEvent = new Event(lineToMarkDone);
-
-		if (choosenEvent.isDone()) {
-			String errorMessage = String.format(MESSAGE_ERROR_ALREADY_DONE,
-					typeToMarkDone, choosenEvent.getName());
-			throw new IllegalArgumentException(errorMessage);
-		}
-
-		choosenEvent.setDone(true);
-
-		deleteLineFromFile(lineNumber);
-		addEventToFile(choosenEvent);
-
-		return lineToMarkDone;
-	}
-
-	private String markTaskAsComplete(int lineNumber, String lineToMarkDone,
+	private void markTaskAsComplete(int lineNumber, String lineToMarkDone,
 			String typeToMarkDone) throws IOException {
 		Task choosenTask = new Task(lineToMarkDone);
 
@@ -949,8 +720,22 @@ public class Storage {
 
 		deleteLineFromFile(lineNumber);
 		addTaskToFile(choosenTask);
+	}
+	
+	private void markEventAsComplete(int lineNumber, String lineToMarkDone,
+			String typeToMarkDone) throws IOException {
+		Event choosenEvent = new Event(lineToMarkDone);
 
-		return lineToMarkDone;
+		if (choosenEvent.isDone()) {
+			String errorMessage = String.format(MESSAGE_ERROR_ALREADY_DONE,
+					typeToMarkDone, choosenEvent.getName());
+			throw new IllegalArgumentException(errorMessage);
+		}
+
+		choosenEvent.setDone(true);
+
+		deleteLineFromFile(lineNumber);
+		addEventToFile(choosenEvent);
 	}
 
 	private boolean isEndOfFile(String lineRead) {
@@ -998,7 +783,7 @@ public class Storage {
 		File oldFilePath = new File(getAbsoluteFilePath());
 
 		try {
-			updateConfigFile(newLocation);
+			configHandler.updateConfigFile(newLocation);
 		} catch (FileNotFoundException exception) {
 			return MESSAGE_ERROR_CHANGING_FILE_PATH_UNKNOWN;
 		}
@@ -1088,9 +873,9 @@ public class Storage {
 
 	private void copyContentsToNewFile(String newLocation,
 			ArrayList<String> fileContents) throws IOException {
-		createFile();
+		createToDoListFile();
 		writeContentsToFile(fileContents);
-		updateConfigFile(newLocation);
+		configHandler.updateConfigFile(newLocation);
 	}
 	
 	private String[] splitParameters(String line) {
@@ -1114,27 +899,11 @@ public class Storage {
 		
 		return numberParameters;
 	}
-
-	private String getPathFromConfig() throws FileSystemException {
-		File file = new File(CONFIG_FILE_PATH);
-		String readFilePath;
-
-		createDirectoryIfMissing(file);
-
-		createNewFileIfFileDoesNotExist(file);
-
-		try {
-			readFilePath = readFirstLine(CONFIG_FILE_PATH);
-		} catch (IOException exception) {
-			return FILE_NAME;
-		}
-
-		if (!hasDirectorySpecifiedInPath(readFilePath)) {
-			return FILE_NAME;
-		}
-
-		return String
-				.format(COLLATED_FILE_PATH_FORMAT, readFilePath, FILE_NAME);
+	
+	private void initialiseHandler() throws FileSystemException {
+		assert(configHandler == null);
+		
+		configHandler = new ConfigHandler();
 	}
 
 	private boolean hasDirectorySpecifiedInPath(String readFilePath) {
@@ -1149,27 +918,21 @@ public class Storage {
 
 	private String readFirstLine(String givenFilePath) throws IOException {
 		FileReader fileToBeRead = new FileReader(givenFilePath);
-		BufferedReader configFileReader = new BufferedReader(fileToBeRead);
+		BufferedReader customFileReader = new BufferedReader(fileToBeRead);
 
-		String lineRead = configFileReader.readLine();
-		configFileReader.close();
+		String lineRead = customFileReader.readLine();
+		customFileReader.close();
 
 		return lineRead;
 	}
 
-	private void createFile() throws FileSystemException {
+	private void createToDoListFile() throws FileSystemException {
 		File file = new File(filePath);
 
 		if (hasDirectorySpecifiedInPath()) {
 			createDirectoryIfMissing(file);
 		}
 
-		createNewFileIfFileDoesNotExist(file);
-	}
-	
-	private void createAliasFile() throws FileSystemException {
-		File file = new File(ALIAS_FILE_PATH);
-		
 		createNewFileIfFileDoesNotExist(file);
 	}
 
@@ -1190,15 +953,6 @@ public class Storage {
 		}
 	}
 
-	private void updateConfigFile(String newLocation)
-			throws FileNotFoundException {
-		PrintWriter configWriter = new PrintWriter(CONFIG_FILE_PATH);
-
-		configWriter.println(newLocation);
-
-		configWriter.close();
-	}
-
 	private String getAbsoluteFilePath() {
 		return new File(filePath).getAbsolutePath();
 	}
@@ -1206,13 +960,6 @@ public class Storage {
 	private void initialiseReader() throws FileNotFoundException {
 		FileReader fileToBeRead = new FileReader(filePath);
 		fileReader = new BufferedReader(fileToBeRead);
-	}
-	
-	private BufferedReader initializeAliasReader() throws FileNotFoundException {
-		FileReader fileToBeRead = new FileReader(ALIAS_FILE_PATH);
-		BufferedReader aliasFileReader = new BufferedReader(fileToBeRead);
-		
-		return aliasFileReader;
 	}
 
 	private void initialiseWriter() throws FileNotFoundException {
