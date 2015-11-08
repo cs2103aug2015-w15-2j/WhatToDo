@@ -139,17 +139,15 @@ public class CommandParser {
 
     public Command parse(String userInput) {
         Command command;
-        ArrayList<String> originalParameters = splitString(userInput);
         ArrayList<String> parameters = splitString(userInput);
         ArrayList<String> convertedParameters = convertParameters(parameters);
         String userCommand = getUserCommand(convertedParameters);
-        ArrayList<String> arguments = getUserArguments(originalParameters);
-        ArrayList<String> convertedArguments = getUserArguments(convertedParameters);
+        ArrayList<String> arguments = getUserArguments(convertedParameters);
 
         switch (userCommand.toLowerCase()) {
 
             case USER_COMMAND_ADD :
-                command = initAddCommand(convertedArguments);
+                command = initAddCommand(arguments);
                 break;
 
             case USER_COMMAND_DELETE :
@@ -157,63 +155,63 @@ public class CommandParser {
                 break;
 
             case USER_COMMAND_EDIT :
-                command = initEditCommand(convertedArguments);
+                command = initEditCommand(arguments);
                 break;
                 
             case USER_COMMAND_SEARCH :
-            	command = initSearchCommand(convertedArguments);
+            	command = initSearchCommand(arguments);
             	break;
             	
             case USER_COMMAND_DONE :
-            	command = initDoneCommand(convertedArguments);
+            	command = initDoneCommand(arguments);
             	break;
             	
             case USER_COMMAND_SET :
-            	command = initSetCommand(convertedArguments);
+            	command = initSetCommand(arguments);
             	break;
             	
             case USER_COMMAND_SAVE :
-            	command = initSaveCommand(convertedArguments);
+            	command = initSaveCommand(arguments);
             	break;
             	
             case USER_COMMAND_UNDO :
-            	command = initUndoCommand(convertedArguments);
+            	command = initUndoCommand(arguments);
             	break;
             	
             case USER_COMMAND_REDO :
-            	command = initRedoCommand(convertedArguments);
+            	command = initRedoCommand(arguments);
             	break; 
             	
             case USER_COMMAND_VIEW_ALL :
-            	command = initViewAllCommand(convertedArguments);
+            	command = initViewAllCommand(arguments);
             	break;
             	
             case USER_COMMAND_VIEW_DEF :
-            	command = initViewDefCommand(convertedArguments);
+            	command = initViewDefCommand(arguments);
             	break;
             	
             case USER_COMMAND_VIEW_HIST :
-            	command = initViewHistCommand(convertedArguments);
+            	command = initViewHistCommand(arguments);
             	break;
             	
             case USER_COMMAND_VIEW_UNRES :
-            	command = initViewUnresCommand(convertedArguments);
+            	command = initViewUnresCommand(arguments);
             	break;
             	
             case USER_COMMAND_VIEW_HELP :
-            	command = initViewHelpCommand(convertedArguments);
+            	command = initViewHelpCommand(arguments);
             	break;
             	
             case USER_COMMAND_VIEW_OPEN_FILE :
-            	command = initViewOpenFileCommand(convertedArguments);
+            	command = initViewOpenFileCommand(arguments);
             	break;
             	
             case USER_COMMAND_VIEW_CONFIG :
-            	command = initViewConfigCommand(convertedArguments);
+            	command = initViewConfigCommand(arguments);
             	break;
                 
             case USER_COMMAND_EXIT :
-                command = initExitCommand(convertedArguments);
+                command = initExitCommand(arguments);
                 break;
 
             default :
@@ -229,13 +227,21 @@ public class CommandParser {
     }
     
     private ArrayList<String> convertParameters(ArrayList<String> parameters) {
-    	for (int i = 0; i < parameters.size(); i++) {
-    		String parameter = parameters.get(i);
-    		if (commandAliases.containsKey(parameter)) {
-    			String newParameter = commandAliases.get(parameter);
-    			parameters.remove(i);
-    			parameters.add(i, newParameter);
-    		}
+    	String parameter = parameters.get(0);
+    	if (commandAliases.containsKey(parameters.get(0))) {
+    		String newParameter = commandAliases.get(parameter);
+    		parameters.remove(0);
+    		parameters.add(0, newParameter);
+    	}
+    	if (parameter.equals(USER_COMMAND_SET)) {
+        	for (int i = 1; i < parameters.size(); i++) {
+        		String currParameter = parameters.get(i);
+        		if (commandAliases.containsKey(currParameter)) {
+        			String newParameter = commandAliases.get(currParameter);
+        			parameters.remove(i);
+        			parameters.add(i, newParameter);
+        		}
+        	}
     	}
     	return parameters;
     }
@@ -1019,21 +1025,6 @@ public class CommandParser {
 		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_OPEN_FILE);
 		COMMANDS_ARRAY_LIST.add(USER_COMMAND_VIEW_CONFIG);
 		COMMANDS_ARRAY_LIST.add(USER_COMMAND_EXIT);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_DEADLINE);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_TODAY);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_TOMORROW_ONE);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_TOMORROW_TWO);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_TOMORROW_THREE);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EVENT_TO);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EVENT_FROM);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EVENT_ON);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_SET);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_NAME);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_DEADLINE);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_START_DATE);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_START_TIME);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_END_DATE);
-		COMMANDS_ARRAY_LIST.add(KEYWORD_EDIT_END_TIME);
 	}
 	
 	public void setAlias(String newCommand, String originalCommand) {
