@@ -54,7 +54,7 @@ public class Logic {
 	private static final String MESSAGE_SET = "Set new alias \"%s\" for \"%s\"."; 
 	private static final String MESSAGE_DELETE_ALIAS = "Deleted alias \"%s\"."; 
 	
-	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered. whattodo.txt may be corrupted."; 
+	private static final String MESSAGE_ERROR_UNKNOWN = "0.Unknown error encountered - file may be corrupted"; 
     private static final String MESSAGE_ERROR_INVALID_COMMAND = "\"%s\" is an invalid command. %s"; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_ERROR_EDIT = "Error encountered when editing item."; 
@@ -66,7 +66,6 @@ public class Logic {
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
-    private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s";
     private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "Showing results for \"%s\"\nTASK\n%s\nFLOAT\n%s\nEVENT\n%s"; 
     
     private static final String KEYWORD_EDIT_NAME = "name";
@@ -172,12 +171,12 @@ public class Logic {
             		Date.tomorrowDateLong(), tomorrowContent, floatContent).trim();
     	}
     	catch(FileSystemException e){
-    		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
-            		Date.tomorrowDateLong(), e.getMessage()).trim();
+    		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, Date.todayDateLong(), e.getMessage(),  
+    				Date.tomorrowDateLong(), e.getMessage(), e.getMessage()).trim();
     	}
     	catch(Exception e){
-    		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, MESSAGE_ERROR_UNKNOWN, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
-            		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
+    		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
+    				Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN).trim();
     	}
     }
     
@@ -209,10 +208,10 @@ public class Logic {
         	return formatter.formatAllTaskView(linesInFile, taskIndexList, floatIndexList);  
     	}
     	catch(FileSystemException e){
-    		return String.format(DISPLAY_LAYOUT_ALL_TASK, e.getMessage(), e.getMessage());
+    		return e.getMessage();
     	}
     	catch (Exception e) {
-    		return String.format(DISPLAY_LAYOUT_ALL_TASK, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN);
+    		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
     
@@ -240,7 +239,7 @@ public class Logic {
     	catch(FileSystemException e){ 
     		return e.getMessage();
     	}catch (Exception e) {
-			return e.getMessage();
+			return MESSAGE_ERROR_UNKNOWN;
 		} 
     }
 
@@ -254,7 +253,7 @@ public class Logic {
     	catch(FileSystemException e){ 
     		return e.getMessage();
     	}catch (Exception e) {
-			return e.getMessage();
+			return MESSAGE_ERROR_UNKNOWN;
 		} 
     }
     
