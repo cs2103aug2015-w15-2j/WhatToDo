@@ -9,7 +9,7 @@ public class Command {
     }
 	
 	public enum DataType { 
-		TASK, FLOATING_TASK, EVENT, ALL
+		TASK, FLOATING_TASK, EVENT
 	}
 	
 	public enum ViewType {
@@ -28,7 +28,6 @@ public class Command {
 	private Date endDate; 
 	private String startTime; 
 	private String endTime;
-	private boolean isStart; 
 	private ArrayList<String> editList;
 	private String originalCommand;
 	
@@ -100,10 +99,6 @@ public class Command {
 		return endTime;
 	}
 	
-	public boolean getIsStart() {
-		return isStart; 
-	}
-	
 	public ArrayList<String> getEditList() {
 		return editList;
 	}
@@ -158,10 +153,6 @@ public class Command {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
-	}
-	
-	public void setIsStartTime(boolean isStart) {
-		this.isStart = isStart; 
 	}
 	
 	public void setEditList(ArrayList<String> editList) {
