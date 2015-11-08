@@ -13,9 +13,11 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import java.nio.file.FileSystemException;
 
 import backend.Storage;
+
 import struct.Date;
 import struct.FloatingTask;
 import struct.Event;
@@ -40,7 +42,8 @@ public class StorageTest {
 		storage.addTask(new Task("wintermelon", false, new Date("010116")));
 		storage.addTask(new Task("kiwi", false, new Date("251215")));
 
-		assertEquals("task;animal;todo;010115\ntask;avocado;todo;010115\ntask;apple;todo;251115\n"
+		assertEquals(
+				"task;animal;todo;010115\ntask;avocado;todo;010115\ntask;apple;todo;251115\n"
 						+ "task;orange;todo;261115\ntask;guava;todo;101215\ntask;pear;todo;241215\n"
 						+ "task;banana;todo;251215\ntask;kiwi;todo;251215\ntask;watermelon;todo;010116\n"
 						+ "task;wintermelon;todo;010116\n", storage.display());
@@ -156,7 +159,7 @@ public class StorageTest {
 
 		// This is a boundary case for delete only item left.
 		assertEquals("task;i am a task;todo;121212", storage.deleteLine(1));
-		
+
 		// This is a boundary case for display nothing.
 		assertEquals("", storage.display());
 
@@ -189,14 +192,16 @@ public class StorageTest {
 	}
 
 	@Test(expected = FileSystemException.class)
-	// Tests if deleting line numbers beyond number of items will throw exception
+	// Tests if deleting line numbers beyond number of items will throw
+	// exception
 	public void testDeleteTooLarge() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
 
 		storage.addFloatingTask(new FloatingTask("dummy", false));
 
-		// This is a boundary case for deleting line numbers beyond number of items.
+		// This is a boundary case for deleting line numbers beyond number of
+		// items.
 		storage.deleteLine(2);
 	}
 
@@ -238,7 +243,8 @@ public class StorageTest {
 
 		storage.addFloatingTask(new FloatingTask("dummy", false));
 
-		// This is a boundary case for finding line numbers beyond number of items
+		// This is a boundary case for finding line numbers beyond number of
+		// items
 		storage.findTypeInLine(2);
 	}
 
@@ -337,7 +343,7 @@ public class StorageTest {
 		// Clear File for next test.
 		storage.overwriteFile("");
 	}
-	
+
 	@Test
 	public void testGetAttribute() throws FileSystemException {
 		Storage storage = new Storage();
@@ -353,21 +359,21 @@ public class StorageTest {
 		assertEquals("float", storage.getAttribute(1, 0));
 		assertEquals("float task", storage.getAttribute(1, 1));
 		assertEquals("todo", storage.getAttribute(1, 2));
-		
+
 		// These are boundary cases where type = 3 and -1 for float task.
 		assertEquals(null, storage.getAttribute(1, 3));
 		assertEquals(null, storage.getAttribute(1, -1));
-		
+
 		// General Case for task
 		assertEquals("task", storage.getAttribute(2, 0));
 		assertEquals("i am a task", storage.getAttribute(2, 1));
 		assertEquals("todo", storage.getAttribute(2, 2));
 		assertEquals("121212", storage.getAttribute(2, 3));
-		
+
 		// These are boundary cases where type = 4 and -1 for task.
 		assertEquals(null, storage.getAttribute(2, 4));
 		assertEquals(null, storage.getAttribute(2, -1));
-		
+
 		// General Case for event
 		assertEquals("event", storage.getAttribute(3, 0));
 		assertEquals("event time", storage.getAttribute(3, 1));
@@ -376,7 +382,7 @@ public class StorageTest {
 		assertEquals("1700", storage.getAttribute(3, 4));
 		assertEquals("111015", storage.getAttribute(3, 5));
 		assertEquals("2359", storage.getAttribute(3, 6));
-		
+
 		// These are boundary cases where type = 7 and -1 for event.
 		assertEquals(null, storage.getAttribute(3, 7));
 		assertEquals(null, storage.getAttribute(3, -1));
@@ -384,141 +390,147 @@ public class StorageTest {
 		// Clear File for next test.
 		storage.overwriteFile("");
 	}
-	
+
 	@Test
 	// Test the methods for Alias File
 	public void testAlias() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.clearAliasFile();
-		
+
 		// Test if add and delete works.
-		storage.addToAliasFile("insert", "add");  
-		storage.addToAliasFile("remove", "delete"); 
+		storage.addToAliasFile("insert", "add");
+		storage.addToAliasFile("remove", "delete");
 		storage.addToAliasFile("plus", "add");
-		storage.deleteFromAliasFile("insert"); 
-		assertEquals("remove;delete\nplus;add\n",storage.readAliasFile());
-		
+		storage.deleteFromAliasFile("insert");
+		assertEquals("remove;delete\nplus;add\n", storage.readAliasFile());
+
 		// Test if deleting non-existent alias affects file.
-		storage.deleteFromAliasFile("flying"); 
-		assertEquals("remove;delete\nplus;add\n",storage.readAliasFile());
-		
+		storage.deleteFromAliasFile("flying");
+		assertEquals("remove;delete\nplus;add\n", storage.readAliasFile());
+
 		// Test if boundary case of empty file is displaying correctly.
 		storage.deleteFromAliasFile("plus");
 		storage.deleteFromAliasFile("remove");
-		assertEquals("",storage.readAliasFile());
-		
+		assertEquals("", storage.readAliasFile());
+
 		// Test add and delete 1 item.
 		storage.addToAliasFile("wakaka", "done");
-		assertEquals("wakaka;done\n",storage.readAliasFile());
+		assertEquals("wakaka;done\n", storage.readAliasFile());
 		storage.deleteFromAliasFile("wakaka");
-		assertEquals("",storage.readAliasFile());
+		assertEquals("", storage.readAliasFile());
 	}
-	
-	@Test 
+
+	@Test
 	public void testClearAliasFile() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.clearAliasFile();
-		
-		storage.addToAliasFile("plus", "add");  
-		storage.addToAliasFile("rm", "delete"); 
+
+		storage.addToAliasFile("plus", "add");
+		storage.addToAliasFile("rm", "delete");
 		storage.addToAliasFile("jia", "add");
-		storage.deleteFromAliasFile("plus"); 
-		assertEquals("rm;delete\njia;add\n",storage.readAliasFile());
-		
+		storage.deleteFromAliasFile("plus");
+		assertEquals("rm;delete\njia;add\n", storage.readAliasFile());
+
 		// General Case
-		storage.clearAliasFile(); 
-		assertEquals("",storage.readAliasFile());
-		
+		storage.clearAliasFile();
+		assertEquals("", storage.readAliasFile());
+
 		// Clearing empty file.
-		storage.clearAliasFile(); 
-		assertEquals("",storage.readAliasFile());
+		storage.clearAliasFile();
+		assertEquals("", storage.readAliasFile());
 	}
-	
+
 	@Test
 	public void testOverwriteAliasFile() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.clearAliasFile();
-		
-		storage.addToAliasFile("plus", "add");  
-		
+
+		storage.addToAliasFile("plus", "add");
+
 		// This is a boundary case for overwriting with empty string.
 		storage.overwriteAliasFile("");
-		assertEquals("",storage.readAliasFile());
-		
+		assertEquals("", storage.readAliasFile());
+
 		// General Case
 		storage.addToAliasFile("find", "search");
-		
+
 		storage.overwriteAliasFile("assign;set\nwhy;help\n");
-		assertEquals("assign;set\nwhy;help\n",storage.readAliasFile());
-		
+		assertEquals("assign;set\nwhy;help\n", storage.readAliasFile());
+
 		storage.overwriteAliasFile("");
-		assertEquals("",storage.readAliasFile());
+		assertEquals("", storage.readAliasFile());
 	}
-	
+
 	@Test
 	// Tests that changing file path to folder without text file.
 	public void testChangeFilePath() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
-		
+
 		storage.addTask(new Task("sample task", false, new Date("121212")));
-		storage.changeFileStorageLocation("src" + File.separator + "test" + File.separator);
-		
+		storage.changeFileStorageLocation("src" + File.separator + "test"
+				+ File.separator);
+
 		assertEquals("task;sample task;todo;121212\n", storage.display());
-		
+
 		storage.changeFileStorageLocation("");
-		assertEquals("task;sample task;todo;121212\n", storage.display());	
-		
+		assertEquals("task;sample task;todo;121212\n", storage.display());
+
 		// Clear File for next test.
 		storage.overwriteFile("");
 	}
-	
+
 	@Test
 	// Tests that changing file path to folder with empty text file.
 	public void testChangeFilePathToEmpty() throws IOException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
-		
+
 		storage.addTask(new Task("sample task", false, new Date("121212")));
-		
+
 		// Simulate empty text file
-		File file = new File("src" + File.separator+ "test" + File.separator + "whattodo.txt");
+		File file = new File("src" + File.separator + "test" + File.separator
+				+ "whattodo.txt");
 		assertEquals(true, file.createNewFile());
-		
+
 		storage.changeFileStorageLocation("src" + File.separator + "test");
 		assertEquals("task;sample task;todo;121212\n", storage.display());
-		
+
 		// Revert back
 		storage.changeFileStorageLocation("");
-		assertEquals("task;sample task;todo;121212\n", storage.display());	
-		
+		assertEquals("task;sample task;todo;121212\n", storage.display());
+
 		// Clear File for next test.
-		storage.overwriteFile("");		
+		storage.overwriteFile("");
 	}
-	
+
 	@Test
 	// Tests that changing file path to folder with conflicting text file.
 	public void testChangeFilePathConflicting() throws IOException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
-		
+
 		storage.addTask(new Task("sample task", false, new Date("121212")));
-		
+
 		// Simulate conflict file.
-		File file = new File("src" + File.separator + "test" + File.separator + "whattodo.txt");
+		File file = new File("src" + File.separator + "test" + File.separator
+				+ "whattodo.txt");
 		assertEquals(true, file.createNewFile());
-		PrintWriter writer = new PrintWriter("src" + File.separator + "test" + File.separator + "whattodo.txt");
+		PrintWriter writer = new PrintWriter("src" + File.separator + "test"
+				+ File.separator + "whattodo.txt");
 		writer.print("float;koala bear;todo");
 		writer.close();
-		
-		assertEquals("Conflicting text files found in"
-				+ " both old and new file paths. Please delete either one before continuing.",
-				storage.changeFileStorageLocation("src" + File.separator + "test"));
-		
+
+		assertEquals(
+				"Conflicting text files found in"
+						+ " both old and new file paths. Please delete either one.",
+				storage.changeFileStorageLocation("src" + File.separator
+						+ "test"));
+
 		assertEquals("task;sample task;todo;121212\n", storage.display());
-		
+
 		// Clear for next tests.
-		storage.overwriteFile("");	
+		storage.overwriteFile("");
 		file.delete();
 	}
 }

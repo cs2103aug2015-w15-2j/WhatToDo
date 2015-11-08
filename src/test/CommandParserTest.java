@@ -14,6 +14,8 @@ public class CommandParserTest {
 	
 	private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
 	private CommandParser parser = new CommandParser(commandAliases);
+	private Date todayDate = Date.todayDate();
+	private String todayDateString = todayDate.formatDateShort();
 	
 	
 	// *******************************************************************
@@ -26,45 +28,72 @@ public class CommandParserTest {
 	public void testAddFloatingTask() {
 		String userInput = "add something";
 		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		Command.DataType dataType = command.getDataType();
 		String name = command.getName();
 		assertEquals("something", name);
+		assertEquals(Command.CommandType.ADD, type);
+		assertEquals(Command.DataType.FLOATING_TASK, dataType);
 	}
 	
 	@Test
 	public void testAddTask() {
-		String userInput = "add something by 2311";
+		String userInput = "add something by 3112";
 		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		Command.DataType dataType = command.getDataType();
 		String name = command.getName();
 		Date endDate = command.getDueDate();
 		String endDateString = endDate.formatDateShort();
-		Date testDate = new Date("231115");
+		Date testDate = new Date("311215");
 		String testDateString = testDate.formatDateShort();
+		assertEquals(Command.CommandType.ADD, type);
+		assertEquals(Command.DataType.TASK, dataType);
 		assertEquals("something", name);
 		assertEquals(testDateString, endDateString);
 	}
 	
-	/**@Test
-	public void testAddEvent() {
-		String userInput = "add event from nfri 10pm to nsun 23";
+	@Test
+	public void testInvalidAddTaskDate() {
+		String userInput = "add something by 3212";
 		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid deadline.", name);
+	}
+	
+	@Test
+	public void testInvalidAddTaskName() {
+		String userInput = "add by 3112";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Task name required.", name);
+	}
+	
+	@Test
+	public void testAddSingleDayEvent() {
+		String userInput = "add event on today from 2pm to 3pm";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		Command.DataType dataType = command.getDataType();
 		String name = command.getName();
 		Date endDate = command.getEndDate();
-		System.out.println(name);
 		String endDateString = endDate.formatDateShort();
-		Date testEndDate = new Date("011115");
-		String testEndDateString = testEndDate.formatDateShort();
 		Date startDate = command.getStartDate();
 		String startDateString = startDate.formatDateShort();
-		Date testStartDate = new Date("301015");
-		String testStartDateString = testStartDate.formatDateShort();
 		String startTime = command.getStartTime();
 		String endTime = command.getEndTime();
+		assertEquals(Command.CommandType.ADD, type);
+		assertEquals(Command.DataType.EVENT, dataType);
 		assertEquals("event", name);
-		assertEquals(testEndDateString, endDateString);
-		assertEquals(testStartDateString, startDateString);
-		assertEquals("2200", startTime);
-		assertEquals("2300", endTime);
-	}**/
+		assertEquals(todayDateString, endDateString);
+		assertEquals(todayDateString, startDateString);
+		assertEquals("1400", startTime);
+		assertEquals("1500", endTime);
+	}
 	
 	
 	// *******************************************************************
@@ -72,6 +101,36 @@ public class CommandParserTest {
 	// FOR DELETE COMMAND
 	// *******************************************************************
 	// *******************************************************************
+	
+	@Test
+	public void testDeleteIndex() {
+		String userInput = "delete 1";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		int index = command.getIndex();
+		assertEquals(Command.CommandType.DELETE, type);
+		assertEquals(1, index);
+	}
+	
+	@Test
+	public void testInvalidDeleteEmpty() {
+		String userInput = "delete";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String errorMsg = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Index/alias command required.", errorMsg);
+	}
+	
+	@Test
+	public void testInvalidDeleteArgument() {
+		String userInput = "delete two words";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String errorMsg = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid index or alias.", errorMsg);
+	}
 	
 	// *******************************************************************
 	// *******************************************************************
