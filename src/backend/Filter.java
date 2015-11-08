@@ -14,7 +14,6 @@ public class Filter {
 	private static final int INDEX_STARTDATE = 3; 
 	private static final int INDEX_ENDDATE = 5; 
 	
-//    private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
     private static final String TYPE_EVENT = "event";
 	
@@ -27,10 +26,10 @@ public class Filter {
 	//============================================
 	// Public methods
 	//============================================
-	
-	//TODO add assertions where applicable
 		
 	public ArrayList<Integer> filterDate(String[] linesInFile, String type, Date date){ 
+		 assert(type.equals(TYPE_TASK) || type.equals(TYPE_EVENT));
+		
 		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		 
 		 for(int i = 0; i < linesInFile.length; i++){ 
@@ -70,7 +69,8 @@ public class Filter {
 	}
 	
 	public ArrayList<Integer> filterPastUncompleted(String[] linesInFile, String type){ 
-		//assert type is not float 
+		assert(type.equals(TYPE_TASK) || type.equals(TYPE_EVENT));
+		
 		ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		
 		for(int i = 0; i < linesInFile.length; i++){ 
@@ -84,7 +84,6 @@ public class Filter {
 	}
 		
 	public ArrayList<Integer> matchTokensInQuery(String[] linesInFile, String type, String query){ 
-		
 		String[] tokens = parseQuery(query); 
 		ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		
@@ -130,6 +129,9 @@ public class Filter {
 	
 	private boolean isOngoing(String line){
 		String[] lineFields = line.split(SEMICOLON);
+		
+		assert(lineFields[INDEX_TYPE].equals(TYPE_EVENT));
+		
 		Date todayDate = Date.todayDate(); 
 		Date startDate = new Date(lineFields[INDEX_STARTDATE]);
 		Date endDate = new Date(lineFields[INDEX_ENDDATE]);
@@ -144,7 +146,8 @@ public class Filter {
 	}
 	
 	private boolean isPast(String type, String line){ 
-		//assert type is not float 
+		assert(type.equals(TYPE_TASK) || type.equals(TYPE_EVENT));
+		
 		String[] lineFields = line.split(SEMICOLON);
 		String lineDateStr = (type.equals(TYPE_TASK)) ? lineFields[INDEX_DUEDATE] : lineFields[INDEX_ENDDATE]; 
 		Date lineDate = new Date(lineDateStr); 
