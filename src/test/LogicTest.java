@@ -8,8 +8,35 @@ import org.junit.Test;
 
 import backend.Logic;
 
+import struct.Command;
+import struct.Command.CommandType;
+import struct.Command.ViewType;
+
 //@@author A0127051U
 public class LogicTest {
+	
+	@Test 
+	/** Test getCommandType and getViewType**/
+	public void testGet() throws FileSystemException{ 
+		Logic logic = new Logic();
+		
+		//test getCommandType
+		Command.CommandType commandType = logic.getCommandType("add sth"); 
+		assertEquals(CommandType.ADD, commandType);
+		
+		//test getViewType 
+		Command.ViewType viewType = logic.getViewType("all"); 
+		assertEquals(ViewType.ALL, viewType);
+	}
+	
+	@Test 
+	//TODO MOVE TO ADD TEST 
+	/* Test adding of float with keyword 'by' */
+	public void testAddFloatWithBy() throws FileSystemException{ 
+		Logic logic = new Logic();
+		String feedback = logic.executeCommand("add sth \\by tomorrow");
+		assertEquals("Added float \"sth by tomorrow\" to list.", feedback);
+	}
 	
 	@Test 
 	/** Test valid add commands **/
@@ -64,11 +91,12 @@ public class LogicTest {
 	/** Test valid delete commands **/
 	public void testDelete() throws FileSystemException{ 
 		Logic logic = new Logic(); 
-//		logic.overwriteFile("");
-	
-		logic.executeCommand("add !"); 
-		String feedback = logic.executeCommand("delete 1");
-		assertEquals("Deleted float \"!\" from list.", feedback);
+		logic.overwriteFile("float;hello;todo\n"
+				+ "task;hellotask;todo;111116\n"
+				+ "event;helloevent;todo;111116;1500;111116;2000");
+		String feedback = logic.executeCommand("delete 2");
+		assertEquals("Deleted task \"hellotask\" from list.", feedback);
+
 	}
 	
 	@Test 
@@ -95,7 +123,7 @@ public class LogicTest {
 	public void testEdit() throws FileSystemException{ 
 		Logic logic = new Logic(); 
 		logic.overwriteFile("float;hello;todo\n"
-				+ "float;hello2;todo\n"
+				+ "float;hello2;done\n"
 				+ "task;hellotask;todo;111116\n"
 				+ "event;helloevent;todo;111116;1500;111116;2000");
 		
@@ -118,7 +146,7 @@ public class LogicTest {
 		assertEquals("Edited event \"neweventname\".", feedback);
 		
 		// edit all fields of event together 
-		feedback = logic.executeCommand("edit 4 name editallevent startd 101116 startt 3 endd 111116 endt 4"); 
+		feedback = logic.executeCommand("edit 4 name editallevent startd 121116 startt 3 endd 131116 endt 4"); 
 		assertEquals("Edited event \"editallevent\".", feedback);
 		
 		/** edit float **/ 
@@ -140,7 +168,7 @@ public class LogicTest {
 	public void testInvalidEdit() throws FileSystemException{
 		Logic logic = new Logic(); 
 		logic.overwriteFile("float;hello;todo\n"
-				+ "task;hellotask;todo;111116\n"
+				+ "task;hellotask;done;111116\n"
 				+ "event;helloevent;todo;111116;1500;111116;2000");
 		
 		/** invalid conversions **/
@@ -158,10 +186,16 @@ public class LogicTest {
 		
 		/** illogical edits **/ 
 		// edit deadline to a date that has past 
-		
+		feedback = logic.executeCommand("edit 2 date 111106"); 
+		assertEquals("\"edit 2 date 111106\" is an invalid command. Invalid deadline.", feedback);
+							
 		// edit start date to become later than end date
+		feedback = logic.executeCommand("edit 3 startd 141116"); 
+		assertEquals("Invalid edit. Start date later than end date.", feedback);
 	
 		// edit start time to become later than end time for single day events 
+		feedback = logic.executeCommand("edit 3 startt 2100"); 
+		assertEquals("Invalid edit. Start time later than or equal to end time for single-day event.", feedback);
 		
 	}
 	
@@ -271,23 +305,77 @@ public class LogicTest {
 	}
 	
 	@Test
+	/** Test set commands **/
+	public void testSet() throws FileSystemException{ 
+		Logic logic = new Logic();
+		logic.clearAliasFile(); 
+		
+		// valid set command
+		String feedback = logic.executeCommand("set + as add"); 
+		assertEquals("Set new alias \"+\" for \"add\".", feedback); 
+	}
+	
+	@Test
 	/** Test invalid set commands **/
 	public void testInvalidSet() throws FileSystemException{ 
 		Logic logic = new Logic();
+		logic.clearAliasFile();
 		
-		// invalid alias - set alias that is already a command keyword/alias 
+		// invalid alias - set alias that is already a command keyword
 		String feedback = logic.executeCommand("set add as delete"); 
 		assertEquals("\"set add as delete\" is an invalid command. "
 				+ "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use.", feedback); 
+		
+		// invalid alias - set alias that already exists 
+		logic.executeCommand("set create as add"); 
+		feedback = logic.executeCommand("set create as delete"); 
+		assertEquals("\"set create as delete\" is an invalid command. "
+				+ "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use.", feedback); 
 	}
 	
-
-	@Test 
-	/* Test adding of float with keyword 'by' */
-	public void testAddFloatWithBy() throws FileSystemException{ 
+	@Test
+	/** Test delete alias commands **/
+	public void testDeleteAlias() throws FileSystemException{ 
 		Logic logic = new Logic();
-		String feedback = logic.executeCommand("add sth \\by tomorrow");
-		assertEquals("Added float \"sth by tomorrow\" to list.", feedback);
+		logic.clearAliasFile();
+		
+		// valid delete alias command 
+		logic.executeCommand("set del as delete");
+		String feedback = logic.executeCommand("delete del"); 
+		assertEquals("Deleted alias \"del\".", feedback); 
+	}
+	
+	@Test
+	/** Test invalid delete alias commands **/
+	public void testInvalidDeleteAlias() throws FileSystemException{ 
+		Logic logic = new Logic();
+		logic.clearAliasFile();
+		
+		// invalid delete alias - delete alias that was not set 
+		String feedback = logic.executeCommand("delete insert"); 
+		assertEquals("\"delete insert\" is an invalid command. No such alias has been set.", feedback); 
+	}
+	
+	@Test 
+	/** Test save command **/
+	public void testSave() throws FileSystemException{ 
+		Logic logic = new Logic();
+		
+		//get original filepath
+		String originalUrl = logic.getFilepath(); 
+		int fileNameIndex = originalUrl.lastIndexOf("\\whattodo.txt");
+		String originalBaseUrl = originalUrl.substring(0, fileNameIndex); 
+		
+		// valid - save to same location
+		String feedback = logic.executeCommand("save " + originalBaseUrl); 
+		assertEquals("Your file location remains unchanged.", feedback); 
+		
+		// valid - save to new location 
+		feedback = logic.executeCommand("save c:\\test"); 
+		assertEquals("You are now writing to \"c:\\test\\whattodo.txt\"", feedback); 
+		
+		//save to original location after testing 
+		logic.executeCommand("save " + originalBaseUrl); 
 	}
 		
 	@Test
@@ -297,4 +385,17 @@ public class LogicTest {
 		String feedback = logic.executeCommand("zzz");
 		assertEquals("\"zzz\" is an invalid command. Invalid user command.", feedback);
 	}
+	
+	@Test
+	public void testCorruptedFile() throws FileSystemException{
+		Logic logic = new Logic();
+		
+		logic.overwriteFile(";;");
+		String feedback = logic.executeCommand("add zzz");
+		assertEquals("Unknown error encountered. whattodo.txt may be corrupted.", feedback);
+		
+		//ensure the file is not corrupted at the end of tests
+		logic.overwriteFile("");
+	}
+	
 }
