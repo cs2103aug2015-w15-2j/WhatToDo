@@ -634,16 +634,6 @@ public class CommandParser {
 		return command;
 	}
 	
-	private int getIndex(ArrayList<String> arguments) {
-		try {
-			int index = Integer.parseInt(arguments.get(0));
-			return index;
-		}
-		catch (Exception e) {
-			return 0;
-		}
-	}
-	
 	public void deleteAliasFromHash(String command) {
 		commandAliases.remove(command);
 	}
@@ -939,14 +929,14 @@ public class CommandParser {
 			command.setViewType(Command.ViewType.DONE);
 			return command;
 		}
-		int index = getIndex(arguments);
+		String index = arguments.get(0);
 		
-		if (arguments.size() > 1 || index <= 0) {
+		if (arguments.size() > 1 || !index.matches(REGEX_POSITIVE_INTEGER)) {
 			return initInvalidCommand(ERROR_INDEX);
 		}
 		
 		Command command = new Command(Command.CommandType.DONE);
-		command.setIndex(index);
+		command.setIndex(Integer.parseInt(index));
 		return command;
 	}
 	
