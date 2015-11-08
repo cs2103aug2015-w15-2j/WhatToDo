@@ -156,6 +156,13 @@ public class InterfaceController {
     protected static final double MARGIN_TICK = 10;
     protected static final double MARGIN_AC_INDICATOR = 13;
 
+    /**
+     * Public method to initialize the logic unit for the interface
+     */
+    public static void initLogicControl() {
+        logicControl = new LogicController();
+    }
+    
     // ===============================================================
     // Protected methods to initialize, update and close the main 
     // interface
@@ -172,8 +179,8 @@ public class InterfaceController {
     	// Initial view set to ALL, 
     	// just a dummy state other than DEFAULT
     	currentView = View.ALL;
-        logicControl = new LogicController();
         ViewIndexMap.initAllMaps();
+        initLogicControl();
         initSubComponents();
         initViewComponents();
         
