@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import struct.Date;
 
+//@@author A0127051U
 public class Formatter {
 
 //	private static final int INDEX_TYPE = 0; 
@@ -30,6 +31,8 @@ public class Formatter {
 	// Public methods
 	//============================================
     
+	//TODO add the assertions where necessary
+	
 	public String formatFloatOrTaskWithoutHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){
 		StringBuffer contentBuffer = new StringBuffer();
 		for(int i : result){ 
