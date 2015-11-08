@@ -36,11 +36,11 @@ public class Formatter {
 	private static final String EMPTYSTRING = ""; 
 	private static final String SPACE = " "; 
 	
+	private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])[0-5][0-9]";
+	
 	//============================================
 	// Public methods
 	//============================================
-    
-	//TODO add the assertions where necessary	
 	
 	public String formatDefEventView(String[] linesInFile, ArrayList<Integer> eventOngoingIndexList, 
 			ArrayList<Integer> eventTodayIndexList, ArrayList<Integer> eventTmrIndexList){ 
@@ -200,7 +200,8 @@ public class Formatter {
     }
     
     private String formatTime(String time){
-    	//assert time string is numeric
+    	assert(time.matches(REGEX_24_HOUR_TIME)); 
+    	
     	Calendar cal = Calendar.getInstance(); 
 		cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
 		cal.set(Calendar.MINUTE, Integer.parseInt(time.substring(2)));
