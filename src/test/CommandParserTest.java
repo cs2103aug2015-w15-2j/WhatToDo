@@ -40,6 +40,7 @@ public class CommandParserTest {
 		Command command = parser.parse(userInput);
 		String name = command.getName();
 		Date endDate = command.getEndDate();
+		System.out.println(name);
 		String endDateString = endDate.formatDateShort();
 		Date testEndDate = new Date("011115");
 		String testEndDateString = testEndDate.formatDateShort();
