@@ -431,65 +431,47 @@ public class Logic {
     	String newDeadlineStr = newDeadline.formatDateShort(); 
     	Boolean isDone = isDone(lineNumber); 
     	Command addTaskCmd = getAddEditedTaskCommand(newName, newDeadlineStr); 
-    	
-    	if(isValidEdit(addTaskCmd, DataType.TASK)){ 
-    		//TODO refactor convert to task
-    		State stateBeforeExecutingCommand = getState(command);
-    		addEditedTaskToFile(lineNumber, newName, isDone, newDeadline);
-    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_TASK, newName);
-    		
-    		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-            return formFeedbackMsg(editFeedback, isSaved);
-    	}else{ 
-    		return handleInvalidEdit(addTaskCmd); 
-    	}	  
-    }
 
-    private String executeEditConvertToEvent(Command command) throws FileSystemException{ 
-    	ArrayList<String> editList = command.getEditList(); 
-    	assert(editList != null);
-    	
-    	int lineNumber = command.getIndex(); 
-    	Date newStartDate = command.getStartDate();
-    	Date newEndDate = command.getEndDate(); 
-    	String oldName = storage.getAttribute(lineNumber, INDEX_NAME); 
-    	String newName = getEditedName(command, editList, lineNumber);
-    	String newStartDateStr = newStartDate.formatDateShort(); 
-    	String newEndDateStr = newEndDate.formatDateShort(); 
-    	String newStartTime = command.getStartTime(); 
-    	String newEndTime = command.getEndTime(); 
-    	Boolean isDone = isDone(lineNumber); 
-    	Command addEventCmd = getAddEditedEventCommand(newName, newStartDateStr, newEndDateStr, newStartTime, newEndTime); 
-    	
-    	if(isValidEdit(addEventCmd, DataType.EVENT)){ 
-    		//TODO refactor convert to event
-    		State stateBeforeExecutingCommand = getState(command);
-    		addEditedEventToFile(lineNumber, newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime);
-    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_EVENT, newName);
-    		
-    		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-            return formFeedbackMsg(editFeedback, isSaved);
-    	}else{ 
-    		return handleInvalid(addEventCmd); 
-    	}	
+    	return handleEditConvertToTask(command,  addTaskCmd, lineNumber, oldName, newName, newDeadline, isDone);	  
     }
-    
+	
+	 private String executeEditConvertToEvent(Command command) throws FileSystemException{ 
+	    	ArrayList<String> editList = command.getEditList(); 
+	    	assert(editList != null);
+	    	
+	    	int lineNumber = command.getIndex(); 
+	    	Date newStartDate = command.getStartDate();
+	    	Date newEndDate = command.getEndDate(); 
+	    	String oldName = storage.getAttribute(lineNumber, INDEX_NAME); 
+	    	String newName = getEditedName(command, editList, lineNumber);
+	    	String newStartDateStr = newStartDate.formatDateShort(); 
+	    	String newEndDateStr = newEndDate.formatDateShort(); 
+	    	String newStartTime = command.getStartTime(); 
+	    	String newEndTime = command.getEndTime(); 
+	    	Boolean isDone = isDone(lineNumber); 
+	    	Command addEventCmd = getAddEditedEventCommand(newName, newStartDateStr, newEndDateStr, newStartTime, newEndTime); 
+	    	
+	    	return handleEditConvertToEvent(command, addEventCmd, lineNumber, newStartDate, 
+	    			newEndDate, oldName, newName, newStartTime, newEndTime, isDone);	
+	    }
+	 
+	//TODO refactor edit float? 
 	private String executeEditFloat(Command command) throws FileSystemException{
 		State stateBeforeExecutingCommand = getState(command);
-		
+			
 		int lineNumber = command.getIndex();
 		String newName = command.getName(); 
 		boolean isDone = isDone(lineNumber);  
 		FloatingTask newFloatingTask = new FloatingTask(newName,isDone); 
-		
+			
 		storage.deleteLine(lineNumber); 
 		storage.addFloatingTask(newFloatingTask);
 		String editFeedback = String.format(MESSAGE_EDIT, TYPE_FLOAT, newName);
-	
+		
 		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        return formFeedbackMsg(editFeedback, isSaved);
+	    return formFeedbackMsg(editFeedback, isSaved);
 	}
-	
+		
 	private String executeEditTask(Command command) throws FileSystemException {
 		ArrayList<String> editList = command.getEditList(); 
 		assert(editList != null);
@@ -502,16 +484,7 @@ public class Logic {
 			boolean isDone = isDone(lineNumber);  			
 			Command addEditedTaskCmd = getAddEditedTaskCommand(newName, newDeadlineStr);
 	    	
-	    	if(isValidEdit(addEditedTaskCmd, DataType.TASK)){ 
-	    		//TODO refactor edit task 
-	    		State stateBeforeExecutingCommand = getState(command);
-	    		addEditedTaskToFile(lineNumber, newName, isDone, newDeadline);
-	    		String editFeedback = String.format(MESSAGE_EDIT, TYPE_TASK, newName);
-	    		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-	            return formFeedbackMsg(editFeedback, isSaved);
-	    	}else{ 
-	    		return handleInvalidEdit(addEditedTaskCmd); 
-	    	}
+	    	return handleEditTask(command, addEditedTaskCmd, lineNumber, newDeadline, newName, isDone);
 		}
 		else{ 
 			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_TASK, TYPE_EVENT); 
@@ -523,7 +496,6 @@ public class Logic {
     	assert(editList != null); 
     	
     	if(Collections.disjoint(editList, ATTRIBUTE_LIST_FLOAT_TO_TASK)){ 
-    		//TODO refactor edit event 
     		int lineNumber = command.getIndex();
     		Date newStartDate = getEditedStartDate(command, editList, lineNumber);
     		Date newEndDate = getEditedEndDate(command, editList, lineNumber);
@@ -536,72 +508,21 @@ public class Logic {
     		Command addEditedEventCmd = getAddEditedEventCommand(newName, newStartDateStr, 
     				newEndDateStr, newStartTime, newEndTime); 
     		
-        	if(isValidEdit(addEditedEventCmd, DataType.EVENT)){ 
-        		State stateBeforeExecutingCommand = getState(command);
-        		addEditedEventToFile(lineNumber, newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime);        		
-        		String editFeedback = String.format(MESSAGE_EDIT, TYPE_EVENT, newName);
-        		
-        		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-                return formFeedbackMsg(editFeedback, isSaved);
-        	}else{ 
-        		return handleInvalidEdit(addEditedEventCmd); 
-        	}	
+        	return handleEditEvent(command, addEditedEventCmd, lineNumber, 
+        			newStartDate, newEndDate, newName, newStartTime, newEndTime, isDone);	
     	}
     	else{ 
 			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_EVENT, TYPE_TASK);
     	}
 	}
-  
-	private void addEditedTaskToFile(int lineNumber, String newName, boolean isDone, Date newDeadline)
-			throws FileSystemException {
-		storage.deleteLine(lineNumber); 
-		Task editedTask = new Task(newName, isDone, newDeadline); 
-		storage.addTask(editedTask);
-	}
 	
-    
-	private void addEditedEventToFile(int lineNumber, String newName, boolean isDone, Date newStartDate,
-			Date newEndDate, String newStartTime, String newEndTime) throws FileSystemException {
-		storage.deleteLine(lineNumber); 
-		Event editedEvent = new Event(newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime); 
-		storage.addEvent(editedEvent);
-	}
-    
-	private Command getAddEditedTaskCommand(String newName, String newDeadlineStr) {
-		String addEditedTaskCmdStr = String.format(COMMAND_FORMAT_ADD_TASK, newName, newDeadlineStr);    	
-		Command addEditedTaskCmd = commandParser.parse(addEditedTaskCmdStr);
-		return addEditedTaskCmd;
-	}
-
-	private Command getAddEditedEventCommand(String newName, String newStartDateStr, String newEndDateStr,
-			String newStartTime, String newEndTime) {
-		String addEditedEventCmdString = String.format(COMMAND_FORMAT_ADD_EVENT, newName, newStartDateStr, newStartTime, newEndDateStr, newEndTime);  
-		Command addEditedEventCmd = commandParser.parse(addEditedEventCmdString);
-		return addEditedEventCmd;
-	}
-
-	private boolean isDone(int lineNumber) throws FileSystemException {
-		String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
-		return isDoneStr.equals(DONE);
-	}
-
-	private String getEditedEndTime(Command command, ArrayList<String> editList, int lineNumber)
+	private String getEditedName(Command command, ArrayList<String> editList, int lineNumber)
 			throws FileSystemException {
-		if(editList.contains(KEYWORD_EDIT_END_TIME)){ 
-			return command.getEndTime(); 
+		if(editList.contains(KEYWORD_EDIT_NAME)){ 
+			return command.getName();
 		}
 		else{ 
-			return storage.getAttribute(lineNumber, INDEX_ENDTIME);
-		}
-	}
-
-	private String getEditedStartTime(Command command, ArrayList<String> editList, int lineNumber)
-			throws FileSystemException {
-		if(editList.contains(KEYWORD_EDIT_START_TIME)){ 
-			return command.getStartTime(); 
-		}
-		else{
-			return storage.getAttribute(lineNumber, INDEX_STARTTIME);
+			return storage.getAttribute(lineNumber, INDEX_NAME);
 		}
 	}
     
@@ -615,13 +536,33 @@ public class Logic {
 		}
 	}
 
-	private String getEditedName(Command command, ArrayList<String> editList, int lineNumber)
+	private String getEditedStartTime(Command command, ArrayList<String> editList, int lineNumber)
 			throws FileSystemException {
-		if(editList.contains(KEYWORD_EDIT_NAME)){ 
-			return command.getName();
+		if(editList.contains(KEYWORD_EDIT_START_TIME)){ 
+			return command.getStartTime(); 
+		}
+		else{
+			return storage.getAttribute(lineNumber, INDEX_STARTTIME);
+		}
+	}
+
+	private String getEditedEndTime(Command command, ArrayList<String> editList, int lineNumber)
+			throws FileSystemException {
+		if(editList.contains(KEYWORD_EDIT_END_TIME)){ 
+			return command.getEndTime(); 
 		}
 		else{ 
-			return storage.getAttribute(lineNumber, INDEX_NAME);
+			return storage.getAttribute(lineNumber, INDEX_ENDTIME);
+		}
+	}
+	
+	private Date getEditedStartDate(Command command, ArrayList<String> editList, int lineNumber)
+			throws FileSystemException {
+		if(editList.contains(KEYWORD_EDIT_START_DATE)){ 
+			return command.getStartDate(); 
+		}
+		else{ 
+			return new Date(storage.getAttribute(lineNumber, INDEX_STARTDATE));
 		}
 	}
 
@@ -634,15 +575,18 @@ public class Logic {
 			return new Date(storage.getAttribute(lineNumber, INDEX_ENDDATE));
 		}
 	}
+	
+	private Command getAddEditedTaskCommand(String newName, String newDeadlineStr) {
+		String addEditedTaskCmdStr = String.format(COMMAND_FORMAT_ADD_TASK, newName, newDeadlineStr);    	
+		Command addEditedTaskCmd = commandParser.parse(addEditedTaskCmdStr);
+		return addEditedTaskCmd;
+	}
 
-	private Date getEditedStartDate(Command command, ArrayList<String> editList, int lineNumber)
-			throws FileSystemException {
-		if(editList.contains(KEYWORD_EDIT_START_DATE)){ 
-			return command.getStartDate(); 
-		}
-		else{ 
-			return new Date(storage.getAttribute(lineNumber, INDEX_STARTDATE));
-		}
+	private Command getAddEditedEventCommand(String newName, String newStartDateStr, String newEndDateStr,
+			String newStartTime, String newEndTime) {
+		String addEditedEventCmdString = String.format(COMMAND_FORMAT_ADD_EVENT, newName, newStartDateStr, newStartTime, newEndDateStr, newEndTime);  
+		Command addEditedEventCmd = commandParser.parse(addEditedEventCmdString);
+		return addEditedEventCmd;
 	}
 	
     private int getConversionStatus(Command command) throws FileSystemException{ 
@@ -663,25 +607,107 @@ public class Logic {
     		return CONVERSION_INVALID;
     	}    	 
     }
-
-	private boolean isValidEdit(Command addEditedItemCmd, Command.DataType dataType) {
-		return addEditedItemCmd.getCommandType() == CommandType.ADD 
-				&& addEditedItemCmd.getDataType() == dataType;
+    
+	private String handleEditConvertToTask(Command command, Command addTaskCmd, int lineNumber, String oldName, String newName,
+			Date newDeadline, Boolean isDone) throws FileSystemException {
+		if(isValidEdit(addTaskCmd, DataType.TASK)){ 	
+    		boolean isSaved = handleValidEditTask(command, lineNumber, newName, newDeadline, isDone);
+    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_TASK, newName);
+            return formFeedbackMsg(editFeedback, isSaved);
+    	}else{ 
+    		return handleInvalidEdit(addTaskCmd); 
+    	}
 	}
     
+	private String handleEditConvertToEvent(Command command, Command addEventCmd, int lineNumber, Date newStartDate,
+			Date newEndDate, String oldName, String newName, String newStartTime, String newEndTime, Boolean isDone)
+						throws FileSystemException {
+		if(isValidEdit(addEventCmd, DataType.EVENT)){ 	
+    		boolean isSaved = handleValidEditEvent(command, lineNumber, 
+	   				newStartDate, newEndDate, newName, newStartTime, newEndTime, isDone);
+	   		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_EVENT, newName);
+            return formFeedbackMsg(editFeedback, isSaved);
+	    }else{ 
+	    	return handleInvalidEdit(addEventCmd);
+	   	}
+	}
+		
+	private String handleEditTask(Command command, Command addTaskCmd, int lineNumber, 
+			Date newDeadline, String newName, boolean isDone) throws FileSystemException {
+		if(isValidEdit(addTaskCmd, DataType.TASK)){ 
+			boolean isSaved = handleValidEditTask(command, lineNumber, newName, newDeadline, isDone); 
+			String editFeedback = String.format(MESSAGE_EDIT, TYPE_TASK, newName);
+		    return formFeedbackMsg(editFeedback, isSaved);
+		}else{ 
+			return handleInvalidEdit(addTaskCmd); 
+		}
+	}
+
+	private String handleEditEvent(Command command, Command addEventCmd, int lineNumber, Date newStartDate,
+			Date newEndDate, String newName, String newStartTime, String newEndTime, boolean isDone) 
+					throws FileSystemException {
+		if(isValidEdit(addEventCmd, DataType.EVENT)){ 
+			boolean isSaved = handleValidEditEvent(command, lineNumber, 
+					newStartDate, newEndDate, newName, newStartTime, newEndTime, isDone);
+			String editFeedback = String.format(MESSAGE_EDIT, TYPE_EVENT, newName);
+		    return formFeedbackMsg(editFeedback, isSaved);
+		}else{ 
+			return handleInvalidEdit(addEventCmd); 
+		}
+	}
+
+	private boolean handleValidEditTask(Command command, int lineNumber, String newName, Date newDeadline,
+			Boolean isDone) throws FileSystemException {
+		State stateBeforeExecutingCommand = getState(command);
+		addEditedTaskToFile(lineNumber, newName, isDone, newDeadline);
+		return loadToMemoryStacks(command, stateBeforeExecutingCommand);
+	}
+
+	private boolean handleValidEditEvent(Command command, int lineNumber, Date newStartDate, Date newEndDate,
+			String newName, String newStartTime, String newEndTime, Boolean isDone) throws FileSystemException {
+		State stateBeforeExecutingCommand = getState(command);
+		addEditedEventToFile(lineNumber, newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime);
+		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
+		return isSaved;
+	}
+	
 	private String handleInvalidEdit(Command addEditedItemCmd) {
 		assert(addEditedItemCmd.getCommandType() == CommandType.INVALID);
 		 
 		String reason = (addEditedItemCmd.getName() != null)? addEditedItemCmd.getName() : EMPTYSTRING;
 		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason);
 	}
-	    
-    private boolean containNameOnly(ArrayList<String> editList){ 
-    	return editList.size() == 1 && editList.contains(KEYWORD_EDIT_NAME); 
-    }
+  
+	private void addEditedTaskToFile(int lineNumber, String newName, boolean isDone, Date newDeadline)
+			throws FileSystemException {
+		storage.deleteLine(lineNumber); 
+		Task editedTask = new Task(newName, isDone, newDeadline); 
+		storage.addTask(editedTask);
+	}
+	
+	private void addEditedEventToFile(int lineNumber, String newName, boolean isDone, Date newStartDate,
+			Date newEndDate, String newStartTime, String newEndTime) throws FileSystemException {
+		storage.deleteLine(lineNumber); 
+		Event editedEvent = new Event(newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime); 
+		storage.addEvent(editedEvent);
+	}
     
+	private boolean isDone(int lineNumber) throws FileSystemException {
+		String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
+		return isDoneStr.equals(DONE);
+	}
+	
+	private boolean isValidEdit(Command addEditedItemCmd, Command.DataType dataType) {
+		return addEditedItemCmd.getCommandType() == CommandType.ADD 
+				&& addEditedItemCmd.getDataType() == dataType;
+	}
+	
     private boolean isTaskOrEvent(String lineType){ 
     	return lineType.equals(TYPE_TASK) || lineType.equals(TYPE_EVENT); 
+    }
+   	    
+    private boolean containNameOnly(ArrayList<String> editList){ 
+    	return editList.size() == 1 && editList.contains(KEYWORD_EDIT_NAME); 
     }
    
 	private String executeDone(Command command){
