@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import gui.InterfaceController;
 import gui.LogicController;
+import struct.Command;
 
 public class LogicControllerTest {
 
@@ -21,7 +22,44 @@ public class LogicControllerTest {
 	public void testCase1() {
 		InterfaceController.initLogicControl();
 		
-		int expected = 25;
+		// Do first initialization of the test data
+		lc.runCommandTest("add float1");
+		lc.runCommandTest("add float2");
+		lc.runCommandTest("add float3");
+		lc.runCommandTest("add float4");
+		lc.runCommandTest("add float5");
+		lc.runCommandTest("add float6");
+		lc.runCommandTest("add float7");
+		lc.runCommandTest("add float8");
+		lc.runCommandTest("add float9");
+		lc.runCommandTest("add deadline1 by 081116");
+		lc.runCommandTest("add deadline2 by 091116");
+		lc.runCommandTest("add deadline3 by 101116");
+		lc.runCommandTest("add deadline4 by 111116");
+		lc.runCommandTest("add deadline5 by 111116");
+		lc.runCommandTest("add deadline6 by 121116");
+		lc.runCommandTest("add deadline7 by 121116");
+		lc.runCommandTest("add event1 from 051116 0000 to 061116 0000");
+		lc.runCommandTest("add event2 from 061116 0000 to 061116 2000");
+		lc.runCommandTest("add event3 from 071116 0000 to 071116 2100");
+		lc.runCommandTest("add event4 from 091116 0000 to 131116 0000");
+		lc.runCommandTest("add event5 from 101116 0000 to 111116 0000");
+		lc.runCommandTest("add event6 from 101116 0000 to 111116 0000");
+		lc.runCommandTest("add event7 from 101116 0000 to 111116 0000");
+		lc.runCommandTest("add event8 from 121116 0000 to 151116 0000");
+		lc.runCommandTest("done 1");
+		lc.runCommandTest("done 2");
+		lc.runCommandTest("done 3");
+		lc.runCommandTest("done 4");
+		lc.runCommandTest("done 5");
+		lc.runCommandTest("done 17");
+		lc.runCommandTest("done 18");
+		lc.runCommandTest("done 19");
+		lc.runCommandTest("done 20");
+		lc.runCommandTest("done 21");
+		lc.runCommandTest("done 22");
+		
+		int expected = 13;
 		int actual = lc.getAllElementsCount();
 		
 		assertEquals(expected, actual);
@@ -71,7 +109,7 @@ public class LogicControllerTest {
 	// Test for getUnresElementsCount(), and by extension getUnresTasks() and getUnresEvents()
 	public void testCase3() {
 		
-		int expected = 8;
+		int expected = 0;
 		int actual = lc.getUnresElementsCount();
 		
 		assertEquals(expected, actual);
@@ -81,20 +119,35 @@ public class LogicControllerTest {
 	// Test for getDoneElementsCount(), and by extension getDoneTasks() and getDoneEvents()
 	public void testCase4() {
 		
-		int expected = 10;
+		int expected = 11;
 		int actual = lc.getDoneElementsCount();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	// Test for getDefElementsCount(), and by extension getDefTasks() and getDefEvents()
+	public void testCase5() {
+		
+		int expected = 4;
+		int actual = lc.getDefElementsCount();
 		
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	// Test for getSummaryCount(), and by extension getDefTasks() and getDefEvents()
-	public void testCase5() {
+	public void testCase6() {
 		
-		int[] expected = {0, 0, 5, 1, 8};
+		int[] expected = {0, 0, 4, 0, 0};
 		
 		int[] actual = new int[5];
 		actual = lc.getSummaryCount();
+		
+		// Remove the added lines
+		for (int i = 0; i < 35; i++) {
+			lc.runCommandTest("delete 1");
+		}
 		
 		assertEquals(expected[0], actual[0]);
 		assertEquals(expected[1], actual[1]);
