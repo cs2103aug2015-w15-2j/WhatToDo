@@ -44,7 +44,7 @@ public class LogicController {
 	 * Possibly catches a FileSystemException from Storage caught by Logic and
 	 * passed on to UI.
 	 */
-	protected LogicController() {
+	public LogicController() {
 		try {
 			logic = new Logic();
 		} catch (FileSystemException e) {
@@ -61,7 +61,7 @@ public class LogicController {
 	 * Getter for the CommandHistory object to work with Handlers class
 	 * @return the CommandHistory object
 	 */
-	protected static CommandHistory getHistory() {
+	public static CommandHistory getHistory() {
 		return commandHistory;
 	}
 	
@@ -69,12 +69,12 @@ public class LogicController {
 	 * Getter for the Logic object to work with the Handlers class
 	 * @return the Logic object
 	 */
-	protected static Logic getLogic() {
+	public static Logic getLogic() {
 		return logic;
 	}
 	
     // ======================================================================
-    // Protected methods called by other GUI classes that require some
+    // Public methods called by other GUI classes that require some
 	// processing of data or Logic methods
     // ======================================================================
 	
@@ -85,7 +85,7 @@ public class LogicController {
 	 * @return A String containing the filepath of whattodo.txt, or an error
 	 * 		   message if the file cannot be found/written
 	 */
-	protected String getFilePath() {
+	public String getFilePath() {
 		if (logic != null) {
 			return logic.getFilepath();
 		} else {
@@ -99,7 +99,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of default task data from the text file
 	 */
-	protected String[] getDefTasks() {
+	public String[] getDefTasks() {
 		// Get the string from logic
 		String defTasks = logic.taskDefaultView();
 		// Split the string by newline
@@ -114,7 +114,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of default event data from the text file
 	 */
-	protected String[] getDefEvents() {
+	public String[] getDefEvents() {
 		// Get the string from logic
 		String defEvents = logic.eventDefaultView();
 		// Split the string by newline
@@ -134,7 +134,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all uncompleted task data from the text file
 	 */
-	protected String[] getAllTasks() {
+	public String[] getAllTasks() {
 		// Get the String from logic
 		String allTasks = logic.taskAllView(false);
 		// Split the string by newline
@@ -149,7 +149,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all uncompleted event data from the text file
 	 */
-	protected String[] getAllEvents() {
+	public String[] getAllEvents() {
 		// Get the String from logic
 		String allEvents = logic.eventAllView(false);
 		// Split the string by newline
@@ -169,7 +169,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all unresolved task data from the text file
 	 */
-	protected String[] getUnresTasks() {
+	public String[] getUnresTasks() {
 		// Get the String from logic
 		String unresTasks = logic.taskPastUncompletedView();
 		// Split the string by newline
@@ -184,7 +184,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all unresolved event data from the text file
 	 */
-	protected String[] getUnresEvents() {
+	public String[] getUnresEvents() {
 		// Get the String from logic
 		String unresEvents = logic.eventPastUncompletedView();
 		// Split the string by newline
@@ -204,7 +204,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all completed task data from the text file
 	 */
-	protected String[] getDoneTasks() {
+	public String[] getDoneTasks() {
 		// Get the String from logic
 		String doneTasks = logic.taskAllView(true);
 		// Split the string by newline
@@ -227,7 +227,7 @@ public class LogicController {
 	 * 
 	 * @return A String[] of all completed event data from the text file
 	 */
-	protected String[] getDoneEvents() {
+	public String[] getDoneEvents() {
 		// Get the String from logic
 		String doneEvents = logic.eventAllView(true);
 		// Split the string by newline
@@ -252,7 +252,7 @@ public class LogicController {
 	 * @return An int[] of size 5, each index storing the number required for
 	 * 		   each element of the summary view
 	 */
-	protected int[] getSummaryCount() {
+	public int[] getSummaryCount() {
 		
 		String[] defTasks = InterfaceController.getLogic().getDefTasks();
 		String[] defEvents = InterfaceController.getLogic().getDefEvents();
@@ -273,7 +273,7 @@ public class LogicController {
 	 * 
 	 * @return The number of elements in the default view
 	 */
-	protected int getDefElementsCount() {
+	public int getDefElementsCount() {
 		int count = 0;
 		
 		String[] temp = InterfaceController.getLogic().getDefTasks();
@@ -298,7 +298,7 @@ public class LogicController {
 	 * 
 	 * @return The number of elements in the all view
 	 */
-	protected int getAllElementsCount() {
+	public int getAllElementsCount() {
 		int count = 0;
 		
 		String[] temp = InterfaceController.getLogic().getAllTasks();
@@ -323,7 +323,7 @@ public class LogicController {
 	 * 
 	 * @return The number of elements in the search view
 	 */
-	protected int getSearchElementsCount(ArrayList<String> taskResults, 
+	public int getSearchElementsCount(ArrayList<String> taskResults, 
 			ArrayList<String> eventResults) {
 		
 		int count = 0;
@@ -348,7 +348,7 @@ public class LogicController {
 	 * 
 	 * @return The number of elements in the unresolved view
 	 */
-	protected int getUnresElementsCount() {
+	public int getUnresElementsCount() {
 		int count = 0;
 		
 		String[] temp = InterfaceController.getLogic().getUnresTasks();
@@ -373,7 +373,7 @@ public class LogicController {
 	 * 
 	 * @return The number of elements in the done view
 	 */
-	protected int getDoneElementsCount() {
+	public int getDoneElementsCount() {
 		int count = 0;
 		
 		String[] temp = InterfaceController.getLogic().getDoneTasks();
