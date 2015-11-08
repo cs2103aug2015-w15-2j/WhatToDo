@@ -227,13 +227,13 @@ public class CommandParser {
     }
     
     private ArrayList<String> convertParameters(ArrayList<String> parameters) {
-    	String parameter = parameters.get(0);
     	if (commandAliases.containsKey(parameters.get(0))) {
+    		String parameter = parameters.get(0);
     		String newParameter = commandAliases.get(parameter);
     		parameters.remove(0);
     		parameters.add(0, newParameter);
     	}
-    	if (parameter.equals(USER_COMMAND_SET)) {
+    	if (parameters.get(0).equals(USER_COMMAND_SET)) {
         	for (int i = 1; i < parameters.size(); i++) {
         		String currParameter = parameters.get(i);
         		if (commandAliases.containsKey(currParameter)) {
@@ -282,15 +282,15 @@ public class CommandParser {
 	
 	private Command addTask(ArrayList<String> arguments) {
 		int keywordIndex = arguments.indexOf(KEYWORD_DEADLINE);
-		int index = keywordIndex + POSITION_PLUS_ONE;
-		String dateString = getDateString(arguments, index);
-		Date date = getDate(dateString);
-		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, keywordIndex);
-		String name = getName(nameList);
-		
+		Date date = null;
+		if (keywordIndex == arguments.size() - 2) {
+			date = getDate(arguments.get(arguments.size() - 1));
+		}
 		if (date == null) {
 			return initInvalidCommand(ERROR_DEADLINE);
 		}
+		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, keywordIndex);
+		String name = getName(nameList);
 		if (name == null) {
 			return initInvalidCommand(ERROR_TASK_NAME);
 		}
@@ -300,15 +300,6 @@ public class CommandParser {
 		command.setName(name);
 		command.setDueDate(date);
 		return command;
-	}
-
-	private String getDateString(ArrayList<String> arguments, int index) {
-		String dateString = STRING_EMPTY;
-		while (index < arguments.size()) {
-			dateString += arguments.get(index);
-			index++;
-		}
-		return dateString;
 	}
 	
 	private Command addEvent(ArrayList<String> arguments) {
