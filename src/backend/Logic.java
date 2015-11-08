@@ -16,6 +16,7 @@ import struct.FloatingTask;
 import struct.State;
 import struct.Task;
 
+//@@author A0127051U
 public class Logic {
 	
     private static final int CONVERSION_NOT_REQ = 0; 
