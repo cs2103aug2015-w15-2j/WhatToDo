@@ -763,7 +763,6 @@ public class LogicController {
 			String textFieldInput, boolean isBackgroundUpdate) {
 		// Execute the command
 		String returnMessage = logic.executeCommand(textFieldInput);
-		
 		if (operationType == Command.CommandType.SEARCH) {
 			// Do not update the feedback bar and history view if the search operation
 			// is a background update of the last search term
@@ -773,7 +772,6 @@ public class LogicController {
 				InterfaceController.getFeedbackLabel().setText(searchTerm);
 				HistoryViewController.updateHistView(searchTerm);
 			}
-			
 			SearchViewController.updateSearchView(returnMessage);
 		} else {
 			// Modify the return message first if it is incorrect and is an operation
