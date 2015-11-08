@@ -710,7 +710,6 @@ public class CommandParser {
 			List<String> argumentsSublist = arguments.subList(keywordIndex + 1, nextKeywordIndex);
 			String argument = getName(argumentsSublist);
 			String argumentLowerCase = argument;
-			System.out.println(argument);
 			if (argument != null) {
 				argumentLowerCase = argument.toLowerCase();
 			}
