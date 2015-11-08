@@ -106,7 +106,7 @@ public class LogicTest {
 		
 		// No such alias has been set 
 		String feedback = logic.executeCommand("delete -1");
-		assertEquals("\"delete -1\" is an invalid command. No such alias has been set.", feedback);
+		assertEquals("\"delete -1\" is an invalid command. Alias -1 has not been set.", feedback);
 		
 		// Invalid index - index does not exist
 		feedback = logic.executeCommand("delete 100000");
@@ -324,13 +324,13 @@ public class LogicTest {
 		// invalid alias - set alias that is already a command keyword
 		String feedback = logic.executeCommand("set add as delete"); 
 		assertEquals("\"set add as delete\" is an invalid command. "
-				+ "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use.", feedback); 
+				+ "Input alias is a either a registered command and cannot be used or an alias-in-use.", feedback); 
 		
 		// invalid alias - set alias that already exists 
 		logic.executeCommand("set create as add"); 
 		feedback = logic.executeCommand("set create as delete"); 
 		assertEquals("\"set create as delete\" is an invalid command. "
-				+ "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use.", feedback); 
+				+ "Input alias is a either a registered command and cannot be used or an alias-in-use.", feedback); 
 	}
 	
 	@Test
@@ -353,7 +353,7 @@ public class LogicTest {
 		
 		// invalid delete alias - delete alias that was not set 
 		String feedback = logic.executeCommand("delete insert"); 
-		assertEquals("\"delete insert\" is an invalid command. No such alias has been set.", feedback); 
+		assertEquals("\"delete insert\" is an invalid command. Alias insert has not been set.", feedback); 
 	}
 	
 	@Test 
