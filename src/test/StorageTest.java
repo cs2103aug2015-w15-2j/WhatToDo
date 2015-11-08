@@ -264,55 +264,6 @@ public class StorageTest {
 		storage.findTypeInLine(-1);
 	}
 
-	// @@author A0124238L-unused
-	@Test
-	// This is a test for the unused method.
-	public void testConvertFloatToTask() throws FileSystemException {
-		Storage storage = new Storage();
-		storage.overwriteFile("");
-
-		// Setup for testing
-		storage.addTask(new Task("arrange meeting", false, new Date("020116")));
-		storage.addEvent(new Event("Company D&D", false, new Date("211215"),
-				new Date("211215"), "1800", "2300"));
-		storage.addFloatingTask(new FloatingTask("buy a painting", false));
-
-		storage.convertFloatToTask(1, new Date("030116"));
-
-		assertEquals(
-				"task;arrange meeting;todo;020116\ntask;buy a painting;todo;030116\n"
-						+ "event;Company D&D;todo;211215;1800;211215;2300\n",
-				storage.display());
-
-		// Clear File for next test.
-		storage.overwriteFile("");
-	}
-
-	@Test
-	// This is a test for the unused method.
-	public void testConvertFloatToEvent() throws FileSystemException {
-		Storage storage = new Storage();
-		storage.overwriteFile("");
-
-		// Setup for testing
-		storage.addTask(new Task("arrange meeting", false, new Date("020116")));
-		storage.addEvent(new Event("Company D&D", false, new Date("211215"),
-				new Date("211215"), "1800", "2300"));
-		storage.addFloatingTask(new FloatingTask("buy a painting", false));
-
-		storage.convertFloatToEvent(1, new Date("030116"), "1300", new Date(
-				"030116"), "1500");
-
-		assertEquals(
-				"task;arrange meeting;todo;020116\nevent;Company D&D;todo;211215;1800;211215;2300\n"
-						+ "event;buy a painting;todo;030116;1300;030116;1500\n",
-				storage.display());
-
-		// Clear File for next test.
-		storage.overwriteFile("");
-	}
-
-	// @@author A0124238L
 	@Test
 	public void testMarkAsDone() throws FileSystemException {
 		Storage storage = new Storage();
@@ -438,23 +389,46 @@ public class StorageTest {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
 		
+		// Test if add and delete works.
 		storage.addToAliasFile("insert", "add");  
 		storage.addToAliasFile("remove", "delete"); 
 		storage.addToAliasFile("plus", "add");
 		storage.deleteFromAliasFile("insert"); 
-		
-		// Test if add and delete works.
 		assertEquals("remove;delete\nplus;add\n",storage.readAliasFile());
 		
-		storage.deleteFromAliasFile("plus");
-		storage.deleteFromAliasFile("remove");
+		// Test if deleting non-existent alias affects file.
+		storage.deleteFromAliasFile("flying"); 
+		assertEquals("remove;delete\nplus;add\n",storage.readAliasFile());
 		
 		// Test if boundary case of empty file is displaying correctly.
+		storage.deleteFromAliasFile("plus");
+		storage.deleteFromAliasFile("remove");
 		assertEquals("",storage.readAliasFile());
 		
+		// Test add and delete 1 item.
 		storage.addToAliasFile("wakaka", "done");
 		assertEquals("wakaka;done\n",storage.readAliasFile());
 		storage.deleteFromAliasFile("wakaka");
+		assertEquals("",storage.readAliasFile());
+	}
+	
+	@Test 
+	public void testClearAliasFile() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+		
+		storage.addToAliasFile("plus", "add");  
+		storage.addToAliasFile("rm", "delete"); 
+		storage.addToAliasFile("jia", "add");
+		storage.deleteFromAliasFile("plus"); 
+		assertEquals("rm;delete\njia;add\n",storage.readAliasFile());
+		
+		// General Case
+		storage.clearAliasFile(); 
+		assertEquals("",storage.readAliasFile());
+		
+		// Clearing empty file.
+		storage.clearAliasFile(); 
 		assertEquals("",storage.readAliasFile());
 	}
 	

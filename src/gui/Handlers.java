@@ -13,6 +13,8 @@ import struct.View;
 
 public class Handlers {
 
+	private static final String COMMAND_SEARCH = "search";
+	
 	private static final boolean SEARCH_USER = false;
 	private static final boolean SEARCH_BACKGROUND = true;
 	
@@ -145,7 +147,15 @@ public class Handlers {
             case SEARCH:
             	// Store the last search command to run the search again dynamically
             	// upon the user's next operation
-            	lastSearchCommand = textFieldInput;
+            	// Modify the search query by replacing the first word with "search" to account
+            	// for aliases since there is no parsing here
+            	String[] textFieldInputSplit = textFieldInput.split(" ");
+            	textFieldInputSplit[0] = COMMAND_SEARCH;
+            	lastSearchCommand = "";
+            	for (int i = 0; i < textFieldInputSplit.length; i++) {
+            		lastSearchCommand += textFieldInputSplit[i] + " ";
+            	}
+            	lastSearchCommand = lastSearchCommand.substring(0, lastSearchCommand.length() - 1);
             	handlerLogicControl.runCommand(operationType, textFieldInput, SEARCH_USER);
             	handlerLogicControl.changeView(View.SEARCH);
             	break;

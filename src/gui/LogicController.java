@@ -9,16 +9,6 @@ import java.util.regex.Pattern;
 
 import backend.Logic;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import struct.Alias;
 import struct.Command;
 import struct.View;
@@ -773,7 +763,6 @@ public class LogicController {
 			String textFieldInput, boolean isBackgroundUpdate) {
 		// Execute the command
 		String returnMessage = logic.executeCommand(textFieldInput);
-		
 		if (operationType == Command.CommandType.SEARCH) {
 			// Do not update the feedback bar and history view if the search operation
 			// is a background update of the last search term
@@ -783,7 +772,6 @@ public class LogicController {
 				InterfaceController.getFeedbackLabel().setText(searchTerm);
 				HistoryViewController.updateHistView(searchTerm);
 			}
-			
 			SearchViewController.updateSearchView(returnMessage);
 		} else {
 			// Modify the return message first if it is incorrect and is an operation
