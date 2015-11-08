@@ -11,6 +11,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.FileSystemException;
 
 import backend.Storage;
@@ -387,7 +389,7 @@ public class StorageTest {
 	// Test the methods for Alias File
 	public void testAlias() throws FileSystemException {
 		Storage storage = new Storage();
-		storage.overwriteFile("");
+		storage.clearAliasFile();
 		
 		// Test if add and delete works.
 		storage.addToAliasFile("insert", "add");  
@@ -415,7 +417,7 @@ public class StorageTest {
 	@Test 
 	public void testClearAliasFile() throws FileSystemException {
 		Storage storage = new Storage();
-		storage.overwriteFile("");
+		storage.clearAliasFile();
 		
 		storage.addToAliasFile("plus", "add");  
 		storage.addToAliasFile("rm", "delete"); 
@@ -433,7 +435,7 @@ public class StorageTest {
 	}
 	
 	@Test
-	// Tests that changing file path will let program run normally.
+	// Tests that changing file path to folder without text file.
 	public void testChangeFilePath() throws FileSystemException {
 		Storage storage = new Storage();
 		storage.overwriteFile("");
@@ -448,5 +450,54 @@ public class StorageTest {
 		
 		// Clear File for next test.
 		storage.overwriteFile("");
+	}
+	
+	@Test
+	// Tests that changing file path to folder with empty text file.
+	public void testChangeFilePathToEmpty() throws IOException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+		
+		storage.addTask(new Task("sample task", false, new Date("121212")));
+		
+		// Simulate empty text file
+		File file = new File("src" + File.separator+ "test" + File.separator + "whattodo.txt");
+		assertEquals(true, file.createNewFile());
+		
+		storage.changeFileStorageLocation("src" + File.separator + "test");
+		assertEquals("task;sample task;todo;121212\n", storage.display());
+		
+		// Revert back
+		storage.changeFileStorageLocation("");
+		assertEquals("task;sample task;todo;121212\n", storage.display());	
+		
+		// Clear File for next test.
+		storage.overwriteFile("");		
+	}
+	
+	@Test
+	// Tests that changing file path to folder with conflicting text file.
+	public void testChangeFilePathConflicting() throws IOException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+		
+		storage.addTask(new Task("sample task", false, new Date("121212")));
+		
+		// Simulate conflict file.
+		File file = new File("src" + File.separator + "test" + File.separator + "whattodo.txt");
+		assertEquals(true, file.createNewFile());
+		PrintWriter writer = new PrintWriter("src" + File.separator + "test" + File.separator + "whattodo.txt");
+		writer.print("float;koala bear;todo");
+		writer.close();
+		
+		assertEquals("Conflicting text files found in"
+				+ " both old and new file paths. Please delete either one before continuing.",
+				storage.changeFileStorageLocation("src" + File.separator + "test"));
+		
+		assertEquals("task;sample task;todo;121212\n", storage.display());
+		
+		// Clear for next tests.
+		storage.overwriteFile("");	
+		file.delete();
 	}
 }
