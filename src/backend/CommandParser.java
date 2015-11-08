@@ -34,7 +34,7 @@ public class CommandParser {
     private static final int NUMBER_NO_EDIT_KEYWORD = -1;
 	
     private static final String REGEX_WHITESPACES = "[\\s;]+";
-    private static final String REGEX_POSITIVE_INTEGER = "^\\d+$";
+    private static final String REGEX_POSITIVE_INTEGER = "^0*[1-9][0-9]*";
     private static final String REGEX_12_HOUR_SIMPLE_TIME = "(1[012]|[1-9]|0[1-9])(\\s)?(?i)(am|pm)";
     private static final String REGEX_12_HOUR_TIME = "(1[012]|[1-9]|0[1-9])(:|.)?" 
                                                     + "[0-5][0-9](\\s)?(?i)(am|pm)";
@@ -656,7 +656,7 @@ public class CommandParser {
 		String indexString = arguments.get(0);
 		int index;
 		if (indexString.matches(REGEX_POSITIVE_INTEGER)) {
-			index = Integer.parseInt(arguments.get(0));
+			index = Integer.parseInt(indexString);
 		} else {
 			return initInvalidCommand(ERROR_INDEX);
 		}
@@ -709,7 +709,11 @@ public class CommandParser {
 			String keyword = indexKeywordHash.get(keywordIndex);
 			List<String> argumentsSublist = arguments.subList(keywordIndex + 1, nextKeywordIndex);
 			String argument = getName(argumentsSublist);
-			String argumentLowerCase = argument.toLowerCase();
+			String argumentLowerCase = argument;
+			System.out.println(argument);
+			if (argument != null) {
+				argumentLowerCase = argument.toLowerCase();
+			}
 			
 			 switch (keyword) {
 			 

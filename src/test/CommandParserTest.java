@@ -81,14 +81,14 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		Command.DataType dataType = command.getDataType();
 		String name = command.getName();
-		Date endDate = command.getDueDate();
-		String endDateString = endDate.formatDateShort();
+		Date dueDate = command.getDueDate();
+		String dueDateString = dueDate.formatDateShort();
 		Date date = new Date("311215");
 		String dateString = date.formatDateShort();
 		assertEquals(Command.CommandType.ADD, type);
 		assertEquals(Command.DataType.TASK, dataType);
 		assertEquals("something", name);
-		assertEquals(dateString, endDateString);
+		assertEquals(dateString, dueDateString);
 	}
 	
 	@Test
@@ -1661,6 +1661,163 @@ public class CommandParserTest {
 	// *******************************************************************
 	// *******************************************************************
 	
+	@Test
+	public void testEditTask() {
+		String userInput = "edit 1 name something date today";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		Date dueDate = command.getDueDate();
+		String dueDateString = dueDate.formatDateShort();
+		int index = command.getIndex();
+		assertEquals(Command.CommandType.EDIT, type);
+		assertEquals("something", name);
+		assertEquals(todayDateString, dueDateString);
+		assertEquals(1, index);
+	}
+	
+	@Test
+	public void testEditEvent() {
+		String userInput = "edit 1 name something startd today startt 2pm endd today endt 3pm";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		Date endDate = command.getEndDate();
+		String endDateString = endDate.formatDateShort();
+		Date startDate = command.getStartDate();
+		String startDateString = startDate.formatDateShort();
+		int index = command.getIndex();
+		String startTime = command.getStartTime();
+		String endTime = command.getEndTime();
+		assertEquals(Command.CommandType.EDIT, type);
+		assertEquals("something", name);
+		assertEquals(todayDateString, endDateString);
+		assertEquals(todayDateString, startDateString);
+		assertEquals("1400", startTime);
+		assertEquals("1500", endTime);
+		assertEquals(1, index);
+	}
+	
+	@Test
+	public void testInvalidEditEmpty() {
+		String userInput = "edit";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Index required.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditZeroIndex() {
+		String userInput = "edit 0 name something";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid index.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditNegativeIndex() {
+		String userInput = "edit -1 name something";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid index.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditDoubleKeywords() {
+		String userInput = "edit 1 name something name something";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Keyword name has been entered twice.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditFormat() {
+		String userInput = "edit 1 name something date today startd today";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid edit format.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditEmptyField() {
+		String userInput = "edit 1";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid edit format.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditName() {
+		String userInput = "edit 1 name";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("New task/event name required.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditDeadline() {
+		String userInput = "edit 1 date 0813";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid deadline.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditStartDate() {
+		String userInput = "edit 1 startd 0813";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid start date.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditStartTime() {
+		String userInput = "edit 1 startt 12345";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid start time.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditEndDate() {
+		String userInput = "edit 1 endd 0813";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid end date.", name);	
+	}
+	
+	@Test
+	public void testInvalidEditEndTime() {
+		String userInput = "edit 1 endt 12345";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String name = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid end time.", name);	
+	}
+	
 	// *******************************************************************
 	// *******************************************************************
 	// FOR SEARCH COMMAND
@@ -1714,7 +1871,17 @@ public class CommandParserTest {
 	}
 	
 	@Test
-	public void testInvalidDoneIndex() {
+	public void testInvalidDoneZeroIndex() {
+		String userInput = "done 0";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String errorMsg = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Invalid index.", errorMsg);
+	}
+	
+	@Test
+	public void testInvalidDoneNegativeIndex() {
 		String userInput = "done -1";
 		Command command = parser.parse(userInput);
 		Command.CommandType type = command.getCommandType();
