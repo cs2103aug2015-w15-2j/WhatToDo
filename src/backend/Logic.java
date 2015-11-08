@@ -54,7 +54,7 @@ public class Logic {
 	private static final String MESSAGE_SET = "Set new alias \"%s\" for \"%s\"."; 
 	private static final String MESSAGE_DELETE_ALIAS = "Deleted alias \"%s\"."; 
 	
-	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
+	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered. whattodo.txt may be corrupted."; 
     private static final String MESSAGE_ERROR_INVALID_COMMAND = "\"%s\" is an invalid command. %s"; 
     private static final String MESSAGE_ERROR_ADD = "Error encountered when adding item. The item's data type is unrecognized."; 
     private static final String MESSAGE_ERROR_EDIT = "Error encountered when editing item."; 
@@ -328,8 +328,7 @@ public class Logic {
         storage.addFloatingTask(floatingTask); 
         String addFeedback = String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
         
-        boolean isSaved = saveState(stateBeforeExecutingCommand);
-        clearRedo(command);
+        boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
         return formFeedbackMsg(addFeedback, isSaved);
     }
     
@@ -343,8 +342,7 @@ public class Logic {
         String addFeedback = String.format(MESSAGE_ADD_TASK, taskName, 
         		taskDeadline.formatDateLong()); 
 
-        boolean isSaved = saveState(stateBeforeExecutingCommand);
-        clearRedo(command);
+        boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
         return formFeedbackMsg(addFeedback, isSaved);
     }
     
@@ -362,8 +360,7 @@ public class Logic {
         		eventStartDate.formatDateLong(), eventStartTime, 
         		eventEndDate.formatDateLong(), eventEndTime);
         
-        boolean isSaved = saveState(stateBeforeExecutingCommand);
-        clearRedo(command);
+        boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
         return formFeedbackMsg(addFeedback, isSaved);
     }
    
@@ -375,8 +372,7 @@ public class Logic {
         	String deletedLine = storage.deleteLine(lineNumber); 
         	String deleteFeedback = String.format(MESSAGE_DELETE_ITEM, formatLine(deletedLine)); 
         	
-        	boolean isSaved = saveState(stateBeforeExecutingCommand);
-        	clearRedo(command);
+        	boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
         	return formFeedbackMsg(deleteFeedback, isSaved);
     	}
     	catch(FileSystemException e){
@@ -408,7 +404,247 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN; 
     	}
     }
-   
+    
+	private String executeEditNoConversion(Command command)	throws FileSystemException {
+		int lineNumber = command.getIndex(); 
+		String lineType = storage.getAttribute(lineNumber, INDEX_TYPE); 
+		switch(lineType){ 
+			case TYPE_FLOAT :
+				return executeEditFloat(command); 
+			case TYPE_TASK : 
+				return executeEditTask(command); 
+			case TYPE_EVENT : 
+				return executeEditEvent(command); 
+			default:
+				return MESSAGE_ERROR_EDIT; 
+		}
+	}
+	
+	private String executeEditConvertToTask(Command command) throws FileSystemException{
+    	ArrayList<String> editList = command.getEditList(); 
+    	assert(editList != null); 
+    	
+    	int lineNumber = command.getIndex(); 
+    	String oldName = storage.getAttribute(lineNumber, INDEX_NAME);
+    	String newName = getEditedName(command, editList, lineNumber);  
+    	Date newDeadline = command.getDueDate(); 
+    	String newDeadlineStr = newDeadline.formatDateShort(); 
+    	Boolean isDone = isDone(lineNumber); 
+    	Command addTaskCmd = getAddEditedTaskCommand(newName, newDeadlineStr); 
+    	
+    	if(isValidEdit(addTaskCmd, DataType.TASK)){ 
+    		//TODO refactor convert to task
+    		State stateBeforeExecutingCommand = getState(command);
+    		addEditedTaskToFile(lineNumber, newName, isDone, newDeadline);
+    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_TASK, newName);
+    		
+    		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
+            return formFeedbackMsg(editFeedback, isSaved);
+    	}else{ 
+    		return handleInvalidEdit(addTaskCmd); 
+    	}	  
+    }
+
+    private String executeEditConvertToEvent(Command command) throws FileSystemException{ 
+    	ArrayList<String> editList = command.getEditList(); 
+    	assert(editList != null);
+    	
+    	int lineNumber = command.getIndex(); 
+    	Date newStartDate = command.getStartDate();
+    	Date newEndDate = command.getEndDate(); 
+    	String oldName = storage.getAttribute(lineNumber, INDEX_NAME); 
+    	String newName = getEditedName(command, editList, lineNumber);
+    	String newStartDateStr = newStartDate.formatDateShort(); 
+    	String newEndDateStr = newEndDate.formatDateShort(); 
+    	String newStartTime = command.getStartTime(); 
+    	String newEndTime = command.getEndTime(); 
+    	Boolean isDone = isDone(lineNumber); 
+    	Command addEventCmd = getAddEditedEventCommand(newName, newStartDateStr, newEndDateStr, newStartTime, newEndTime); 
+    	
+    	if(isValidEdit(addEventCmd, DataType.EVENT)){ 
+    		//TODO refactor convert to event
+    		State stateBeforeExecutingCommand = getState(command);
+    		addEditedEventToFile(lineNumber, newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime);
+    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_EVENT, newName);
+    		
+    		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
+            return formFeedbackMsg(editFeedback, isSaved);
+    	}else{ 
+    		return handleInvalid(addEventCmd); 
+    	}	
+    }
+    
+	private String executeEditFloat(Command command) throws FileSystemException{
+		State stateBeforeExecutingCommand = getState(command);
+		
+		int lineNumber = command.getIndex();
+		String newName = command.getName(); 
+		boolean isDone = isDone(lineNumber);  
+		FloatingTask newFloatingTask = new FloatingTask(newName,isDone); 
+		
+		storage.deleteLine(lineNumber); 
+		storage.addFloatingTask(newFloatingTask);
+		String editFeedback = String.format(MESSAGE_EDIT, TYPE_FLOAT, newName);
+	
+		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
+        return formFeedbackMsg(editFeedback, isSaved);
+	}
+	
+	private String executeEditTask(Command command) throws FileSystemException {
+		ArrayList<String> editList = command.getEditList(); 
+		assert(editList != null);
+
+		if(Collections.disjoint(editList, ATTRIBUTE_LIST_FLOAT_TO_EVENT)){  
+			int lineNumber = command.getIndex();
+			Date newDeadline =  getEditedDeadline(command, editList, lineNumber);
+			String newName = getEditedName(command, editList, lineNumber); 
+			String newDeadlineStr = newDeadline.formatDateShort(); 
+			boolean isDone = isDone(lineNumber);  			
+			Command addEditedTaskCmd = getAddEditedTaskCommand(newName, newDeadlineStr);
+	    	
+	    	if(isValidEdit(addEditedTaskCmd, DataType.TASK)){ 
+	    		//TODO refactor edit task 
+	    		State stateBeforeExecutingCommand = getState(command);
+	    		addEditedTaskToFile(lineNumber, newName, isDone, newDeadline);
+	    		String editFeedback = String.format(MESSAGE_EDIT, TYPE_TASK, newName);
+	    		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
+	            return formFeedbackMsg(editFeedback, isSaved);
+	    	}else{ 
+	    		return handleInvalidEdit(addEditedTaskCmd); 
+	    	}
+		}
+		else{ 
+			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_TASK, TYPE_EVENT); 
+		}
+	}
+	
+	private String executeEditEvent(Command command) throws FileSystemException {
+    	ArrayList<String> editList = command.getEditList(); 
+    	assert(editList != null); 
+    	
+    	if(Collections.disjoint(editList, ATTRIBUTE_LIST_FLOAT_TO_TASK)){ 
+    		//TODO refactor edit event 
+    		int lineNumber = command.getIndex();
+    		Date newStartDate = getEditedStartDate(command, editList, lineNumber);
+    		Date newEndDate = getEditedEndDate(command, editList, lineNumber);
+    		String newName = getEditedName(command, editList, lineNumber); 
+    		String newStartDateStr = newStartDate.formatDateShort();
+    		String newEndDateStr = newEndDate.formatDateShort(); 
+    		String newStartTime = getEditedStartTime(command, editList, lineNumber);
+    		String newEndTime = getEditedEndTime(command, editList, lineNumber);
+    		boolean isDone = isDone(lineNumber);  
+    		Command addEditedEventCmd = getAddEditedEventCommand(newName, newStartDateStr, 
+    				newEndDateStr, newStartTime, newEndTime); 
+    		
+        	if(isValidEdit(addEditedEventCmd, DataType.EVENT)){ 
+        		State stateBeforeExecutingCommand = getState(command);
+        		addEditedEventToFile(lineNumber, newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime);        		
+        		String editFeedback = String.format(MESSAGE_EDIT, TYPE_EVENT, newName);
+        		
+        		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
+                return formFeedbackMsg(editFeedback, isSaved);
+        	}else{ 
+        		return handleInvalidEdit(addEditedEventCmd); 
+        	}	
+    	}
+    	else{ 
+			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_EVENT, TYPE_TASK);
+    	}
+	}
+  
+	private void addEditedTaskToFile(int lineNumber, String newName, boolean isDone, Date newDeadline)
+			throws FileSystemException {
+		storage.deleteLine(lineNumber); 
+		Task editedTask = new Task(newName, isDone, newDeadline); 
+		storage.addTask(editedTask);
+	}
+	
+    
+	private void addEditedEventToFile(int lineNumber, String newName, boolean isDone, Date newStartDate,
+			Date newEndDate, String newStartTime, String newEndTime) throws FileSystemException {
+		storage.deleteLine(lineNumber); 
+		Event editedEvent = new Event(newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime); 
+		storage.addEvent(editedEvent);
+	}
+    
+	private Command getAddEditedTaskCommand(String newName, String newDeadlineStr) {
+		String addEditedTaskCmdStr = String.format(COMMAND_FORMAT_ADD_TASK, newName, newDeadlineStr);    	
+		Command addEditedTaskCmd = commandParser.parse(addEditedTaskCmdStr);
+		return addEditedTaskCmd;
+	}
+
+	private Command getAddEditedEventCommand(String newName, String newStartDateStr, String newEndDateStr,
+			String newStartTime, String newEndTime) {
+		String addEditedEventCmdString = String.format(COMMAND_FORMAT_ADD_EVENT, newName, newStartDateStr, newStartTime, newEndDateStr, newEndTime);  
+		Command addEditedEventCmd = commandParser.parse(addEditedEventCmdString);
+		return addEditedEventCmd;
+	}
+
+	private boolean isDone(int lineNumber) throws FileSystemException {
+		String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
+		return isDoneStr.equals(DONE);
+	}
+
+	private String getEditedEndTime(Command command, ArrayList<String> editList, int lineNumber)
+			throws FileSystemException {
+		if(editList.contains(KEYWORD_EDIT_END_TIME)){ 
+			return command.getEndTime(); 
+		}
+		else{ 
+			return storage.getAttribute(lineNumber, INDEX_ENDTIME);
+		}
+	}
+
+	private String getEditedStartTime(Command command, ArrayList<String> editList, int lineNumber)
+			throws FileSystemException {
+		if(editList.contains(KEYWORD_EDIT_START_TIME)){ 
+			return command.getStartTime(); 
+		}
+		else{
+			return storage.getAttribute(lineNumber, INDEX_STARTTIME);
+		}
+	}
+    
+	private Date getEditedDeadline(Command command, ArrayList<String> editList, int lineNumber)
+			throws FileSystemException {
+		if(editList.contains(KEYWORD_EDIT_DEADLINE)){ 
+			return command.getDueDate(); 
+		}
+		else{ 
+			return new Date(storage.getAttribute(lineNumber, INDEX_DUEDATE));
+		}
+	}
+
+	private String getEditedName(Command command, ArrayList<String> editList, int lineNumber)
+			throws FileSystemException {
+		if(editList.contains(KEYWORD_EDIT_NAME)){ 
+			return command.getName();
+		}
+		else{ 
+			return storage.getAttribute(lineNumber, INDEX_NAME);
+		}
+	}
+
+	private Date getEditedEndDate(Command command, ArrayList<String> editList, int lineNumber)
+			throws FileSystemException {
+		if(editList.contains(KEYWORD_EDIT_END_DATE)){
+			return command.getEndDate(); 
+		}
+		else{ 
+			return new Date(storage.getAttribute(lineNumber, INDEX_ENDDATE));
+		}
+	}
+
+	private Date getEditedStartDate(Command command, ArrayList<String> editList, int lineNumber)
+			throws FileSystemException {
+		if(editList.contains(KEYWORD_EDIT_START_DATE)){ 
+			return command.getStartDate(); 
+		}
+		else{ 
+			return new Date(storage.getAttribute(lineNumber, INDEX_STARTDATE));
+		}
+	}
+	
     private int getConversionStatus(Command command) throws FileSystemException{ 
 		ArrayList<String> editList = command.getEditList();
 		int lineNumber = command.getIndex(); 
@@ -427,7 +663,19 @@ public class Logic {
     		return CONVERSION_INVALID;
     	}    	 
     }
+
+	private boolean isValidEdit(Command addEditedItemCmd, Command.DataType dataType) {
+		return addEditedItemCmd.getCommandType() == CommandType.ADD 
+				&& addEditedItemCmd.getDataType() == dataType;
+	}
     
+	private String handleInvalidEdit(Command addEditedItemCmd) {
+		assert(addEditedItemCmd.getCommandType() == CommandType.INVALID);
+		 
+		String reason = (addEditedItemCmd.getName() != null)? addEditedItemCmd.getName() : EMPTYSTRING;
+		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason);
+	}
+	    
     private boolean containNameOnly(ArrayList<String> editList){ 
     	return editList.size() == 1 && editList.contains(KEYWORD_EDIT_NAME); 
     }
@@ -435,183 +683,6 @@ public class Logic {
     private boolean isTaskOrEvent(String lineType){ 
     	return lineType.equals(TYPE_TASK) || lineType.equals(TYPE_EVENT); 
     }
-       
-    private String executeEditConvertToTask(Command command) throws FileSystemException{
-    	State stateBeforeExecutingCommand = getState(command);
-    	
-    	ArrayList<String> editList = command.getEditList(); 
-    	int lineNumber = command.getIndex(); 
-    	String oldName = storage.getAttribute(lineNumber, INDEX_NAME);
-    	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : oldName;  
-    	Date deadline = command.getDueDate(); 
-    	String deadlineStr = deadline.formatDateShort(); 
-    	String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE);
-    	Boolean isDone = (isDoneStr.equals(DONE)) ? true : false; 
-    
-    	String addTaskCmdString = String.format(COMMAND_FORMAT_ADD_TASK, name, deadlineStr);    	
-    	Command addTaskCmd = commandParser.parse(addTaskCmdString); 
-    	if(addTaskCmd.getCommandType() == CommandType.ADD && addTaskCmd.getDataType() == DataType.TASK){ 
-    		storage.deleteLine(lineNumber); 
-    		Task convertedTask = new Task(name, isDone, deadline); 
-    		storage.addTask(convertedTask);
-    		
-    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_TASK, name);
-    		
-    		boolean isSaved = saveState(stateBeforeExecutingCommand);
-            clearRedo(command);
-            return formFeedbackMsg(editFeedback, isSaved);
-    	}else{ 
-    		//assert cmdtype == invalid 
-    		String reason = (addTaskCmd.getName() != null)? addTaskCmd.getName() : EMPTYSTRING;
-    		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason);  
-    	}	  
-    }
-    
-    private String executeEditConvertToEvent(Command command) throws FileSystemException{ 
-    	State stateBeforeExecutingCommand = getState(command);
-    	
-    	ArrayList<String> editList = command.getEditList(); 
-    	int lineNumber = command.getIndex(); 
-    	String oldName = storage.getAttribute(lineNumber, INDEX_NAME); 
-    	String name = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : oldName; 
-    	Date startDate = command.getStartDate(); 
-    	String startDateStr = startDate.formatDateShort(); 
-    	Date endDate = command.getEndDate(); 
-    	String endDateStr = endDate.formatDateShort(); 
-    	String startTime = command.getStartTime(); 
-    	String endTime = command.getEndTime(); 
-    	String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE);
-    	Boolean isDone = (isDoneStr.equals(DONE)) ? true : false; 
-    	
-    	String addEventCmdString = String.format(COMMAND_FORMAT_ADD_EVENT, name, startDateStr, startTime, endDateStr, endTime);  
-    	Command addEventCmd = commandParser.parse(addEventCmdString); 
-    	if(addEventCmd.getCommandType() == CommandType.ADD && addEventCmd.getDataType() == DataType.EVENT){ 
-    		storage.deleteLine(lineNumber); 
-    		Event convertedEvent = new Event(name, isDone, startDate, endDate, startTime, endTime); 
-    		storage.addEvent(convertedEvent);
-    		
-    		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_EVENT, name);
-    		
-    		boolean isSaved = saveState(stateBeforeExecutingCommand);
-            clearRedo(command);
-            return formFeedbackMsg(editFeedback, isSaved);
-    	}else{ 
-    		//assert cmdtype == invalid 
-    		String reason = (addEventCmd.getName() != null)? addEventCmd.getName() : EMPTYSTRING;
-    		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason);  
-    	}	
-    }
-
-	private String executeEditNoConversion(Command command)	throws FileSystemException {
-		int lineNumber = command.getIndex(); 
-		String lineType = storage.getAttribute(lineNumber, INDEX_TYPE); 
-		switch(lineType){ 
-			case TYPE_FLOAT :
-				return executeEditFloat(command); 
-			case TYPE_TASK : 
-				return executeEditTask(command); 
-			case TYPE_EVENT : 
-				return executeEditEvent(command); 
-			default:
-				return MESSAGE_ERROR_EDIT; 
-		}
-	}
-
-	private String executeEditFloat(Command command) throws FileSystemException{
-		State stateBeforeExecutingCommand = getState(command);
-		
-		int lineNumber = command.getIndex();
-		String newName = command.getName(); 
-		String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
-		boolean isDone = (isDoneStr.equals(DONE))? true : false;  
-		FloatingTask newFloatingTask = new FloatingTask(newName,isDone); 
-		
-		storage.deleteLine(lineNumber); 
-		storage.addFloatingTask(newFloatingTask);
-		String editFeedback = String.format(MESSAGE_EDIT, TYPE_FLOAT, newName);
-	
-		boolean isSaved = saveState(stateBeforeExecutingCommand);
-        clearRedo(command);
-        return formFeedbackMsg(editFeedback, isSaved);
-	}
-	
-	private String executeEditTask(Command command) throws FileSystemException {
-		State stateBeforeExecutingCommand = getState(command);
-		
-		ArrayList<String> editList = command.getEditList(); 
-		
-		//assert editList is not null 
-		if(Collections.disjoint(editList, ATTRIBUTE_LIST_FLOAT_TO_EVENT)){ 
-			int lineNumber = command.getIndex();
-			//TODO refactor this shit 
-			String newName = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME); 
-			Date newDeadline =  (editList.contains(KEYWORD_EDIT_DEADLINE)) ? command.getDueDate() : new Date(storage.getAttribute(lineNumber, INDEX_DUEDATE));
-			String newDeadlineStr = newDeadline.formatDateShort(); 
-			String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
-			boolean isDone = (isDoneStr.equals(DONE))? true : false;  
-			
-			String addEditedTaskCmdStr = String.format(COMMAND_FORMAT_ADD_TASK, newName, newDeadlineStr);    	
-	    	Command addEditedTaskCmd = commandParser.parse(addEditedTaskCmdStr); 
-	    	if(addEditedTaskCmd.getCommandType() == CommandType.ADD && addEditedTaskCmd.getDataType() == DataType.TASK){ 
-	    		storage.deleteLine(lineNumber); 
-	    		Task editedTask = new Task(newName, isDone, newDeadline); 
-	    		storage.addTask(editedTask);
-	    		String editFeedback = String.format(MESSAGE_EDIT, TYPE_TASK, newName);
-	    		
-	    		boolean isSaved = saveState(stateBeforeExecutingCommand);
-	            clearRedo(command);
-	            return formFeedbackMsg(editFeedback, isSaved);
-	    	}else{ 
-        		//assert cmdtype == invalid 
-        		String reason = (addEditedTaskCmd.getName() != null)? addEditedTaskCmd.getName() : EMPTYSTRING;
-        		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason); 
-	    	}
-		}
-		else{ 
-			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_TASK, TYPE_EVENT); 
-		}
-	}
-	
-    private String executeEditEvent(Command command) throws FileSystemException {
-    	State stateBeforeExecutingCommand = getState(command);
-    	
-    	ArrayList<String> editList = command.getEditList(); 
-    	
-    	//assert editList is not null 
-    	if(Collections.disjoint(editList, ATTRIBUTE_LIST_FLOAT_TO_TASK)){ 
-    		int lineNumber = command.getIndex();
-    		//TODO refactor this shit 
-    		String newName = (editList.contains(KEYWORD_EDIT_NAME)) ? command.getName() : storage.getAttribute(lineNumber, INDEX_NAME); 
-    		Date newStartDate = (editList.contains(KEYWORD_EDIT_START_DATE)) ? command.getStartDate() : new Date(storage.getAttribute(lineNumber, INDEX_STARTDATE));
-    		String newStartDateStr = newStartDate.formatDateShort();
-    		Date newEndDate = (editList.contains(KEYWORD_EDIT_END_DATE)) ? command.getEndDate() : new Date(storage.getAttribute(lineNumber, INDEX_ENDDATE));
-    		String newEndDateStr = newEndDate.formatDateShort(); 
-    		String newStartTime = (editList.contains(KEYWORD_EDIT_START_TIME)) ? command.getStartTime() : storage.getAttribute(lineNumber, INDEX_STARTTIME);
-    		String newEndTime = (editList.contains(KEYWORD_EDIT_END_TIME)) ? command.getEndTime() : storage.getAttribute(lineNumber, INDEX_ENDTIME);
-    		String isDoneStr = storage.getAttribute(lineNumber, INDEX_ISDONE); 
-			boolean isDone = (isDoneStr.equals(DONE))? true : false;  
-    		
-    		String addEditedEventCmdString = String.format(COMMAND_FORMAT_ADD_EVENT, newName, newStartDateStr, newStartTime, newEndDateStr, newEndTime);  
-        	Command addEditedEventCmd = commandParser.parse(addEditedEventCmdString); 
-        	if(addEditedEventCmd.getCommandType() == CommandType.ADD && addEditedEventCmd.getDataType() == DataType.EVENT){ 
-        		storage.deleteLine(lineNumber); 
-        		Event editedEvent = new Event(newName, isDone, newStartDate, newEndDate, newStartTime, newEndTime); 
-        		storage.addEvent(editedEvent);
-        		String editFeedback = String.format(MESSAGE_EDIT, TYPE_EVENT, newName);
-        		
-        		boolean isSaved = saveState(stateBeforeExecutingCommand);
-                clearRedo(command);
-                return formFeedbackMsg(editFeedback, isSaved);
-        	}else{ 
-        		//assert cmdtype == invalid 
-        		String reason = (addEditedEventCmd.getName() != null)? addEditedEventCmd.getName() : EMPTYSTRING;
-        		return String.format(MESSAGE_ERROR_EDIT_INVALID_EDIT, reason); 
-        	}	
-    	}
-    	else{ 
-			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_EVENT, TYPE_TASK);
-    	}
-	}
    
 	private String executeDone(Command command){
     	try{
@@ -621,8 +692,7 @@ public class Logic {
         	String doneLine = storage.markAsDone(lineNumber); 
         	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, formatLine(doneLine)); 
         	
-        	boolean isSaved = saveState(stateBeforeExecutingCommand);
-        	clearRedo(command);
+        	boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
         	return formFeedbackMsg(markDoneFeedback, isSaved);
     	}
     	catch(FileSystemException e){
@@ -634,10 +704,9 @@ public class Logic {
     }
      
     private String executeSearch(Command command){ 
+    	String query = command.getName(); 
     	try{
     		String[] linesInFile = getLinesInFile();
-    		String query = command.getName(); 
-    		
     		String floatResult = formattedSearchResult(linesInFile, TYPE_FLOAT, query); 
     		String taskResult = formattedSearchResult(linesInFile, TYPE_TASK, query); 
     		String eventResult = formattedSearchResult(linesInFile, TYPE_EVENT, query); 
@@ -645,14 +714,11 @@ public class Logic {
     		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, taskResult, floatResult, eventResult);
     	}
     	catch(FileSystemException e){
-    		//TODO REFACTOR command.getName()
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, command.getName(), e.getMessage(), e.getMessage(), e.getMessage());
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, e.getMessage(), e.getMessage(), e.getMessage());
     	}
     	catch(Exception e){ 
-    		//TODO REFACTOR command.getName()
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, command.getName(), MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN);
+    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN);
     	}
-    	
     }
     
     //TODO REFACTOR - considering putting all the formatting into formatter class 
@@ -726,6 +792,11 @@ public class Logic {
    		}
    	}
    	
+	private boolean loadToMemoryStacks(Command command, State stateBeforeExecutingCommand) {
+        clearRedo(command);
+        return saveState(stateBeforeExecutingCommand);
+	}
+   	
 	private boolean saveState(State prevState) {
 		if(prevState != null){
         	memory.savePrevState(prevState);
@@ -794,7 +865,6 @@ public class Logic {
 		catch (Exception e) {
 			return MESSAGE_ERROR_UNKNOWN; 
 		}
-		 
 	}
 	
 	private String executeSave(Command command) {
@@ -823,7 +893,7 @@ public class Logic {
     
     private String getDateContent(String[] linesInFile ,String type, Date date){
     	ArrayList<Integer> result = filter.filterDate(linesInFile, type, date); 
-    	//TODO REFACTOR THIS SHIT
+    	//TODO getDateContent
     	switch(type){  
     		case TYPE_TASK : 
     			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result, false); 
@@ -847,7 +917,7 @@ public class Logic {
     
     private String getAllStatus(String[] linesInFile ,String type, boolean isDone){
     	ArrayList<Integer> result = filter.filterStatus(linesInFile, type, isDone); 
-    	//TODO REFACTOR THIS SHIT
+    	//TODO refactor getAllStatus
     	switch(type){ 
     		case TYPE_FLOAT : 
     			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result,false); 
@@ -864,8 +934,11 @@ public class Logic {
   	// Public method used in testing only
   	//============================================
     
-    public void overwriteFile(String textToWrite) throws FileSystemException{ 
-    	storage.overwriteFile(textToWrite);
+    public void overwriteFile(String textToOverwrite) throws FileSystemException{ 
+    	storage.overwriteFile(textToOverwrite);
     }
-       
+    
+    public void clearAliasFile() throws FileSystemException{ 
+    	storage.clearAliasFile();
+    }
 }
