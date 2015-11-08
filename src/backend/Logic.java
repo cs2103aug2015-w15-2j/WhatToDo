@@ -53,7 +53,6 @@ public class Logic {
 	private static final String MESSAGE_NO_UNDO = "There are no commands to undo.";
 	private static final String MESSAGE_SET = "Set new alias \"%s\" for \"%s\"."; 
 	private static final String MESSAGE_DELETE_ALIAS = "Deleted alias \"%s\"."; 
-	private static final String MESSAGE_EXIT = "Exit";
 	
 	private static final String MESSAGE_ERROR_UNKNOWN = "Unknown error encountered."; 
     private static final String MESSAGE_ERROR_INVALID_COMMAND = "\"%s\" is an invalid command. %s"; 
@@ -154,8 +153,6 @@ public class Logic {
     			return executeDeleteAlias(command); 
     		case SAVE : 
     			return executeSave(command);
-    		case EXIT :
-    			return executeExit(); 
     		case INVALID :
             default :
             	return handleInvalid(command);
@@ -804,10 +801,6 @@ public class Logic {
 		String newFilePath = command.getName(); 
 		return storage.changeFileStorageLocation(newFilePath); 
 	}
-	
-    private String executeExit(){
-    	return MESSAGE_EXIT; 
-    }
     
     private String handleInvalid(Command command){ 
     	String userInput = command.getUserInput(); 
