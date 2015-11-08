@@ -173,7 +173,7 @@ public class InterfaceController {
      * Views are saved as HBoxes within this class, and swapped into viewBox
      * as and when called by updateMainInterface
      */
-    protected static void initMainInterface() {
+    public static void initMainInterface() {
     	// Initial view set to ALL, 
     	// just a dummy state other than DEFAULT
     	currentView = View.ALL;
