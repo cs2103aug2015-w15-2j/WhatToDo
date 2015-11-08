@@ -796,6 +796,12 @@ public class LogicController {
 		SummaryViewController.updateSummaryView();
 	}
 	
+	// runCommand(), edited for JUnit testing
+	public void runCommandTest(String textFieldInput) {
+		// Execute the command
+		String returnMessage = logic.executeCommand(textFieldInput);
+	}
+	
 	/**
 	 * This method modifies the String input by a user by extracting the view 
 	 * index of delete, done and edit operations, mapping it to the file index, 

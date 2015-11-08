@@ -110,9 +110,31 @@ public class ConfigHandler {
 		emptyAliasFile();
 	}
 	
+	public void overwriteAliasFile(String textToOverwrite) throws IOException {
+		String[] linesToReplace = textToOverwrite.split(NEWLINE);
+		
+		ArrayList<String> fileContents = convertToArrayList(linesToReplace);
+		
+		writeContentsToAliasFile(fileContents);
+	}
+	
 	/*
 	 * Private Methods start here
 	 */
+	
+	private void initialiseAliasWriter() throws FileNotFoundException {
+		aliasFileWriter = new PrintWriter(ALIAS_FILE_PATH);
+	}
+	
+	private ArrayList<String> convertToArrayList(String[] linesToConvert) {
+		ArrayList<String> convertedContents = new ArrayList<String>();
+		
+		for (int i = PARAM_START_LOOP_ZERO; i < linesToConvert.length; i++) {
+			convertedContents.add(linesToConvert[i]);
+		}
+		
+		return convertedContents;
+	}
 	
 	private void createConfigFileIfMissing() throws FileSystemException {
 		File file = new File(CONFIG_FILE_PATH);
@@ -158,7 +180,8 @@ public class ConfigHandler {
 	}
 	
 	private void writeContentsToAliasFile(ArrayList<String> fileContents) throws FileNotFoundException {
-		aliasFileWriter = new PrintWriter(ALIAS_FILE_PATH);
+		initialiseAliasWriter();
+		
 		int lastLine = fileContents.size() - PARAM_LESS_ONE;
 
 		if (lastLine == PARAM_DOES_NOT_EXIST) {

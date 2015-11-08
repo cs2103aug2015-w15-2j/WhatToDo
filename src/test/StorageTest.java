@@ -435,6 +435,27 @@ public class StorageTest {
 	}
 	
 	@Test
+	public void testOverwriteAliasFile() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.clearAliasFile();
+		
+		storage.addToAliasFile("plus", "add");  
+		
+		// This is a boundary case for overwriting with empty string.
+		storage.overwriteAliasFile("");
+		assertEquals("",storage.readAliasFile());
+		
+		// General Case
+		storage.addToAliasFile("find", "search");
+		
+		storage.overwriteAliasFile("assign;set\nwhy;help\n");
+		assertEquals("assign;set\nwhy;help\n",storage.readAliasFile());
+		
+		storage.overwriteAliasFile("");
+		assertEquals("",storage.readAliasFile());
+	}
+	
+	@Test
 	// Tests that changing file path to folder without text file.
 	public void testChangeFilePath() throws FileSystemException {
 		Storage storage = new Storage();
