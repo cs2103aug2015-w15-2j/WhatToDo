@@ -365,10 +365,16 @@ public class Storage {
 			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
 		}
 	}
+	
+	public void overwriteAliasFile(String textToOverwrite) throws FileSystemException {
+		try {
+			configHandler.overwriteAliasFile(textToOverwrite);
+		} catch (IOException exception) {
+			throw new FileSystemException(MESSAGE_ERROR_WRITE_FILE);
+		}
+	}
 
-	/*
-	 * Private Methods Start Here.
-	 */
+	// Private Methods Start Here.
 
 	private void addFloatTaskToFile(FloatingTask newFloatTask)
 			throws IOException {
