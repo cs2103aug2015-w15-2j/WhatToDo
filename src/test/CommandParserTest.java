@@ -2096,21 +2096,21 @@ public class CommandParserTest {
 	
 	@Test
 	public void testSetAndDeleteAlias() {
-		parser.setAlias("create", "add");
+		parser.setAlias("create", "set");
 		String userInput = "delete create";
 		Command command = parser.parse(userInput);
 		Command.CommandType type = command.getCommandType();
 		String name = command.getName();
 		assertEquals(Command.CommandType.DELETEALIAS, type);
 		assertEquals("create", name);
-		String userInput2 = "set include as create";
+		String userInput2 = "create include as create";
 		Command command2 = parser.parse(userInput2);
 		Command.CommandType type2 = command2.getCommandType();
 		String alias = command2.getName();
 		String originalCommand = command2.getOriginalCommand();
 		assertEquals(Command.CommandType.SET, type2);
 		assertEquals("include", alias);
-		assertEquals("add", originalCommand);
+		assertEquals("set", originalCommand);
 		parser.deleteAliasFromHash("create");
 		Command command3 = parser.parse(userInput);
 		Command.CommandType type3 = command3.getCommandType();
