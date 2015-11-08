@@ -15,13 +15,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import struct.FloatingTask;
 import struct.Event;
 import struct.Task;
 
 public class Storage {
-
 	private static final String FILE_NAME = "whattodo.txt";
 	private static final String COLLATED_FILE_PATH_FORMAT = "%s"
 			+ File.separator + "%s";
@@ -38,7 +40,12 @@ public class Storage {
 	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH = "File location specified is invalid.";
 	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH_UNKNOWN = "Unknown error encountered when changing file path.";
 	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH_CONFLICT = "Conflicting text files found in"
-			+ " both old and new file paths. Please delete either one before continuing.";
+			+ " both old and new file paths. Please delete either one.";
+	
+	private static final String MESSAGE_LOG_UNKNOWN_TYPE = "Unknown type found in line %d";
+	private static final String MESSAGE_LOG_CHANGE_PATH = "Unknown Exception found";
+	private static final String MESSAGE_LOG_UNKNOWN_SITUATION = "Unknown situation: %d";
+	private static final String MESSAGE_LOG_LINE_VALIDATION = "Line Number: %d, file lines: %d";
 
 	private static final String TEXT_FILE_DIVIDER = ";";
 
@@ -55,6 +62,9 @@ public class Storage {
 	private static final int PARAM_DOES_NOT_EXIST = -1;
 	private static final int PARAM_FIRST_WORD = 0;
 	private static final int PARAM_COMPARE_TO = 0;
+	
+	// For Logging.
+	private static final Level LEVEL_TO_SHOW = Level.ALL;
 
 	// Used to offset difference in 1-based and 0-based counting.
 	private static final int PARAM_OFFSET = 1;
@@ -76,6 +86,9 @@ public class Storage {
 	
 	// For handling operations within config folder.
 	private ConfigHandler configHandler;
+	
+	// For Logging
+	private Logger logger;
 
 	/**
 	 * Constructor
@@ -91,6 +104,8 @@ public class Storage {
 		createToDoListFile();
 		
 		configHandler.createAliasFile();
+		
+		initialiseLogger();
 	}
 
 	public String getFilePath() {
@@ -99,14 +114,7 @@ public class Storage {
 
 	/**
 	 * Changes location to store text file to given newLocation string.
-	 * Directories/Folders will be created if missing.
-	 * 
-	 * Here are some examples of what newLocation parameter can be: " " - store
-	 * text file at default location. "TaskList" - store text file in folder
-	 * called TaskList. TaskList created at default location. "One\Two" - store
-	 * text file in folder Two which is nested in folder One (at default
-	 * location) "C:\Users\Jim\DropBox" - store text file in DropBox.
-	 * 
+	 * Directories/Folders will be created if missing.	 * 
 	 * Returns error message when given newLocation is invalid name for
 	 * directory or file.
 	 * 
@@ -358,6 +366,11 @@ public class Storage {
 		}
 	}
 	
+	/**
+	 * Clears the entire content of the alias file.
+	 * 
+	 * @throws FileSystemException    when error in writing file.
+	 */
 	public void clearAliasFile() throws FileSystemException {
 		try {
 			configHandler.clearAliasFile();
@@ -366,6 +379,12 @@ public class Storage {
 		}
 	}
 	
+	/**
+	 * Overwrites the entire content of the alias file with given text.
+	 * 
+	 * @param  textToOverwrite        text to overwrite alias file with.
+	 * @throws FileSystemException    when error in writing file.
+	 */
 	public void overwriteAliasFile(String textToOverwrite) throws FileSystemException {
 		try {
 			configHandler.overwriteAliasFile(textToOverwrite);
@@ -375,6 +394,18 @@ public class Storage {
 	}
 
 	// Private Methods Start Here.
+	
+	private void initialiseLogger() {
+		logger = Logger.getLogger(Storage.class.getName());
+		
+		logger.setLevel(LEVEL_TO_SHOW);
+		logger.setUseParentHandlers(false);
+		
+		ConsoleHandler handler = new ConsoleHandler();
+	    handler.setLevel(LEVEL_TO_SHOW);
+	    
+	    logger.addHandler(handler);
+	}
 
 	private void addFloatTaskToFile(FloatingTask newFloatTask)
 			throws IOException {
@@ -626,12 +657,14 @@ public class Storage {
 
 		fileReader.close();
 	}
-
+	
 	private boolean isValidLineNumber(int lineNumber,
 			ArrayList<String> fileContents) {
 		if (lineNumber <= PARAM_LINE_NUMBER_ZERO) {
+			logger.log(Level.FINE, String.format(MESSAGE_LOG_LINE_VALIDATION, lineNumber, fileContents.size()));
 			return false;
 		} else if (lineNumber > fileContents.size()) {
+			logger.log(Level.FINE, String.format(MESSAGE_LOG_LINE_VALIDATION, lineNumber, fileContents.size()));
 			return false;
 		} else {
 			return true;
@@ -690,6 +723,7 @@ public class Storage {
 			markFloatAsComplete(lineNumber, lineToMarkDone,
 					typeToMarkDone);
 		} else {
+			logger.log(Level.WARNING, String.format(MESSAGE_LOG_UNKNOWN_TYPE, lineNumber));
 			throw new IOException();
 		}
 		
@@ -755,6 +789,7 @@ public class Storage {
 			closeStreamsIfOpen();
 			changePathSituation = checkChangePathSituation(newLocation);
 		} catch (IOException exception) {
+			logger.log(Level.WARNING, MESSAGE_LOG_CHANGE_PATH);
 			return MESSAGE_ERROR_CHANGING_FILE_PATH_UNKNOWN;
 		}
 
@@ -772,6 +807,7 @@ public class Storage {
 			case SITUATION_CONFLICT_FILES:
 				return MESSAGE_ERROR_CHANGING_FILE_PATH_CONFLICT;
 			default:
+				logger.log(Level.WARNING, String.format(MESSAGE_LOG_UNKNOWN_SITUATION,changePathSituation));
 				return MESSAGE_ERROR_CHANGING_FILE_PATH_UNKNOWN;
 		}
 	}
@@ -791,6 +827,7 @@ public class Storage {
 		try {
 			configHandler.updateConfigFile(newLocation);
 		} catch (FileNotFoundException exception) {
+			logger.log(Level.WARNING, MESSAGE_LOG_CHANGE_PATH);
 			return MESSAGE_ERROR_CHANGING_FILE_PATH_UNKNOWN;
 		}
 

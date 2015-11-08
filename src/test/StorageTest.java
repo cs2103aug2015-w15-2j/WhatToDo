@@ -512,7 +512,7 @@ public class StorageTest {
 		writer.close();
 		
 		assertEquals("Conflicting text files found in"
-				+ " both old and new file paths. Please delete either one before continuing.",
+				+ " both old and new file paths. Please delete either one.",
 				storage.changeFileStorageLocation("src" + File.separator + "test"));
 		
 		assertEquals("task;sample task;todo;121212\n", storage.display());
