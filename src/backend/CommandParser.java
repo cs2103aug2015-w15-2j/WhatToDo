@@ -104,16 +104,16 @@ public class CommandParser {
     private static final String ERROR_EVENT_DATE = "Invalid date.";
     private static final String ERROR_DELETE = "Index/alias command required.";
     private static final String ERROR_DELETE_INDEX_ALIAS = "Invalid index or alias.";
-    private static final String ERROR_DELETE_ALIAS = "No such alias has been set.";
+    private static final String ERROR_DELETE_ALIAS = "Alias %1$s has not been set.";
     private static final String ERROR_EDIT = "Index required.";
     private static final String ERROR_INDEX = "Invalid index.";
-    private static final String ERROR_DOUBLE_EDIT_KEYWORD = "Double keywords not accepted.";
+    private static final String ERROR_DOUBLE_EDIT_KEYWORD = "Keyword %1$s has been entered twice.";
     private static final String ERROR_EDIT_FORMAT = "Invalid edit format.";
     private static final String ERROR_NAME = "New task/event name required.";
     private static final String ERROR_SET = "Command and alias required.";
     private static final String ERROR_SET_FORMAT = "Invalid set format.";
-    private static final String ERROR_SET_COMMAND = "Command specified is not a registered command/keyword.";
-    private static final String ERROR_SET_ALIAS = "Specified alias is a either a registered command/keyword and cannot be used or an alias-in-use.";
+    private static final String ERROR_SET_COMMAND = "%1$s is not a registered command.";
+    private static final String ERROR_SET_ALIAS = "Input alias is a either a registered command and cannot be used or an alias-in-use.";
     private static final String ERROR_SET_NUMBER = "Positive integers cannot be used as aliases.";
     private static final String ERROR_SAVE = "Directory required.";
     private static final String ERROR_NO_ARGUMENTS = "This command does not expect arguments.";
@@ -123,12 +123,6 @@ public class CommandParser {
     
     private static final ArrayList<String> COMMANDS_ARRAY_LIST = new ArrayList<String>();
     private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
-    
-	public CommandParser() {
-        initDaysArrayList();
-        initFullDaysArrayList();
-        initCommandsArrayList();
-    }
 	
 	public CommandParser(Hashtable<String, String> commandAliases) {
 		this.commandAliases = commandAliases;
@@ -139,15 +133,17 @@ public class CommandParser {
 
     public Command parse(String userInput) {
         Command command;
-        ArrayList<String> parameters = splitString(userInput);
+        ArrayList<String> originalParameters = splitString(userInput);
+        ArrayList<String> originalArguments = getUserArguments(originalParameters);
+        ArrayList<String> parameters = splitString(userInput.toLowerCase());
         ArrayList<String> convertedParameters = convertParameters(parameters);
-        String userCommand = getUserCommand(convertedParameters);
         ArrayList<String> arguments = getUserArguments(convertedParameters);
-
+        String userCommand = getUserCommand(convertedParameters);
+        
         switch (userCommand.toLowerCase()) {
 
             case USER_COMMAND_ADD :
-                command = initAddCommand(arguments);
+                command = initAddCommand(originalArguments);
                 break;
 
             case USER_COMMAND_DELETE :
@@ -155,11 +151,11 @@ public class CommandParser {
                 break;
 
             case USER_COMMAND_EDIT :
-                command = initEditCommand(arguments);
+                command = initEditCommand(originalArguments);
                 break;
                 
             case USER_COMMAND_SEARCH :
-            	command = initSearchCommand(arguments);
+            	command = initSearchCommand(originalArguments);
             	break;
             	
             case USER_COMMAND_DONE :
@@ -171,7 +167,7 @@ public class CommandParser {
             	break;
             	
             case USER_COMMAND_SAVE :
-            	command = initSaveCommand(arguments);
+            	command = initSaveCommand(originalArguments);
             	break;
             	
             case USER_COMMAND_UNDO :
@@ -262,17 +258,21 @@ public class CommandParser {
 	
 	private Command initAddCommand(ArrayList<String> arguments) {
 		Command command;
-		
-		if (arguments.isEmpty()) {
+		ArrayList<String> argumentsLowerCase = toLowerCase(arguments);
+		if (argumentsLowerCase.isEmpty()) {
 			return initInvalidCommand(ERROR_TASK_NAME);
-		} else if (arguments.contains(KEYWORD_DEADLINE)) {
-			command = addTask(arguments);
-		} else if (arguments.contains(KEYWORD_EVENT_TO) && 
-				   arguments.contains(KEYWORD_EVENT_FROM)) {
-			if (arguments.contains(KEYWORD_EVENT_ON)) {
-				command = addDayEvent(arguments);
+		} else if (argumentsLowerCase.contains(KEYWORD_DEADLINE)) {
+			int keywordByIndex = argumentsLowerCase.indexOf(KEYWORD_DEADLINE);
+			command = addTask(arguments, keywordByIndex);
+		} else if (argumentsLowerCase.contains(KEYWORD_EVENT_TO) && 
+				   argumentsLowerCase.contains(KEYWORD_EVENT_FROM)) {
+			int keywordFromIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_FROM);
+			int keywordToIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_TO);
+			if (argumentsLowerCase.contains(KEYWORD_EVENT_ON)) {
+				int keywordOnIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_ON);
+				command = addDayEvent(arguments, keywordOnIndex, keywordFromIndex, keywordToIndex);
 			} else {
-				command = addEvent(arguments);
+				command = addEvent(arguments, keywordFromIndex, keywordToIndex);
 			} 
 		} else {
 			command = addFloatingTask(arguments);
@@ -280,16 +280,15 @@ public class CommandParser {
 		return command;
 	}
 	
-	private Command addTask(ArrayList<String> arguments) {
-		int keywordIndex = arguments.indexOf(KEYWORD_DEADLINE);
+	private Command addTask(ArrayList<String> arguments, int keywordByIndex) {
 		Date date = null;
-		if (keywordIndex == arguments.size() - 2) {
-			date = getDate(arguments.get(arguments.size() - 1));
+		if (keywordByIndex == arguments.size() - 2) {
+			date = getDate(arguments.get(arguments.size() - 1).toLowerCase());
 		}
 		if (date == null) {
 			return initInvalidCommand(ERROR_DEADLINE);
 		}
-		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, keywordIndex);
+		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, keywordByIndex);
 		String name = getName(nameList);
 		if (name == null) {
 			return initInvalidCommand(ERROR_TASK_NAME);
@@ -302,9 +301,7 @@ public class CommandParser {
 		return command;
 	}
 	
-	private Command addEvent(ArrayList<String> arguments) {
-		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_TO);
-		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_FROM);
+	private Command addEvent(ArrayList<String> arguments, int keywordFromIndex, int keywordToIndex) {
 		
 		if (Math.abs(keywordToIndex - keywordFromIndex) != POSITION_DIFFERENCE_THREE 
 			|| (arguments.size() - keywordToIndex != POSITION_DIFFERENCE_THREE 
@@ -312,9 +309,9 @@ public class CommandParser {
 			return initInvalidCommand(ERROR_EVENT_FORMAT);
 		}
 		
-		Date startDate = getDate(arguments.get(keywordFromIndex + POSITION_PLUS_ONE));
+		Date startDate = getDate(arguments.get(keywordFromIndex + POSITION_PLUS_ONE).toLowerCase());
 		String startTime = getTime(arguments.get(keywordFromIndex + POSITION_PLUS_TWO));
-		Date endDate = getDate(arguments.get(keywordToIndex + POSITION_PLUS_ONE));
+		Date endDate = getDate(arguments.get(keywordToIndex + POSITION_PLUS_ONE).toLowerCase());
 		String endTime = getTime(arguments.get(keywordToIndex + POSITION_PLUS_TWO));
 		String name = null;
 		
@@ -360,10 +357,7 @@ public class CommandParser {
 		return command;
 	}
 	
-	private Command addDayEvent(ArrayList<String> arguments) {
-		int keywordToIndex = arguments.indexOf(KEYWORD_EVENT_TO);
-		int keywordFromIndex = arguments.indexOf(KEYWORD_EVENT_FROM);
-		int keywordOnIndex = arguments.indexOf(KEYWORD_EVENT_ON);
+	private Command addDayEvent(ArrayList<String> arguments, int keywordOnIndex, int keywordFromIndex, int keywordToIndex) {
 		int minIndex = Math.min(keywordToIndex, Math.min(keywordFromIndex, keywordOnIndex));
 		int maxIndex = Math.max(keywordToIndex, Math.max(keywordFromIndex, keywordOnIndex));
 		
@@ -372,7 +366,7 @@ public class CommandParser {
 			return initInvalidCommand(ERROR_EVENT_FORMAT);
 		}
 		
-		Date date = getDate(arguments.get(keywordOnIndex + POSITION_PLUS_ONE));
+		Date date = getDate(arguments.get(keywordOnIndex + POSITION_PLUS_ONE).toLowerCase());
 		String startTime = getTime(arguments.get(keywordFromIndex + POSITION_PLUS_ONE));
 		String endTime = getTime(arguments.get(keywordToIndex + POSITION_PLUS_ONE));
 		List<String> nameList = arguments.subList(POSITION_FIRST_INDEX, minIndex);
@@ -434,11 +428,11 @@ public class CommandParser {
 		} else if (date.equals(KEYWORD_TOMORROW_ONE) || date.equals(KEYWORD_TOMORROW_TWO) 
 				   || date.equals(KEYWORD_TOMORROW_THREE)) {
 			return Date.tomorrowDate();
-		} else if (DAYS_FULL_ARRAY_LIST.contains(date.toLowerCase())) {
-			String daySubstring = date.substring(POSITION_FIRST_INDEX, POSITION_FOURTH_INDEX).toLowerCase();
+		} else if (DAYS_FULL_ARRAY_LIST.contains(date)) {
+			String daySubstring = date.substring(POSITION_FIRST_INDEX, POSITION_FOURTH_INDEX);
 			int day = DAYS_ARRAY_LIST.indexOf(daySubstring);
-			String todayString = todayDate.getDayString();
-			String todaySubstring = todayString.substring(POSITION_FIRST_INDEX, POSITION_FOURTH_INDEX).toLowerCase();
+			String todayString = todayDate.getDayString().toLowerCase();
+			String todaySubstring = todayString.substring(POSITION_FIRST_INDEX, POSITION_FOURTH_INDEX);
 			int today = DAYS_ARRAY_LIST.indexOf(todaySubstring);
 			int difference = day - today;
 			if (difference >= DIFFERENCE_ZERO) {
@@ -447,8 +441,8 @@ public class CommandParser {
 				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_A_WEEK);
 			}
 		} else if (date.substring(0,1).equals(KEYWORD_NEXT) 
-				&& DAYS_FULL_ARRAY_LIST.contains(date.substring(1).toLowerCase())) {
-			int day = DAYS_ARRAY_LIST.indexOf(date.substring(1,4).toLowerCase());
+				&& DAYS_FULL_ARRAY_LIST.contains(date.substring(1))) {
+			int day = DAYS_ARRAY_LIST.indexOf(date.substring(1,4));
 			int today = DAYS_ARRAY_LIST.indexOf(todayDate.getDayString().substring(0,3).toLowerCase());
 			int difference = day - today;
 			if (difference >= DIFFERENCE_ZERO) {
@@ -593,6 +587,16 @@ public class CommandParser {
 			return false;
 		}
 	}
+	
+	private ArrayList<String> toLowerCase(ArrayList<String> arguments) {
+		ArrayList<String> argumentsLowerCase = new ArrayList<String>();
+		for (int i=0; i < arguments.size(); i++) {
+			String parameter = arguments.get(i);
+			String newParameter = parameter.toLowerCase();
+			argumentsLowerCase.add(newParameter);
+		}
+		return argumentsLowerCase;
+	}
 
 	
     // ================================================================
@@ -618,7 +622,7 @@ public class CommandParser {
 	
 	private Command deleteAlias(String alias) {
 		 if (!commandAliases.containsKey(alias)) {
-			 return initInvalidCommand(ERROR_DELETE_ALIAS);
+			 return initInvalidCommand(String.format(ERROR_DELETE_ALIAS, alias));
 		 } else {
 			 String originalCommand = commandAliases.get(alias);
 			 Command command = new Command(Command.CommandType.DELETEALIAS);
@@ -657,19 +661,19 @@ public class CommandParser {
 			return initInvalidCommand(ERROR_INDEX);
 		}
 		
-		int nameIndex = getKeywordIndex(arguments, KEYWORD_EDIT_NAME);
-		int deadlineIndex = getKeywordIndex(arguments, KEYWORD_EDIT_DEADLINE);
-		int startDateIndex = getKeywordIndex(arguments, KEYWORD_EDIT_START_DATE);
-		int startTimeIndex = getKeywordIndex(arguments, KEYWORD_EDIT_START_TIME);
-		int endDateIndex = getKeywordIndex(arguments, KEYWORD_EDIT_END_DATE);
-		int endTimeIndex = getKeywordIndex(arguments, KEYWORD_EDIT_END_TIME);
+		ArrayList<String> argumentsLowerCase = toLowerCase(arguments);
+		int nameIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_NAME);
+		int deadlineIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_DEADLINE);
+		int startDateIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_START_DATE);
+		int startTimeIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_START_TIME);
+		int endDateIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_END_DATE);
+		int endTimeIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_END_TIME);
 		
 		if (repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, 
 				             startTimeIndex, endDateIndex, endTimeIndex) != null) {
 			String repeatedKeyword = repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, 
 					                                  startTimeIndex, endDateIndex, endTimeIndex);
-			String errorMsg = "Double keywords " + repeatedKeyword + " not accepted!";
-			return initInvalidCommand(ERROR_DOUBLE_EDIT_KEYWORD);
+			return initInvalidCommand(String.format(ERROR_DOUBLE_EDIT_KEYWORD, repeatedKeyword));
 		}
 		if (!(deadlineIndex < 0)) {
 			if (!(startDateIndex < 0) || !(startTimeIndex < 0) || !(endDateIndex < 0) || !(endTimeIndex < 0)) {
@@ -705,6 +709,7 @@ public class CommandParser {
 			String keyword = indexKeywordHash.get(keywordIndex);
 			List<String> argumentsSublist = arguments.subList(keywordIndex + 1, nextKeywordIndex);
 			String argument = getName(argumentsSublist);
+			String argumentLowerCase = argument.toLowerCase();
 			
 			 switch (keyword) {
 			 
@@ -713,23 +718,23 @@ public class CommandParser {
 			 		break;
 
 	            case KEYWORD_EDIT_DEADLINE :
-	                command = editDeadline(command, argument);
+	                command = editDeadline(command, argumentLowerCase);
 	                break;
 	                
 	            case KEYWORD_EDIT_START_DATE :
-	            	command = editStartDate(command, argument);
+	            	command = editStartDate(command, argumentLowerCase);
 	            	break;
 	            
 	            case KEYWORD_EDIT_START_TIME :
-	            	command = editStartTime(command, argument);
+	            	command = editStartTime(command, argumentLowerCase);
 	            	break;
 	            	
 	            case KEYWORD_EDIT_END_DATE :
-	            	command = editEndDate(command, argument);
+	            	command = editEndDate(command, argumentLowerCase);
 	            	break;
 	            	
 	            case KEYWORD_EDIT_END_TIME :
-	            	command = editEndTime(command, argument);
+	            	command = editEndTime(command, argumentLowerCase);
 	            	break;
 			 }
 			 if (command.getCommandType() == Command.CommandType.INVALID) {
@@ -973,8 +978,7 @@ public class CommandParser {
 		if (COMMANDS_ARRAY_LIST.contains(commandKeyword)) {
 			return STRING_VERIFIED;
 		} else {
-			String errorMsg = commandKeyword + " is not a registered command/keyword";
-			return ERROR_SET_COMMAND;
+			return String.format(ERROR_SET_COMMAND, commandKeyword);
 		}
 	}
 	
