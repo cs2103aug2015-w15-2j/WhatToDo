@@ -64,9 +64,6 @@ public class Logic {
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
     
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
-    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
-    private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
-    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "Showing results for \"%s\"\nTASK\n%s\nFLOAT\n%s\nEVENT\n%s"; 
     
     private static final String KEYWORD_EDIT_NAME = "name";
     private static final String KEYWORD_EDIT_DEADLINE = "date";
@@ -161,42 +158,33 @@ public class Logic {
     public String taskDefaultView(){
     	try{
     		String[] linesInFile = getLinesInFile();
-    		//TODO change this 
-        	String floatContent = formatter.formatFloatOrTaskWithoutHeaders(linesInFile, 
-        			getAllStatus(linesInFile, TYPE_FLOAT, false), false); 
-            String todayContent = getDateContent(linesInFile, TYPE_TASK, Date.todayDate()); 
-            String tomorrowContent = getDateContent(linesInFile, TYPE_TASK, Date.tomorrowDate());
-           
-            return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, Date.todayDateLong(), todayContent, 
-            		Date.tomorrowDateLong(), tomorrowContent, floatContent).trim();
+    		ArrayList<Integer> taskTodayIndexList = getDateContent(linesInFile, TYPE_TASK, Date.todayDate()); 
+            ArrayList<Integer> taskTmrIndexList = getDateContent(linesInFile, TYPE_TASK, Date.tomorrowDate());
+        	ArrayList<Integer> floatIndexList = getAllStatus(linesInFile, TYPE_FLOAT, false); 
+            return formatter.formatDefTaskView(linesInFile, taskTodayIndexList, taskTmrIndexList, floatIndexList);
     	}
     	catch(FileSystemException e){
-    		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, Date.todayDateLong(), e.getMessage(),  
-    				Date.tomorrowDateLong(), e.getMessage(), e.getMessage()).trim();
+    		return e.getMessage(); 
     	}
     	catch(Exception e){
-    		return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
-    				Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN).trim();
+    		return MESSAGE_ERROR_UNKNOWN; 
     	}
     }
     
     public String eventDefaultView(){
     	try{
     		String[] linesInFile = getLinesInFile();
-        	String onGoingContent = getOngoingEventContent(linesInFile); 
-            String todayContent = getDateContent(linesInFile, TYPE_EVENT, Date.todayDate());
-            String tomorrowContent = getDateContent(linesInFile, TYPE_EVENT, Date.tomorrowDate()); 
-            	
-            return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, onGoingContent, Date.todayDateLong(), todayContent, 
-            		Date.tomorrowDateLong(), tomorrowContent).trim();
+        	ArrayList<Integer> eventOngoingIndexList = getOngoingEventContent(linesInFile); 
+            ArrayList<Integer> eventTodayIndexList = getDateContent(linesInFile, TYPE_EVENT, Date.todayDate());
+            ArrayList<Integer> eventTmrIndexList = getDateContent(linesInFile, TYPE_EVENT, Date.tomorrowDate()); 
+    		return formatter.formatDefEventView(linesInFile, eventOngoingIndexList, 
+    				eventTodayIndexList, eventTmrIndexList); 
     	}
     	catch(FileSystemException e){
-    		return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, e.getMessage(), Date.todayDateLong(), e.getMessage(), 
-            		Date.tomorrowDateLong(), e.getMessage()).trim();
+    		return e.getMessage();  
     	}
     	catch (Exception e) {
-    		return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, MESSAGE_ERROR_UNKNOWN, Date.todayDateLong(), MESSAGE_ERROR_UNKNOWN, 
-            		Date.tomorrowDateLong(), MESSAGE_ERROR_UNKNOWN).trim();
+    		return MESSAGE_ERROR_UNKNOWN; 
 		}
     }
        
@@ -274,7 +262,6 @@ public class Logic {
 	// Private methods for constructor 
 	//============================================
     
-    //TODO - consider returning a message if there is prob reading alias.txt 
     private Hashtable<String, String> createAliasHashtable(){
     	Hashtable<String, String> aliasHashtable = new Hashtable<String, String>();
     	
@@ -734,33 +721,21 @@ public class Logic {
     	String query = command.getName(); 
     	try{
     		String[] linesInFile = getLinesInFile();
-    		String floatResult = formattedSearchResult(linesInFile, TYPE_FLOAT, query); 
-    		String taskResult = formattedSearchResult(linesInFile, TYPE_TASK, query); 
-    		String eventResult = formattedSearchResult(linesInFile, TYPE_EVENT, query); 
-    		
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, taskResult, floatResult, eventResult);
+    		ArrayList<Integer> floatResults = getSearchResults(linesInFile, TYPE_FLOAT, query); 
+    		ArrayList<Integer> taskResults = getSearchResults(linesInFile, TYPE_TASK, query); 
+    		ArrayList<Integer> eventResults = getSearchResults(linesInFile, TYPE_EVENT, query); 
+    		return formatter.formatSearchResults(query, linesInFile, taskResults, floatResults, eventResults); 
     	}
     	catch(FileSystemException e){
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, e.getMessage(), e.getMessage(), e.getMessage());
+    		return formatter.formatSearchError(query, e.getMessage());
     	}
     	catch(Exception e){ 
-    		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN);
+    		return formatter.formatSearchError(query, MESSAGE_ERROR_UNKNOWN); 
     	}
     }
     
-    //TODO REFACTOR - considering putting all the formatting into formatter class 
-    private String formattedSearchResult(String[] linesInFile, String type, String query){
-    	ArrayList<Integer> result = filter.matchTokensInQuery(linesInFile, type, query); 
-    	switch(type){
-    		case TYPE_FLOAT : 
-    			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result, true);
-    		case TYPE_TASK : 
-    			return formatter.formatTaskWithHeaders(linesInFile, result, true);
-    		case TYPE_EVENT : 
-    			return formatter.formatEventWithHeaders(linesInFile, result, true); 
-    		default : 
-    			return ""; 
-    	}
+    private ArrayList<Integer> getSearchResults(String[] linesInFile, String type, String query){
+    	return filter.matchTokensInQuery(linesInFile, type, query); 
     }
         
     private String executeUndo(Command command){ 
@@ -906,7 +881,7 @@ public class Logic {
     }
     
 	//============================================
-	// Private methods for defaultView 
+	// Private methods for View mtds  
 	//============================================    
       
     private String[] getLinesInFile() throws FileSystemException{
@@ -918,30 +893,14 @@ public class Logic {
     	}
     }
     
-    private String getDateContent(String[] linesInFile ,String type, Date date){
-    	ArrayList<Integer> result = filter.filterDate(linesInFile, type, date); 
-    	//TODO getDateContent
-    	switch(type){  
-    		case TYPE_TASK : 
-    			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result, false); 
-    		case TYPE_EVENT : 
-    			return formatter.formatEventWithoutHeaders(linesInFile, result); 
-    		default : 
-    			return ""; 
-    	}
+    private ArrayList<Integer> getDateContent(String[] linesInFile ,String type, Date date){
+    	return filter.filterDate(linesInFile, type, date); 
     }
     
-    private String getOngoingEventContent(String[] linesInFile){ 
-    	ArrayList<Integer> ongoingEventIndexes = filter.filterOngoingEvents(linesInFile);
-    	String formattedList = formatter.formatEventWithoutHeaders(linesInFile, ongoingEventIndexes);
-    	
-    	return formattedList; 
+    private ArrayList<Integer> getOngoingEventContent(String[] linesInFile){ 
+    	return filter.filterOngoingEvents(linesInFile);
     }
-    
-    //============================================
-  	// Private methods for allView
-  	//============================================
-    
+     
     private ArrayList<Integer> getAllStatus(String[] linesInFile ,String type, boolean isDone){
     	return filter.filterStatus(linesInFile, type, isDone); 
     }

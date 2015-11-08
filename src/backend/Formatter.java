@@ -23,6 +23,9 @@ public class Formatter {
     private static final String DISPLAY_FORMAT_EVENT = "%s%d. %s;Start: %s         End: %s %s\n"; 
     
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s"; 
+    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
+    private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "Showing results for \"%s\"\nTASK\n%s\nFLOAT\n%s\nEVENT\n%s"; 
     
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_TASK = "task";
@@ -37,16 +40,58 @@ public class Formatter {
 	// Public methods
 	//============================================
     
-	//TODO add the assertions where necessary
+	//TODO add the assertions where necessary	
+	
+	public String formatDefEventView(String[] linesInFile, ArrayList<Integer> eventOngoingIndexList, 
+			ArrayList<Integer> eventTodayIndexList, ArrayList<Integer> eventTmrIndexList){ 
+		
+		String ongoingContent = formatEventWithoutHeaders(linesInFile, eventOngoingIndexList); 
+		String todayContent = formatEventWithoutHeaders(linesInFile, eventTodayIndexList); 
+		String tmrContent = formatEventWithoutHeaders(linesInFile, eventTmrIndexList); 
+		String todayDate = Date.todayDateLong(); 
+		String tmrDate = Date.tomorrowDateLong();
+		
+		return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, ongoingContent, todayDate, todayContent, 
+        		tmrDate, tmrContent).trim();
+	}
+
+	public String formatDefTaskView(String[] linesInFile, ArrayList<Integer> taskTodayIndexList, 
+			ArrayList<Integer> taskTmrIndexList, ArrayList<Integer> floatIndexList){ 
+		
+		String taskTodayContent = formatFloatOrTaskWithoutHeaders(linesInFile, taskTodayIndexList, false); 
+		String taskTmrContent = formatFloatOrTaskWithoutHeaders(linesInFile, taskTmrIndexList, false); 
+		String floatContent = formatFloatOrTaskWithoutHeaders(linesInFile, floatIndexList, false); 
+		String todayDate = Date.todayDateLong(); 
+		String tmrDate = Date.tomorrowDateLong(); 
+		
+        return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, todayDate, taskTodayContent, 
+        		tmrDate, taskTmrContent, floatContent).trim();
+	}
 	
 	public String formatAllTaskView(String[] linesInFile, 
 			ArrayList<Integer> taskIndexList, ArrayList<Integer> floatIndexList){ 
 		
 		String taskContent = formatTaskWithHeaders(linesInFile, taskIndexList, false); 
-		String floatContent = formatFloatOrTaskWithoutHeaders(linesInFile, floatIndexList, false); 
-		return String.format(DISPLAY_LAYOUT_ALL_TASK, taskContent, floatContent); 
+		String floatContent = formatFloatOrTaskWithoutHeaders(linesInFile, floatIndexList, false);
+		
+		return String.format(DISPLAY_LAYOUT_ALL_TASK, taskContent, floatContent).trim(); 
 	}
 	
+	public String formatSearchResults(String query, String[] linesInFile, ArrayList<Integer> taskResults,
+			ArrayList<Integer> floatResults, ArrayList<Integer> eventResults){ 
+		
+		String taskContent = formatTaskWithHeaders(linesInFile, taskResults, true);
+		String floatContent = formatFloatOrTaskWithoutHeaders(linesInFile, floatResults, true);
+		String eventContent = formatEventWithHeaders(linesInFile, eventResults, true); 
+		
+		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, taskContent, floatContent, eventContent);
+		
+	}
+	
+	public String formatSearchError(String query, String errorMsg){ 		
+		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, errorMsg, errorMsg, errorMsg);
+	}
+
 	public String formatFloatOrTaskWithoutHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){
 		StringBuffer contentBuffer = new StringBuffer();
 		for(int i : result){ 
