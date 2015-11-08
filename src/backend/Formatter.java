@@ -9,7 +9,7 @@ import struct.Date;
 //@@author A0127051U
 public class Formatter {
 
-//	private static final int INDEX_TYPE = 0; 
+	private static final int INDEX_TYPE = 0; 
 	private static final int INDEX_NAME = 1; 
 	private static final int INDEX_ISDONE = 2; 
 	private static final int INDEX_DUEDATE = 3;
@@ -19,8 +19,14 @@ public class Formatter {
 	private static final int INDEX_ENDTIME = 6; 
 	
 	private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
-    private static final String DISPLAY_RESULTS_FLOAT_OR_TASK = "%s%d. %s\n"; 
+    private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%s%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%s%d. %s;Start: %s         End: %s %s\n"; 
+    
+    private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s"; 
+    
+    private static final String TYPE_FLOAT = "float";
+    private static final String TYPE_TASK = "task";
+    private static final String TYPE_EVENT = "event";
     
 	private static final String SEMICOLON = ";";
 	private static final String NEWLINE = "\n";
@@ -33,17 +39,27 @@ public class Formatter {
     
 	//TODO add the assertions where necessary
 	
+	public String formatAllTaskView(String[] linesInFile, 
+			ArrayList<Integer> taskIndexList, ArrayList<Integer> floatIndexList){ 
+		
+		String taskContent = formatTaskWithHeaders(linesInFile, taskIndexList, false); 
+		String floatContent = formatFloatOrTaskWithoutHeaders(linesInFile, floatIndexList, false); 
+		return String.format(DISPLAY_LAYOUT_ALL_TASK, taskContent, floatContent); 
+	}
+	
 	public String formatFloatOrTaskWithoutHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){
 		StringBuffer contentBuffer = new StringBuffer();
 		for(int i : result){ 
 			String line = linesInFile[i]; 
 			String[] lineFields = line.split(SEMICOLON);
-//			String lineType = lineFields[INDEX_TYPE];
-//			assert items is float or task  
+
+			assert(lineFields[INDEX_TYPE].equals(TYPE_FLOAT) ||
+					lineFields[INDEX_TYPE].equals(TYPE_TASK)); 
+			
 			String lineName = lineFields[INDEX_NAME];
 			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] + SPACE : EMPTYSTRING;
 			
-			String formattedLine = String.format(DISPLAY_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
+			String formattedLine = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
 			contentBuffer.append(formattedLine); 
 		}
 		
@@ -56,18 +72,18 @@ public class Formatter {
 		for(int i : result){ 
 			String line = linesInFile[i]; 
 			String[] lineFields = line.split(SEMICOLON);
-//			String lineType = lineFields[INDEX_TYPE];
-//			assert items is task  
+
+			assert(lineFields[INDEX_TYPE].equals(TYPE_TASK)); 
+			
 			String lineName = lineFields[INDEX_NAME];
 			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] + SPACE : EMPTYSTRING;
-			
 			Date currDeadline = new Date(lineFields[INDEX_DUEDATE]);
-			prevDeadline = addDateHeader(contentBuffer, currDeadline, prevDeadline);
 			
-			String formattedLine = String.format(DISPLAY_RESULTS_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
+			prevDeadline = addDateHeader(contentBuffer, currDeadline, prevDeadline);
+			String formattedLine = String.format(DISPLAY_FORMAT_FLOAT_OR_TASK, lineIsDone, i+1, lineName);
 			contentBuffer.append(formattedLine); 
 		}
-		
+	
 		return addMsgIfEmpty(contentBuffer); 
 	}
 
@@ -76,8 +92,9 @@ public class Formatter {
 		for(int i : result){ 
 			String line = linesInFile[i]; 
 			String[] lineFields = line.split(SEMICOLON);
-//			String lineType = lineFields[INDEX_TYPE];
-//			assert items is event  
+
+			assert(lineFields[INDEX_TYPE].equals(TYPE_EVENT)); 
+			
 			String lineName = lineFields[INDEX_NAME];
 			String lineIsDone = EMPTYSTRING;
 			String lineStartTime = formatTime(lineFields[INDEX_STARTTIME]); 
@@ -98,17 +115,17 @@ public class Formatter {
 		for(int i : result){ 
 			String line = linesInFile[i]; 
 			String[] lineFields = line.split(SEMICOLON);
-//			String lineType = lineFields[INDEX_TYPE];
-//			assert items is event  
+
+			assert(lineFields[INDEX_TYPE].equals(TYPE_EVENT)); 
+			
 			String lineName = lineFields[INDEX_NAME];
 			String lineIsDone = (includeStatus) ? lineFields[INDEX_ISDONE] + SPACE : EMPTYSTRING;
 			String lineStartTime = formatTime(lineFields[INDEX_STARTTIME]); 
 			String lineEndTime = formatTime(lineFields[INDEX_ENDTIME]); 
 			Date currEndDate = new Date(lineFields[INDEX_ENDDATE]);
-			
 			Date currStartDate = new Date(lineFields[INDEX_STARTDATE]);
-			prevStartDate = addDateHeader(contentBuffer, currStartDate, prevStartDate); 
 			
+			prevStartDate = addDateHeader(contentBuffer, currStartDate, prevStartDate); 
 			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, lineIsDone, i+1, 
 					lineName, lineStartTime, currEndDate.formatDateMedium(), lineEndTime);
 			contentBuffer.append(formattedLine); 

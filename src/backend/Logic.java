@@ -162,7 +162,9 @@ public class Logic {
     public String taskDefaultView(){
     	try{
     		String[] linesInFile = getLinesInFile();
-        	String floatContent = getAllStatus(linesInFile, TYPE_FLOAT, false); 
+    		//TODO change this 
+        	String floatContent = formatter.formatFloatOrTaskWithoutHeaders(linesInFile, 
+        			getAllStatus(linesInFile, TYPE_FLOAT, false), false); 
             String todayContent = getDateContent(linesInFile, TYPE_TASK, Date.todayDate()); 
             String tomorrowContent = getDateContent(linesInFile, TYPE_TASK, Date.tomorrowDate());
            
@@ -202,23 +204,23 @@ public class Logic {
     public String taskAllView(boolean isDone){ 
     	try{ 
     		String[] linesInFile = getLinesInFile();
-        	String floatContent = getAllStatus(linesInFile, TYPE_FLOAT, isDone); 
-        	String taskContent = getAllStatus(linesInFile,TYPE_TASK, isDone);
-        	
-        	return String.format(DISPLAY_LAYOUT_ALL_TASK, taskContent, floatContent); 
+        	ArrayList<Integer> taskIndexList = getAllStatus(linesInFile,TYPE_TASK, isDone);
+        	ArrayList<Integer> floatIndexList = getAllStatus(linesInFile, TYPE_FLOAT, isDone); 
+        	return formatter.formatAllTaskView(linesInFile, taskIndexList, floatIndexList);  
     	}
     	catch(FileSystemException e){
-    		return e.getMessage(); 
+    		return String.format(DISPLAY_LAYOUT_ALL_TASK, e.getMessage(), e.getMessage());
     	}
     	catch (Exception e) {
-    		return MESSAGE_ERROR_UNKNOWN; 
+    		return String.format(DISPLAY_LAYOUT_ALL_TASK, MESSAGE_ERROR_UNKNOWN, MESSAGE_ERROR_UNKNOWN);
     	}
     }
     
     public String eventAllView(boolean isDone){ 
     	try{
     		String[] linesInFile = getLinesInFile(); 
-    		return getAllStatus(linesInFile, TYPE_EVENT, isDone);
+    		ArrayList<Integer> eventIndexList = getAllStatus(linesInFile, TYPE_EVENT, isDone);
+    		return formatter.formatEventWithHeaders(linesInFile, eventIndexList, false);
     	}
     	catch(FileSystemException e){
     		return e.getMessage(); 
@@ -941,19 +943,8 @@ public class Logic {
   	// Private methods for allView
   	//============================================
     
-    private String getAllStatus(String[] linesInFile ,String type, boolean isDone){
-    	ArrayList<Integer> result = filter.filterStatus(linesInFile, type, isDone); 
-    	//TODO refactor getAllStatus
-    	switch(type){ 
-    		case TYPE_FLOAT : 
-    			return formatter.formatFloatOrTaskWithoutHeaders(linesInFile, result,false); 
-    		case TYPE_TASK : 
-    			return formatter.formatTaskWithHeaders(linesInFile, result, false);
-    		case TYPE_EVENT : 
-    			return formatter.formatEventWithHeaders(linesInFile, result, false); 
-    		default : 
-    			return ""; 
-    	}
+    private ArrayList<Integer> getAllStatus(String[] linesInFile ,String type, boolean isDone){
+    	return filter.filterStatus(linesInFile, type, isDone); 
     }
     
     //============================================
