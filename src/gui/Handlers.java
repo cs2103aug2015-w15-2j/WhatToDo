@@ -170,7 +170,6 @@ public class Handlers {
 	            // Only modify the user command for these operations by editing the 
 	            // index from ViewIndexMap
 	            case DELETE:
-	            	// Run the command
 	            	handlerLogicControl.runCommand(
 	            			operationType, 
 	            			handlerLogicControl.mapToFileIndex(textFieldInput), 
@@ -178,7 +177,6 @@ public class Handlers {
 	            	runBackgroundUpdate();
 	            	break;
 	            case EDIT:
-	            	// Run the command
 	            	handlerLogicControl.runCommand(
 	            			operationType, 
 	            			handlerLogicControl.mapToFileIndex(textFieldInput), 
@@ -186,7 +184,6 @@ public class Handlers {
 	            	runBackgroundUpdate();
 	            	break;
 	            case DONE:
-	            	// Run the command
 	            	handlerLogicControl.runCommand(
 	            			operationType, 
 	            			handlerLogicControl.mapToFileIndex(textFieldInput), 
@@ -194,7 +191,6 @@ public class Handlers {
 	            	runBackgroundUpdate();
 	            	break;
 	            default:
-	            	// Run the command
 	            	handlerLogicControl.runCommand(operationType, textFieldInput, SEARCH_USER);
 	            	runBackgroundUpdate();
 	            	break;
@@ -214,6 +210,9 @@ public class Handlers {
 						Command.CommandType.SEARCH, lastSearchCommand, SEARCH_BACKGROUND);
 				InterfaceController.updateMainInterface(View.SEARCH);
 			}
+			
+			assert InterfaceController.getCurrentView() != View.SEARCH;
+			
 			// If the user is not in search view, do not switch to search view
 			if (!lastSearchCommand.equals(LogicController.NULL_STRING) && 
 					InterfaceController.getCurrentView() != View.SEARCH) {

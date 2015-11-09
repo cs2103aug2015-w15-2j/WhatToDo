@@ -254,27 +254,6 @@ public class AutoComplete {
 	}
 	
 	/**
-	 * This method checks if one String is a substring of another
-	 * 
-	 * @param input
-	 * 			  The String to try and check
-	 * @param target
-	 * 			  The String to check input against
-	 * @return true if input is a substring of target, false otherwise
-	 */
-	private static boolean isSubstring(String input, String target) {
-		if (input.length() > target.length()) {
-			return false;
-		} else if (input.length() == target.length()) {
-			return input.equals(target);
-		} else if (target.substring(0, input.length()).equals(input)) {
-			return true;
-		} else {
-			return isSubstring(input, target.substring(1));
-		}
-	}
-	
-	/**
 	 * This method returns all commands that match (contain a substring) of 
 	 * the searchTerm
 	 * 
@@ -397,6 +376,27 @@ public class AutoComplete {
 			}
 		}
 		return isShortcut;
+	}
+	
+	/**
+	 * This method checks if one String is a substring of another
+	 * 
+	 * @param input
+	 * 			  The String to try and check
+	 * @param target
+	 * 			  The String to check input against
+	 * @return true if input is a substring of target, false otherwise
+	 */
+	private static boolean isSubstring(String input, String target) {
+		if (input.length() > target.length()) {
+			return false;
+		} else if (input.length() == target.length()) {
+			return input.equals(target);
+		} else if (target.substring(0, input.length()).equals(input)) {
+			return true;
+		} else {
+			return isSubstring(input, target.substring(1));
+		}
 	}
 }
 

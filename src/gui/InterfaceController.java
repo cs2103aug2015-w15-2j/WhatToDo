@@ -20,6 +20,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import struct.View;
 
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class InterfaceController {
@@ -230,6 +231,7 @@ public class InterfaceController {
      * 		      The view to display in the application window
      */
     protected static void updateMainInterface(View view) {
+    	assert viewBox != null;
     	viewBox.getChildren().clear();
     	
     	switch (view) {
@@ -325,6 +327,7 @@ public class InterfaceController {
     protected static void closeMainInterface() {
     	currentView = View.EXIT;
     	MainApp.stage.close();
+    	MainApp.logger.log(Level.INFO, MainApp.LOG_CLOSE);
     }
     
     // ===============================================================
@@ -576,12 +579,14 @@ public class InterfaceController {
     	if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
     		return Constructor.initTitleOrDateElement(displayData);
     	} else {
+    		assert !InterfaceController.getLogic().isTitleOrDate(displayData);
     		// Determine whether the element data is an element or a null response
     		String[] displayDataSplit = displayData.split(Pattern.quote("."));
     		// If no items to display
     		if (displayDataSplit.length == 1) {
     			return Constructor.initNoResultElement(displayData);
     		} else {
+    			assert displayDataSplit.length != 1;
     			return Constructor.initDataElement(displayData, numOfElements, index, 
     					isTask, displayDataSplit, targetView);
     		}
