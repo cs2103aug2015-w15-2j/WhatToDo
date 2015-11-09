@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.nio.file.FileSystemException;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -21,6 +22,12 @@ public class LogicControllerTest {
 	// Test for getAllElementsCount(), and by extension getAllTasks() and getAllEvents()
 	public void testCase1() {
 		InterfaceController.initLogicControl();
+		
+		try {
+			LogicController.getLogic().overwriteFile("");
+		} catch (FileSystemException e) {
+			e.printStackTrace();
+		}
 		
 		// Do first initialization of the test data
 		lc.runCommandTest("add float1");
