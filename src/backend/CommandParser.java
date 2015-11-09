@@ -21,9 +21,7 @@ public class CommandParser {
 	private static final int POSITION_FIRST_INDEX = 0;
 
 	private static final String REGEX_WHITESPACES = "[\\s;]+";
-	private static final String REGEX_POSITIVE_INTEGER = "^0*[1-9][0-9]*";
-
-	private static final String STRING_VERIFIED = "verified";
+	protected static final String REGEX_POSITIVE_INTEGER = "^0*[1-9][0-9]*";
 
 	protected static final String USER_COMMAND_ADD = "add";
 	protected static final String USER_COMMAND_DELETE = "delete";
@@ -43,26 +41,8 @@ public class CommandParser {
 	protected static final String USER_COMMAND_VIEW_CONFIG = "config";
 	protected static final String USER_COMMAND_EXIT = "exit";
 
-	private static final String KEYWORD_DEADLINE = "by";
-	private static final String KEYWORD_EVENT_TO = "to";
-	private static final String KEYWORD_EVENT_FROM = "from";
-	private static final String KEYWORD_EVENT_ON = "on";
-	private static final String KEYWORD_SET = "as";
-
-	private static final String KEYWORD_EDIT_NAME = "name";
-	private static final String KEYWORD_EDIT_DEADLINE = "date";
-	private static final String KEYWORD_EDIT_START_DATE = "startd";
-	private static final String KEYWORD_EDIT_START_TIME = "startt";
-	private static final String KEYWORD_EDIT_END_DATE = "endd";
-	private static final String KEYWORD_EDIT_END_TIME = "endt";
-
 	private static final String ERROR_USER_COMMAND = "Invalid user command.";
-	private static final String ERROR_TASK_NAME = "Task name required.";
-	private static final String ERROR_DELETE = "Index/alias command required.";
-	private static final String ERROR_DELETE_INDEX_ALIAS = "Invalid index or alias.";
 	private static final String ERROR_INDEX = "Invalid index.";
-	private static final String ERROR_SET = "Command and alias required.";
-	private static final String ERROR_SET_FORMAT = "Invalid set format.";
 	private static final String ERROR_SAVE = "Directory required.";
 	private static final String ERROR_NO_ARGUMENTS = "This command does not expect arguments.";
 
@@ -197,7 +177,7 @@ public class CommandParser {
 				                     parameters.size()));
 	}
 	
-	private ArrayList<String> toLowerCase(ArrayList<String> arguments) {
+	protected static ArrayList<String> toLowerCase(ArrayList<String> arguments) {
 		ArrayList<String> argumentsLowerCase = new ArrayList<String>();
 		for (int i = 0; i < arguments.size(); i++) {
 			String parameter = arguments.get(i);
@@ -212,26 +192,7 @@ public class CommandParser {
 	// ================================================================
 
 	private Command initAddCommand(ArrayList<String> arguments) {
-		Command command;
-		ArrayList<String> argumentsLowerCase = toLowerCase(arguments);
-		if (arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_TASK_NAME);
-		} else if (argumentsLowerCase.contains(KEYWORD_DEADLINE)) {
-			int keywordByIndex = argumentsLowerCase.indexOf(KEYWORD_DEADLINE);
-			command = addParser.addTask(arguments, keywordByIndex);
-		} else if (addParser.containsToAndFrom(argumentsLowerCase)) {
-			int keywordFromIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_FROM);
-			int keywordToIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_TO);
-			if (argumentsLowerCase.contains(KEYWORD_EVENT_ON)) {
-				int keywordOnIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_ON);
-				command = addParser.addDayEvent(arguments, keywordOnIndex, keywordFromIndex, keywordToIndex);
-			} else {
-				command = addParser.addEvent(arguments, keywordFromIndex, keywordToIndex);
-			}
-		} else {
-			command = addParser.addFloatingTask(arguments);
-		}
-		return command;
+		return addParser.parse(arguments);
 	}
 
 	// ================================================================
@@ -239,20 +200,8 @@ public class CommandParser {
 	// ================================================================
 
 	private Command initDeleteCommand(ArrayList<String> arguments) {
-		if (arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_DELETE);
-		}
-		if (arguments.size() > 1) {
-			return initInvalidCommand(ERROR_DELETE_INDEX_ALIAS);
-		}
-
-		String argument = arguments.get(0);
 		DeleteParser deleteParser = new DeleteParser(commandAliases);
-		if (argument.matches(REGEX_POSITIVE_INTEGER)) {
-			return deleteParser.deleteIndex(Integer.parseInt(argument));
-		} else {
-			return deleteParser.deleteAlias(argument);
-		}
+		return deleteParser.parse(arguments);
 	}
 
 	public void deleteAliasFromHash(String command) {
@@ -264,83 +213,7 @@ public class CommandParser {
 	// ================================================================
 
 	private Command initEditCommand(ArrayList<String> arguments) {
-
-		ArrayList<String> argumentsLowerCase = toLowerCase(arguments);
-		int nameIndex = editParser.getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_NAME);
-		int deadlineIndex = editParser.getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_DEADLINE);
-		int startDateIndex = editParser.getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_START_DATE);
-		int startTimeIndex = editParser.getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_START_TIME);
-		int endDateIndex = editParser.getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_END_DATE);
-		int endTimeIndex = editParser.getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_END_TIME);
-
-		String repeatedKeyword = editParser.repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, 
-				                                             startTimeIndex, endDateIndex, endTimeIndex);
-		ArrayList<Integer> indexArrayList = editParser.getIndexArrayList(nameIndex, deadlineIndex, 
-		        startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
-		
-		String verificationMsg = editParser.verifyEdit(arguments, deadlineIndex, startDateIndex, 
-		        startTimeIndex, endDateIndex, endTimeIndex, repeatedKeyword, indexArrayList);
-		if (!verificationMsg.equals(STRING_VERIFIED)) {
-			return initInvalidCommand(verificationMsg);
-		}
-		int index = Integer.parseInt(arguments.get(POSITION_FIRST_INDEX));
-
-		Hashtable<Integer, String> indexKeywordHash = editParser.getHashtable(nameIndex, deadlineIndex, 
-		        startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
-		ArrayList<String> editList = editParser.getEditList(nameIndex, deadlineIndex, startDateIndex, 
-				                                            startTimeIndex, endDateIndex, endTimeIndex);
-
-		Command command = new Command();
-		command.setCommandType(Command.CommandType.EDIT);
-		command.setEditList(editList);
-		command.setIndex(index);
-
-		for (int i = 0; i < indexArrayList.size(); i++) {
-			int keywordIndex = indexArrayList.get(i);
-			int nextKeywordIndex;
-			if (i == indexArrayList.size() - 1) {
-				nextKeywordIndex = arguments.size();
-			} else {
-				nextKeywordIndex = indexArrayList.get(i + 1);
-			}
-			String keyword = indexKeywordHash.get(keywordIndex);
-			String argument = nameParser.getName(arguments, keywordIndex + 1, nextKeywordIndex);
-			String argumentLowerCase = argument;
-			if (argument != null) {
-				argumentLowerCase = argument.toLowerCase();
-			}
-
-			switch (keyword) {
-
-			 	case KEYWORD_EDIT_NAME :
-			 		command = editParser.editName(command, argument);
-			 		break;
-
-	            case KEYWORD_EDIT_DEADLINE :
-	                command = editParser.editDeadline(command, argumentLowerCase);
-	                break;
-	                
-	            case KEYWORD_EDIT_START_DATE :
-	            	command = editParser.editStartDate(command, argumentLowerCase);
-	            	break;
-	            
-	            case KEYWORD_EDIT_START_TIME :
-	            	command = editParser.editStartTime(command, argumentLowerCase);
-	            	break;
-	            	
-	            case KEYWORD_EDIT_END_DATE :
-	            	command = editParser.editEndDate(command, argumentLowerCase);
-	            	break;
-	            	
-	            case KEYWORD_EDIT_END_TIME :
-	            	command = editParser.editEndTime(command, argumentLowerCase);
-	            	break;
-			}
-			if (command.getCommandType() == Command.CommandType.INVALID) {
-				i = indexArrayList.size();
-			}
-		}
-		return command;
+		return editParser.parse(arguments);
 	}
 
 	// ================================================================
@@ -385,27 +258,7 @@ public class CommandParser {
 	// ================================================================
 
 	private Command initSetCommand(ArrayList<String> arguments) {
-		if (arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_SET);
-		}
-		if (arguments.size() != 3 || !arguments.get(1).equals(KEYWORD_SET)) {
-			return initInvalidCommand(ERROR_SET_FORMAT);
-		}
-		String commandKeyword = arguments.get(2);
-		String alias = arguments.get(0);
-		String commandKeywordVerified = setParser.verifyCommandKeyword(commandKeyword);
-		String aliasVerified = setParser.verifyAlias(alias);
-		if (!commandKeywordVerified.equals(STRING_VERIFIED)) {
-			return initInvalidCommand(commandKeywordVerified);
-		}
-		if (!aliasVerified.equals(STRING_VERIFIED)) {
-			return initInvalidCommand(aliasVerified);
-		}
-
-		Command command = new Command(Command.CommandType.SET);
-		command.setName(alias);
-		command.setOriginalCommand(commandKeyword);
-		return command;
+		return setParser.parse(arguments);
 	}
 
 	public void setAlias(String newCommand, String originalCommand) {
@@ -556,7 +409,7 @@ public class CommandParser {
 	// Create invalid command methods
 	// ================================================================
 
-	protected Command initInvalidCommand(String errorMsg) {
+	protected static Command initInvalidCommand(String errorMsg) {
 		Command command = new Command(Command.CommandType.INVALID);
 		command.setName(errorMsg);
 		return command;
