@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import backend.Logic;
@@ -412,6 +413,7 @@ public class LogicController {
 			}
 		} catch (FileSystemException e) {
 			// Do nothing, return an empty alias list to AutoComplete
+			MainApp.logger.log(Level.SEVERE, MainApp.LOG_ALIAS_NOT_FOUND);
 		}
 		
 		return newAliases;
@@ -522,7 +524,7 @@ public class LogicController {
 			Desktop.getDesktop().open(
 					new File(InterfaceController.getLogic().getFilePath()));
 		} catch (IOException e) {
-			e.printStackTrace();
+			MainApp.logger.log(Level.SEVERE, MainApp.LOG_FILE_NOT_FOUND);
 		}
     }
     
@@ -537,7 +539,7 @@ public class LogicController {
     		InterfaceController.getFeedbackLabel().setText("Opening config...");
     		Desktop.getDesktop().open(new File(PATH_CONFIG_FILE));
     	} catch (IOException e) {
-    		e.printStackTrace();
+    		MainApp.logger.log(Level.SEVERE, MainApp.LOG_CONFIG_NOT_FOUND);
     	}
     }
     
@@ -846,6 +848,7 @@ public class LogicController {
     		// User did not enter an integer and hence exception is thrown
     		// Do not modify the string and pass through to CommandParser to reject
     		mapIndexOutOfBounds = true;
+    		MainApp.logger.log(Level.WARNING, MainApp.LOG_INVALID_INDEX);
     	}
     	
     	return modifiedString;

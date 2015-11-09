@@ -32,9 +32,13 @@ public class MainApp extends Application {
     private static final String TITLE_STAGE = "WhatToDo";
     private static final String TITLE_HELP = "Help Dialog";
     
-    protected static final String LOG_START = "Starting WhatToDo...";
-    protected static final String LOG_HELP_OPEN = "Opening Help dialog...";
-    protected static final String LOG_HELP_CLOSE = "Closing Help dialog...";
+    protected static final String LOG_START = "Starting WhatToDo";
+    protected static final String LOG_HELP_OPEN = "Opening Help dialog";
+    protected static final String LOG_HELP_CLOSE = "Closing Help dialog";
+    protected static final String LOG_INVALID_INDEX = "Invalid index has been entered";
+    protected static final String LOG_FILE_NOT_FOUND = "Unable to open whattodo.txt";
+    protected static final String LOG_CONFIG_NOT_FOUND = "Unable to open config.txt";
+    protected static final String LOG_ALIAS_NOT_FOUND = "Unable to open alias.txt";
 
 	// ============================================================
 	// Scenes and stages used by the application
