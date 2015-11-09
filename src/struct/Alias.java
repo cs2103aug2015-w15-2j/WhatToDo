@@ -8,6 +8,8 @@ package struct;
 
 public class Alias implements Comparable<Alias> {
 
+	private static final String SEPARATOR = " : ";
+	
 	private String alias;
 	private String original;
 
@@ -32,7 +34,7 @@ public class Alias implements Comparable<Alias> {
 	public String toString() {
 		// Display both the alias and original if it is user defined
 		if (isUserDefined()) {
-			return alias + " : " + original;
+			return alias + SEPARATOR + original;
 		} else {
 			return alias;
 		}
