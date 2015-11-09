@@ -1,3 +1,8 @@
+/**
+ * This class formats results from filter methods
+ * 
+ * @@author A0127051U
+ */
 package backend;
 
 import java.text.SimpleDateFormat;
@@ -6,7 +11,6 @@ import java.util.Calendar;
 
 import struct.Date;
 
-//@@author A0127051U
 public class Formatter {
 
 	private static final int INDEX_TYPE = 0; 
@@ -20,7 +24,7 @@ public class Formatter {
 	
 	private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%s%d. %s\n"; 
-    private static final String DISPLAY_FORMAT_EVENT = "%s%d. %s;Start: %s         End: %s %s\n"; 
+    private static final String DISPLAY_FORMAT_EVENT = "%s%d. %s;Start: %s%s;End: %s %s\n"; 
     
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s"; 
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
@@ -45,9 +49,9 @@ public class Formatter {
 	public String formatDefEventView(String[] linesInFile, ArrayList<Integer> eventOngoingIndexList, 
 			ArrayList<Integer> eventTodayIndexList, ArrayList<Integer> eventTmrIndexList){ 
 		
-		String ongoingContent = formatEventWithoutHeaders(linesInFile, eventOngoingIndexList); 
-		String todayContent = formatEventWithoutHeaders(linesInFile, eventTodayIndexList); 
-		String tmrContent = formatEventWithoutHeaders(linesInFile, eventTmrIndexList); 
+		String ongoingContent = formatEventWithoutHeaders(linesInFile, eventOngoingIndexList, true); 
+		String todayContent = formatEventWithoutHeaders(linesInFile, eventTodayIndexList, false); 
+		String tmrContent = formatEventWithoutHeaders(linesInFile, eventTmrIndexList, false); 
 		String todayDate = Date.todayDateLong(); 
 		String tmrDate = Date.tomorrowDateLong();
 		
@@ -131,8 +135,8 @@ public class Formatter {
 	
 		return addMsgIfEmpty(contentBuffer); 
 	}
-
-	public String formatEventWithoutHeaders(String[] linesInFile, ArrayList<Integer> result){ 
+	
+	public String formatEventWithoutHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStartDate){ 
 		StringBuffer contentBuffer = new StringBuffer(); 
 		for(int i : result){ 
 			String line = linesInFile[i]; 
@@ -144,10 +148,12 @@ public class Formatter {
 			String lineIsDone = EMPTYSTRING;
 			String lineStartTime = formatTime(lineFields[INDEX_STARTTIME]); 
 			String lineEndTime = formatTime(lineFields[INDEX_ENDTIME]); 
+			Date startDate = new Date(lineFields[INDEX_STARTDATE]); 
+			String currStartDate = (includeStartDate)? startDate.formatDateMedium() + SPACE : EMPTYSTRING; 
 			Date currEndDate = new Date(lineFields[INDEX_ENDDATE]);
 			
 			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, lineIsDone, i+1, 
-					lineName, lineStartTime, currEndDate.formatDateMedium(), lineEndTime);
+					lineName, currStartDate, lineStartTime, currEndDate.formatDateMedium(), lineEndTime);
 			contentBuffer.append(formattedLine); 	
 		}
 		
@@ -172,7 +178,7 @@ public class Formatter {
 			
 			prevStartDate = addDateHeader(contentBuffer, currStartDate, prevStartDate); 
 			String formattedLine = String.format(DISPLAY_FORMAT_EVENT, lineIsDone, i+1, 
-					lineName, lineStartTime, currEndDate.formatDateMedium(), lineEndTime);
+					lineName, EMPTYSTRING, lineStartTime, currEndDate.formatDateMedium(), lineEndTime);
 			contentBuffer.append(formattedLine); 
 		}
 		
