@@ -1,6 +1,6 @@
 package struct;
 
-public class FloatingTask extends Data implements Comparable<FloatingTask>{
+public class FloatingTask extends TodoItem implements Comparable<FloatingTask>{
 	
 	private static final String SEMICOLON = ";";
 	

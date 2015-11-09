@@ -246,7 +246,7 @@ public class LogicTest {
 		assertEquals("Showing results for \"hello\"\n"
 				+ "TASK\nFri, 11 Nov 2016\ntodo 3. task hello\n"
 				+ "FLOAT\ndone 1. hello\n"
-				+ "EVENT\nFri, 11 Nov 2016\ntodo 4. helloevent;Start: 3:00 PM         End: Fri, 11 Nov 8:00 PM", feedback);
+				+ "EVENT\nFri, 11 Nov 2016\ntodo 4. helloevent;Start: 3:00 PM;End: Fri, 11 Nov 16 8:00 PM", feedback);
 		
 		// search no results 
 		feedback = logic.executeCommand("search xxxxx"); 

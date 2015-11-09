@@ -1,8 +1,8 @@
 package backend;
 
-import backend.CommandParser;
 import backend.DateParser;
 import backend.TimeParser;
+import backend.NameParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +16,7 @@ import struct.Date;
 public class EditParser {
 	
 	private static final int POSITION_FIRST_INDEX = 0;
-	private static final String REGEX_POSITIVE_INTEGER = "^0*[1-9][0-9]*";
+	
 	private static final String STRING_VERIFIED = "verified";
 
 	private static final int NUMBER_REPEATED_EDIT_KEYWORD = -2;
@@ -42,13 +42,93 @@ public class EditParser {
 
 	private static final DateParser dateParser = new DateParser();
 	private static final TimeParser timeParser = new TimeParser();
-	private static final CommandParser parser = new CommandParser(new Hashtable<String, String>());
+	private static final NameParser nameParser = new NameParser();
 
 	public EditParser() {
 
 	}
+	
+	protected Command parse(ArrayList<String> arguments) {
 
-	protected int getKeywordIndex(ArrayList<String> arguments, String keyword) {
+		ArrayList<String> argumentsLowerCase = CommandParser.toLowerCase(arguments);
+		int nameIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_NAME);
+		int deadlineIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_DEADLINE);
+		int startDateIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_START_DATE);
+		int startTimeIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_START_TIME);
+		int endDateIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_END_DATE);
+		int endTimeIndex = getKeywordIndex(argumentsLowerCase, KEYWORD_EDIT_END_TIME);
+
+		String repeatedKeyword = repeatedKeywords(nameIndex, deadlineIndex, startDateIndex, 
+				                                             startTimeIndex, endDateIndex, endTimeIndex);
+		ArrayList<Integer> indexArrayList = getIndexArrayList(nameIndex, deadlineIndex, 
+		        startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
+		
+		String verificationMsg = verifyEdit(arguments, deadlineIndex, startDateIndex, 
+		        startTimeIndex, endDateIndex, endTimeIndex, repeatedKeyword, indexArrayList);
+		if (!verificationMsg.equals(STRING_VERIFIED)) {
+			return CommandParser.initInvalidCommand(verificationMsg);
+		}
+		int index = Integer.parseInt(arguments.get(POSITION_FIRST_INDEX));
+
+		Hashtable<Integer, String> indexKeywordHash = getHashtable(nameIndex, deadlineIndex, 
+		        startDateIndex, startTimeIndex, endDateIndex, endTimeIndex);
+		ArrayList<String> editList = getEditList(nameIndex, deadlineIndex, startDateIndex, 
+				                                            startTimeIndex, endDateIndex, endTimeIndex);
+
+		Command command = new Command();
+		command.setCommandType(Command.CommandType.EDIT);
+		command.setEditList(editList);
+		command.setIndex(index);
+
+		for (int i = 0; i < indexArrayList.size(); i++) {
+			int keywordIndex = indexArrayList.get(i);
+			int nextKeywordIndex;
+			if (i == indexArrayList.size() - 1) {
+				nextKeywordIndex = arguments.size();
+			} else {
+				nextKeywordIndex = indexArrayList.get(i + 1);
+			}
+			String keyword = indexKeywordHash.get(keywordIndex);
+			String argument = nameParser.getName(arguments, keywordIndex + 1, nextKeywordIndex);
+			String argumentLowerCase = argument;
+			if (argument != null) {
+				argumentLowerCase = argument.toLowerCase();
+			}
+
+			switch (keyword) {
+
+			 	case KEYWORD_EDIT_NAME :
+			 		command = editName(command, argument);
+			 		break;
+
+	            case KEYWORD_EDIT_DEADLINE :
+	                command = editDeadline(command, argumentLowerCase);
+	                break;
+	                
+	            case KEYWORD_EDIT_START_DATE :
+	            	command = editStartDate(command, argumentLowerCase);
+	            	break;
+	            
+	            case KEYWORD_EDIT_START_TIME :
+	            	command = editStartTime(command, argumentLowerCase);
+	            	break;
+	            	
+	            case KEYWORD_EDIT_END_DATE :
+	            	command = editEndDate(command, argumentLowerCase);
+	            	break;
+	            	
+	            case KEYWORD_EDIT_END_TIME :
+	            	command = editEndTime(command, argumentLowerCase);
+	            	break;
+			}
+			if (command.getCommandType() == Command.CommandType.INVALID) {
+				i = indexArrayList.size();
+			}
+		}
+		return command;
+	}
+
+	private int getKeywordIndex(ArrayList<String> arguments, String keyword) {
 		if (arguments.contains(keyword)) {
 			int keywordIndex = arguments.indexOf(keyword);
 			List<String> subList = arguments.subList(keywordIndex + 1, arguments.size());
@@ -60,7 +140,7 @@ public class EditParser {
 		return NUMBER_NO_EDIT_KEYWORD;
 	}
 
-	protected String repeatedKeywords(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex,
+	private String repeatedKeywords(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex,
 			int endDateIndex, int endTimeIndex) {
 		if (nameIndex == NUMBER_REPEATED_EDIT_KEYWORD) {
 			return KEYWORD_EDIT_NAME;
@@ -83,14 +163,14 @@ public class EditParser {
 		return null;
 	}
 	
-	protected String verifyEdit(ArrayList<String> arguments, int deadlineIndex, int startDateIndex, 
+	private String verifyEdit(ArrayList<String> arguments, int deadlineIndex, int startDateIndex, 
 	        int startTimeIndex, int endDateIndex, int endTimeIndex, String repeatedKeyword, 
 	        ArrayList<Integer> indexArrayList) {
 		if (arguments.isEmpty()) {
 			return ERROR_EDIT;
 		}
 		String indexString = arguments.get(POSITION_FIRST_INDEX);
-		if (!indexString.matches(REGEX_POSITIVE_INTEGER)) {
+		if (!indexString.matches(CommandParser.REGEX_POSITIVE_INTEGER)) {
 			return ERROR_INDEX;
 		}
 		if (repeatedKeyword != null) {
@@ -107,7 +187,7 @@ public class EditParser {
 		return STRING_VERIFIED;
 	}
 
-	protected ArrayList<Integer> getIndexArrayList(int nameIndex, int deadlineIndex, int startDateIndex,
+	private ArrayList<Integer> getIndexArrayList(int nameIndex, int deadlineIndex, int startDateIndex,
 			int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		ArrayList<Integer> indexArrayList = new ArrayList<Integer>();
 		if (nameIndex != NUMBER_NO_EDIT_KEYWORD) {
@@ -132,7 +212,7 @@ public class EditParser {
 		return indexArrayList;
 	}
 
-	protected Hashtable<Integer, String> getHashtable(int nameIndex, int deadlineIndex, int startDateIndex,
+	private Hashtable<Integer, String> getHashtable(int nameIndex, int deadlineIndex, int startDateIndex,
 			int startTimeIndex, int endDateIndex, int endTimeIndex) {
 		Hashtable<Integer, String> indexKeywordHash = new Hashtable<Integer, String>();
 		if (nameIndex != NUMBER_NO_EDIT_KEYWORD) {
@@ -156,7 +236,7 @@ public class EditParser {
 		return indexKeywordHash;
 	}
 
-	protected ArrayList<String> getEditList(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex,
+	private ArrayList<String> getEditList(int nameIndex, int deadlineIndex, int startDateIndex, int startTimeIndex,
 			int endDateIndex, int endTimeIndex) {
 		ArrayList<String> editList = new ArrayList<String>();
 		if (nameIndex != NUMBER_NO_EDIT_KEYWORD) {
@@ -180,54 +260,54 @@ public class EditParser {
 		return editList;
 	}
 
-	protected Command editName(Command command, String argument) {
+	private Command editName(Command command, String argument) {
 		if (argument == null) {
-			return parser.initInvalidCommand(ERROR_NAME);
+			return CommandParser.initInvalidCommand(ERROR_NAME);
 		}
 		command.setName(argument);
 		return command;
 	}
 
-	protected Command editDeadline(Command command, String argument) {
+	private Command editDeadline(Command command, String argument) {
 		Date deadline = dateParser.getDate(argument);
 		if (deadline == null) {
-			return parser.initInvalidCommand(ERROR_DEADLINE);
+			return CommandParser.initInvalidCommand(ERROR_DEADLINE);
 		}
 		command.setDueDate(deadline);
 		return command;
 	}
 
-	protected Command editStartDate(Command command, String argument) {
+	private Command editStartDate(Command command, String argument) {
 		Date startDate = dateParser.getDate(argument);
 		if (startDate == null) {
-			return parser.initInvalidCommand(ERROR_START_DATE);
+			return CommandParser.initInvalidCommand(ERROR_START_DATE);
 		}
 		command.setStartDate(startDate);
 		return command;
 	}
 
-	protected Command editStartTime(Command command, String argument) {
+	private Command editStartTime(Command command, String argument) {
 		String startTime = timeParser.getTime(argument);
 		if (startTime == null) {
-			return parser.initInvalidCommand(ERROR_START_TIME);
+			return CommandParser.initInvalidCommand(ERROR_START_TIME);
 		}
 		command.setStartTime(startTime);
 		return command;
 	}
 
-	protected Command editEndDate(Command command, String argument) {
+	private Command editEndDate(Command command, String argument) {
 		Date endDate = dateParser.getDate(argument);
 		if (endDate == null) {
-			return parser.initInvalidCommand(ERROR_END_DATE);
+			return CommandParser.initInvalidCommand(ERROR_END_DATE);
 		}
 		command.setEndDate(endDate);
 		return command;
 	}
 
-	protected Command editEndTime(Command command, String argument) {
+	private Command editEndTime(Command command, String argument) {
 		String endTime = timeParser.getTime(argument);
 		if (endTime == null) {
-			return parser.initInvalidCommand(ERROR_END_TIME);
+			return CommandParser.initInvalidCommand(ERROR_END_TIME);
 		}
 		command.setEndTime(endTime);
 		return command;

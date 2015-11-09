@@ -43,9 +43,17 @@ public class Formatter {
 	private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])[0-5][0-9]";
 	
 	//============================================
-	// Public methods
+	// Public methods 
 	//============================================
 	
+	/**
+	 * formats content to display in events in default view 
+	 * @param linesInFile
+	 * @param eventOngoingIndexList
+	 * @param eventTodayIndexList
+	 * @param eventTmrIndexList
+	 * @return formatted string
+	 */
 	public String formatDefEventView(String[] linesInFile, ArrayList<Integer> eventOngoingIndexList, 
 			ArrayList<Integer> eventTodayIndexList, ArrayList<Integer> eventTmrIndexList){ 
 		
@@ -59,6 +67,14 @@ public class Formatter {
         		tmrDate, tmrContent).trim();
 	}
 
+	/**
+	 * formats content to display in tasks in default view 
+	 * @param linesInFile
+	 * @param taskTodayIndexList
+	 * @param taskTmrIndexList
+	 * @param floatIndexList
+	 * @return formatted string
+	 */
 	public String formatDefTaskView(String[] linesInFile, ArrayList<Integer> taskTodayIndexList, 
 			ArrayList<Integer> taskTmrIndexList, ArrayList<Integer> floatIndexList){ 
 		
@@ -72,6 +88,13 @@ public class Formatter {
         		tmrDate, taskTmrContent, floatContent).trim();
 	}
 	
+	/**
+	 * formats content to display tasks in all view 
+	 * @param linesInFile
+	 * @param taskIndexList
+	 * @param floatIndexList
+	 * @return formatted string
+	 */
 	public String formatAllTaskView(String[] linesInFile, 
 			ArrayList<Integer> taskIndexList, ArrayList<Integer> floatIndexList){ 
 		
@@ -81,6 +104,15 @@ public class Formatter {
 		return String.format(DISPLAY_LAYOUT_ALL_TASK, taskContent, floatContent).trim(); 
 	}
 	
+	/**
+	 * formats content to display in search view 
+	 * @param query
+	 * @param linesInFile
+	 * @param taskResults
+	 * @param floatResults
+	 * @param eventResults
+	 * @return formatted string
+	 */
 	public String formatSearchResults(String query, String[] linesInFile, ArrayList<Integer> taskResults,
 			ArrayList<Integer> floatResults, ArrayList<Integer> eventResults){ 
 		
@@ -92,11 +124,26 @@ public class Formatter {
 		
 	}
 	
+	/**
+	 * formats search results if there is error 
+	 * @param query
+	 * @param errorMsg
+	 * @return 
+	 */
 	public String formatSearchError(String query, String errorMsg){ 		
 		return String.format(DISPLAY_LAYOUT_SEARCH_RESULTS, query, errorMsg, errorMsg, errorMsg);
 	}
 
-	public String formatFloatOrTaskWithoutHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){
+	/**
+	 * formats float or tasks into list with no date headers 
+	 * @param linesInFile
+	 * @param result
+	 * @param includeStatus - true if isDoneStr is required, false if not required 
+	 * @return formatted string 
+	 */
+	public String formatFloatOrTaskWithoutHeaders(String[] linesInFile, 
+			ArrayList<Integer> result, boolean includeStatus){
+		
 		StringBuffer contentBuffer = new StringBuffer();
 		for(int i : result){ 
 			String line = linesInFile[i]; 
@@ -115,6 +162,13 @@ public class Formatter {
 		return addMsgIfEmpty(contentBuffer); 
 	}
 	
+	/**
+	 * formats tasks into list with date headers 
+	 * @param linesInFile
+	 * @param result
+	 * @param includeStatus - true if isDoneStr is required, false if not required 
+	 * @return formatted string 
+	 */
 	public String formatTaskWithHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){
 		StringBuffer contentBuffer = new StringBuffer();
 		Date prevDeadline = null; 
@@ -136,6 +190,13 @@ public class Formatter {
 		return addMsgIfEmpty(contentBuffer); 
 	}
 	
+	/**
+	 * formatting of events into a list that with no date headers
+	 * @param linesInFile
+	 * @param result
+	 * @param includeStartDate - true if startDate is required; false if startDate is not required 
+	 * @return formatted string 
+	 */
 	public String formatEventWithoutHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStartDate){ 
 		StringBuffer contentBuffer = new StringBuffer(); 
 		for(int i : result){ 
@@ -159,7 +220,14 @@ public class Formatter {
 		
 		return addMsgIfEmpty(contentBuffer); 
 	}
-		
+	
+	/**
+	 * formatting of events into a list that include date headers
+	 * @param linesInFile
+	 * @param result 
+	 * @param includeStatus - true if isDoneStr require, false if not required
+	 * @return
+	 */
 	public String formatEventWithHeaders(String[] linesInFile, ArrayList<Integer> result, boolean includeStatus){ 
 		StringBuffer contentBuffer = new StringBuffer();
 		Date prevStartDate = null; 
@@ -196,8 +264,14 @@ public class Formatter {
     	return buffer.toString().trim();
     }
     
+    /**
+     * add date headers to sb if the currDate is different from prevDate
+     * @param sb
+     * @param currDate
+     * @param prevDate
+     * @return currDate
+     */
     private Date addDateHeader(StringBuffer sb, Date currDate, Date prevDate){
-    	//add date header only if the currDate is different from the prevDate
     	if(prevDate == null || currDate.compareTo(prevDate)!= 0){
     		String dateHeader = currDate.formatDateLong(); 
     		sb.append(dateHeader + NEWLINE); 
@@ -205,6 +279,11 @@ public class Formatter {
     	return currDate;
     }
     
+    /**
+     * format time to 12h format
+     * @param time in 24h format
+     * @return formatted time string
+     */
     private String formatTime(String time){
     	assert(time.matches(REGEX_24_HOUR_TIME)); 
     	

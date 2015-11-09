@@ -3,10 +3,8 @@ package backend;
 import backend.NameParser;
 import backend.DateParser;
 import backend.TimeParser;
-import backend.CommandParser;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import struct.Command;
 import struct.Date;
@@ -22,8 +20,10 @@ public class AddParser {
 	
 	private static final String STRING_VERIFIED = "verified";
 	
+	private static final String KEYWORD_DEADLINE = "by";
 	private static final String KEYWORD_EVENT_TO = "to";
 	private static final String KEYWORD_EVENT_FROM = "from";
+	private static final String KEYWORD_EVENT_ON = "on";
 	
 	private static final String ERROR_TASK_NAME = "Task name required.";
 	private static final String ERROR_DEADLINE = "Invalid deadline.";
@@ -40,14 +40,39 @@ public class AddParser {
 	private static final DateParser dateParser = new DateParser();
 	private static final TimeParser timeParser = new TimeParser();
 	private static final NameParser nameParser = new NameParser();
-	private static final CommandParser parser = new CommandParser(new Hashtable<String, String>());
 	
-	protected boolean containsToAndFrom(ArrayList<String> argumentsLowerCase) {
+	public AddParser() {
+	}
+	
+	protected Command parse(ArrayList<String> arguments) {
+		Command command;
+		ArrayList<String> argumentsLowerCase = CommandParser.toLowerCase(arguments);
+		if (arguments.isEmpty()) {
+			return CommandParser.initInvalidCommand(ERROR_TASK_NAME);
+		} else if (argumentsLowerCase.contains(KEYWORD_DEADLINE)) {
+			int keywordByIndex = argumentsLowerCase.indexOf(KEYWORD_DEADLINE);
+			command = addTask(arguments, keywordByIndex);
+		} else if (containsToAndFrom(argumentsLowerCase)) {
+			int keywordFromIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_FROM);
+			int keywordToIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_TO);
+			if (argumentsLowerCase.contains(KEYWORD_EVENT_ON)) {
+				int keywordOnIndex = argumentsLowerCase.indexOf(KEYWORD_EVENT_ON);
+				command = addDayEvent(arguments, keywordOnIndex, keywordFromIndex, keywordToIndex);
+			} else {
+				command = addEvent(arguments, keywordFromIndex, keywordToIndex);
+			}
+		} else {
+			command = addFloatingTask(arguments);
+		}
+		return command;
+	}
+	
+	private boolean containsToAndFrom(ArrayList<String> argumentsLowerCase) {
 		return argumentsLowerCase.contains(KEYWORD_EVENT_TO) 
 			   && argumentsLowerCase.contains(KEYWORD_EVENT_FROM);
 	}
 
-	protected Command addTask(ArrayList<String> arguments, int keywordByIndex) {
+	private Command addTask(ArrayList<String> arguments, int keywordByIndex) {
 		Date date = null;
 		String name = nameParser.getName(arguments, POSITION_FIRST_INDEX, keywordByIndex);
 		if (keywordByIndex == arguments.size() - 2) {
@@ -56,7 +81,7 @@ public class AddParser {
 		
 		String verificationMsg = verifyTaskAttributes(date, name);
 		if (!verificationMsg.equals(STRING_VERIFIED)) {
-			return parser.initInvalidCommand(verificationMsg);
+			return CommandParser.initInvalidCommand(verificationMsg);
 		}
 		
 		Command command = new Command(Command.CommandType.ADD);
@@ -76,10 +101,10 @@ public class AddParser {
 		return STRING_VERIFIED;
 	}
 
-	protected Command addEvent(ArrayList<String> arguments, int keywordFromIndex, int keywordToIndex) {
+	private Command addEvent(ArrayList<String> arguments, int keywordFromIndex, int keywordToIndex) {
 
 		if (!isEventInCorrectPosition(arguments, keywordFromIndex, keywordToIndex)) {
-			return parser.initInvalidCommand(ERROR_EVENT_FORMAT);
+			return CommandParser.initInvalidCommand(ERROR_EVENT_FORMAT);
 		}
 
 		Date startDate = dateParser.getDate(arguments.get(
@@ -92,7 +117,7 @@ public class AddParser {
 
 		String verificationMsg = verifyEvent(startDate, startTime, endDate, endTime, name);
 		if (!verificationMsg.equals(STRING_VERIFIED)) {
-			return parser.initInvalidCommand(verificationMsg);
+			return CommandParser.initInvalidCommand(verificationMsg);
 		}
 
 		Command command = new Command(Command.CommandType.ADD);
@@ -139,13 +164,13 @@ public class AddParser {
 		return STRING_VERIFIED;
 	}
 
-	protected Command addDayEvent(ArrayList<String> arguments, int keywordOnIndex, int keywordFromIndex,
+	private Command addDayEvent(ArrayList<String> arguments, int keywordOnIndex, int keywordFromIndex,
 			                      int keywordToIndex) {
 		int minIndex = Math.min(keywordToIndex, Math.min(keywordFromIndex, keywordOnIndex));
 		int maxIndex = Math.max(keywordToIndex, Math.max(keywordFromIndex, keywordOnIndex));
 
 		if (isDayEventInCorrectPosition(arguments, minIndex, maxIndex)) {
-			return parser.initInvalidCommand(ERROR_EVENT_FORMAT);
+			return CommandParser.initInvalidCommand(ERROR_EVENT_FORMAT);
 		}
 
 		Date date = dateParser.getDate(arguments.get(keywordOnIndex + POSITION_PLUS_ONE).toLowerCase());
@@ -155,7 +180,7 @@ public class AddParser {
 
 		String verificationMsg = verifyEvent(date, startTime, date, endTime, name);
 		if (!verificationMsg.equals(STRING_VERIFIED)) {
-			return parser.initInvalidCommand(verificationMsg);
+			return CommandParser.initInvalidCommand(verificationMsg);
 		}
 		
 		Command command = new Command(Command.CommandType.ADD);
@@ -173,7 +198,7 @@ public class AddParser {
 			   || arguments.size() - maxIndex != POSITION_DIFFERENCE_TWO;
 	}
 
-	protected Command addFloatingTask(ArrayList<String> arguments) {
+	private Command addFloatingTask(ArrayList<String> arguments) {
 		Command command = new Command(Command.CommandType.ADD);
 		command.setDataType(Command.DataType.FLOATING_TASK);
 		String name = nameParser.getName(arguments, POSITION_FIRST_INDEX, arguments.size());

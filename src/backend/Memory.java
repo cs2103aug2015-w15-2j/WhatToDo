@@ -1,3 +1,9 @@
+/**
+ * This class encapsulates memory of the application 
+ * 
+ * @@author A0127051U
+ */
+
 package backend;
 
 import java.util.Stack;
@@ -45,7 +51,7 @@ public class Memory {
 	//============================================
 	// Private method
 	//============================================
-	
+
 	private State getState(String currFileContents, Stack<State> stackPop, Stack<State> stackPush){ 
 		if(stackPop.isEmpty()){
 			return null; 
