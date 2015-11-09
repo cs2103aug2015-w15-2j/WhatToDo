@@ -1,3 +1,11 @@
+/**
+ * This class contains mappings from view indices of elements to its respective
+ * file index in the file, and provides methods for LogicController to map the
+ * indices and modify the command appropriately
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import java.util.ArrayList;

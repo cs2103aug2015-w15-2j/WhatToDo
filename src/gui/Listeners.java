@@ -1,3 +1,10 @@
+/**
+ * This class contains the ChangeListener private classes that are used in the 
+ * application and getter methods for the other GUI classes to access them
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import javafx.beans.value.ChangeListener;

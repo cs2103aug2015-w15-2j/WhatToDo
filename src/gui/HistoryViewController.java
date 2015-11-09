@@ -1,3 +1,11 @@
+/**
+ * This class initializes the history view of the application and provides methods 
+ * that update the view when the user has entered a new command and a new feedback
+ * message has been generated.
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import javafx.geometry.Insets;

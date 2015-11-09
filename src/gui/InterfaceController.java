@@ -1,3 +1,11 @@
+/**
+ * This class initializes the main interface of the application and all of its
+ * subcomponents, and provides methods for the other GUI classes to interact with
+ * and modify the components.
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import javafx.geometry.Insets;

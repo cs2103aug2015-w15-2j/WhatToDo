@@ -1,3 +1,11 @@
+/**
+ * This class acts as a intermediary between InterfaceController and Logic, contains 
+ * all class instances required for logical operations by InterfaceController, and
+ * provides methods for InterfaceController to access those operations.
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import java.awt.Desktop;

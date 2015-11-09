@@ -1,3 +1,10 @@
+/**
+ * This class initializes the autocomplete popup for the text field and contains the
+ * list of commands of which autocomplete can reference
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import java.util.ArrayList;
@@ -391,23 +398,6 @@ public class AutoComplete {
 		}
 		return isShortcut;
 	}
-	
-	/* For OSX
-	protected static void setX(double coord) {
-		popup.setX(coord +
-				InterfaceController.WIDTH_SIDEBAR + 
-				InterfaceController.MARGIN_TEXT_FIELD);
-	}
-	
-	protected static void setY(double coord) {
-		popup.setY(coord + 
-				MainApp.stage.getHeight() - 
-				InterfaceController.MARGIN_TEXT_FIELD - 
-				InterfaceController.HEIGHT_TEXT_FIELD - 
-				InterfaceController.HEIGHT_HORIZ_LINE - 
-				HEIGHT_POPUP);
-	}
-	*/
 }
 
 

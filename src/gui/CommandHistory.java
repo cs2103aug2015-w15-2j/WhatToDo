@@ -1,3 +1,11 @@
+/**
+ * This class creates a history object that contains all instances of commands
+ * that has been entered by the user, and provides methods to access those
+ * commands when called by a text handler
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import java.util.ArrayList;
