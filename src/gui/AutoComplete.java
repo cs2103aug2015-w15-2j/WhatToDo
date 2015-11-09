@@ -1,3 +1,10 @@
+/**
+ * This class initializes the autocomplete popup for the text field and contains the
+ * list of commands of which autocomplete can reference
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import java.util.ArrayList;

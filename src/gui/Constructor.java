@@ -1,3 +1,11 @@
+/**
+ * This class provides methods that initialize and create different elements
+ * for the various String types in InterfaceController (title, date, data),
+ * and are called through initDisplayElement()
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import javafx.geometry.Insets;

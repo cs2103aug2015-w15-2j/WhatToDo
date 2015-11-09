@@ -1,3 +1,10 @@
+/**
+ * This class initializes the help window of the application and provides methods 
+ * to interact (open, close, toggle) with the window
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import javafx.scene.Scene;

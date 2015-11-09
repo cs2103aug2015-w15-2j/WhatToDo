@@ -1,3 +1,10 @@
+/**
+ * This class contains all the EventHandler private classes used in the application
+ * and provides getter methods for other GUI classes to access them
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import javafx.event.ActionEvent;

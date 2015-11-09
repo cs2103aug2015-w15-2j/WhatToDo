@@ -1,3 +1,10 @@
+/**
+ * This class initializes the summary view of the application and provides methods 
+ * that update the view when the file has been edited by the user.
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import javafx.geometry.Insets;

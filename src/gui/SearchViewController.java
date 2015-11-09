@@ -1,3 +1,10 @@
+/**
+ * This class initializes the search view of the application and provides methods 
+ * that update the view when a new search term has been entered by the user.
+ * 
+ * @@author A0124123Y
+ */
+
 package gui;
 
 import java.util.ArrayList;

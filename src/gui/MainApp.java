@@ -1,7 +1,8 @@
 /**
- * This class contains the main application that runs the entire program and GUI
+ * This class contains the main driver class that runs the entire program and 
+ * starts the user interface.
  *
- * @author Adrian
+ * @@author A0124123Y
  */
 
 package gui;
