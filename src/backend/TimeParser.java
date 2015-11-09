@@ -1,27 +1,27 @@
 package backend;
 
+//@@author A0124099B
 public class TimeParser {
-	
-    private static final String REGEX_12_HOUR_SIMPLE_TIME = "(1[012]|[1-9]|0[1-9])(\\s)?(?i)(am|pm)";
-    private static final String REGEX_12_HOUR_TIME = "(1[012]|[1-9]|0[1-9])(:|.)?" 
-                                                    + "[0-5][0-9](\\s)?(?i)(am|pm)";
-    private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
-    private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
-    
-    private static final String STRING_ONE_DOT = ".";
-    private static final String STRING_ONE_COLON = ":";
-    private static final String STRING_EMPTY = "";
-    
-    private static final String TIME_MIDNIGHT = "0000";
-    private static final String TIME_ZERO_HOUR = "00";
-    private static final String TIME_ZERO_MINUTE = "00";
-    private static final int TIME_MAXIMUM = 2400;
-    private static final int TIME_ADD_TWELVE = 12;
-	
+
+	private static final String REGEX_12_HOUR_SIMPLE_TIME = "(1[012]|[1-9]|0[1-9])(\\s)?(?i)(am|pm)";
+	private static final String REGEX_12_HOUR_TIME = "(1[012]|[1-9]|0[1-9])(:|.)?" + "[0-5][0-9](\\s)?(?i)(am|pm)";
+	private static final String REGEX_24_HOUR_SIMPLE_TIME = "([01]?[0-9]|2[0-3])";
+	private static final String REGEX_24_HOUR_TIME = "([01]?[0-9]|2[0-3])(:|.)?[0-5][0-9]";
+
+	private static final String STRING_ONE_DOT = ".";
+	private static final String STRING_ONE_COLON = ":";
+	private static final String STRING_EMPTY = "";
+
+	private static final String TIME_MIDNIGHT = "0000";
+	private static final String TIME_ZERO_HOUR = "00";
+	private static final String TIME_ZERO_MINUTE = "00";
+	private static final int TIME_MAXIMUM = 2400;
+	private static final int TIME_ADD_TWELVE = 12;
+
 	public TimeParser() {
-		
+
 	}
-	
+
 	protected String getTime(String time) {
 		String timeString;
 		if (time.matches(REGEX_12_HOUR_SIMPLE_TIME)) {
@@ -63,7 +63,7 @@ public class TimeParser {
 			if (Integer.parseInt(timeString) < TIME_MAXIMUM) {
 				return timeString;
 			}
-		} else if (time.matches(REGEX_24_HOUR_SIMPLE_TIME)){
+		} else if (time.matches(REGEX_24_HOUR_SIMPLE_TIME)) {
 			timeString = time;
 			if (time.length() == 1) {
 				timeString = "0" + time + TIME_ZERO_MINUTE;
@@ -73,8 +73,8 @@ public class TimeParser {
 			return timeString;
 		} else if (time.matches(REGEX_24_HOUR_TIME)) {
 			timeString = time;
-			timeString = timeString.replace(".","");
-			timeString = timeString.replace(":","");
+			timeString = timeString.replace(".", "");
+			timeString = timeString.replace(":", "");
 			if (timeString.length() == 3) {
 				timeString = "0" + timeString;
 			}
@@ -84,7 +84,7 @@ public class TimeParser {
 		}
 		return null;
 	}
-	
+
 	protected boolean areValidTimes(String startTime, String endTime) {
 		int intStartTime = Integer.parseInt(startTime);
 		int intEndTime = Integer.parseInt(endTime);

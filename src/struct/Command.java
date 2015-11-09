@@ -2,6 +2,7 @@ package struct;
 
 import java.util.ArrayList;
 
+//@@author A0124099B
 public class Command {
 	
 	public enum CommandType {

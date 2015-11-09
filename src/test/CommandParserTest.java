@@ -11,8 +11,9 @@ import backend.CommandParser;
 import struct.Command;
 import struct.Date;
 
+//@@author A0124099B
 public class CommandParserTest {
-	
+
 	private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
 	private CommandParser parser = new CommandParser(commandAliases);
 	private Date todayDate = Date.todayDate();
@@ -21,7 +22,7 @@ public class CommandParserTest {
 	private Date tmrDate = Date.tomorrowDate();
 	private String tmrDateString = tmrDate.formatDateShort();
 	private static final ArrayList<String> DAYS_ARRAY_LIST = new ArrayList<String>();
-	
+
 	private void initDaysArrayList() {
 		DAYS_ARRAY_LIST.add("mon");
 		DAYS_ARRAY_LIST.add("tue");
@@ -31,7 +32,7 @@ public class CommandParserTest {
 		DAYS_ARRAY_LIST.add("sat");
 		DAYS_ARRAY_LIST.add("sun");
 	}
-	
+
 	private Date getDate(String day) {
 		initDaysArrayList();
 		String daySubstring;
@@ -42,8 +43,8 @@ public class CommandParserTest {
 		} else {
 			daySubstring = day.substring(0, 3);
 		}
-		int difference = DAYS_ARRAY_LIST.indexOf(daySubstring) - 
-				         DAYS_ARRAY_LIST.indexOf(todayDayString.substring(0, 3));
+		int difference = DAYS_ARRAY_LIST.indexOf(daySubstring)
+				- DAYS_ARRAY_LIST.indexOf(todayDayString.substring(0, 3));
 		if (difference < 0) {
 			difference += 7;
 		}
@@ -52,14 +53,13 @@ public class CommandParserTest {
 		}
 		return todayDate.plusDay(difference);
 	}
-	
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR ADD COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	// Floating task
 	@Test
 	public void testAddFloatingTask() {
@@ -72,7 +72,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.ADD, type);
 		assertEquals(Command.DataType.FLOATING_TASK, dataType);
 	}
-	
+
 	@Test
 	public void testAddFloatingTaskWithEscapeChar() {
 		String userInput = "add something \\by today";
@@ -84,7 +84,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.ADD, type);
 		assertEquals(Command.DataType.FLOATING_TASK, dataType);
 	}
-	
+
 	@Test
 	public void testInvalidAddEmpty() {
 		String userInput = "add";
@@ -94,7 +94,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Task name required.", errorMsg);
 	}
-	
+
 	// Tasks with deadline
 	@Test
 	public void testAddTask() {
@@ -112,7 +112,7 @@ public class CommandParserTest {
 		assertEquals("something", name);
 		assertEquals(dateString, dueDateString);
 	}
-	
+
 	@Test
 	public void testInvalidAddTaskDate() {
 		String userInput = "add something by 3212";
@@ -122,7 +122,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid deadline.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddTaskName() {
 		String userInput = "add by 3112";
@@ -132,7 +132,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Task name required.", errorMsg);
 	}
-	
+
 	// Single day events
 	@Test
 	public void testAddSingleDayEvent() {
@@ -155,7 +155,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testAddSingleDayEventJumbled1() {
 		String userInput = "add event on today to 3pm from 2pm";
@@ -177,7 +177,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testAddSingleDayEventJumbled2() {
 		String userInput = "add event from 2pm on today to 3pm";
@@ -199,7 +199,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testAddSingleDayEventJumbled3() {
 		String userInput = "add event from 2pm to 3pm on today";
@@ -221,7 +221,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testAddSingleDayEventJumbled4() {
 		String userInput = "add event to 3pm from 2pm on today";
@@ -243,7 +243,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testAddSingleDayEventJumbled5() {
 		String userInput = "add event to 3pm on today from 2pm";
@@ -265,7 +265,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testInvalidAddSingleDayEventFormat1() {
 		String userInput = "add event on today from today 2pm to 3pm";
@@ -275,7 +275,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid format for adding event.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddSingleDayEventFormat2() {
 		String userInput = "add event on today from 2pm to 3pm tmr";
@@ -285,7 +285,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid format for adding event.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddSingleDayEventEmpty() {
 		String userInput = "add on today from 2pm to 3pm";
@@ -295,7 +295,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Event name required.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddSingleDayEventDate() {
 		String userInput = "add event on todayy from 2pm to 3pm";
@@ -303,9 +303,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid date.", errorMsg);
+		assertEquals("Invalid start date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddSingleDayEventStartTime() {
 		String userInput = "add event on today from 2401 to 3pm";
@@ -315,7 +315,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid start time.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddSingleDayEventEndTime() {
 		String userInput = "add event on today from 2pm to 2401";
@@ -325,7 +325,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid end time.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddSingleDayEventTimes1() {
 		String userInput = "add event on today from 3pm to 3pm";
@@ -335,7 +335,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Start time later than or equal to end time for single-day event.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddSingleDayEventTimes2() {
 		String userInput = "add event on today from 3pm to 2pm";
@@ -345,7 +345,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Start time later than or equal to end time for single-day event.", errorMsg);
 	}
-	
+
 	// Multi-days event
 	@Test
 	public void testAddEvent() {
@@ -370,7 +370,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testAddEventJumbled() {
 		String userInput = "add event to tomorrow 3pm from today 2pm";
@@ -392,7 +392,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventFormat1() {
 		String userInput = "add event from sun 2 pm to sun 3pm";
@@ -402,7 +402,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid format for adding event.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventFormat2() {
 		String userInput = "add event from sun 2pm to sun 3 pm";
@@ -412,7 +412,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid format for adding event.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventStartDate() {
 		String userInput = "add event from sund 2pm to sun 3pm";
@@ -422,7 +422,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid start date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventStartTime() {
 		String userInput = "add event from sun 12345 to sun 3pm";
@@ -432,7 +432,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid start time.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventEndDate() {
 		String userInput = "add event from sun 2pm to sund 3pm";
@@ -442,7 +442,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid end date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventEndTime() {
 		String userInput = "add event from sun 2pm to sun 12345";
@@ -452,7 +452,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid end time.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventTimes() {
 		String userInput = "add event from sun 3pm to sun 2pm";
@@ -462,7 +462,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Start time later than or equal to end time for single-day event.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventDates() {
 		String userInput = "add event from tomorrow 2pm to today 3pm";
@@ -472,7 +472,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Start date later than end date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidAddEventEmpty() {
 		String userInput = "add from sun 2pm to sun 3pm";
@@ -482,13 +482,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Event name required.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR DATE FORMATS
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testDateTomorrow1() {
 		String userInput = "add event on tomorrow from 2pm to 3pm";
@@ -510,7 +510,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateTomorrow2() {
 		String userInput = "add event on tmr from 2pm to 3pm";
@@ -532,7 +532,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateTomorrow3() {
 		String userInput = "add event on tomo from 2pm to 3pm";
@@ -554,7 +554,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateMondayShort() {
 		String userInput = "add event on mon from 2pm to 3pm";
@@ -578,7 +578,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateMondayLong() {
 		String userInput = "add event on monday from 2pm to 3pm";
@@ -602,7 +602,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateTuesdayShort() {
 		String userInput = "add event on tue from 2pm to 3pm";
@@ -626,7 +626,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateTuesdayLong() {
 		String userInput = "add event on tuesday from 2pm to 3pm";
@@ -650,7 +650,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateWednesdayShort() {
 		String userInput = "add event on wed from 2pm to 3pm";
@@ -674,7 +674,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateWednesdayLong() {
 		String userInput = "add event on wednesday from 2pm to 3pm";
@@ -698,7 +698,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateThursdayShort() {
 		String userInput = "add event on thu from 2pm to 3pm";
@@ -722,7 +722,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateThursdayLong() {
 		String userInput = "add event on thursday from 2pm to 3pm";
@@ -746,7 +746,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateFridayShort() {
 		String userInput = "add event on fri from 2pm to 3pm";
@@ -770,7 +770,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateFridayLong() {
 		String userInput = "add event on friday from 2pm to 3pm";
@@ -794,7 +794,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateSaturdayShort() {
 		String userInput = "add event on sat from 2pm to 3pm";
@@ -818,7 +818,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateSaturdayLong() {
 		String userInput = "add event on saturday from 2pm to 3pm";
@@ -842,7 +842,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateSundayShort() {
 		String userInput = "add event on sun from 2pm to 3pm";
@@ -866,7 +866,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateSundayLong() {
 		String userInput = "add event on sunday from 2pm to 3pm";
@@ -890,7 +890,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextMondayShort() {
 		String userInput = "add event on nmon from 2pm to 3pm";
@@ -914,7 +914,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextMondayLong() {
 		String userInput = "add event on nmonday from 2pm to 3pm";
@@ -938,7 +938,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextTuesdayShort() {
 		String userInput = "add event on ntue from 2pm to 3pm";
@@ -962,7 +962,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextTuesdayLong() {
 		String userInput = "add event on ntuesday from 2pm to 3pm";
@@ -986,7 +986,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextWednesdayShort() {
 		String userInput = "add event on nwed from 2pm to 3pm";
@@ -1010,7 +1010,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextWednesdayLong() {
 		String userInput = "add event on nwednesday from 2pm to 3pm";
@@ -1034,7 +1034,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextThursdayShort() {
 		String userInput = "add event on nthu from 2pm to 3pm";
@@ -1058,7 +1058,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextThursdayLong() {
 		String userInput = "add event on nthursday from 2pm to 3pm";
@@ -1082,7 +1082,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextFridayShort() {
 		String userInput = "add event on nfri from 2pm to 3pm";
@@ -1106,7 +1106,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextFridayLong() {
 		String userInput = "add event on nfriday from 2pm to 3pm";
@@ -1130,7 +1130,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextSaturdayShort() {
 		String userInput = "add event on nsat from 2pm to 3pm";
@@ -1154,7 +1154,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextSaturdayLong() {
 		String userInput = "add event on nsaturday from 2pm to 3pm";
@@ -1178,7 +1178,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextSundayShort() {
 		String userInput = "add event on nsun from 2pm to 3pm";
@@ -1202,7 +1202,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateNextSundayLong() {
 		String userInput = "add event on nsunday from 2pm to 3pm";
@@ -1226,7 +1226,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateFutureShort() {
 		String userInput = "add event on 3112 from 2pm to 3pm";
@@ -1250,7 +1250,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateFutureLong() {
 		String userInput = "add event on 311215 from 2pm to 3pm";
@@ -1274,7 +1274,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testDateLeapYear() {
 		String userInput = "add event on 290216 from 2pm to 3pm";
@@ -1298,7 +1298,7 @@ public class CommandParserTest {
 		assertEquals("1400", startTime);
 		assertEquals("1500", endTime);
 	}
-	
+
 	@Test
 	public void testInvalidDatePastShort() {
 		String userInput = "add event on 1210 from 2pm to 3pm";
@@ -1306,9 +1306,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid date.", errorMsg);
+		assertEquals("Invalid start date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidDatePastLong() {
 		String userInput = "add event on 121015 from 2pm to 3pm";
@@ -1316,9 +1316,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid date.", errorMsg);
+		assertEquals("Invalid start date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidDatePastLeapYear() {
 		String userInput = "add event on 290200 from 2pm to 3pm";
@@ -1326,9 +1326,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid date.", errorMsg);
+		assertEquals("Invalid start date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidDateMonth() {
 		String userInput = "add event on 121315 from 2pm to 3pm";
@@ -1336,9 +1336,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid date.", errorMsg);
+		assertEquals("Invalid start date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidDateDay() {
 		String userInput = "add event on 321215 from 2pm to 3pm";
@@ -1346,15 +1346,15 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid date.", errorMsg);
+		assertEquals("Invalid start date.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR TIME FORMATS
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testTime1() {
 		String userInput = "add event on today from 1am to 2am";
@@ -1376,7 +1376,7 @@ public class CommandParserTest {
 		assertEquals("0100", startTime);
 		assertEquals("0200", endTime);
 	}
-	
+
 	@Test
 	public void testTime2() {
 		String userInput = "add event on today from 1pm to 2pm";
@@ -1398,7 +1398,7 @@ public class CommandParserTest {
 		assertEquals("1300", startTime);
 		assertEquals("1400", endTime);
 	}
-	
+
 	@Test
 	public void testTime3() {
 		String userInput = "add event on today from 10am to 11am";
@@ -1420,7 +1420,7 @@ public class CommandParserTest {
 		assertEquals("1000", startTime);
 		assertEquals("1100", endTime);
 	}
-	
+
 	@Test
 	public void testTime4() {
 		String userInput = "add event on today from 10pm to 11pm";
@@ -1442,7 +1442,7 @@ public class CommandParserTest {
 		assertEquals("2200", startTime);
 		assertEquals("2300", endTime);
 	}
-	
+
 	@Test
 	public void testTime5() {
 		String userInput = "add event on today from 10am to 12pm";
@@ -1464,7 +1464,7 @@ public class CommandParserTest {
 		assertEquals("1000", startTime);
 		assertEquals("1200", endTime);
 	}
-	
+
 	@Test
 	public void testTime6() {
 		String userInput = "add event on today from 12am to 10am";
@@ -1486,7 +1486,7 @@ public class CommandParserTest {
 		assertEquals("0000", startTime);
 		assertEquals("1000", endTime);
 	}
-	
+
 	@Test
 	public void testTime7() {
 		String userInput = "add event on today from 1:30am to 2:30am";
@@ -1508,7 +1508,7 @@ public class CommandParserTest {
 		assertEquals("0130", startTime);
 		assertEquals("0230", endTime);
 	}
-	
+
 	@Test
 	public void testTime8() {
 		String userInput = "add event on today from 01:30am to 02:30am";
@@ -1530,7 +1530,7 @@ public class CommandParserTest {
 		assertEquals("0130", startTime);
 		assertEquals("0230", endTime);
 	}
-	
+
 	@Test
 	public void testTime9() {
 		String userInput = "add event on today from 1.30am to 2.30am";
@@ -1552,7 +1552,7 @@ public class CommandParserTest {
 		assertEquals("0130", startTime);
 		assertEquals("0230", endTime);
 	}
-	
+
 	@Test
 	public void testTime10() {
 		String userInput = "add event on today from 01.30am to 02.30am";
@@ -1574,7 +1574,7 @@ public class CommandParserTest {
 		assertEquals("0130", startTime);
 		assertEquals("0230", endTime);
 	}
-	
+
 	@Test
 	public void testTime11() {
 		String userInput = "add event on today from 130am to 0230am";
@@ -1596,7 +1596,7 @@ public class CommandParserTest {
 		assertEquals("0130", startTime);
 		assertEquals("0230", endTime);
 	}
-	
+
 	@Test
 	public void testTime12() {
 		String userInput = "add event on today from 2 to 23";
@@ -1618,7 +1618,7 @@ public class CommandParserTest {
 		assertEquals("0200", startTime);
 		assertEquals("2300", endTime);
 	}
-	
+
 	@Test
 	public void testTime13() {
 		String userInput = "add event on today from 2:30 to 23.30";
@@ -1640,7 +1640,7 @@ public class CommandParserTest {
 		assertEquals("0230", startTime);
 		assertEquals("2330", endTime);
 	}
-	
+
 	@Test
 	public void testTime14() {
 		String userInput = "add event on today from 12:00am to 11.00pm";
@@ -1662,7 +1662,7 @@ public class CommandParserTest {
 		assertEquals("0000", startTime);
 		assertEquals("2300", endTime);
 	}
-	
+
 	@Test
 	public void testTime15() {
 		String userInput = "add event on today from 2:30 to 11.30am";
@@ -1684,13 +1684,13 @@ public class CommandParserTest {
 		assertEquals("0230", startTime);
 		assertEquals("1130", endTime);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR DELETE COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testDeleteIndex() {
 		String userInput = "delete 1";
@@ -1700,7 +1700,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.DELETE, type);
 		assertEquals(1, index);
 	}
-	
+
 	@Test
 	public void testInvalidDeleteEmpty() {
 		String userInput = "delete";
@@ -1710,7 +1710,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Index/alias command required.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidDeleteArgument() {
 		String userInput = "delete two words";
@@ -1720,13 +1720,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid index or alias.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR EDIT COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testEditTask() {
 		String userInput = "edit 1 name something date today";
@@ -1741,7 +1741,7 @@ public class CommandParserTest {
 		assertEquals(todayDateString, dueDateString);
 		assertEquals(1, index);
 	}
-	
+
 	@Test
 	public void testEditEvent() {
 		String userInput = "edit 1 name something startd today startt 2pm endd today endt 3pm";
@@ -1763,7 +1763,7 @@ public class CommandParserTest {
 		assertEquals("1500", endTime);
 		assertEquals(1, index);
 	}
-	
+
 	@Test
 	public void testInvalidEditEmpty() {
 		String userInput = "edit";
@@ -1771,9 +1771,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Index required.", errorMsg);	
+		assertEquals("Index required.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditZeroIndex() {
 		String userInput = "edit 0 name something";
@@ -1781,9 +1781,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid index.", errorMsg);	
+		assertEquals("Invalid index.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditNegativeIndex() {
 		String userInput = "edit -1 name something";
@@ -1791,9 +1791,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid index.", errorMsg);	
+		assertEquals("Invalid index.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditDoubleKeywordsName() {
 		String userInput = "edit 1 name something name something";
@@ -1801,9 +1801,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Keyword name has been entered twice.", errorMsg);	
+		assertEquals("Keyword name has been entered twice.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditDoubleKeywordsDeadline() {
 		String userInput = "edit 1 date 3112 date 3112";
@@ -1811,9 +1811,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Keyword date has been entered twice.", errorMsg);	
+		assertEquals("Keyword date has been entered twice.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditDoubleKeywordsStartDate() {
 		String userInput = "edit 1 startd today startd today";
@@ -1821,9 +1821,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Keyword startd has been entered twice.", errorMsg);	
+		assertEquals("Keyword startd has been entered twice.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditDoubleKeywordsStartTime() {
 		String userInput = "edit 1 startt 0000 startt 0000";
@@ -1831,9 +1831,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Keyword startt has been entered twice.", errorMsg);	
+		assertEquals("Keyword startt has been entered twice.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditDoubleKeywordsEndDate() {
 		String userInput = "edit 1 endd today endd today";
@@ -1841,9 +1841,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Keyword endd has been entered twice.", errorMsg);	
+		assertEquals("Keyword endd has been entered twice.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditDoubleKeywordsEndTime() {
 		String userInput = "edit 1 endt 0000 endt 0000";
@@ -1851,9 +1851,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Keyword endt has been entered twice.", errorMsg);	
+		assertEquals("Keyword endt has been entered twice.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditFormat() {
 		String userInput = "edit 1 name something date today startd today";
@@ -1861,9 +1861,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid edit format.", errorMsg);	
+		assertEquals("Invalid edit format.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditEmptyField() {
 		String userInput = "edit 1";
@@ -1871,9 +1871,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid edit format.", errorMsg);	
+		assertEquals("Invalid edit format.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditName() {
 		String userInput = "edit 1 name";
@@ -1881,9 +1881,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("New task/event name required.", errorMsg);	
+		assertEquals("New task/event name required.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditDeadline() {
 		String userInput = "edit 1 date 0813";
@@ -1891,9 +1891,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid deadline.", errorMsg);	
+		assertEquals("Invalid deadline.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditStartDate() {
 		String userInput = "edit 1 startd 0813";
@@ -1901,9 +1901,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid start date.", errorMsg);	
+		assertEquals("Invalid start date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditStartTime() {
 		String userInput = "edit 1 startt 12345";
@@ -1911,9 +1911,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid start time.", errorMsg);	
+		assertEquals("Invalid start time.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditEndDate() {
 		String userInput = "edit 1 endd 0813";
@@ -1921,9 +1921,9 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid end date.", errorMsg);	
+		assertEquals("Invalid end date.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidEditEndTime() {
 		String userInput = "edit 1 endt 12345";
@@ -1931,15 +1931,15 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		String errorMsg = command.getName();
 		assertEquals(Command.CommandType.INVALID, type);
-		assertEquals("Invalid end time.", errorMsg);	
+		assertEquals("Invalid end time.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR SEARCH COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testSearchOneKeyword() {
 		String userInput = "search something";
@@ -1949,7 +1949,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.SEARCH, type);
 		assertEquals("something", keyword);
 	}
-	
+
 	@Test
 	public void testSearchTwoKeywords() {
 		String userInput = "search two keywords";
@@ -1959,13 +1959,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.SEARCH, type);
 		assertEquals("two keywords", keywords);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR DONE COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testDone() {
 		String userInput = "done 1";
@@ -1975,7 +1975,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.DONE, type);
 		assertEquals(1, index);
 	}
-	
+
 	@Test
 	public void testInvalidDoneString() {
 		String userInput = "done something";
@@ -1985,7 +1985,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid index.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidDoneZeroIndex() {
 		String userInput = "done 0";
@@ -1995,7 +1995,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid index.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidDoneNegativeIndex() {
 		String userInput = "done -1";
@@ -2005,7 +2005,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid index.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidDoneArgument() {
 		String userInput = "done 1 1";
@@ -2015,13 +2015,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid index.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR SET COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testSet() {
 		String userInput = "set create as add";
@@ -2033,7 +2033,7 @@ public class CommandParserTest {
 		assertEquals("create", alias);
 		assertEquals("add", originalCommand);
 	}
-	
+
 	@Test
 	public void testInvalidSetEmpty() {
 		String userInput = "set";
@@ -2043,7 +2043,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Command and alias required.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidSetCommandFormat() {
 		String userInput = "set something as add task";
@@ -2063,7 +2063,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Invalid set format.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidSetAlias() {
 		String userInput = "set add as add";
@@ -2073,7 +2073,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Input alias is a either a registered command and cannot be used or an alias-in-use.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidSetPositiveIntegerAlias() {
 		String userInput = "set 1 as add";
@@ -2083,7 +2083,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Positive integers cannot be used as aliases.", errorMsg);
 	}
-	
+
 	@Test
 	public void testInvalidSetCommand() {
 		String userInput = "set create as include";
@@ -2093,7 +2093,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("include is not a registered command.", errorMsg);
 	}
-	
+
 	@Test
 	public void testSetAndDeleteAlias() {
 		parser.setAlias("create", "set");
@@ -2118,13 +2118,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type3);
 		assertEquals("Alias create has not been set.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR SAVE COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testSave() {
 		String userInput = "save C:/Dropbox";
@@ -2134,7 +2134,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.SAVE, type);
 		assertEquals("C:/Dropbox", directory);
 	}
-	
+
 	// To test empty argument
 	@Test
 	public void testInvalidSave() {
@@ -2145,13 +2145,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Directory required.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR UNDO COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testUndo() {
 		String userInput = "undo";
@@ -2159,7 +2159,7 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		assertEquals(Command.CommandType.UNDO, type);
 	}
-	
+
 	@Test
 	public void testInvalidUndo() {
 		String userInput = "undo 1";
@@ -2169,13 +2169,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR REDO COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testRedo() {
 		String userInput = "redo";
@@ -2183,7 +2183,7 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		assertEquals(Command.CommandType.REDO, type);
 	}
-	
+
 	@Test
 	public void testInvalidRedo() {
 		String userInput = "redo 1";
@@ -2193,13 +2193,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR VIEW COMMANDS
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testViewAll() {
 		String userInput = "all";
@@ -2209,7 +2209,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.ALL, viewType);
 	}
-	
+
 	@Test
 	public void testInvalidViewAll() {
 		String userInput = "all something";
@@ -2219,7 +2219,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	@Test
 	public void testViewDef() {
 		String userInput = "def";
@@ -2229,7 +2229,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.DEF, viewType);
 	}
-	
+
 	@Test
 	public void testInvalidViewDef() {
 		String userInput = "def something";
@@ -2239,7 +2239,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	@Test
 	public void testViewHist() {
 		String userInput = "hist";
@@ -2249,7 +2249,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.HIST, viewType);
 	}
-	
+
 	@Test
 	public void testInvalidViewHist() {
 		String userInput = "hist something";
@@ -2259,7 +2259,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	@Test
 	public void testViewUnres() {
 		String userInput = "unres";
@@ -2269,7 +2269,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.UNRES, viewType);
 	}
-	
+
 	@Test
 	public void testInvalidViewUnres() {
 		String userInput = "unres something";
@@ -2279,7 +2279,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	@Test
 	public void testViewSearch() {
 		String userInput = "search";
@@ -2289,7 +2289,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.SEARCH, viewType);
 	}
-	
+
 	@Test
 	public void testViewHelp() {
 		String userInput = "help";
@@ -2299,7 +2299,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.HELP, viewType);
 	}
-	
+
 	@Test
 	public void testInvalidViewHelp() {
 		String userInput = "help something";
@@ -2309,7 +2309,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	@Test
 	public void testViewDone() {
 		String userInput = "done";
@@ -2319,7 +2319,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.DONE, viewType);
 	}
-	
+
 	@Test
 	public void testViewOpenfile() {
 		String userInput = "openfile";
@@ -2329,7 +2329,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.OPENFILE, viewType);
 	}
-	
+
 	@Test
 	public void testInvalidViewOpenfile() {
 		String userInput = "openfile something";
@@ -2339,7 +2339,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	@Test
 	public void testViewConfig() {
 		String userInput = "config";
@@ -2349,7 +2349,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.VIEW, type);
 		assertEquals(Command.ViewType.CONFIG, viewType);
 	}
-	
+
 	@Test
 	public void testInvalidViewConfig() {
 		String userInput = "config something";
@@ -2359,13 +2359,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR EXIT COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testExit() {
 		String userInput = "exit";
@@ -2373,7 +2373,7 @@ public class CommandParserTest {
 		Command.CommandType type = command.getCommandType();
 		assertEquals(Command.CommandType.EXIT, type);
 	}
-	
+
 	@Test
 	public void testInvalidExit() {
 		String userInput = "exit software";
@@ -2383,13 +2383,13 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("This command does not expect arguments.", errorMsg);
 	}
-	
+
 	// *******************************************************************
 	// *******************************************************************
 	// FOR INVALID COMMAND
 	// *******************************************************************
 	// *******************************************************************
-	
+
 	@Test
 	public void testInvalid() {
 		String userInput = "random invalid command";
