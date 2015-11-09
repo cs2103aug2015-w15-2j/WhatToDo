@@ -96,7 +96,6 @@ public class Date implements Comparable<Date>{
     }
     
     public String getDayString() {
-    	
         Calendar cal = Calendar.getInstance(); 
         cal.set(this.year, this.month-1, this.day);
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
@@ -132,8 +131,9 @@ public class Date implements Comparable<Date>{
     
     public String formatDateMedium(){ 
     	Calendar cal = Calendar.getInstance(); 
+    	int todayYear = cal.get(Calendar.YEAR);
     	cal.set(this.year, this.month-1, this.day);
-    	SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM"); 
+    	SimpleDateFormat sdf = getDateFormat(todayYear);
     	return sdf.format(cal.getTime());
     }
     
@@ -176,4 +176,13 @@ public class Date implements Comparable<Date>{
     private int getIntDate(String yymmdd) {
         return Integer.parseInt(yymmdd);
     }
+    
+	private SimpleDateFormat getDateFormat(int todayYear) {
+    	if(todayYear == this.year){
+    		return new SimpleDateFormat("EEE, dd MMM"); 
+    	}
+    	else{ 
+    		return new SimpleDateFormat("EEE, dd MMM yy"); 
+    	}
+	}
 }
