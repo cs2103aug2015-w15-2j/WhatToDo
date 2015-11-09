@@ -391,23 +391,6 @@ public class AutoComplete {
 		}
 		return isShortcut;
 	}
-	
-	/* For OSX
-	protected static void setX(double coord) {
-		popup.setX(coord +
-				InterfaceController.WIDTH_SIDEBAR + 
-				InterfaceController.MARGIN_TEXT_FIELD);
-	}
-	
-	protected static void setY(double coord) {
-		popup.setY(coord + 
-				MainApp.stage.getHeight() - 
-				InterfaceController.MARGIN_TEXT_FIELD - 
-				InterfaceController.HEIGHT_TEXT_FIELD - 
-				InterfaceController.HEIGHT_HORIZ_LINE - 
-				HEIGHT_POPUP);
-	}
-	*/
 }
 
 
