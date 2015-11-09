@@ -68,7 +68,8 @@ public class StorageTest {
 
 		assertEquals(
 				"float;catch a dreamcatcher;todo\nfloat;dancing at the bar;todo\n"
-						+ "float;eat something nice;todo\nfloat;fly a kite;todo\nfloat;kill a monster;todo\n"
+						+ "float;eat something nice;todo\n"
+						+ "float;fly a kite;todo\nfloat;kill a monster;todo\n"
 						+ "float;train a dragon;todo\nfloat;uniqlo shopping;todo\n",
 				storage.display());
 
@@ -78,7 +79,8 @@ public class StorageTest {
 		assertEquals(
 				"float;catch a catcher;todo\nfloat;catch a dreamcatcher;todo\n"
 						+ "float;catch a dreamer;todo\nfloat;dancing at the bar;todo\n"
-						+ "float;eat something nice;todo\nfloat;fly a kite;todo\nfloat;kill a monster;todo\n"
+						+ "float;eat something nice;todo\n"
+						+ "float;fly a kite;todo\nfloat;kill a monster;todo\n"
 						+ "float;train a dragon;todo\nfloat;uniqlo shopping;todo\n",
 				storage.display());
 
@@ -228,7 +230,8 @@ public class StorageTest {
 		// Checks file remains unchanged.
 		assertEquals(
 				"float;buy a painting;todo\n"
-						+ "task;arrange meeting;todo;020116\nevent;Company D&D;todo;211215;1800;211215;2300\n",
+						+ "task;arrange meeting;todo;020116\nevent;"
+						+ "Company D&D;todo;211215;1800;211215;2300\n",
 				storage.display());
 
 		// Clear File for next test.
@@ -342,6 +345,43 @@ public class StorageTest {
 
 		// Clear File for next test.
 		storage.overwriteFile("");
+	}
+	
+	@Test(expected = FileSystemException.class)
+	// Tests if mark done line numbers beyond number of items will throw exception
+	public void testMarkAsDoneTooLarge() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+
+		storage.addFloatingTask(new FloatingTask("dummy", false));
+
+		// This is a boundary case for marking done line numbers beyond number of
+		// items
+		storage.markAsDone(2);
+	}
+
+	@Test(expected = FileSystemException.class)
+	// Tests if marking done line number 0 will throw exception
+	public void testMarkAsDoneZero() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+
+		storage.addFloatingTask(new FloatingTask("dummy", false));
+
+		// This is a boundary case for marking done line 0
+		storage.markAsDone(0);
+	}
+
+	@Test(expected = FileSystemException.class)
+	// Tests if marking done negative line numbers will throw exception
+	public void testMarkAsDoneNegative() throws FileSystemException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+
+		storage.addFloatingTask(new FloatingTask("dummy", false));
+
+		// This is a boundary case for marking done negative numbers
+		storage.markAsDone(-1);
 	}
 
 	@Test
@@ -528,6 +568,32 @@ public class StorageTest {
 						+ "test"));
 
 		assertEquals("task;sample task;todo;121212\n", storage.display());
+
+		// Clear for next tests.
+		storage.overwriteFile("");
+		file.delete();
+	}
+	
+	@Test
+	// Tests that changing file path to folder with written text file.
+	public void testChangeFilePathMove() throws IOException {
+		Storage storage = new Storage();
+		storage.overwriteFile("");
+
+		// Simulate written text file.
+		File file = new File("src" + File.separator + "test" + File.separator
+				+ "whattodo.txt");
+		assertEquals(true, file.createNewFile());
+		PrintWriter writer = new PrintWriter("src" + File.separator + "test"
+				+ File.separator + "whattodo.txt");
+		writer.print("float;koala bear;todo");
+		writer.close();
+
+		storage.changeFileStorageLocation("src" + File.separator + "test");
+
+		assertEquals("float;koala bear;todo\n", storage.display());
+		
+		storage.changeFileStorageLocation("");
 
 		// Clear for next tests.
 		storage.overwriteFile("");

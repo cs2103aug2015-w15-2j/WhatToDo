@@ -37,10 +37,12 @@ public class Storage {
 	private static final String MESSAGE_ERROR_READ_FILE = "Error encountered when reading file.";
 	private static final String MESSAGE_ERROR_WRITE_FILE = "Error encountered when writing to file.";
 	private static final String MESSAGE_ERROR_INVALID_LINE_ACCESS = "Cannot find line %d in text file.";
-	private static final String MESSAGE_ERROR_ALREADY_DONE = "Error encountered: the %s \"%s\" has already been completed.";
+	private static final String MESSAGE_ERROR_ALREADY_DONE = "Error encountered: the %s \"%s\" has already"
+			+ " been completed.";
 
 	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH = "File location specified is invalid.";
-	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH_UNKNOWN = "Unknown error encountered when changing file path.";
+	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH_UNKNOWN = "Unknown error encountered when "
+			+ "changing file path.";
 	private static final String MESSAGE_ERROR_CHANGING_FILE_PATH_CONFLICT = "Conflicting text files found in"
 			+ " both old and new file paths. Please delete either one.";
 
