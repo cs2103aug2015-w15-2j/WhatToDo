@@ -941,7 +941,7 @@ public class Logic {
 		try{
 			String alias = command.getName(); 
 			storage.deleteFromAliasFile(alias);
-			commandParser.deleteAliasFromHash(alias);
+			commandParser.deleteAlias(alias);
 			return String.format(MESSAGE_DELETE_ALIAS, alias);
 		}
 		catch(FileSystemException e){

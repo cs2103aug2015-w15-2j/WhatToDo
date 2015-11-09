@@ -3,7 +3,7 @@
  * that has been entered by the user, and provides methods to access those
  * commands when called by a text handler
  * 
- * @@author A0124123Y
+ * @@author A0124238L
  */
 
 package gui;
@@ -11,6 +11,12 @@ package gui;
 import java.util.ArrayList;
 
 public class CommandHistory {
+	private static final int PARAM_FIRST_INDEX = 0;
+	private static final int PARAM_SIZE_HIST = 1;
+	private static final int PARAM_DEFAULT = -1;
+	private static final int OFFSET = 1;
+	
+	private static final String EMPTY_STRING = "";
 
     private ArrayList<String> history;
     private int currentIndex;
@@ -20,7 +26,7 @@ public class CommandHistory {
      */
     public CommandHistory() {
         history = new ArrayList<String>();
-        currentIndex = history.size() - 1;
+        currentIndex = history.size() - OFFSET;
     }
 
     /**
@@ -38,7 +44,7 @@ public class CommandHistory {
      * This method resets the index to the most recent command entered
      */
     public void resetIndex() {
-        currentIndex = history.size() - 1;
+        currentIndex = history.size() - OFFSET;
     }
 
     /**
@@ -50,22 +56,22 @@ public class CommandHistory {
 
     	// If command history is empty
     	if (history.isEmpty()) {
-    		return "";
-    	} else if (currentIndex == 0) {
+    		return EMPTY_STRING;
+    	} else if (currentIndex == PARAM_FIRST_INDEX) {
     		// currentIndex = 0, meaning the user has viewed till the very first command
     		return history.get(currentIndex);
-    	} else if (currentIndex == history.size() - 1) {
+    	} else if (currentIndex == history.size() - OFFSET) {
     		// currentIndex = history.size() - 1, meaning the user has viewed till the 
     		// very last command
     		String returnCommand = history.get(currentIndex);
     		// If the returned command is the same as the one already displayed, display the
     		// previous command instead. Only works for history.size() > 1
-    		if (isSameAsDisplayed(returnCommand) && history.size() > 1) {
+    		if (isSameAsDisplayed(returnCommand) && history.size() > PARAM_SIZE_HIST) {
     			currentIndex--;
     			returnCommand = history.get(currentIndex);
     		}
     		return returnCommand;
-    	} else if (currentIndex == -1) {
+    	} else if (currentIndex == PARAM_DEFAULT) {
     		currentIndex++;
     		return history.get(currentIndex);
     	} else {
@@ -84,17 +90,17 @@ public class CommandHistory {
 
     	// If command history is empty
     	if (history.isEmpty()) {
-    		return "";
-    	} else if (currentIndex == history.size() - 1) {
+    		return EMPTY_STRING;
+    	} else if (currentIndex == history.size() - OFFSET) {
     		// currentIndex = history.size() - 1, meaning the user has viewed 
     		// till the very last command
     		return history.get(currentIndex);
-    	} else if (currentIndex == 0) {
+    	} else if (currentIndex == PARAM_FIRST_INDEX) {
     		// currentIndex = 0, meaning the user has viewed till the very first command
     		String returnCommand = history.get(currentIndex);
     		// If the returned command is the same as the one already displayed, display the
     		// next command instead. Only works for history.size() > 1
-    		if (isSameAsDisplayed(returnCommand) && history.size() > 1) {
+    		if (isSameAsDisplayed(returnCommand) && history.size() > PARAM_SIZE_HIST) {
     			currentIndex++;
     			returnCommand = history.get(currentIndex);
     		}
@@ -146,22 +152,22 @@ public class CommandHistory {
     	
     	// If command history is empty
     	if (history.isEmpty()) {
-    		return "";
-    	} else if (currentIndex == 0) {
+    		return EMPTY_STRING;
+    	} else if (currentIndex == PARAM_FIRST_INDEX) {
     		// currentIndex = 0, meaning the user has viewed till the very first command
     		return history.get(currentIndex);
-    	} else if (currentIndex == history.size() - 1) {
+    	} else if (currentIndex == history.size() - OFFSET) {
     		// currentIndex = history.size() - 1, meaning the user has viewed till the 
     		// very last command
     		String returnCommand = history.get(currentIndex);
     		// If the returned command is the same as the one already displayed, display the
     		// previous command instead. Only works for history.size() > 1
-    		if (returnCommand.equals(simulatedTextField) && history.size() > 1) {
+    		if (returnCommand.equals(simulatedTextField) && history.size() > PARAM_SIZE_HIST) {
     			currentIndex--;
     			returnCommand = history.get(currentIndex);
     		}
     		return returnCommand;
-    	} else if (currentIndex == -1) {
+    	} else if (currentIndex == PARAM_DEFAULT) {
     		currentIndex++;
     		return history.get(currentIndex);
     	} else {
@@ -175,17 +181,17 @@ public class CommandHistory {
 
     	// If command history is empty
     	if (history.isEmpty()) {
-    		return "";
-    	} else if (currentIndex == history.size() - 1) {
+    		return EMPTY_STRING;
+    	} else if (currentIndex == history.size() - OFFSET) {
     		// currentIndex = history.size() - 1, meaning the user has viewed 
     		// till the very last command
     		return history.get(currentIndex);
-    	} else if (currentIndex == 0) {
+    	} else if (currentIndex == PARAM_FIRST_INDEX) {
     		// currentIndex = 0, meaning the user has viewed till the very first command
     		String returnCommand = history.get(currentIndex);
     		// If the returned command is the same as the one already displayed, display the
     		// next command instead. Only works for history.size() > 1
-    		if (returnCommand.equals(simulatedTextField) && history.size() > 1) {
+    		if (returnCommand.equals(simulatedTextField) && history.size() > PARAM_SIZE_HIST) {
     			currentIndex++;
     			returnCommand = history.get(currentIndex);
     		}

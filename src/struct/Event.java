@@ -10,12 +10,25 @@ package struct;
 public class Event extends TodoItem implements Comparable<Event>{
 
 	private static final String SEMICOLON = ";";
+	private static final String EMPTY_STRING = "";
 	
 	private static final String FORMAT_TO_STRING = "event;%s;%s;%s;%s;%s;%s";
 	
 	private static final String STRING_EVENT = "event";
 	private static final String STRING_DONE = "done";
 	private static final String STRING_NOT_DONE = "todo";
+	
+	private static final int PARAM_TYPE = 0;
+	private static final int PARAM_NAME = 1;
+	private static final int PARAM_DONE = 2;
+	private static final int PARAM_START_DATE = 3;
+	private static final int PARAM_START_TIME = 4;
+	private static final int PARAM_END_DATE = 5;
+	private static final int PARAM_END_TIME = 6;
+	private static final int NUM_PARAM_EVENTS = 7;
+	
+	private static final int SAME_DATE = 0;
+	private static final int SAME_TIME = 0;
 	
     private Date eventStartDate, eventEndDate;
     private String eventStartTime, eventEndTime;
@@ -28,23 +41,23 @@ public class Event extends TodoItem implements Comparable<Event>{
     	super();
         this.eventStartDate = new Date();
         this.eventEndDate = new Date();
-        this.eventStartTime = "";
-        this.eventEndTime = "";
+        this.eventStartTime = EMPTY_STRING;
+        this.eventEndTime = EMPTY_STRING;
     }
     
     public Event(String line){ 
     	line.trim();
     	String[] lineComponents = line.split(SEMICOLON);
     	
-    	assert(lineComponents[0].equals(STRING_EVENT));
-    	assert(lineComponents.length == 7);
+    	assert(lineComponents[PARAM_TYPE].equals(STRING_EVENT));
+    	assert(lineComponents.length == NUM_PARAM_EVENTS);
     	
-    	this.name = lineComponents[1]; 
-    	this.isDone = lineComponents[2].equals(STRING_DONE); 
-    	this.eventStartDate = new Date(lineComponents[3]);
-    	this.eventEndDate = new Date(lineComponents[5]);
-    	this.eventStartTime = lineComponents[4];
-    	this.eventEndTime = lineComponents[6];
+    	this.name = lineComponents[PARAM_NAME]; 
+    	this.isDone = lineComponents[PARAM_DONE].equals(STRING_DONE); 
+    	this.eventStartDate = new Date(lineComponents[PARAM_START_DATE]);
+    	this.eventEndDate = new Date(lineComponents[PARAM_END_DATE]);
+    	this.eventStartTime = lineComponents[PARAM_START_TIME];
+    	this.eventEndTime = lineComponents[PARAM_END_TIME];
     }
 
 	public Event(String name, boolean isDone, Date eventStartDate, Date eventEndDate, String eventStartTime, String eventEndTime) {
@@ -72,13 +85,13 @@ public class Event extends TodoItem implements Comparable<Event>{
 		int compareEndTime = this.getEventEndTime().compareTo(other.getEventEndTime());
 		int compareName = this.getName().compareTo(other.getName());
 		
-		if(compareStartDate != 0){ 
+		if(compareStartDate != SAME_DATE){ 
 			return compareStartDate; 
-		}else if (compareStartTime != 0){ 
+		}else if (compareStartTime != SAME_TIME){ 
 			return compareStartTime; 
-		}else if (compareEndDate != 0){ 
+		}else if (compareEndDate != SAME_DATE){ 
 			return compareEndDate; 
-		}else if (compareEndTime != 0){ 
+		}else if (compareEndTime != SAME_TIME){ 
 			return compareEndTime; 
 		}else{
 			return compareName; 

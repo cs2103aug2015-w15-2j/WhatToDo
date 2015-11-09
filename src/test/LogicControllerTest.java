@@ -1,3 +1,9 @@
+/**
+ * This class runs tests on LogicController
+ * 
+ * @@author A0124123Y
+ */
+
 package test;
 
 import static org.junit.Assert.*;
