@@ -1,3 +1,9 @@
+/**
+ * This class runs tests on CommandHistory
+ * 
+ * @@author A0124123Y
+ */
+
 package test;
 
 import static org.junit.Assert.*;
