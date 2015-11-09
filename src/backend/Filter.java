@@ -1,10 +1,16 @@
+/**
+ * This class filters the contents of file so that each view in the application 
+ * can display the correct information 
+ * 
+ * @@author A0127051U
+ */
+
 package backend;
 
 import java.util.ArrayList;
 
 import struct.Date;
 
-//@@author A0127051U
 public class Filter {
 	
 	private static final int INDEX_TYPE = 0; 
@@ -17,16 +23,22 @@ public class Filter {
     private static final String TYPE_TASK = "task";
     private static final String TYPE_EVENT = "event";
 	
-	private static final String DONE = "done"; 
-	
-	private static final String REGEX_WHITESPACES = "[\\s,]+"; 
-	
+	private static final String DONE = "done";
 	private static final String SEMICOLON = ";";
+	private static final String REGEX_WHITESPACES = "[\\s,]+"; 
 	
 	//============================================
 	// Public methods
 	//============================================
-		
+	
+	/**
+	 * filters tasks and events only
+	 * @param linesInFile
+	 * @param type
+	 * @param date
+	 * @return the arraylist of indexes of tasks due on date if type is task 
+	 *         the arraylist indexes of events starting on date if type is event
+	 */
 	public ArrayList<Integer> filterDate(String[] linesInFile, String type, Date date){ 
 		 assert(type.equals(TYPE_TASK) || type.equals(TYPE_EVENT));
 		
@@ -42,6 +54,12 @@ public class Filter {
 		 return resultList; 
 	}
 	
+	/**
+	 * filters for ongoing events - events starting earlier than today 
+	 * and ending later than today 
+	 * @param linesInFile
+	 * @return the arraylist indexes of ongoing events 
+	 */
 	public ArrayList<Integer> filterOngoingEvents(String[] linesInFile){ 
 		ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		
@@ -55,6 +73,14 @@ public class Filter {
 		return resultList; 
 	}
 	
+	/**
+	 * filters any type of to-do item
+	 * @param linesInFile
+	 * @param type
+	 * @param isDone
+	 * @return arraylist of indexes items of type 'type' that is done if isDone is true 
+	 *         arraylist of indexes items of type 'type' that is uncompleted, otherwise
+	 */
 	public ArrayList<Integer> filterStatus(String[] linesInFile, String type, boolean isDone){ 
 		 ArrayList<Integer> resultList = new ArrayList<Integer>(); 
 		 
@@ -68,6 +94,14 @@ public class Filter {
 		 return resultList; 
 	}
 	
+	/**
+	 * filters tasks and events only
+	 * @param linesInFile
+	 * @param type
+	 * @param date
+	 * @return the arraylist of indexes of tasks that is uncompleted and past deadline 
+	 *          or arraylist of indexed of events that is uncompleted and past enddate
+	 */
 	public ArrayList<Integer> filterPastUncompleted(String[] linesInFile, String type){ 
 		assert(type.equals(TYPE_TASK) || type.equals(TYPE_EVENT));
 		
@@ -82,7 +116,14 @@ public class Filter {
 
 		return resultList; 
 	}
-		
+	
+	/**
+	 * filter method for search
+	 * @param linesInFile
+	 * @param type
+	 * @param query
+	 * @return arraylist of indexes of items that match at least one of the tokens in query 
+	 */
 	public ArrayList<Integer> matchTokensInQuery(String[] linesInFile, String type, String query){ 
 		String[] tokens = parseQuery(query); 
 		ArrayList<Integer> resultList = new ArrayList<Integer>(); 
@@ -149,7 +190,7 @@ public class Filter {
 		assert(type.equals(TYPE_TASK) || type.equals(TYPE_EVENT));
 		
 		String[] lineFields = line.split(SEMICOLON);
-		String lineDateStr = (type.equals(TYPE_TASK)) ? lineFields[INDEX_DUEDATE] : lineFields[INDEX_ENDDATE]; 
+		String lineDateStr = getPastDate(type, lineFields); 
 		Date lineDate = new Date(lineDateStr); 
 		Date todayDate = Date.todayDate(); 
 		
@@ -158,6 +199,22 @@ public class Filter {
 		}
 		else{ 
 			return false; 
+		}
+	}
+	/**
+	 * get date to compare to today's date to determine if item is past 
+	 * @param type
+	 * @param lineFields
+	 * @return deadline if type is task
+	 *         end date if type id event 
+	 */
+	private String getPastDate(String type, String[] lineFields) {
+		assert(type.equals(TYPE_TASK) || type.equals(TYPE_EVENT));
+		if(type.equals(TYPE_TASK)){ 
+			return lineFields[INDEX_DUEDATE]; 
+		}
+		else{
+			return lineFields[INDEX_ENDDATE];
 		}
 	}
 	
