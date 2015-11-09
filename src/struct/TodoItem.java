@@ -1,6 +1,10 @@
+/**
+ * 
+ */
+
 package struct;
 
-public abstract class Data {
+public abstract class TodoItem {
 	
 	protected String name; 
 	protected boolean isDone;
@@ -9,12 +13,12 @@ public abstract class Data {
 	// Constructor
 	//============================================
 	
-	public Data(){
+	public TodoItem(){
 		this.name = ""; 
 		this.isDone = false;
 	}
 	
-	public Data(String name, boolean isDone) {
+	public TodoItem(String name, boolean isDone) {
 		this.name = name;
 		this.isDone = isDone;
 	}
