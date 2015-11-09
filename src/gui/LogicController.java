@@ -402,6 +402,9 @@ public class LogicController {
 	}
 	
 	/**
+	 * @@author A0124099B
+	 */
+	/**
 	 * This method gets the list of added Aliases by calling Logic's getAliasFileContents()
 	 * method, and then converting the returned Strings into the Alias type and storing them
 	 * in an array
@@ -428,6 +431,10 @@ public class LogicController {
 		
 		return newAliases;
 	}
+	
+	/**
+	 * @@author A0124123Y
+	 */
 	
     // ======================================================================
     // Boolean methods which are used in other GUI classes to check for 
@@ -524,6 +531,10 @@ public class LogicController {
     }
 	
     /**
+     * @@author A0124099B
+     */
+    
+    /**
      * This method opens the text file currently set by the application for writing.
      * This text file is opened in the user's default associated application
      */
@@ -553,6 +564,9 @@ public class LogicController {
     	}
     }
     
+    /**
+     * @@author A0124123Y
+     */
     // ======================================================================
     // Private methods for running commands and switching views accessible 
     // only within LogicController
