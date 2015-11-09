@@ -51,7 +51,7 @@ public class Memory {
 	//============================================
 	// Private method
 	//============================================
-	
+
 	private State getState(String currFileContents, Stack<State> stackPop, Stack<State> stackPush){ 
 		if(stackPop.isEmpty()){
 			return null; 

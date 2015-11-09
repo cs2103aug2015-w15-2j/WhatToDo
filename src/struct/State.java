@@ -1,5 +1,6 @@
 /**
- * This class encapsulates the state of the file 
+ * This class encapsulates the state of the file after each command that 
+ * changes the contents of the file 
  * 
  * @@author A0127051U
  */
