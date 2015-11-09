@@ -114,15 +114,9 @@ public class Logic {
 	// Constructor
 	//============================================
     
-    public Logic() throws FileSystemException {
-		//storage must be initialized before createAliasHashtable()
-    	storage = new Storage();
+    public Logic() throws FileSystemException {    	
    		Hashtable<String, String> aliasHashtable = createAliasHashtable(); 
-		commandParser = new CommandParser(aliasHashtable);
-		memory = new Memory();
-		filter = new Filter(); 
-		formatter = new Formatter(); 
-		prevCommand = new Command(); 
+   		initialiseMemberVariables(aliasHashtable); 
     }
         
 	//============================================
@@ -207,7 +201,12 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN; 
 		}
     }
-          
+    
+    /**
+     * filter and format tasks to shows in all or done views
+     * @param isDone - true if display all completed tasks, false is display all uncompleted tasks 
+     * @return formatted string
+     */
     public String taskAllView(boolean isDone){ 
     	try{ 
     		String[] linesInFile = getLinesInFile();
@@ -224,6 +223,11 @@ public class Logic {
     	}
     }
     
+    /**
+     * filter and format events to shows in all or done views
+     * @param isDone - true if display all completed events, false is display all uncompleted events 
+     * @return formatted string
+     */
     public String eventAllView(boolean isDone){ 
     	try{
     		String[] linesInFile = getLinesInFile(); 
@@ -238,7 +242,11 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
-        
+    
+    /**
+     * filter and format tasks for unresolved view
+     * @return formatted string
+     */
     public String taskPastUncompletedView(){
     	try{
     		String[] linesInFile = getLinesInFile();
@@ -254,6 +262,10 @@ public class Logic {
 		} 
     }
 
+    /**
+     * filter and format events for unresolved view
+     * @return formatted string
+     */
     public String eventPastUncompletedView(){
     	try{
     		String[] linesInFile = getLinesInFile();
@@ -308,6 +320,7 @@ public class Logic {
     }
     
     private String[] getLinesInAliasFile() throws FileSystemException{
+    	storage = new Storage(); 
     	String fileContents = storage.readAliasFile();
     	if(fileContents.isEmpty()){ 
     		return new String[0];
@@ -315,6 +328,15 @@ public class Logic {
     		return fileContents.split(NEWLINE);
     	}
     }
+    
+	private void initialiseMemberVariables(Hashtable<String, String> aliasHashtable) throws FileSystemException {
+		storage = new Storage();
+		commandParser = new CommandParser(aliasHashtable);
+		memory = new Memory();
+		filter = new Filter(); 
+		formatter = new Formatter(); 
+		prevCommand = new Command();
+	}
       
 	//============================================
 	// Private methods for executing add 
@@ -350,7 +372,7 @@ public class Logic {
         String addFeedback = String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
         
         boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        return formFeedbackMsg(addFeedback, isSaved);
+        return addMemoryFeedback(addFeedback, isSaved);
     }
     
     private String executeAddTask(Command command) throws FileSystemException{
@@ -364,7 +386,7 @@ public class Logic {
         		taskDeadline.formatDateLong()); 
 
         boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        return formFeedbackMsg(addFeedback, isSaved);
+        return addMemoryFeedback(addFeedback, isSaved);
     }
     
     private String executeAddEvent(Command command) throws FileSystemException{
@@ -382,7 +404,7 @@ public class Logic {
         		eventEndDate.formatDateLong(), eventEndTime);
         
         boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        return formFeedbackMsg(addFeedback, isSaved);
+        return addMemoryFeedback(addFeedback, isSaved);
     }
     
 	//============================================
@@ -399,7 +421,7 @@ public class Logic {
         	String deleteFeedback = String.format(MESSAGE_DELETE_ITEM, formattedDelLine); 
         	
         	boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        	return formFeedbackMsg(deleteFeedback, isSaved);
+        	return addMemoryFeedback(deleteFeedback, isSaved);
     	}
     	catch(FileSystemException e){
     		return e.getMessage();
@@ -499,7 +521,7 @@ public class Logic {
 		String editFeedback = String.format(MESSAGE_EDIT, TYPE_FLOAT, newName);
 		
 		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-	    return formFeedbackMsg(editFeedback, isSaved);
+	    return addMemoryFeedback(editFeedback, isSaved);
 	}
 		
 	private String executeEditTask(Command command) throws FileSystemException {
@@ -545,7 +567,7 @@ public class Logic {
 			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_EVENT, TYPE_TASK);
     	}
 	}
-	
+
 	private String getEditedName(Command command, ArrayList<String> editList, int lineNumber)
 			throws FileSystemException {
 		if(editList.contains(KEYWORD_EDIT_NAME)){ 
@@ -644,7 +666,7 @@ public class Logic {
 		if(isValidEdit(addTaskCmd, DataType.TASK)){ 	
     		boolean isSaved = handleValidEditTask(command, lineNumber, newName, newDeadline, isDone);
     		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_TASK, newName);
-            return formFeedbackMsg(editFeedback, isSaved);
+            return addMemoryFeedback(editFeedback, isSaved);
     	}else{ 
     		return handleInvalidEdit(addTaskCmd); 
     	}
@@ -657,7 +679,7 @@ public class Logic {
     		boolean isSaved = handleValidEditEvent(command, lineNumber, 
 	   				newStartDate, newEndDate, newName, newStartTime, newEndTime, isDone);
 	   		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_EVENT, newName);
-            return formFeedbackMsg(editFeedback, isSaved);
+            return addMemoryFeedback(editFeedback, isSaved);
 	    }else{ 
 	    	return handleInvalidEdit(addEventCmd);
 	   	}
@@ -668,7 +690,7 @@ public class Logic {
 		if(isValidEdit(addTaskCmd, DataType.TASK)){ 
 			boolean isSaved = handleValidEditTask(command, lineNumber, newName, newDeadline, isDone); 
 			String editFeedback = String.format(MESSAGE_EDIT, TYPE_TASK, newName);
-		    return formFeedbackMsg(editFeedback, isSaved);
+		    return addMemoryFeedback(editFeedback, isSaved);
 		}else{ 
 			return handleInvalidEdit(addTaskCmd); 
 		}
@@ -681,7 +703,7 @@ public class Logic {
 			boolean isSaved = handleValidEditEvent(command, lineNumber, 
 					newStartDate, newEndDate, newName, newStartTime, newEndTime, isDone);
 			String editFeedback = String.format(MESSAGE_EDIT, TYPE_EVENT, newName);
-		    return formFeedbackMsg(editFeedback, isSaved);
+		    return addMemoryFeedback(editFeedback, isSaved);
 		}else{ 
 			return handleInvalidEdit(addEventCmd); 
 		}
@@ -755,7 +777,7 @@ public class Logic {
         	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, formattedDoneLine); 
         	
         	boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        	return formFeedbackMsg(markDoneFeedback, isSaved);
+        	return addMemoryFeedback(markDoneFeedback, isSaved);
     	}
     	catch(FileSystemException e){
     		return e.getMessage();
@@ -876,7 +898,7 @@ public class Logic {
     	prevCommand = command; 
     }
    	
-	private String formFeedbackMsg(String cmdFeedback, boolean isSaved) {
+	private String addMemoryFeedback(String cmdFeedback, boolean isSaved) {
 		if(isSaved){
         	return cmdFeedback;
         }
