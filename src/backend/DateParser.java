@@ -18,8 +18,6 @@ public class DateParser {
 	private static final int NUMBER_OF_DAYS_IN_A_WEEK = 7;
 	private static final int NUMBER_OF_DAYS_IN_TWO_WEEKS = 14;
 
-	private static final String REGEX_POSITIVE_INTEGER = "^0*[1-9][0-9]*";
-
 	private static final String KEYWORD_TODAY = "today";
 	private static final String KEYWORD_TOMORROW_ONE = "tomorrow";
 	private static final String KEYWORD_TOMORROW_TWO = "tmr";
@@ -62,14 +60,14 @@ public class DateParser {
 			} else {
 				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_TWO_WEEKS);
 			}
-		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == SMALL_DATE_LENGTH) {
+		} else if (date.matches(CommandParser.REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == SMALL_DATE_LENGTH) {
 			String year = todayDate.formatDateShort().substring(4);
 			date = date + year;
 			Date currDate = new Date(date);
 			if (isValidDate(date) && todayDate.compareTo(currDate) <= 0) {
 				return currDate;
 			}
-		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == FULL_DATE_LENGTH
+		} else if (date.matches(CommandParser.REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == FULL_DATE_LENGTH
 				&& isValidDate(date)) {
 			Date currDate = new Date(date);
 			if (todayDate.compareTo(currDate) <= 0) {
