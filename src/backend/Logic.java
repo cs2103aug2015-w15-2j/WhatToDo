@@ -130,6 +130,7 @@ public class Logic {
     
     public ViewType getViewType(String userInput){ 
     	Command command = commandParser.parse(userInput);
+    	assert(command.getCommandType() == CommandType.VIEW); 
     	return command.getViewType();
     }
     
