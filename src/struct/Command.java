@@ -54,7 +54,8 @@ public class Command {
 	//============================================	
 	
 	public boolean isUndoOrRedo() {
-		return this.commandType == CommandType.UNDO || this.commandType == CommandType.REDO;
+		return this.commandType == CommandType.UNDO || 
+				this.commandType == CommandType.REDO;
 	}
 	
 	//============================================

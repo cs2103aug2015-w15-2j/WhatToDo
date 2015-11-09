@@ -1,10 +1,16 @@
+/**
+ * This class parses user input string.
+ * 
+ * @@author A0124099B
+ */
+
 package backend;
 
+import backend.AddParser;
+import backend.DeleteParser;
 import backend.EditParser;
 import backend.SetParser;
-import backend.DeleteParser;
 import backend.NameParser;
-import backend.AddParser;
 
 import struct.Command;
 
@@ -12,16 +18,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 
-
-//@@author A0124099B
 public class CommandParser {
 
 	private static final int POSITION_PARAM_COMMAND = 0;
 	private static final int POSITION_FIRST_PARAM_ARGUMENT = 1;
-	private static final int POSITION_FIRST_INDEX = 0;
+	protected static final int POSITION_FIRST_INDEX = 0;
 
 	private static final String REGEX_WHITESPACES = "[\\s;]+";
 	protected static final String REGEX_POSITIVE_INTEGER = "^0*[1-9][0-9]*";
+	
+	protected static final String STRING_VERIFIED = "verified";
 
 	protected static final String USER_COMMAND_ADD = "add";
 	protected static final String USER_COMMAND_DELETE = "delete";
@@ -41,27 +47,40 @@ public class CommandParser {
 	protected static final String USER_COMMAND_VIEW_CONFIG = "config";
 	protected static final String USER_COMMAND_EXIT = "exit";
 
-	private static final String ERROR_USER_COMMAND = "Invalid user command.";
-	private static final String ERROR_INDEX = "Invalid index.";
-	private static final String ERROR_SAVE = "Directory required.";
-	private static final String ERROR_NO_ARGUMENTS = "This command does not expect arguments.";
+	private static final String MESSAGE_ERROR_USER_COMMAND = "Invalid user command.";
+	private static final String MESSAGE_ERROR_INDEX = "Invalid index.";
+	private static final String MESSAGE_ERROR_SAVE = "Directory required.";
+	private static final String MESSAGE_ERROR_NO_ARGUMENTS = "This command does not expect arguments.";
 
-	private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
-
+	private static final AddParser addParser = new AddParser();
 	private static final EditParser editParser = new EditParser();
 	private static final SetParser setParser = new SetParser();
 	private static final NameParser nameParser = new NameParser();
-	private static final AddParser addParser = new AddParser();
+	
+	// Hashtable of aliases as keys and commands as values
+	private Hashtable<String, String> commandAliases = new Hashtable<String, String>();
 
+	// ================================================================
+	// Constructor
+	// ================================================================
+	
 	public CommandParser(Hashtable<String, String> commandAliases) {
+		assert(commandAliases != null);
 		this.commandAliases = commandAliases;
 	}
+	
+	// ================================================================
+	// Public methods
+	// ================================================================
 
 	public Command parse(String userInput) {
 		Command command;
 		ArrayList<String> originalParameters = splitString(userInput);
+		// originalArguments are given to add, edit, search and save commands to preserve
+		// the original name, keywords or directory given in userInput
 		ArrayList<String> originalArguments = getUserArguments(originalParameters);
 		ArrayList<String> parameters = splitString(userInput.toLowerCase());
+		// convert parameters to account for aliases
 		ArrayList<String> convertedParameters = convertParameters(parameters);
 		ArrayList<String> arguments = getUserArguments(convertedParameters);
 		String userCommand = getUserCommand(convertedParameters);
@@ -137,25 +156,47 @@ public class CommandParser {
                 break;
 
             default :
-                command = initInvalidCommand(ERROR_USER_COMMAND);
+                command = initInvalidCommand(MESSAGE_ERROR_USER_COMMAND);
         }
 		command.setUserInput(userInput);
 		return command;
 	}
+	
+	public void deleteAlias(String command) {
+		commandAliases.remove(command);
+	}
+	
+	public void setAlias(String newCommand, String originalCommand) {
+		commandAliases.put(newCommand, originalCommand);
+	}
+	
+	// ================================================================
+	// Private methods
+	// ================================================================
 
 	private ArrayList<String> splitString(String arguments) {
 		String[] strArray = arguments.trim().split(REGEX_WHITESPACES);
 		return new ArrayList<String>(Arrays.asList(strArray));
 	}
 
+	/**
+	 * This method first attempts to convert the first string if it is a
+	 * registered alias. It then checks if this first string is 
+	 * USER_COMMAND_SET. If it is, it converts the rest of the userInput
+	 * if any of them is also a registered alias. This is to allow for 
+	 * initSetCommand() to know which command the user is referring to.
+	 * 
+	 * @param parameters
+	 * @return convertedParameters
+	 */
 	private ArrayList<String> convertParameters(ArrayList<String> parameters) {
-		if (commandAliases.containsKey(parameters.get(0))) {
-			String parameter = parameters.get(0);
+		if (commandAliases.containsKey(parameters.get(POSITION_FIRST_INDEX))) {
+			String parameter = parameters.get(POSITION_FIRST_INDEX);
 			String newParameter = commandAliases.get(parameter);
-			parameters.remove(0);
-			parameters.add(0, newParameter);
+			parameters.remove(POSITION_FIRST_INDEX);
+			parameters.add(POSITION_FIRST_INDEX, newParameter);
 		}
-		if (parameters.get(0).equals(USER_COMMAND_SET)) {
+		if (parameters.get(POSITION_FIRST_INDEX).equals(USER_COMMAND_SET)) {
 			for (int i = 1; i < parameters.size(); i++) {
 				String currParameter = parameters.get(i);
 				if (commandAliases.containsKey(currParameter)) {
@@ -177,6 +218,11 @@ public class CommandParser {
 				                     parameters.size()));
 	}
 	
+	/**
+	 * This method converts all the strings in the ArrayList to lower case
+	 * @param arguments
+	 * @return arguments with its members all in lower case
+	 */
 	protected static ArrayList<String> toLowerCase(ArrayList<String> arguments) {
 		ArrayList<String> argumentsLowerCase = new ArrayList<String>();
 		for (int i = 0; i < arguments.size(); i++) {
@@ -188,7 +234,7 @@ public class CommandParser {
 	}
 
 	// ================================================================
-	// Create add command methods
+	// Create add command method
 	// ================================================================
 
 	private Command initAddCommand(ArrayList<String> arguments) {
@@ -200,16 +246,14 @@ public class CommandParser {
 	// ================================================================
 
 	private Command initDeleteCommand(ArrayList<String> arguments) {
+		// deleteParser is created with every delete command in order
+		// to pass in the most updated commandAliases Hashtable
 		DeleteParser deleteParser = new DeleteParser(commandAliases);
 		return deleteParser.parse(arguments);
 	}
 
-	public void deleteAliasFromHash(String command) {
-		commandAliases.remove(command);
-	}
-
 	// ================================================================
-	// Create edit command methods
+	// Create edit command method
 	// ================================================================
 
 	private Command initEditCommand(ArrayList<String> arguments) {
@@ -221,6 +265,8 @@ public class CommandParser {
 	// ================================================================
 
 	private Command initSearchCommand(ArrayList<String> arguments) {
+		// If userInput is simply "search", the arguments here will be empty
+		// and it will be recgonised as a command to switch to search view
 		if (arguments.isEmpty()) {
 			Command command = new Command(Command.CommandType.VIEW);
 			command.setViewType(Command.ViewType.SEARCH);
@@ -237,15 +283,17 @@ public class CommandParser {
 	// ================================================================
 
 	private Command initDoneCommand(ArrayList<String> arguments) {
+		// If userInput is simply "done", the arguments here will be empty
+		// and it will be recgonised as a command to switch to search view
 		if (arguments.isEmpty()) {
 			Command command = new Command(Command.CommandType.VIEW);
 			command.setViewType(Command.ViewType.DONE);
 			return command;
 		}
-		String index = arguments.get(0);
+		String index = arguments.get(POSITION_FIRST_INDEX);
 
 		if (arguments.size() > 1 || !index.matches(REGEX_POSITIVE_INTEGER)) {
-			return initInvalidCommand(ERROR_INDEX);
+			return initInvalidCommand(MESSAGE_ERROR_INDEX);
 		}
 
 		Command command = new Command(Command.CommandType.DONE);
@@ -261,17 +309,13 @@ public class CommandParser {
 		return setParser.parse(arguments);
 	}
 
-	public void setAlias(String newCommand, String originalCommand) {
-		commandAliases.put(newCommand, originalCommand);
-	}
-
 	// ================================================================
 	// Create save command method
 	// ================================================================
 
 	private Command initSaveCommand(ArrayList<String> arguments) {
 		if (arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_SAVE);
+			return initInvalidCommand(MESSAGE_ERROR_SAVE);
 		}
 		Command command = new Command(Command.CommandType.SAVE);
 		String directory = nameParser.getName(arguments, POSITION_FIRST_INDEX, arguments.size());
@@ -285,7 +329,7 @@ public class CommandParser {
 
 	private Command initUndoCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.UNDO);
 		return command;
@@ -297,7 +341,7 @@ public class CommandParser {
 
 	private Command initRedoCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.REDO);
 		return command;
@@ -309,7 +353,7 @@ public class CommandParser {
 
 	private Command initViewAllCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.ALL);
@@ -322,7 +366,7 @@ public class CommandParser {
 
 	private Command initViewDefCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.DEF);
@@ -335,7 +379,7 @@ public class CommandParser {
 
 	private Command initViewHistCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.HIST);
@@ -348,7 +392,7 @@ public class CommandParser {
 
 	private Command initViewUnresCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.UNRES);
@@ -361,7 +405,7 @@ public class CommandParser {
 
 	private Command initViewHelpCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.HELP);
@@ -374,7 +418,7 @@ public class CommandParser {
 
 	private Command initViewOpenFileCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.OPENFILE);
@@ -387,7 +431,7 @@ public class CommandParser {
 
 	private Command initViewConfigCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		Command command = new Command(Command.CommandType.VIEW);
 		command.setViewType(Command.ViewType.CONFIG);
@@ -400,13 +444,13 @@ public class CommandParser {
 
 	private Command initExitCommand(ArrayList<String> arguments) {
 		if (!arguments.isEmpty()) {
-			return initInvalidCommand(ERROR_NO_ARGUMENTS);
+			return initInvalidCommand(MESSAGE_ERROR_NO_ARGUMENTS);
 		}
 		return new Command(Command.CommandType.EXIT);
 	}
 
 	// ================================================================
-	// Create invalid command methods
+	// Create invalid command method
 	// ================================================================
 
 	protected static Command initInvalidCommand(String errorMsg) {

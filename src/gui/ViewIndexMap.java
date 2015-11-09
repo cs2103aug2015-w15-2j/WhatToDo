@@ -3,7 +3,7 @@
  * file index in the file, and provides methods for LogicController to map the
  * indices and modify the command appropriately
  * 
- * @@author A0124123Y
+ * @@author A0124238L
  */
 
 package gui;

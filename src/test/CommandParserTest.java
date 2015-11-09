@@ -2073,6 +2073,16 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.INVALID, type);
 		assertEquals("Input alias is a either a registered command and cannot be used or an alias-in-use.", errorMsg);
 	}
+	
+	@Test
+	public void testInvalidSetAliasAs() {
+		String userInput = "set as as add";
+		Command command = parser.parse(userInput);
+		Command.CommandType type = command.getCommandType();
+		String errorMsg = command.getName();
+		assertEquals(Command.CommandType.INVALID, type);
+		assertEquals("Keyword as cannot be used as alias.", errorMsg);
+	}
 
 	@Test
 	public void testInvalidSetPositiveIntegerAlias() {
@@ -2111,7 +2121,7 @@ public class CommandParserTest {
 		assertEquals(Command.CommandType.SET, type2);
 		assertEquals("include", alias);
 		assertEquals("set", originalCommand);
-		parser.deleteAliasFromHash("create");
+		parser.deleteAlias("create");
 		Command command3 = parser.parse(userInput);
 		Command.CommandType type3 = command3.getCommandType();
 		String errorMsg = command3.getName();

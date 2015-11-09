@@ -1,3 +1,9 @@
+/**
+ * This class defines the Task object and its methods used in the application
+ * 
+ * @@author A0124238L
+ */
+
 package struct;
 
 public class FloatingTask extends TodoItem implements Comparable<FloatingTask>{
@@ -9,6 +15,11 @@ public class FloatingTask extends TodoItem implements Comparable<FloatingTask>{
 	private static final String STRING_FLOAT = "float";
 	private static final String STRING_DONE = "done";
 	private static final String STRING_NOT_DONE = "todo";
+	
+	private static final int PARAM_TYPE = 0;
+	private static final int PARAM_NAME = 1;
+	private static final int PARAM_DONE = 2;
+	private static final int NUM_PARAM_FLOAT_TASK = 3;
 
 	//============================================
 	// Constructors
@@ -22,11 +33,11 @@ public class FloatingTask extends TodoItem implements Comparable<FloatingTask>{
 		line.trim();
     	String[] lineComponents = line.split(SEMICOLON);
     	
-    	assert(lineComponents[0].equals(STRING_FLOAT));
-    	assert(lineComponents.length == 3);
+    	assert(lineComponents[PARAM_TYPE].equals(STRING_FLOAT));
+    	assert(lineComponents.length == NUM_PARAM_FLOAT_TASK);
     	
-    	this.name = lineComponents[1]; 
-    	this.isDone = lineComponents[2].equals(STRING_DONE); 
+    	this.name = lineComponents[PARAM_NAME]; 
+    	this.isDone = lineComponents[PARAM_DONE].equals(STRING_DONE); 
 	}
 	
 	public FloatingTask(String name, boolean isDone){
