@@ -52,6 +52,7 @@ public class Constructor {
 		if (isStatusField(displayDataSplit[0].split(" ")[0])) {
 			ViewIndexMap.add(targetView, Integer.parseInt(displayDataSplit[0].substring(5)));
 		} else {
+			assert !isStatusField(displayDataSplit[0].split(" ")[0]);
 			ViewIndexMap.add(targetView, Integer.parseInt(displayDataSplit[0]));
 		}
 		
@@ -62,6 +63,7 @@ public class Constructor {
     		return initDataElementWithStatus(
     				displayData, numOfElements, index, isTask, displayDataSplit, targetView);
     	} else {
+    		assert !statusData.equals(InterfaceController.STATUS_DONE);
     		return initDataElementNoStatus(
     				displayData, numOfElements, index, isTask, displayDataSplit, targetView);
     	}

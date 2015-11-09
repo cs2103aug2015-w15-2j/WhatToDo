@@ -63,6 +63,13 @@ public class SummaryViewController {
 	private static final double MARGIN_SUMMARY_COUNT_HORIZ = 20;
 	private static final double MARGIN_SUMMARY_COUNT_VERT = 5;
 	
+	private static final int INDEX_TASK_TWO_DAYS = 0;
+	private static final int INDEX_EVENT_TWO_DAYS = 1;
+	private static final int INDEX_TASK_FLOAT = 2;
+	private static final int INDEX_EVENT_ONGOING = 3;
+	private static final int INDEX_UNRES = 4;
+	private static final int ARRAY_LENGTH = 5;
+	
 	private static boolean isShowing = false;
 	
     /**
@@ -71,13 +78,14 @@ public class SummaryViewController {
      */
 	protected static void initSummaryView() {
 		int[] summary = InterfaceController.getLogic().getSummaryCount();
+		assert summary.length == ARRAY_LENGTH;
 		double maxWidth = getCountMaxWidth(summary);
 		
-		initTaskTwoDays(summary[0], maxWidth);
-		initEventTwoDays(summary[1], maxWidth);
-		initTaskFloat(summary[2], maxWidth);
-		initEventOngoing(summary[3], maxWidth);
-		initAllUnres(summary[4], maxWidth);
+		initTaskTwoDays(summary[INDEX_TASK_TWO_DAYS], maxWidth);
+		initEventTwoDays(summary[INDEX_EVENT_TWO_DAYS], maxWidth);
+		initTaskFloat(summary[INDEX_TASK_FLOAT], maxWidth);
+		initEventOngoing(summary[INDEX_EVENT_ONGOING], maxWidth);
+		initAllUnres(summary[INDEX_UNRES], maxWidth);
 		
 		Region space1 = new Region();
 		Region space2 = new Region();
@@ -116,6 +124,7 @@ public class SummaryViewController {
      */
 	protected static void updateSummaryView() {
 		int[] summary = InterfaceController.getLogic().getSummaryCount();
+		assert summary.length == ARRAY_LENGTH;
 		
 		// Clear the old data
 		taskTwoDaysCountBox.getChildren().clear();
@@ -124,19 +133,19 @@ public class SummaryViewController {
 		eventOngoingCountBox.getChildren().clear();
 		allUnresCountBox.getChildren().clear();
 		
-		taskTwoDaysCount = new Label(String.valueOf(summary[0]));
-		eventTwoDaysCount = new Label(String.valueOf(summary[1]));
-		taskFloatCount = new Label(String.valueOf(summary[2]));
-		eventOngoingCount = new Label(String.valueOf(summary[3]));
-		allUnresCount = new Label(String.valueOf(summary[4]));
+		taskTwoDaysCount = new Label(String.valueOf(summary[INDEX_TASK_TWO_DAYS]));
+		eventTwoDaysCount = new Label(String.valueOf(summary[INDEX_EVENT_TWO_DAYS]));
+		taskFloatCount = new Label(String.valueOf(summary[INDEX_TASK_FLOAT]));
+		eventOngoingCount = new Label(String.valueOf(summary[INDEX_EVENT_ONGOING]));
+		allUnresCount = new Label(String.valueOf(summary[INDEX_UNRES]));
 		
 		// Update the icon depending on the new value of unresolved tasks
-		initUnresIcon(summary[4]);
+		initUnresIcon(summary[INDEX_UNRES]);
 		allUnresIconBox.getChildren().clear();
 		allUnresIconBox.getChildren().add(allUnresIcon);
 		HBox.setMargin(allUnresIcon, new Insets(0, MARGIN_SUMMARY_COUNT_HORIZ, 0, 0));
 		
-		updateUnresNotifyBox(summary[4]);
+		updateUnresNotifyBox(summary[INDEX_UNRES]);
 		
 		// Insert the new data
 		taskTwoDaysCountBox.getChildren().add(taskTwoDaysCount);

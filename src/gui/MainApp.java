@@ -7,6 +7,9 @@
 
 package gui;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
@@ -20,7 +23,7 @@ public class MainApp extends Application {
 	// Variables used in stage configuration
 	// ============================================================
 	
-    protected static final double MIN_WINDOW_HEIGHT = 700;
+	protected static final double MIN_WINDOW_HEIGHT = 700;
     protected static final double MIN_WINDOW_WIDTH = 1000;
     
     protected static final double WIDTH_HELP_DIALOG = 800;
@@ -28,13 +31,32 @@ public class MainApp extends Application {
     
     private static final String TITLE_STAGE = "WhatToDo";
     private static final String TITLE_HELP = "Help Dialog";
+    
+    protected static final String LOG_START = "Starting WhatToDo";
+    protected static final String LOG_CLOSE = "Closing WhatToDo";
+    protected static final String LOG_HELP_OPEN = "Opening Help dialog";
+    protected static final String LOG_HELP_CLOSE = "Closing Help dialog";
+    protected static final String LOG_INVALID_INDEX = "Invalid index has been entered";
+    protected static final String LOG_FILE_NOT_FOUND = "Unable to open whattodo.txt";
+    protected static final String LOG_CONFIG_NOT_FOUND = "Unable to open config.txt";
+    protected static final String LOG_ALIAS_NOT_FOUND = "Unable to open alias.txt";
+    protected static final String LOG_FILE_NOT_CREATED = "Unable to create the file";
+    
+    private static final String PATH_ICON = "gui/resources/icon.png";
 
 	// ============================================================
 	// Scenes and stages used by the application
 	// ============================================================
+    
     protected static Scene scene, helpScene;
     protected static Stage stage, help;
 
+	// ============================================================
+	// Logger object used to log events and details
+	// ============================================================
+    
+    protected static final Logger logger = Logger.getLogger(MainApp.class.getName()); 
+    
 	/**
 	 * This method is the driver method which starts the application and
 	 * displays the interface
@@ -50,6 +72,7 @@ public class MainApp extends Application {
         initHelpStage();
 
         stage.show();
+        logger.log(Level.INFO, LOG_START);
         
         // Set the first view to be the default view
         InterfaceController.updateMainInterface(View.DEFAULT);
@@ -68,7 +91,7 @@ public class MainApp extends Application {
 
         // Customize the stage
         stage.setTitle(TITLE_STAGE);
-        stage.getIcons().add(new Image("gui/resources/icon.png"));
+        stage.getIcons().add(new Image(PATH_ICON));
 
         stage.setWidth(MIN_WINDOW_WIDTH);
         stage.setHeight(MIN_WINDOW_HEIGHT);

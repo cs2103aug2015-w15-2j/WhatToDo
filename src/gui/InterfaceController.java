@@ -20,6 +20,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import struct.View;
 
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class InterfaceController {
@@ -230,101 +231,103 @@ public class InterfaceController {
      * 		      The view to display in the application window
      */
     protected static void updateMainInterface(View view) {
+    	assert viewBox != null;
     	viewBox.getChildren().clear();
     	
     	switch (view) {
-    	case DEFAULT:
-    		DefaultViewController.updateDefView();
-    		viewBox.getChildren().add(defBox);
-    		
-    		// Component formatting
-            HBox.setHgrow(defBox, Priority.ALWAYS);
-            
-            changeButtonToUnselected(currentView);
-            changeButtonToSelected(View.DEFAULT);
-            
-            currentView = View.DEFAULT;
-    		break;
-    		
-    	case ALL:
-    		AllViewController.updateAllView();
-    		viewBox.getChildren().add(allBox);
-    		
-    		// Component formatting
-            HBox.setHgrow(allBox, Priority.ALWAYS);
-            
-            changeButtonToUnselected(currentView);
-            changeButtonToSelected(View.ALL);
-            
-            currentView = View.ALL;
-    		break;
-    		
-    	case HISTORY:
-    		viewBox.getChildren().add(histBox);
-    		
-    		// Component formatting
-            HBox.setHgrow(histBox, Priority.ALWAYS);
-    		
-            changeButtonToUnselected(currentView);
-            changeButtonToSelected(View.HISTORY);
-            
-            currentView = View.HISTORY;
-    		break;
-    		
-    	case UNRESOLVED:
-    		UnresolvedViewController.updateUnresView();
-    		viewBox.getChildren().add(unresBox);
-    		
-    		// Component formatting
-    		HBox.setHgrow(unresBox, Priority.ALWAYS);
-    		
-            changeButtonToUnselected(currentView);
-            changeButtonToSelected(View.UNRESOLVED);
-            
-            currentView = View.UNRESOLVED;
-    		break;
-    		
-    	case DONE:
-    		DoneViewController.updateDoneView();
-    		viewBox.getChildren().add(doneBox);
-    		
-    		// Component formatting
-    		HBox.setHgrow(doneBox, Priority.ALWAYS);
-    		
-            changeButtonToUnselected(currentView);
-            changeButtonToSelected(View.DONE);
-            
-            currentView = View.DONE;
-    		break;
-    		
-    	case SEARCH:
-    		viewBox.getChildren().add(searchBox);
-    		
-    		// Component formatting
-            HBox.setHgrow(searchBox, Priority.ALWAYS);
-    		
-            changeButtonToUnselected(currentView);
-            changeButtonToSelected(View.SEARCH);
-            
-            currentView = View.SEARCH;
-    		break;
-    		
-    	case SUMMARY:
-    		SummaryViewController.updateSummaryView();
-    		viewBox.getChildren().add(summaryBox);
-    		
-    		// Component formatting
-            HBox.setHgrow(summaryBox, Priority.ALWAYS);
-    		break;
-    		
-    	default: //ignore
-    		break;
+	    	case DEFAULT:
+	    		DefaultViewController.updateDefView();
+	    		viewBox.getChildren().add(defBox);
+	    		
+	    		// Component formatting
+	            HBox.setHgrow(defBox, Priority.ALWAYS);
+	            
+	            changeButtonToUnselected(currentView);
+	            changeButtonToSelected(View.DEFAULT);
+	            
+	            currentView = View.DEFAULT;
+	    		break;
+	    		
+	    	case ALL:
+	    		AllViewController.updateAllView();
+	    		viewBox.getChildren().add(allBox);
+	    		
+	    		// Component formatting
+	            HBox.setHgrow(allBox, Priority.ALWAYS);
+	            
+	            changeButtonToUnselected(currentView);
+	            changeButtonToSelected(View.ALL);
+	            
+	            currentView = View.ALL;
+	    		break;
+	    		
+	    	case HISTORY:
+	    		viewBox.getChildren().add(histBox);
+	    		
+	    		// Component formatting
+	            HBox.setHgrow(histBox, Priority.ALWAYS);
+	    		
+	            changeButtonToUnselected(currentView);
+	            changeButtonToSelected(View.HISTORY);
+	            
+	            currentView = View.HISTORY;
+	    		break;
+	    		
+	    	case UNRESOLVED:
+	    		UnresolvedViewController.updateUnresView();
+	    		viewBox.getChildren().add(unresBox);
+	    		
+	    		// Component formatting
+	    		HBox.setHgrow(unresBox, Priority.ALWAYS);
+	    		
+	            changeButtonToUnselected(currentView);
+	            changeButtonToSelected(View.UNRESOLVED);
+	            
+	            currentView = View.UNRESOLVED;
+	    		break;
+	    		
+	    	case DONE:
+	    		DoneViewController.updateDoneView();
+	    		viewBox.getChildren().add(doneBox);
+	    		
+	    		// Component formatting
+	    		HBox.setHgrow(doneBox, Priority.ALWAYS);
+	    		
+	            changeButtonToUnselected(currentView);
+	            changeButtonToSelected(View.DONE);
+	            
+	            currentView = View.DONE;
+	    		break;
+	    		
+	    	case SEARCH:
+	    		viewBox.getChildren().add(searchBox);
+	    		
+	    		// Component formatting
+	            HBox.setHgrow(searchBox, Priority.ALWAYS);
+	    		
+	            changeButtonToUnselected(currentView);
+	            changeButtonToSelected(View.SEARCH);
+	            
+	            currentView = View.SEARCH;
+	    		break;
+	    		
+	    	case SUMMARY:
+	    		SummaryViewController.updateSummaryView();
+	    		viewBox.getChildren().add(summaryBox);
+	    		
+	    		// Component formatting
+	            HBox.setHgrow(summaryBox, Priority.ALWAYS);
+	    		break;
+	    		
+	    	default: //ignore
+	    		break;
     	}
     }
     
     protected static void closeMainInterface() {
     	currentView = View.EXIT;
     	MainApp.stage.close();
+    	MainApp.logger.log(Level.INFO, MainApp.LOG_CLOSE);
     }
     
     // ===============================================================
@@ -463,44 +466,44 @@ public class InterfaceController {
      */
     protected static void changeButtonToSelected(View view) {
     	switch (view) {
-    	case DEFAULT:
-    		sbDefImage = new ImageView(PATH_DEFAULT_SELECTED);
-    		sbDefBox.getChildren().clear();
-    		sbDefBox.getChildren().add(sbDefImage);
-    		break;
-    	case ALL:
-    		sbAllImage = new ImageView(PATH_ALL_SELECTED);
-    		sbAllBox.getChildren().clear();
-    		sbAllBox.getChildren().add(sbAllImage);
-    		break;
-    	case HISTORY:
-    		sbHistImage = new ImageView(PATH_HIST_SELECTED);
-    		sbHistBox.getChildren().clear();
-    		sbHistBox.getChildren().add(sbHistImage);
-    		break;
-    	case UNRESOLVED:
-    		sbUnresImage = new ImageView(PATH_UNRESOLVED_SELECTED);
-    		sbUnresBox.getChildren().clear();
-    		sbUnresBox.getChildren().add(sbUnresImage);
-    		break;
-    	case DONE:
-    		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
-    		sbDoneBox.getChildren().clear();
-    		sbDoneBox.getChildren().add(sbDoneImage);
-    		break;
-    	case SEARCH:
-    		sbSearchImage = new ImageView(PATH_SEARCH_SELECTED);
-    		sbSearchBox.getChildren().clear();
-    		sbSearchBox.getChildren().add(sbSearchImage);
-    		break;
-    	case HELP:
-    		sbHelpImage = new ImageView(PATH_HELP_SELECTED);
-    		sbHelpBox.getChildren().clear();
-    		sbHelpBox.getChildren().add(sbHelpImage);
-    		break;
-    	default:
-    		// Do nothing
-    		break;
+	    	case DEFAULT:
+	    		sbDefImage = new ImageView(PATH_DEFAULT_SELECTED);
+	    		sbDefBox.getChildren().clear();
+	    		sbDefBox.getChildren().add(sbDefImage);
+	    		break;
+	    	case ALL:
+	    		sbAllImage = new ImageView(PATH_ALL_SELECTED);
+	    		sbAllBox.getChildren().clear();
+	    		sbAllBox.getChildren().add(sbAllImage);
+	    		break;
+	    	case HISTORY:
+	    		sbHistImage = new ImageView(PATH_HIST_SELECTED);
+	    		sbHistBox.getChildren().clear();
+	    		sbHistBox.getChildren().add(sbHistImage);
+	    		break;
+	    	case UNRESOLVED:
+	    		sbUnresImage = new ImageView(PATH_UNRESOLVED_SELECTED);
+	    		sbUnresBox.getChildren().clear();
+	    		sbUnresBox.getChildren().add(sbUnresImage);
+	    		break;
+	    	case DONE:
+	    		sbDoneImage = new ImageView(PATH_DONE_SELECTED);
+	    		sbDoneBox.getChildren().clear();
+	    		sbDoneBox.getChildren().add(sbDoneImage);
+	    		break;
+	    	case SEARCH:
+	    		sbSearchImage = new ImageView(PATH_SEARCH_SELECTED);
+	    		sbSearchBox.getChildren().clear();
+	    		sbSearchBox.getChildren().add(sbSearchImage);
+	    		break;
+	    	case HELP:
+	    		sbHelpImage = new ImageView(PATH_HELP_SELECTED);
+	    		sbHelpBox.getChildren().clear();
+	    		sbHelpBox.getChildren().add(sbHelpImage);
+	    		break;
+	    	default:
+	    		// Do nothing
+	    		break;
     	}
     }
     
@@ -513,44 +516,44 @@ public class InterfaceController {
      */
     protected static void changeButtonToUnselected(View view) {
     	switch (view) {
-    	case DEFAULT:
-    		sbDefImage = new ImageView(PATH_DEFAULT);
-    		sbDefBox.getChildren().clear();
-    		sbDefBox.getChildren().add(sbDefImage);
-    		break;
-    	case ALL:
-    		sbAllImage = new ImageView(PATH_ALL);
-    		sbAllBox.getChildren().clear();
-    		sbAllBox.getChildren().add(sbAllImage);
-    		break;
-    	case HISTORY:
-    		sbHistImage = new ImageView(PATH_HIST);
-    		sbHistBox.getChildren().clear();
-    		sbHistBox.getChildren().add(sbHistImage);
-    		break;
-    	case UNRESOLVED:
-    		sbUnresImage = new ImageView(PATH_UNRESOLVED);
-    		sbUnresBox.getChildren().clear();
-    		sbUnresBox.getChildren().add(sbUnresImage);
-    		break;
-    	case DONE:
-    		sbDoneImage = new ImageView(PATH_DONE);
-    		sbDoneBox.getChildren().clear();
-    		sbDoneBox.getChildren().add(sbDoneImage);
-    		break;
-    	case SEARCH:
-    		sbSearchImage = new ImageView(PATH_SEARCH);
-    		sbSearchBox.getChildren().clear();
-    		sbSearchBox.getChildren().add(sbSearchImage);
-    		break;
-    	case HELP:
-    		sbHelpImage = new ImageView(PATH_HELP);
-    		sbHelpBox.getChildren().clear();
-    		sbHelpBox.getChildren().add(sbHelpImage);
-    		break;
-    	default:
-    		// Do nothing
-    		break;
+	    	case DEFAULT:
+	    		sbDefImage = new ImageView(PATH_DEFAULT);
+	    		sbDefBox.getChildren().clear();
+	    		sbDefBox.getChildren().add(sbDefImage);
+	    		break;
+	    	case ALL:
+	    		sbAllImage = new ImageView(PATH_ALL);
+	    		sbAllBox.getChildren().clear();
+	    		sbAllBox.getChildren().add(sbAllImage);
+	    		break;
+	    	case HISTORY:
+	    		sbHistImage = new ImageView(PATH_HIST);
+	    		sbHistBox.getChildren().clear();
+	    		sbHistBox.getChildren().add(sbHistImage);
+	    		break;
+	    	case UNRESOLVED:
+	    		sbUnresImage = new ImageView(PATH_UNRESOLVED);
+	    		sbUnresBox.getChildren().clear();
+	    		sbUnresBox.getChildren().add(sbUnresImage);
+	    		break;
+	    	case DONE:
+	    		sbDoneImage = new ImageView(PATH_DONE);
+	    		sbDoneBox.getChildren().clear();
+	    		sbDoneBox.getChildren().add(sbDoneImage);
+	    		break;
+	    	case SEARCH:
+	    		sbSearchImage = new ImageView(PATH_SEARCH);
+	    		sbSearchBox.getChildren().clear();
+	    		sbSearchBox.getChildren().add(sbSearchImage);
+	    		break;
+	    	case HELP:
+	    		sbHelpImage = new ImageView(PATH_HELP);
+	    		sbHelpBox.getChildren().clear();
+	    		sbHelpBox.getChildren().add(sbHelpImage);
+	    		break;
+	    	default:
+	    		// Do nothing
+	    		break;
     	}
     }
     
@@ -576,12 +579,14 @@ public class InterfaceController {
     	if (InterfaceController.getLogic().isTitleOrDate(displayData)) {
     		return Constructor.initTitleOrDateElement(displayData);
     	} else {
+    		assert !InterfaceController.getLogic().isTitleOrDate(displayData);
     		// Determine whether the element data is an element or a null response
     		String[] displayDataSplit = displayData.split(Pattern.quote("."));
     		// If no items to display
     		if (displayDataSplit.length == 1) {
     			return Constructor.initNoResultElement(displayData);
     		} else {
+    			assert displayDataSplit.length != 1;
     			return Constructor.initDataElement(displayData, numOfElements, index, 
     					isTask, displayDataSplit, targetView);
     		}

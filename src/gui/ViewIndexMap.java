@@ -14,6 +14,8 @@ import struct.View;
 
 public class ViewIndexMap {
 
+	private static final int INDEX_OFFSET = -1;
+	
 	// Each of the individual elements is the file index of the ith
 	// element in the array.
 	// Array index = view index
@@ -33,11 +35,11 @@ public class ViewIndexMap {
 		doneMap = new ArrayList<Integer>();
 		
 		// Add an element to index 0 to offset the starting index
-		defMap.add(-1);
-		allMap.add(-1);
-		searchMap.add(-1);
-		unresMap.add(-1);
-		doneMap.add(-1);
+		defMap.add(INDEX_OFFSET);
+		allMap.add(INDEX_OFFSET);
+		searchMap.add(INDEX_OFFSET);
+		unresMap.add(INDEX_OFFSET);
+		doneMap.add(INDEX_OFFSET);
 	}
 	
 	// ============================================================
@@ -46,7 +48,7 @@ public class ViewIndexMap {
 	
 	public static int getFromDefMap(int viewIndex) {
 		if (viewIndex >= defMap.size()) {
-			return -1;
+			return INDEX_OFFSET;
 		} else if (viewIndex <= 0) {
 			return viewIndex;
 		} else {
@@ -56,7 +58,7 @@ public class ViewIndexMap {
 	
 	public static int getFromAllMap(int viewIndex) {
 		if (viewIndex >= allMap.size()) {
-			return -1;
+			return INDEX_OFFSET;
 		} else if (viewIndex <= 0) {
 			return viewIndex;
 		} else {
@@ -66,7 +68,7 @@ public class ViewIndexMap {
 	
 	static int getFromSearchMap(int viewIndex) {
 		if (viewIndex >= searchMap.size()) {
-			return -1;
+			return INDEX_OFFSET;
 		} else if (viewIndex <= 0) {
 			return viewIndex;
 		} else {
@@ -76,7 +78,7 @@ public class ViewIndexMap {
 
 	static int getFromUnresMap(int viewIndex) {
 		if (viewIndex >= unresMap.size()) {
-			return -1;
+			return INDEX_OFFSET;
 		} else if (viewIndex <= 0) {
 			return viewIndex;
 		} else {
@@ -86,7 +88,7 @@ public class ViewIndexMap {
 	
 	public static int getFromDoneMap(int viewIndex) {
 		if (viewIndex >= doneMap.size()) {
-			return -1;
+			return INDEX_OFFSET;
 		} else if (viewIndex <= 0) {
 			return viewIndex;
 		} else {
@@ -104,19 +106,19 @@ public class ViewIndexMap {
 	 */
 	public static int get(int viewIndex) {
 		switch (InterfaceController.getCurrentView()) {
-		case DEFAULT:
-			return getFromDefMap(viewIndex);
-		case ALL:
-			return getFromAllMap(viewIndex);
-		case UNRESOLVED:
-			return getFromUnresMap(viewIndex);
-		case SEARCH:
-			return getFromSearchMap(viewIndex);
-		case DONE:
-			return getFromDoneMap(viewIndex);
-		default:
-			// Should not enter
-			return -1;
+			case DEFAULT:
+				return getFromDefMap(viewIndex);
+			case ALL:
+				return getFromAllMap(viewIndex);
+			case UNRESOLVED:
+				return getFromUnresMap(viewIndex);
+			case SEARCH:
+				return getFromSearchMap(viewIndex);
+			case DONE:
+				return getFromDoneMap(viewIndex);
+			default:
+				// Should not enter
+				return INDEX_OFFSET;
 		}
 	}
 	
@@ -154,24 +156,24 @@ public class ViewIndexMap {
 	 */
 	public static void add(View targetView, int fileIndex) {
 		switch (targetView) {
-		case DEFAULT:
-			addToDefMap(fileIndex);
-			break;
-		case ALL:
-			addToAllMap(fileIndex);
-			break;
-		case UNRESOLVED:
-			addToUnresMap(fileIndex);
-			break;
-		case SEARCH:
-			addToSearchMap(fileIndex);
-			break;
-		case DONE:
-			addToDoneMap(fileIndex);
-			break;
-		default:
-			// Should not enter
-			break;
+			case DEFAULT:
+				addToDefMap(fileIndex);
+				break;
+			case ALL:
+				addToAllMap(fileIndex);
+				break;
+			case UNRESOLVED:
+				addToUnresMap(fileIndex);
+				break;
+			case SEARCH:
+				addToSearchMap(fileIndex);
+				break;
+			case DONE:
+				addToDoneMap(fileIndex);
+				break;
+			default:
+				// Should not enter
+				break;
 		}
 	}
 	
@@ -201,26 +203,26 @@ public class ViewIndexMap {
 	
 	public static void resetDefMap() {
 		defMap = new ArrayList<Integer>();
-		defMap.add(-1);
+		defMap.add(INDEX_OFFSET);
 	}
 	
 	public static void resetAllMap() {
 		allMap = new ArrayList<Integer>();
-		allMap.add(-1);
+		allMap.add(INDEX_OFFSET);
 	}
 	
 	public static void resetSearchMap() {
 		searchMap = new ArrayList<Integer>();
-		searchMap.add(-1);
+		searchMap.add(INDEX_OFFSET);
 	}
 	
 	public static void resetUnresMap() {
 		unresMap = new ArrayList<Integer>();
-		unresMap.add(-1);
+		unresMap.add(INDEX_OFFSET);
 	}
 	
 	public static void resetDoneMap() {
 		doneMap = new ArrayList<Integer>();
-		doneMap.add(-1);
+		doneMap.add(INDEX_OFFSET);
 	}
 }

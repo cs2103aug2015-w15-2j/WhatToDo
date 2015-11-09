@@ -7,6 +7,8 @@
 
 package gui;
 
+import java.util.logging.Level;
+
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -61,6 +63,7 @@ public class HelpController {
 		isHelpOpen = true;
 		MainApp.help.show();
 		MainApp.help.requestFocus();
+		MainApp.logger.log(Level.INFO, MainApp.LOG_HELP_OPEN);
     }
     
     protected static void closeHelpDialog() {
@@ -68,5 +71,6 @@ public class HelpController {
 		InterfaceController.changeButtonToUnselected(View.HELP);
 		isHelpOpen = false;
 		MainApp.help.close();
+		MainApp.logger.log(Level.INFO, MainApp.LOG_HELP_CLOSE);
     }
 }

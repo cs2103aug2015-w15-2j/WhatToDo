@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import backend.Logic;
@@ -23,8 +24,17 @@ import struct.View;
 
 public class LogicController {
 	
-	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
+
+	protected static final int INDEX_UNRES = 4;
+	
+	protected static final char NEWLINE_CHAR = '\n';
+	protected static final char SEMICOLON = ';';
+	protected static final String NEWLINE = "\n";
 	protected static final String NULL_STRING = "";
+	
+	protected static final String PATH_CONFIG_FILE = "config" + File.separator + "config.txt";
+	private static final String MESSAGE_OPEN_CONFIG = "Opening config...";
+	private static final String MESSAGE_OPEN_FILE = "Opening file...";
 	
 	// Class instances within one LogicController instance
 	private static Listeners.AutoCompleteListener autocompleter;
@@ -47,6 +57,7 @@ public class LogicController {
 			logic = new Logic();
 		} catch (FileSystemException e) {
 			logic = null;
+			MainApp.logger.log(Level.SEVERE, MainApp.LOG_FILE_NOT_CREATED);
 		}
 		
 		// Initialize the command history object
@@ -101,7 +112,7 @@ public class LogicController {
 		// Get the string from logic
 		String defTasks = logic.taskDefaultView();
 		// Split the string by newline
-		String[] defTasksSplit = defTasks.split("\n");
+		String[] defTasksSplit = defTasks.split(NEWLINE);
 		
 		return defTasksSplit;
 	}
@@ -116,11 +127,11 @@ public class LogicController {
 		// Get the string from logic
 		String defEvents = logic.eventDefaultView();
 		// Split the string by newline
-		String[] defEventsSplit = defEvents.split("\n");
+		String[] defEventsSplit = defEvents.split(NEWLINE);
 		
 		// Filter through the array and reformat the data
 		for (int i = 0; i < defEventsSplit.length; i++) {
-			defEventsSplit[i] = defEventsSplit[i].replace(';', '\n');
+			defEventsSplit[i] = defEventsSplit[i].replace(SEMICOLON, NEWLINE_CHAR);
 		}
 		
 		return defEventsSplit;
@@ -136,7 +147,7 @@ public class LogicController {
 		// Get the String from logic
 		String allTasks = logic.taskAllView(false);
 		// Split the string by newline
-		String[] allTasksSplit = allTasks.split("\n");
+		String[] allTasksSplit = allTasks.split(NEWLINE);
 		
 		return allTasksSplit;
 	}
@@ -151,11 +162,11 @@ public class LogicController {
 		// Get the String from logic
 		String allEvents = logic.eventAllView(false);
 		// Split the string by newline
-		String[] allEventsSplit = allEvents.split("\n");
+		String[] allEventsSplit = allEvents.split(NEWLINE);
 		
 		// Filter through the array and reformat the data
 		for (int i = 0; i < allEventsSplit.length; i++) {
-			allEventsSplit[i] = allEventsSplit[i].replace(';', '\n');
+			allEventsSplit[i] = allEventsSplit[i].replace(SEMICOLON, NEWLINE_CHAR);
 		}
 		
 		return allEventsSplit;
@@ -171,7 +182,7 @@ public class LogicController {
 		// Get the String from logic
 		String unresTasks = logic.taskPastUncompletedView();
 		// Split the string by newline
-		String[] unresTasksSplit = unresTasks.split("\n");
+		String[] unresTasksSplit = unresTasks.split(NEWLINE);
 		
 		return unresTasksSplit;
 	}
@@ -186,11 +197,11 @@ public class LogicController {
 		// Get the String from logic
 		String unresEvents = logic.eventPastUncompletedView();
 		// Split the string by newline
-		String[] unresEventsSplit = unresEvents.split("\n");
+		String[] unresEventsSplit = unresEvents.split(NEWLINE);
 		
 		// Filter through the array and reformat the data
 		for (int i = 0; i < unresEventsSplit.length; i++) {
-			unresEventsSplit[i] = unresEventsSplit[i].replace(';', '\n');
+			unresEventsSplit[i] = unresEventsSplit[i].replace(SEMICOLON, NEWLINE_CHAR);
 		}
 		
 		return unresEventsSplit;
@@ -206,7 +217,7 @@ public class LogicController {
 		// Get the String from logic
 		String doneTasks = logic.taskAllView(true);
 		// Split the string by newline
-		String[] doneTasksSplit = doneTasks.split("\n");
+		String[] doneTasksSplit = doneTasks.split(NEWLINE);
 		
 		// Prefix a "done" to the returned data
 		for (int i = 0; i < doneTasksSplit.length; i++) {
@@ -229,7 +240,7 @@ public class LogicController {
 		// Get the String from logic
 		String doneEvents = logic.eventAllView(true);
 		// Split the string by newline
-		String[] doneEventsSplit = doneEvents.split("\n");
+		String[] doneEventsSplit = doneEvents.split(NEWLINE);
 		
 		// Filter through the array and reformat the data
 		for (int i = 0; i < doneEventsSplit.length; i++) {
@@ -237,7 +248,7 @@ public class LogicController {
 				doneEventsSplit[i] = InterfaceController.STATUS_DONE + 
 						" " + doneEventsSplit[i];
 			}
-			doneEventsSplit[i] = doneEventsSplit[i].replace(';', '\n');
+			doneEventsSplit[i] = doneEventsSplit[i].replace(SEMICOLON, NEWLINE_CHAR);
 		}
 		
 		return doneEventsSplit;
@@ -260,7 +271,7 @@ public class LogicController {
 		currentIndex = getTaskSummaryCount(defTasks, summary, currentIndex);
 		currentIndex = getEventSummaryCount(defEvents, summary, currentIndex);
 		// Count the unresolved tasks and events as well
-		summary[4] = getUnresElementsCount();
+		summary[INDEX_UNRES] = getUnresElementsCount();
 		
 		return summary;
 	}
@@ -404,7 +415,7 @@ public class LogicController {
 			String aliases = logic.getAliasFileContents();
 			// Check if the there are any aliases set in the file yet
 			if (!aliases.equals(NULL_STRING)) {
-				String[] aliasesSplit = aliases.split("\n");
+				String[] aliasesSplit = aliases.split(NEWLINE);
 				for (int i = 0; i < aliasesSplit.length; i++) {
 					String[] aliasSplit = aliasesSplit[i].split(";");
 					newAliases.add(new Alias(aliasSplit[0], aliasSplit[1]));
@@ -412,6 +423,7 @@ public class LogicController {
 			}
 		} catch (FileSystemException e) {
 			// Do nothing, return an empty alias list to AutoComplete
+			MainApp.logger.log(Level.SEVERE, MainApp.LOG_ALIAS_NOT_FOUND);
 		}
 		
 		return newAliases;
@@ -517,12 +529,12 @@ public class LogicController {
      */
     protected void openFileLocation() {
 		try {
-			HistoryViewController.updateHistView("Opening file...");
-			InterfaceController.getFeedbackLabel().setText("Opening file...");
+			HistoryViewController.updateHistView(MESSAGE_OPEN_FILE);
+			InterfaceController.getFeedbackLabel().setText(MESSAGE_OPEN_FILE);
 			Desktop.getDesktop().open(
 					new File(InterfaceController.getLogic().getFilePath()));
 		} catch (IOException e) {
-			e.printStackTrace();
+			MainApp.logger.log(Level.SEVERE, MainApp.LOG_FILE_NOT_FOUND);
 		}
     }
     
@@ -533,11 +545,11 @@ public class LogicController {
      */
     protected void openConfigLocation() {
     	try {
-    		HistoryViewController.updateHistView("Opening config...");
-    		InterfaceController.getFeedbackLabel().setText("Opening config...");
+    		HistoryViewController.updateHistView(MESSAGE_OPEN_CONFIG);
+    		InterfaceController.getFeedbackLabel().setText(MESSAGE_OPEN_CONFIG);
     		Desktop.getDesktop().open(new File(PATH_CONFIG_FILE));
     	} catch (IOException e) {
-    		e.printStackTrace();
+    		MainApp.logger.log(Level.SEVERE, MainApp.LOG_CONFIG_NOT_FOUND);
     	}
     }
     
@@ -557,201 +569,201 @@ public class LogicController {
 	protected void changeView(View view) {
 		
 		switch(InterfaceController.getCurrentView()) {
-	    // currentView == DEFAULT
-        case DEFAULT:
-        	switch (view) {
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-            	break;
-        	}
-        	break;
-    	// currentView == ALL
-        case ALL:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-    	// currentView == HISTORY
-        case HISTORY:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-    	// currentView == UNRESOLVED
-        case UNRESOLVED:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-    	// currentView == DONE
-        case DONE:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-    	// currentView == SEARCH
-        case SEARCH:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-
-        default: // do nothing, should not enter
-        	break;
+		    // currentView == DEFAULT
+	        case DEFAULT:
+	        	switch (view) {
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		            	break;
+		        }
+	        	break;
+	    	// currentView == ALL
+	        case ALL:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	    	// currentView == HISTORY
+	        case HISTORY:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	    	// currentView == UNRESOLVED
+	        case UNRESOLVED:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	    	// currentView == DONE
+	        case DONE:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	    	// currentView == SEARCH
+	        case SEARCH:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	
+	        default: // do nothing, should not enter
+	        	break;
         }
 	}
 	
@@ -775,7 +787,7 @@ public class LogicController {
 			// Do not update the feedback bar and history view if the search operation
 			// is a background update of the last search term
 			if (!isBackgroundUpdate) {
-				String searchTerm = returnMessage.split("\n")[0];
+				String searchTerm = returnMessage.split(NEWLINE)[0];
 				// Add the search terms to the feedback bar and history view
 				InterfaceController.getFeedbackLabel().setText(searchTerm);
 				HistoryViewController.updateHistView(searchTerm);
@@ -807,7 +819,7 @@ public class LogicController {
 	// runCommand(), edited for JUnit testing
 	public void runCommandTest(String textFieldInput) {
 		// Execute the command
-		String returnMessage = logic.executeCommand(textFieldInput);
+		logic.executeCommand(textFieldInput);
 	}
 	
 	/**
@@ -846,6 +858,7 @@ public class LogicController {
     		// User did not enter an integer and hence exception is thrown
     		// Do not modify the string and pass through to CommandParser to reject
     		mapIndexOutOfBounds = true;
+    		MainApp.logger.log(Level.WARNING, MainApp.LOG_INVALID_INDEX);
     	}
     	
     	return modifiedString;
@@ -894,17 +907,17 @@ public class LogicController {
 				// Switch array index to increment the right counter
 				temp = temp.split(" ")[0];
 				switch(temp) {
-				case "TODAY":
-					currentIndex = 1;
-					break;
-				case "TOMORROW":
-					currentIndex = 1;
-					break;
-				case "ONGOING":
-					currentIndex = 3;
-					break;
-				default:
-					break;
+					case "TODAY":
+						currentIndex = 1;
+						break;
+					case "TOMORROW":
+						currentIndex = 1;
+						break;
+					case "ONGOING":
+						currentIndex = 3;
+						break;
+					default:
+						break;
 				}
 			} else {
 				// Increment the counter in the currentIndex
@@ -940,17 +953,17 @@ public class LogicController {
 				// Switch array index to increment the right counter
 				temp = temp.split(" ")[0];
 				switch(temp) {
-				case "TODAY":
-					currentIndex = 0;
-					break;
-				case "TOMORROW":
-					currentIndex = 0;
-					break;
-				case "FLOAT":
-					currentIndex = 2;
-					break;
-				default:
-					break;
+					case "TODAY":
+						currentIndex = 0;
+						break;
+					case "TOMORROW":
+						currentIndex = 0;
+						break;
+					case "FLOAT":
+						currentIndex = 2;
+						break;
+					default:
+						break;
 				}
 			} else {
 				// Increment the counter in the currentIndex

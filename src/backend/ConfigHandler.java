@@ -49,6 +49,12 @@ public class ConfigHandler {
 	private PrintWriter configFileWriter;
 	private PrintWriter aliasFileWriter;
 
+	/**
+	 * Retrieves the path of whattodo.txt from config file, creating it if missing.
+	 * 
+	 * @return                      file path of whattodo.txt
+	 * @throws FileSystemException  when error in creating config file
+	 */
 	public String getPathFromConfig() throws FileSystemException {
 		createConfigFileIfMissing();
 
@@ -68,6 +74,12 @@ public class ConfigHandler {
 				.format(COLLATED_FILE_PATH_FORMAT, readFilePath, FILE_NAME);
 	}
 
+	/**
+	 * Updates the config file with new location of file path for whattodo.txt
+	 * 
+	 * @param newLocation             new file path of whattodo.txt
+	 * @throws FileNotFoundException  when cannot find config file
+	 */
 	public void updateConfigFile(String newLocation)
 			throws FileNotFoundException {
 		configFileWriter = new PrintWriter(CONFIG_FILE_PATH);
@@ -77,12 +89,24 @@ public class ConfigHandler {
 		configFileWriter.close();
 	}
 
+	/**
+	 * Creates Alias file in config folder
+	 * 
+	 * @throws FileSystemException   when error in creating file
+	 */
 	public void createAliasFile() throws FileSystemException {
 		File file = new File(ALIAS_FILE_PATH);
 
 		createNewFileIfFileDoesNotExist(file);
 	}
 
+	/**
+	 * Adds in an alias->commandType pair to the alias file.
+	 * 
+	 * @param aliasLine          the alias to be added
+	 * @param actualCommandType  the command type the alias is paired with
+	 * @throws IOException       when error in reading or writing to file or finding alias file
+	 */
 	public void updateAliasFile(String aliasLine, String actualCommandType)
 			throws IOException {
 		ArrayList<String> fileContents = readAliasFileToArrayList();
@@ -94,6 +118,12 @@ public class ConfigHandler {
 		writeContentsToAliasFile(fileContents);
 	}
 
+	/**
+	 * Removes specified alias and its corresponding pair from alias file
+	 * 
+	 * @param aliasLine       the alias to be removed
+	 * @throws IOException    when error in reading or writing to file or finding alias file
+	 */
 	public void removeFromAliasFile(String aliasLine) throws IOException {
 		ArrayList<String> fileContents = readAliasFileToArrayList();
 
@@ -102,6 +132,12 @@ public class ConfigHandler {
 		writeContentsToAliasFile(fileContents);
 	}
 
+	/**
+	 * Shows all the contents of the alias file
+	 * 
+	 * @return              all the contents of alias file as a String
+	 * @throws IOException  when error in reading the file or finding alias file
+	 */
 	public String displayAliasFile() throws IOException {
 		initializeAliasReader();
 
@@ -112,10 +148,21 @@ public class ConfigHandler {
 		return fileContents.toString();
 	}
 
+	/**
+	 * Clears all contents of the alias file
+	 * 
+	 * @throws IOException   when unable to find alias file. 
+	 */
 	public void clearAliasFile() throws IOException {
 		emptyAliasFile();
 	}
 
+	/**
+	 * Replaces the contents of the alias file with specified String contents
+	 * 
+	 * @param textToOverwrite   the text to replace the contents of alias file with
+	 * @throws IOException      when error in writing to file or finding alias file
+	 */
 	public void overwriteAliasFile(String textToOverwrite) throws IOException {
 		String[] linesToReplace = textToOverwrite.split(NEWLINE);
 
