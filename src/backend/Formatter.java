@@ -1,8 +1,9 @@
 /**
- * This class formats results from filter methods
+ * This class formats items to display on the application 
  * 
  * @@author A0127051U
  */
+
 package backend;
 
 import java.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ public class Formatter {
 	private static final String DISPLAY_NO_ITEMS = "There are no items to display.\n"; 
     private static final String DISPLAY_FORMAT_FLOAT_OR_TASK = "%s%d. %s\n"; 
     private static final String DISPLAY_FORMAT_EVENT = "%s%d. %s;Start: %s%s;End: %s %s\n"; 
+    private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s"; 
     private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
@@ -251,6 +253,18 @@ public class Formatter {
 		}
 		
 		return addMsgIfEmpty(contentBuffer); 
+	}
+	
+	/**
+	 * extracts the type and name of the line 
+	 * @param line
+	 * @return formatted string in this format: <type> "<name>"
+	 */
+	public String formatDeleteOrDoneLine(String line){
+		String[] lineComponents = line.split(SEMICOLON);
+		String type = lineComponents[INDEX_TYPE]; 
+		String name = lineComponents[INDEX_NAME];
+		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
 	}
 		
 	//============================================

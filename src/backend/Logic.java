@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import struct.Command;
 import struct.Command.CommandType;
@@ -66,9 +68,13 @@ public class Logic {
 	private static final String MESSAGE_ERROR_EDIT_INSUFFICIENT_ARGS = "Not enough arguments for conversion."; 
     private static final String MESSAGE_ERROR_EDIT_INVALID_CONVERSION = "A %s cannot be converted to a %s.";
     private static final String MESSAGE_ERROR_EDIT_INVALID_EDIT = "Invalid edit. %s"; 
-    private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
+    private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. "
+    		+ "Undo will be unavailable for all commands before this.";
     
-    private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
+    private static final String MESSAGE_LOG_ERROR_FILE_SYSTEM = "File system error. May have problems opening file.";
+    private static final String MESSAGE_LOG_ERROR_ALIAS_HASHTABLE = "Error creating alias hash table from alias.txt.";
+    private static final String MESSAGE_LOG_ERROR_GET_PREV_STATE = "Error getting state.";
+    private static final String MESSAGE_LOG_ERROR_SAVE_STATE = "Error saving state. Undo stack cleared";
     
     private static final String KEYWORD_EDIT_NAME = "name";
     private static final String KEYWORD_EDIT_DEADLINE = "date";
@@ -94,31 +100,27 @@ public class Logic {
     private static final String EMPTYSTRING = "";
     private static final String REGEX_WHITESPACES = "[\\s;]+"; 
     
+    private static final Logger LOGGER = Logger.getLogger(Logic.class.getName());
+    
     private CommandParser commandParser; 
     private Storage storage;
     private Memory memory; 
     private Filter filter; 
     private Formatter formatter; 
     //prevCommand refer to the last command that made changes to the file 
-    private Command prevCommand; 
- 
+    private Command prevCommand;
+    
 	//============================================
 	// Constructor
 	//============================================
     
-    public Logic() throws FileSystemException {
-		//storage must be initialized before createAliasHashtable()
-    	storage = new Storage();
+    public Logic() throws FileSystemException {    	
    		Hashtable<String, String> aliasHashtable = createAliasHashtable(); 
-		commandParser = new CommandParser(aliasHashtable);
-		memory = new Memory();
-		filter = new Filter(); 
-		formatter = new Formatter(); 
-		prevCommand = new Command(); 
+   		initialiseMemberVariables(aliasHashtable); 
     }
         
 	//============================================
-	// Public methods
+	// Public methods for executing commands 
 	//============================================
     
     public CommandType getCommandType(String userInput) {
@@ -159,6 +161,10 @@ public class Logic {
             	return handleInvalid(command);
     	}	
     }
+    
+	//============================================
+	// Public methods for views
+	//============================================
  
     public String taskDefaultView(){
     	try{
@@ -169,6 +175,7 @@ public class Logic {
             return formatter.formatDefTaskView(linesInFile, taskTodayIndexList, taskTmrIndexList, floatIndexList);
     	}
     	catch(FileSystemException e){
+    		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
     		return e.getMessage(); 
     	}
     	catch(Exception e){
@@ -186,13 +193,20 @@ public class Logic {
     				eventTodayIndexList, eventTmrIndexList); 
     	}
     	catch(FileSystemException e){
+    		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
     		return e.getMessage();  
     	}
     	catch (Exception e) {
+    		System.out.println(e.getMessage());
     		return MESSAGE_ERROR_UNKNOWN; 
 		}
     }
-       
+    
+    /**
+     * filter and format tasks to shows in all or done views
+     * @param isDone - true if display all completed tasks, false is display all uncompleted tasks 
+     * @return formatted string
+     */
     public String taskAllView(boolean isDone){ 
     	try{ 
     		String[] linesInFile = getLinesInFile();
@@ -201,6 +215,7 @@ public class Logic {
         	return formatter.formatAllTaskView(linesInFile, taskIndexList, floatIndexList);  
     	}
     	catch(FileSystemException e){
+    		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
     		return e.getMessage();
     	}
     	catch (Exception e) {
@@ -208,6 +223,11 @@ public class Logic {
     	}
     }
     
+    /**
+     * filter and format events to shows in all or done views
+     * @param isDone - true if display all completed events, false is display all uncompleted events 
+     * @return formatted string
+     */
     public String eventAllView(boolean isDone){ 
     	try{
     		String[] linesInFile = getLinesInFile(); 
@@ -215,13 +235,18 @@ public class Logic {
     		return formatter.formatEventWithHeaders(linesInFile, eventIndexList, false);
     	}
     	catch(FileSystemException e){
+    		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
     		return e.getMessage(); 
     	}
     	catch(Exception e){
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
-        
+    
+    /**
+     * filter and format tasks for unresolved view
+     * @return formatted string
+     */
     public String taskPastUncompletedView(){
     	try{
     		String[] linesInFile = getLinesInFile();
@@ -230,12 +255,17 @@ public class Logic {
     		return formattedContent; 
     	}
     	catch(FileSystemException e){ 
+    		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
     		return e.getMessage();
     	}catch (Exception e) {
 			return MESSAGE_ERROR_UNKNOWN;
 		} 
     }
 
+    /**
+     * filter and format events for unresolved view
+     * @return formatted string
+     */
     public String eventPastUncompletedView(){
     	try{
     		String[] linesInFile = getLinesInFile();
@@ -244,6 +274,7 @@ public class Logic {
     		return formattedContent; 
     	}
     	catch(FileSystemException e){ 
+    		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
     		return e.getMessage();
     	}catch (Exception e) {
 			return MESSAGE_ERROR_UNKNOWN;
@@ -260,6 +291,7 @@ public class Logic {
     }
     
     public String getAliasFileContents() throws FileSystemException{
+    	assert(storage != null); 
     	return storage.readAliasFile(); 
     }
     
@@ -271,8 +303,7 @@ public class Logic {
     	Hashtable<String, String> aliasHashtable = new Hashtable<String, String>();
     	
     	try{ 
-    		String aliasFileContents = storage.readAliasFile();
-    		String[] lineInAliasFile = aliasFileContents.split(NEWLINE); 
+    		String[] lineInAliasFile = getLinesInAliasFile(); 
     		for(int i = 0; i < lineInAliasFile.length; i++){
     			String[] lineFields = lineInAliasFile[i].split(SEMICOLON);
     			String alias = lineFields[INDEX_ALIAS];
@@ -282,14 +313,33 @@ public class Logic {
     		}
     	}
     	catch(Exception e){
-    		
+    		LOGGER.log(Level.WARNING, MESSAGE_LOG_ERROR_ALIAS_HASHTABLE);
     	}
     	
     	return aliasHashtable; 
     }
     
+    private String[] getLinesInAliasFile() throws FileSystemException{
+    	storage = new Storage(); 
+    	String fileContents = storage.readAliasFile();
+    	if(fileContents.isEmpty()){ 
+    		return new String[0];
+    	}else{
+    		return fileContents.split(NEWLINE);
+    	}
+    }
+    
+	private void initialiseMemberVariables(Hashtable<String, String> aliasHashtable) throws FileSystemException {
+		storage = new Storage();
+		commandParser = new CommandParser(aliasHashtable);
+		memory = new Memory();
+		filter = new Filter(); 
+		formatter = new Formatter(); 
+		prevCommand = new Command();
+	}
+      
 	//============================================
-	// Private methods for executeCommand 
+	// Private methods for executing add 
 	//============================================
     
     private String executeAdd(Command command){
@@ -322,7 +372,7 @@ public class Logic {
         String addFeedback = String.format(MESSAGE_ADD_FLOAT_TASK, taskName); 
         
         boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        return formFeedbackMsg(addFeedback, isSaved);
+        return addMemoryFeedback(addFeedback, isSaved);
     }
     
     private String executeAddTask(Command command) throws FileSystemException{
@@ -336,7 +386,7 @@ public class Logic {
         		taskDeadline.formatDateLong()); 
 
         boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        return formFeedbackMsg(addFeedback, isSaved);
+        return addMemoryFeedback(addFeedback, isSaved);
     }
     
     private String executeAddEvent(Command command) throws FileSystemException{
@@ -354,8 +404,12 @@ public class Logic {
         		eventEndDate.formatDateLong(), eventEndTime);
         
         boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        return formFeedbackMsg(addFeedback, isSaved);
+        return addMemoryFeedback(addFeedback, isSaved);
     }
+    
+	//============================================
+	// Private methods for executing delete 
+	//============================================
    
     private String executeDelete(Command command){
     	try{
@@ -363,10 +417,11 @@ public class Logic {
     		
     		int lineNumber = command.getIndex(); 
         	String deletedLine = storage.deleteLine(lineNumber); 
-        	String deleteFeedback = String.format(MESSAGE_DELETE_ITEM, formatLine(deletedLine)); 
+        	String formattedDelLine = formatter.formatDeleteOrDoneLine(deletedLine); 
+        	String deleteFeedback = String.format(MESSAGE_DELETE_ITEM, formattedDelLine); 
         	
         	boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        	return formFeedbackMsg(deleteFeedback, isSaved);
+        	return addMemoryFeedback(deleteFeedback, isSaved);
     	}
     	catch(FileSystemException e){
     		return e.getMessage();
@@ -375,6 +430,10 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
+    
+	//============================================
+	// Private methods for executing edit  
+	//============================================
 
     private String executeEdit(Command command){
     	try{     		
@@ -442,7 +501,8 @@ public class Logic {
 	    	String newStartTime = command.getStartTime(); 
 	    	String newEndTime = command.getEndTime(); 
 	    	Boolean isDone = isDone(lineNumber); 
-	    	Command addEventCmd = getAddEditedEventCommand(newName, newStartDateStr, newEndDateStr, newStartTime, newEndTime); 
+	    	Command addEventCmd = getAddEditedEventCommand(newName, newStartDateStr, 
+	    			newEndDateStr, newStartTime, newEndTime); 
 	    	
 	    	return handleEditConvertToEvent(command, addEventCmd, lineNumber, newStartDate, 
 	    			newEndDate, oldName, newName, newStartTime, newEndTime, isDone);	
@@ -461,7 +521,7 @@ public class Logic {
 		String editFeedback = String.format(MESSAGE_EDIT, TYPE_FLOAT, newName);
 		
 		boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-	    return formFeedbackMsg(editFeedback, isSaved);
+	    return addMemoryFeedback(editFeedback, isSaved);
 	}
 		
 	private String executeEditTask(Command command) throws FileSystemException {
@@ -507,7 +567,7 @@ public class Logic {
 			return String.format(MESSAGE_ERROR_EDIT_INVALID_CONVERSION, TYPE_EVENT, TYPE_TASK);
     	}
 	}
-	
+
 	private String getEditedName(Command command, ArrayList<String> editList, int lineNumber)
 			throws FileSystemException {
 		if(editList.contains(KEYWORD_EDIT_NAME)){ 
@@ -600,12 +660,13 @@ public class Logic {
     	}    	 
     }
     
-	private String handleEditConvertToTask(Command command, Command addTaskCmd, int lineNumber, String oldName, String newName,
-			Date newDeadline, Boolean isDone) throws FileSystemException {
+	private String handleEditConvertToTask(Command command, Command addTaskCmd, int lineNumber, 
+			String oldName, String newName, Date newDeadline, Boolean isDone) throws FileSystemException {
+		
 		if(isValidEdit(addTaskCmd, DataType.TASK)){ 	
     		boolean isSaved = handleValidEditTask(command, lineNumber, newName, newDeadline, isDone);
     		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_TASK, newName);
-            return formFeedbackMsg(editFeedback, isSaved);
+            return addMemoryFeedback(editFeedback, isSaved);
     	}else{ 
     		return handleInvalidEdit(addTaskCmd); 
     	}
@@ -618,7 +679,7 @@ public class Logic {
     		boolean isSaved = handleValidEditEvent(command, lineNumber, 
 	   				newStartDate, newEndDate, newName, newStartTime, newEndTime, isDone);
 	   		String editFeedback = String.format(MESSAGE_EDIT_CONVERSION, oldName, TYPE_EVENT, newName);
-            return formFeedbackMsg(editFeedback, isSaved);
+            return addMemoryFeedback(editFeedback, isSaved);
 	    }else{ 
 	    	return handleInvalidEdit(addEventCmd);
 	   	}
@@ -629,7 +690,7 @@ public class Logic {
 		if(isValidEdit(addTaskCmd, DataType.TASK)){ 
 			boolean isSaved = handleValidEditTask(command, lineNumber, newName, newDeadline, isDone); 
 			String editFeedback = String.format(MESSAGE_EDIT, TYPE_TASK, newName);
-		    return formFeedbackMsg(editFeedback, isSaved);
+		    return addMemoryFeedback(editFeedback, isSaved);
 		}else{ 
 			return handleInvalidEdit(addTaskCmd); 
 		}
@@ -642,7 +703,7 @@ public class Logic {
 			boolean isSaved = handleValidEditEvent(command, lineNumber, 
 					newStartDate, newEndDate, newName, newStartTime, newEndTime, isDone);
 			String editFeedback = String.format(MESSAGE_EDIT, TYPE_EVENT, newName);
-		    return formFeedbackMsg(editFeedback, isSaved);
+		    return addMemoryFeedback(editFeedback, isSaved);
 		}else{ 
 			return handleInvalidEdit(addEventCmd); 
 		}
@@ -701,6 +762,10 @@ public class Logic {
     private boolean containNameOnly(ArrayList<String> editList){ 
     	return editList.size() == 1 && editList.contains(KEYWORD_EDIT_NAME); 
     }
+    
+	//============================================
+	// Private methods for executing done 
+	//============================================
    
 	private String executeDone(Command command){
     	try{
@@ -708,10 +773,11 @@ public class Logic {
     		
     		int lineNumber = command.getIndex(); 
         	String doneLine = storage.markAsDone(lineNumber); 
-        	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, formatLine(doneLine)); 
+        	String formattedDoneLine = formatter.formatDeleteOrDoneLine(doneLine);
+        	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, formattedDoneLine); 
         	
         	boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
-        	return formFeedbackMsg(markDoneFeedback, isSaved);
+        	return addMemoryFeedback(markDoneFeedback, isSaved);
     	}
     	catch(FileSystemException e){
     		return e.getMessage();
@@ -720,6 +786,10 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
+	
+	//============================================
+	// Private methods for executing search
+	//============================================
      
     private String executeSearch(Command command){ 
     	String query = command.getName(); 
@@ -731,6 +801,7 @@ public class Logic {
     		return formatter.formatSearchResults(query, linesInFile, taskResults, floatResults, eventResults); 
     	}
     	catch(FileSystemException e){
+    		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
     		return formatter.formatSearchError(query, e.getMessage());
     	}
     	catch(Exception e){ 
@@ -741,6 +812,10 @@ public class Logic {
     private ArrayList<Integer> getSearchResults(String[] linesInFile, String type, String query){
     	return filter.matchTokensInQuery(linesInFile, type, query); 
     }
+    
+	//============================================
+	// Private methods for executing undo and redo 
+	//============================================
         
     private String executeUndo(Command command){ 
     	try{
@@ -794,6 +869,7 @@ public class Logic {
    	   		return prevState;
    		}
    		catch(Exception e){
+   			LOGGER.log(Level.WARNING, MESSAGE_LOG_ERROR_GET_PREV_STATE);
    			return null; 
    		}
    	}
@@ -810,6 +886,7 @@ public class Logic {
         }
 		else{
         	memory.clearUndoStack();
+        	LOGGER.log(Level.WARNING, MESSAGE_LOG_ERROR_SAVE_STATE);
         	return false;
         }
 	}
@@ -821,7 +898,7 @@ public class Logic {
     	prevCommand = command; 
     }
    	
-	private String formFeedbackMsg(String cmdFeedback, boolean isSaved) {
+	private String addMemoryFeedback(String cmdFeedback, boolean isSaved) {
 		if(isSaved){
         	return cmdFeedback;
         }
@@ -829,18 +906,15 @@ public class Logic {
         	return cmdFeedback + MESSAGE_ERROR_UNDO;
         }
 	}
-
+ 
 	private String getCommandStr(String userString){
 		String[] lineComponents = userString.split(REGEX_WHITESPACES);
 		return lineComponents[INDEX_COMMAND]; 
 	}
-	
-	private String formatLine(String line){
-		String[] lineComponents = line.split(SEMICOLON);
-		String type = lineComponents[INDEX_TYPE]; 
-		String name = lineComponents[INDEX_NAME];
-		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
-	}
+		
+	//============================================
+	// Private methods for executing set
+	//============================================
 	
 	private String executeSet(Command command){ 
 		try{
@@ -858,6 +932,10 @@ public class Logic {
 		} 
 	}
 	
+	//============================================
+	// Private methods for executing delete alias
+	//============================================
+	
 	private String executeDeleteAlias(Command command){ 
 		try{
 			String alias = command.getName(); 
@@ -873,10 +951,18 @@ public class Logic {
 		}
 	}
 	
+	//============================================
+	// Private methods for executing save
+	//============================================
+	
 	private String executeSave(Command command) {
 		String newFilePath = command.getName(); 
 		return storage.changeFileStorageLocation(newFilePath); 
 	}
+	
+	//============================================
+	// Private methods for handling invalid cmd
+	//============================================
     
     private String handleInvalid(Command command){ 
     	String userInput = command.getUserInput(); 

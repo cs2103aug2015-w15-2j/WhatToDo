@@ -308,6 +308,10 @@ public class LogicTest {
 		// valid set command
 		String feedback = logic.executeCommand("set + as add"); 
 		assertEquals("Set new alias \"+\" for \"add\".", feedback); 
+		
+		//try using alias
+		feedback = logic.executeCommand("+ sth"); 
+		assertEquals("Added float \"sth\" to list.", feedback); 
 	}
 	
 	@Test
