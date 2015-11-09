@@ -101,7 +101,7 @@ public class DateParser {
 		return todayDate.plusDay(difference);
 	}
 
-	protected boolean isValidDate(String date) {
+	private boolean isValidDate(String date) {
 		// To account for the offset in index referencing, index 0 is initialiased to 0,
 		// while the rest of the indexes are initialised to the number of days in that
 		// index's month
