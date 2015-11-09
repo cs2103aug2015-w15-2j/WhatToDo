@@ -2,7 +2,7 @@
  * This class contains all the EventHandler private classes used in the application
  * and provides getter methods for other GUI classes to access them
  * 
- * @@author A0124123Y
+ * @@author A0127051U
  */
 
 package gui;
@@ -21,6 +21,9 @@ import struct.View;
 public class Handlers {
 
 	private static final String COMMAND_SEARCH = "search";
+	
+	private static final String EMPTY_STRING = "";
+	private static final String SPACE = " ";
 	
 	private static final boolean SEARCH_USER = false;
 	private static final boolean SEARCH_BACKGROUND = true;
@@ -157,11 +160,11 @@ public class Handlers {
 	            	// upon the user's next operation
 	            	// Modify the search query by replacing the first word with "search" to account
 	            	// for aliases since there is no parsing here
-	            	String[] textFieldInputSplit = textFieldInput.split(" ");
+	            	String[] textFieldInputSplit = textFieldInput.split(SPACE);
 	            	textFieldInputSplit[0] = COMMAND_SEARCH;
-	            	lastSearchCommand = "";
+	            	lastSearchCommand = EMPTY_STRING;
 	            	for (int i = 0; i < textFieldInputSplit.length; i++) {
-	            		lastSearchCommand += textFieldInputSplit[i] + " ";
+	            		lastSearchCommand += textFieldInputSplit[i] + SPACE;
 	            	}
 	            	lastSearchCommand = lastSearchCommand.substring(0, lastSearchCommand.length() - 1);
 	            	handlerLogicControl.runCommand(operationType, textFieldInput, SEARCH_USER);

@@ -2,7 +2,7 @@
  * This class contains the ChangeListener private classes that are used in the 
  * application and getter methods for the other GUI classes to access them
  * 
- * @@author A0124123Y
+ * @@author A0124238L
  */
 
 package gui;
@@ -12,6 +12,10 @@ import javafx.beans.value.ObservableValue;
 import struct.View;
 
 public class Listeners {
+	
+	private static final String SPACE = " ";
+	
+	private static final int PARAM_ONE_WORD = 1;
 	
     // ======================================================================
     // Getters to allow GUI components in InterfaceController to access the
@@ -66,7 +70,7 @@ public class Listeners {
     			String oldValue, String newValue) {
     		// Only perform autocompletion when the string is within one word
     		// and is not empty
-    		if (newValue.split(" ").length == 1 && !newValue.equals(LogicController.NULL_STRING)) {
+    		if (newValue.split(SPACE).length == PARAM_ONE_WORD && !newValue.equals(LogicController.NULL_STRING)) {
     			AutoComplete.updatePopup(newValue);
     		} else {
     			AutoComplete.closePopup();
