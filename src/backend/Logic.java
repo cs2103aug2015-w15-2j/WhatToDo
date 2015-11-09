@@ -67,9 +67,7 @@ public class Logic {
     private static final String MESSAGE_ERROR_EDIT_INVALID_CONVERSION = "A %s cannot be converted to a %s.";
     private static final String MESSAGE_ERROR_EDIT_INVALID_EDIT = "Invalid edit. %s"; 
     private static final String MESSAGE_ERROR_UNDO = "Error encountered in memory. Undo will be unavailable for all commands before this.";
-    
-    private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
-    
+        
     private static final String KEYWORD_EDIT_NAME = "name";
     private static final String KEYWORD_EDIT_DEADLINE = "date";
     private static final String KEYWORD_EDIT_START_DATE = "startd";
@@ -118,7 +116,7 @@ public class Logic {
     }
         
 	//============================================
-	// Public methods
+	// Public methods for executing commands 
 	//============================================
     
     public CommandType getCommandType(String userInput) {
@@ -159,6 +157,10 @@ public class Logic {
             	return handleInvalid(command);
     	}	
     }
+    
+	//============================================
+	// Public methods for views
+	//============================================
  
     public String taskDefaultView(){
     	try{
@@ -289,7 +291,7 @@ public class Logic {
     }
     
 	//============================================
-	// Private methods for executeCommand 
+	// Private methods for executing add 
 	//============================================
     
     private String executeAdd(Command command){
@@ -356,6 +358,10 @@ public class Logic {
         boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
         return formFeedbackMsg(addFeedback, isSaved);
     }
+    
+	//============================================
+	// Private methods for executing delete 
+	//============================================
    
     private String executeDelete(Command command){
     	try{
@@ -363,7 +369,8 @@ public class Logic {
     		
     		int lineNumber = command.getIndex(); 
         	String deletedLine = storage.deleteLine(lineNumber); 
-        	String deleteFeedback = String.format(MESSAGE_DELETE_ITEM, formatLine(deletedLine)); 
+        	String formattedDelLine = formatter.formatDeleteOrDoneLine(deletedLine); 
+        	String deleteFeedback = String.format(MESSAGE_DELETE_ITEM, formattedDelLine); 
         	
         	boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
         	return formFeedbackMsg(deleteFeedback, isSaved);
@@ -375,6 +382,10 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
+    
+	//============================================
+	// Private methods for executing edit  
+	//============================================
 
     private String executeEdit(Command command){
     	try{     		
@@ -701,6 +712,10 @@ public class Logic {
     private boolean containNameOnly(ArrayList<String> editList){ 
     	return editList.size() == 1 && editList.contains(KEYWORD_EDIT_NAME); 
     }
+    
+	//============================================
+	// Private methods for executing done 
+	//============================================
    
 	private String executeDone(Command command){
     	try{
@@ -708,7 +723,8 @@ public class Logic {
     		
     		int lineNumber = command.getIndex(); 
         	String doneLine = storage.markAsDone(lineNumber); 
-        	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, formatLine(doneLine)); 
+        	String formattedDoneLine = formatter.formatDeleteOrDoneLine(doneLine);
+        	String markDoneFeedback = String.format(MESSAGE_MARK_DONE, formattedDoneLine); 
         	
         	boolean isSaved = loadToMemoryStacks(command, stateBeforeExecutingCommand);
         	return formFeedbackMsg(markDoneFeedback, isSaved);
@@ -720,6 +736,10 @@ public class Logic {
     		return MESSAGE_ERROR_UNKNOWN;
     	}
     }
+	
+	//============================================
+	// Private methods for executing search
+	//============================================
      
     private String executeSearch(Command command){ 
     	String query = command.getName(); 
@@ -741,6 +761,10 @@ public class Logic {
     private ArrayList<Integer> getSearchResults(String[] linesInFile, String type, String query){
     	return filter.matchTokensInQuery(linesInFile, type, query); 
     }
+    
+	//============================================
+	// Private methods for executing undo and redo 
+	//============================================
         
     private String executeUndo(Command command){ 
     	try{
@@ -829,18 +853,15 @@ public class Logic {
         	return cmdFeedback + MESSAGE_ERROR_UNDO;
         }
 	}
-
+ 
 	private String getCommandStr(String userString){
 		String[] lineComponents = userString.split(REGEX_WHITESPACES);
 		return lineComponents[INDEX_COMMAND]; 
 	}
-	
-	private String formatLine(String line){
-		String[] lineComponents = line.split(SEMICOLON);
-		String type = lineComponents[INDEX_TYPE]; 
-		String name = lineComponents[INDEX_NAME];
-		return String.format(DISPLAY_FORMAT_DELETED_OR_MARKDONE, type, name); 
-	}
+		
+	//============================================
+	// Private methods for executing set
+	//============================================
 	
 	private String executeSet(Command command){ 
 		try{
@@ -858,6 +879,10 @@ public class Logic {
 		} 
 	}
 	
+	//============================================
+	// Private methods for executing delete alias
+	//============================================
+	
 	private String executeDeleteAlias(Command command){ 
 		try{
 			String alias = command.getName(); 
@@ -873,10 +898,18 @@ public class Logic {
 		}
 	}
 	
+	//============================================
+	// Private methods for executing save
+	//============================================
+	
 	private String executeSave(Command command) {
 		String newFilePath = command.getName(); 
 		return storage.changeFileStorageLocation(newFilePath); 
 	}
+	
+	//============================================
+	// Private methods for handling invalid cmd
+	//============================================
     
     private String handleInvalid(Command command){ 
     	String userInput = command.getUserInput(); 
