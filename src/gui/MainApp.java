@@ -23,7 +23,7 @@ public class MainApp extends Application {
 	// Variables used in stage configuration
 	// ============================================================
 	
-    protected static final double MIN_WINDOW_HEIGHT = 700;
+	protected static final double MIN_WINDOW_HEIGHT = 700;
     protected static final double MIN_WINDOW_WIDTH = 1000;
     
     protected static final double WIDTH_HELP_DIALOG = 800;
@@ -41,6 +41,8 @@ public class MainApp extends Application {
     protected static final String LOG_CONFIG_NOT_FOUND = "Unable to open config.txt";
     protected static final String LOG_ALIAS_NOT_FOUND = "Unable to open alias.txt";
     protected static final String LOG_FILE_NOT_CREATED = "Unable to create the file";
+    
+    private static final String PATH_ICON = "gui/resources/icon.png";
 
 	// ============================================================
 	// Scenes and stages used by the application
@@ -89,7 +91,7 @@ public class MainApp extends Application {
 
         // Customize the stage
         stage.setTitle(TITLE_STAGE);
-        stage.getIcons().add(new Image("gui/resources/icon.png"));
+        stage.getIcons().add(new Image(PATH_ICON));
 
         stage.setWidth(MIN_WINDOW_WIDTH);
         stage.setHeight(MIN_WINDOW_HEIGHT);
