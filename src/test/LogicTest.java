@@ -28,16 +28,7 @@ public class LogicTest {
 		Command.ViewType viewType = logic.getViewType("all"); 
 		assertEquals(ViewType.ALL, viewType);
 	}
-	
-	@Test 
-	//TODO MOVE TO ADD TEST 
-	/* Test adding of float with keyword 'by' */
-	public void testAddFloatWithBy() throws FileSystemException{ 
-		Logic logic = new Logic();
-		String feedback = logic.executeCommand("add sth \\by tomorrow");
-		assertEquals("Added float \"sth by tomorrow\" to list.", feedback);
-	}
-	
+		
 	@Test 
 	/** Test valid add commands **/
 	public void testAdd() throws FileSystemException{ 
@@ -46,6 +37,10 @@ public class LogicTest {
 		// add float 
 		String feedback = logic.executeCommand("add sth");
 		assertEquals("Added float \"sth\" to list.", feedback);
+		
+		// add float with keyword in name
+		feedback = logic.executeCommand("add sth \\by tomorrow");
+		assertEquals("Added float \"sth by tomorrow\" to list.", feedback);
 		
 		// add task with deadline 
 		feedback = logic.executeCommand("add deadline by 111116");
@@ -392,7 +387,7 @@ public class LogicTest {
 		
 		logic.overwriteFile(";;");
 		String feedback = logic.executeCommand("add zzz");
-		assertEquals("Unknown error encountered. whattodo.txt may be corrupted.", feedback);
+		assertEquals("0.Unknown error encountered - file may be corrupted", feedback);
 		
 		//ensure the file is not corrupted at the end of tests
 		logic.overwriteFile("");
