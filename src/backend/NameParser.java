@@ -1,17 +1,21 @@
 package backend;
 
+import java.util.ArrayList;
 import java.util.List;
 
+//@@author A0124099B
 public class NameParser {
 	
-    private static final String STRING_ONE_SPACE = " ";
-    private static final String ESCAPE_CHARACTER = "\\";
-	
+	private static final int POSITION_FIRST_INDEX = 0;
+
+	private static final String STRING_ONE_SPACE = " ";
+	private static final String ESCAPE_CHARACTER = "\\";
+
 	public NameParser() {
-		
+
 	}
-	
-	protected String getName(List<String> arguments) {
+
+	private String getName(List<String> arguments) {
 		String name = "";
 		if (arguments.isEmpty()) {
 			return null;
@@ -24,6 +28,21 @@ public class NameParser {
 			name += currArgument + STRING_ONE_SPACE;
 		}
 		return name.trim();
+	}
+	
+	protected String getName(ArrayList<String> arguments, int startIndex, int endIndex) {
+		List<String> nameList = arguments.subList(startIndex, endIndex);
+		return getName(nameList);
+	}
+	
+	protected String getEventName(ArrayList<String> arguments, int keywordToIndex, int keywordFromIndex) {
+		String name = null;
+		if (keywordToIndex > keywordFromIndex) {
+			name = getName(arguments, POSITION_FIRST_INDEX, keywordFromIndex);
+		} else {
+			name = getName(arguments, POSITION_FIRST_INDEX, keywordToIndex);
+		}
+		return name;
 	}
 
 }

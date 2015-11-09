@@ -4,41 +4,42 @@ import java.util.ArrayList;
 
 import struct.Date;
 
+//@@author A0124099B
 public class DateParser {
-	
-    private static final int POSITION_FIRST_INDEX = 0;
-    private static final int POSITION_FOURTH_INDEX = 3;
-    
-    private static final int DIFFERENCE_ZERO = 0;
-    
-    private static final int FULL_DATE_LENGTH = 6;
-    private static final int SMALL_DATE_LENGTH = 4;
-    
-    private static final int NUMBER_OF_DAYS_IN_A_WEEK = 7;
-    private static final int NUMBER_OF_DAYS_IN_TWO_WEEKS = 14;
-    
-    private static final String REGEX_POSITIVE_INTEGER = "^0*[1-9][0-9]*";
-	
-    private static final String KEYWORD_TODAY = "today";
-    private static final String KEYWORD_TOMORROW_ONE = "tomorrow";
-    private static final String KEYWORD_TOMORROW_TWO = "tmr";
-    private static final String KEYWORD_TOMORROW_THREE = "tomo";
-    private static final String KEYWORD_NEXT = "n";
-	
-    private static final ArrayList<String> DAYS_ARRAY_LIST = new ArrayList<String>();
-    private static final ArrayList<String> DAYS_FULL_ARRAY_LIST = new ArrayList<String>();
-	
+
+	private static final int POSITION_FIRST_INDEX = 0;
+	private static final int POSITION_FOURTH_INDEX = 3;
+
+	private static final int DIFFERENCE_ZERO = 0;
+
+	private static final int FULL_DATE_LENGTH = 6;
+	private static final int SMALL_DATE_LENGTH = 4;
+
+	private static final int NUMBER_OF_DAYS_IN_A_WEEK = 7;
+	private static final int NUMBER_OF_DAYS_IN_TWO_WEEKS = 14;
+
+	private static final String REGEX_POSITIVE_INTEGER = "^0*[1-9][0-9]*";
+
+	private static final String KEYWORD_TODAY = "today";
+	private static final String KEYWORD_TOMORROW_ONE = "tomorrow";
+	private static final String KEYWORD_TOMORROW_TWO = "tmr";
+	private static final String KEYWORD_TOMORROW_THREE = "tomo";
+	private static final String KEYWORD_NEXT = "n";
+
+	private static final ArrayList<String> DAYS_ARRAY_LIST = new ArrayList<String>();
+	private static final ArrayList<String> DAYS_FULL_ARRAY_LIST = new ArrayList<String>();
+
 	public DateParser() {
 		initDaysArrayList();
 		initFullDaysArrayList();
 	}
-	
+
 	protected Date getDate(String date) {
 		Date todayDate = Date.todayDate();
-		if (date.equals(KEYWORD_TODAY)){
+		if (date.equals(KEYWORD_TODAY)) {
 			return todayDate;
-		} else if (date.equals(KEYWORD_TOMORROW_ONE) || date.equals(KEYWORD_TOMORROW_TWO) 
-				   || date.equals(KEYWORD_TOMORROW_THREE)) {
+		} else if (date.equals(KEYWORD_TOMORROW_ONE) || date.equals(KEYWORD_TOMORROW_TWO)
+				|| date.equals(KEYWORD_TOMORROW_THREE)) {
 			return Date.tomorrowDate();
 		} else if (DAYS_FULL_ARRAY_LIST.contains(date)) {
 			String daySubstring = date.substring(POSITION_FIRST_INDEX, POSITION_FOURTH_INDEX);
@@ -52,10 +53,9 @@ public class DateParser {
 			} else {
 				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_A_WEEK);
 			}
-		} else if (date.substring(0,1).equals(KEYWORD_NEXT) 
-				&& DAYS_FULL_ARRAY_LIST.contains(date.substring(1))) {
-			int day = DAYS_ARRAY_LIST.indexOf(date.substring(1,4));
-			int today = DAYS_ARRAY_LIST.indexOf(todayDate.getDayString().substring(0,3).toLowerCase());
+		} else if (date.substring(0, 1).equals(KEYWORD_NEXT) && DAYS_FULL_ARRAY_LIST.contains(date.substring(1))) {
+			int day = DAYS_ARRAY_LIST.indexOf(date.substring(1, 4));
+			int today = DAYS_ARRAY_LIST.indexOf(todayDate.getDayString().substring(0, 3).toLowerCase());
 			int difference = day - today;
 			if (difference >= DIFFERENCE_ZERO) {
 				return todayDate.plusDay(difference + NUMBER_OF_DAYS_IN_A_WEEK);
@@ -69,8 +69,8 @@ public class DateParser {
 			if (isValidDate(date) && todayDate.compareTo(currDate) <= 0) {
 				return currDate;
 			}
-		} else if (date.matches(REGEX_POSITIVE_INTEGER) 
-				&& String.valueOf(date).length() == FULL_DATE_LENGTH && isValidDate(date)) {
+		} else if (date.matches(REGEX_POSITIVE_INTEGER) && String.valueOf(date).length() == FULL_DATE_LENGTH
+				&& isValidDate(date)) {
 			Date currDate = new Date(date);
 			if (todayDate.compareTo(currDate) <= 0) {
 				return currDate;
@@ -78,11 +78,11 @@ public class DateParser {
 		}
 		return null;
 	}
-	
+
 	protected boolean isValidDate(String date) {
-		int[] daysInEachMonth = {0,31,28,31,30,31,30,31,31,30,31,30,31};
-		int day = Integer.parseInt(date.substring(0,2));
-		int month = Integer.parseInt(date.substring(2,4));
+		int[] daysInEachMonth = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+		int day = Integer.parseInt(date.substring(0, 2));
+		int month = Integer.parseInt(date.substring(2, 4));
 		int year = 2000 + Integer.parseInt(date.substring(4));
 		if (year % 4 == 0) {
 			if (year % 100 != 0) {
@@ -99,7 +99,7 @@ public class DateParser {
 			return false;
 		}
 	}
-	
+
 	private void initDaysArrayList() {
 		DAYS_ARRAY_LIST.add("mon");
 		DAYS_ARRAY_LIST.add("tue");
@@ -109,7 +109,7 @@ public class DateParser {
 		DAYS_ARRAY_LIST.add("sat");
 		DAYS_ARRAY_LIST.add("sun");
 	}
-	
+
 	private void initFullDaysArrayList() {
 		DAYS_FULL_ARRAY_LIST.add("mon");
 		DAYS_FULL_ARRAY_LIST.add("tue");
