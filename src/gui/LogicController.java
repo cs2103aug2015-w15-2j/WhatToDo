@@ -557,201 +557,201 @@ public class LogicController {
 	protected void changeView(View view) {
 		
 		switch(InterfaceController.getCurrentView()) {
-	    // currentView == DEFAULT
-        case DEFAULT:
-        	switch (view) {
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-            	break;
-        	}
-        	break;
-    	// currentView == ALL
-        case ALL:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-    	// currentView == HISTORY
-        case HISTORY:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-    	// currentView == UNRESOLVED
-        case UNRESOLVED:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-    	// currentView == DONE
-        case DONE:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case SEARCH:
-        		InterfaceController.updateMainInterface(View.SEARCH);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-    	// currentView == SEARCH
-        case SEARCH:
-        	switch (view) {
-        	case DEFAULT:
-        		InterfaceController.updateMainInterface(View.DEFAULT);
-        		break;
-        	case ALL:
-        		InterfaceController.updateMainInterface(View.ALL);
-        		break;
-        	case HISTORY:
-        		InterfaceController.updateMainInterface(View.HISTORY);
-        		break;
-        	case UNRESOLVED:
-        		InterfaceController.updateMainInterface(View.UNRESOLVED);
-        		break;
-        	case DONE:
-        		InterfaceController.updateMainInterface(View.DONE);
-        		break;
-        	case HELP:
-        		HelpController.toggleHelpDialog();
-        		break;
-        	case SUMMARY:
-        		InterfaceController.updateMainInterface(View.SUMMARY);
-        		break;
-        	case EXIT:
-        		InterfaceController.closeMainInterface();
-        		break;
-        	default:
-        		// Do nothing if already in this view
-        		break;
-        	}
-        	break;
-
-        default: // do nothing, should not enter
-        	break;
+		    // currentView == DEFAULT
+	        case DEFAULT:
+	        	switch (view) {
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		            	break;
+		        }
+	        	break;
+	    	// currentView == ALL
+	        case ALL:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	    	// currentView == HISTORY
+	        case HISTORY:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	    	// currentView == UNRESOLVED
+	        case UNRESOLVED:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	    	// currentView == DONE
+	        case DONE:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case SEARCH:
+		        		InterfaceController.updateMainInterface(View.SEARCH);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	    	// currentView == SEARCH
+	        case SEARCH:
+	        	switch (view) {
+		        	case DEFAULT:
+		        		InterfaceController.updateMainInterface(View.DEFAULT);
+		        		break;
+		        	case ALL:
+		        		InterfaceController.updateMainInterface(View.ALL);
+		        		break;
+		        	case HISTORY:
+		        		InterfaceController.updateMainInterface(View.HISTORY);
+		        		break;
+		        	case UNRESOLVED:
+		        		InterfaceController.updateMainInterface(View.UNRESOLVED);
+		        		break;
+		        	case DONE:
+		        		InterfaceController.updateMainInterface(View.DONE);
+		        		break;
+		        	case HELP:
+		        		HelpController.toggleHelpDialog();
+		        		break;
+		        	case SUMMARY:
+		        		InterfaceController.updateMainInterface(View.SUMMARY);
+		        		break;
+		        	case EXIT:
+		        		InterfaceController.closeMainInterface();
+		        		break;
+		        	default:
+		        		// Do nothing if already in this view
+		        		break;
+	        	}
+	        	break;
+	
+	        default: // do nothing, should not enter
+	        	break;
         }
 	}
 	
@@ -894,17 +894,17 @@ public class LogicController {
 				// Switch array index to increment the right counter
 				temp = temp.split(" ")[0];
 				switch(temp) {
-				case "TODAY":
-					currentIndex = 1;
-					break;
-				case "TOMORROW":
-					currentIndex = 1;
-					break;
-				case "ONGOING":
-					currentIndex = 3;
-					break;
-				default:
-					break;
+					case "TODAY":
+						currentIndex = 1;
+						break;
+					case "TOMORROW":
+						currentIndex = 1;
+						break;
+					case "ONGOING":
+						currentIndex = 3;
+						break;
+					default:
+						break;
 				}
 			} else {
 				// Increment the counter in the currentIndex
@@ -940,17 +940,17 @@ public class LogicController {
 				// Switch array index to increment the right counter
 				temp = temp.split(" ")[0];
 				switch(temp) {
-				case "TODAY":
-					currentIndex = 0;
-					break;
-				case "TOMORROW":
-					currentIndex = 0;
-					break;
-				case "FLOAT":
-					currentIndex = 2;
-					break;
-				default:
-					break;
+					case "TODAY":
+						currentIndex = 0;
+						break;
+					case "TOMORROW":
+						currentIndex = 0;
+						break;
+					case "FLOAT":
+						currentIndex = 2;
+						break;
+					default:
+						break;
 				}
 			} else {
 				// Increment the counter in the currentIndex

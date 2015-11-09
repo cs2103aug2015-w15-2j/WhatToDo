@@ -104,19 +104,19 @@ public class ViewIndexMap {
 	 */
 	public static int get(int viewIndex) {
 		switch (InterfaceController.getCurrentView()) {
-		case DEFAULT:
-			return getFromDefMap(viewIndex);
-		case ALL:
-			return getFromAllMap(viewIndex);
-		case UNRESOLVED:
-			return getFromUnresMap(viewIndex);
-		case SEARCH:
-			return getFromSearchMap(viewIndex);
-		case DONE:
-			return getFromDoneMap(viewIndex);
-		default:
-			// Should not enter
-			return -1;
+			case DEFAULT:
+				return getFromDefMap(viewIndex);
+			case ALL:
+				return getFromAllMap(viewIndex);
+			case UNRESOLVED:
+				return getFromUnresMap(viewIndex);
+			case SEARCH:
+				return getFromSearchMap(viewIndex);
+			case DONE:
+				return getFromDoneMap(viewIndex);
+			default:
+				// Should not enter
+				return -1;
 		}
 	}
 	
@@ -154,24 +154,24 @@ public class ViewIndexMap {
 	 */
 	public static void add(View targetView, int fileIndex) {
 		switch (targetView) {
-		case DEFAULT:
-			addToDefMap(fileIndex);
-			break;
-		case ALL:
-			addToAllMap(fileIndex);
-			break;
-		case UNRESOLVED:
-			addToUnresMap(fileIndex);
-			break;
-		case SEARCH:
-			addToSearchMap(fileIndex);
-			break;
-		case DONE:
-			addToDoneMap(fileIndex);
-			break;
-		default:
-			// Should not enter
-			break;
+			case DEFAULT:
+				addToDefMap(fileIndex);
+				break;
+			case ALL:
+				addToAllMap(fileIndex);
+				break;
+			case UNRESOLVED:
+				addToUnresMap(fileIndex);
+				break;
+			case SEARCH:
+				addToSearchMap(fileIndex);
+				break;
+			case DONE:
+				addToDoneMap(fileIndex);
+				break;
+			default:
+				// Should not enter
+				break;
 		}
 	}
 	

@@ -110,93 +110,94 @@ public class Handlers {
             textField.setText(LogicController.NULL_STRING);
 
             // Do a preliminary parse to determine the type of operation
-            Command.CommandType operationType = LogicController.getLogic().getCommandType(textFieldInput);
+            Command.CommandType operationType = LogicController.getLogic().
+            		getCommandType(textFieldInput);
             
             // Perform branching based on the operation type
             switch (operationType) {
-            case VIEW:
-            	// Run another parse of the command to get the destination view
-            	switch(LogicController.getLogic().getViewType(textFieldInput)) {
-                case DEF:
-                	handlerLogicControl.changeView(View.DEFAULT);
-                	break;
-                case ALL:
-                	handlerLogicControl.changeView(View.ALL);
-                	break;
-                case HIST:
-                	handlerLogicControl.changeView(View.HISTORY);
-                	break;
-                case UNRES:
-                	handlerLogicControl.changeView(View.UNRESOLVED);
-                	break;
-                case SEARCH:
-                	handlerLogicControl.changeView(View.SEARCH);
-                	break;
-                case DONE:
-                	handlerLogicControl.changeView(View.DONE);
-                	break;
-                case HELP:
-                	handlerLogicControl.changeView(View.HELP);
-                	break;
-                case OPENFILE:
-                	handlerLogicControl.openFileLocation();
-                	break;
-                case CONFIG:
-                	handlerLogicControl.openConfigLocation();
-                	break;
-                default:
-                	break;
-            	}
-            	break;
-            case EXIT:
-            	handlerLogicControl.changeView(View.EXIT);
-            	break;
-            case SEARCH:
-            	// Store the last search command to run the search again dynamically
-            	// upon the user's next operation
-            	// Modify the search query by replacing the first word with "search" to account
-            	// for aliases since there is no parsing here
-            	String[] textFieldInputSplit = textFieldInput.split(" ");
-            	textFieldInputSplit[0] = COMMAND_SEARCH;
-            	lastSearchCommand = "";
-            	for (int i = 0; i < textFieldInputSplit.length; i++) {
-            		lastSearchCommand += textFieldInputSplit[i] + " ";
-            	}
-            	lastSearchCommand = lastSearchCommand.substring(0, lastSearchCommand.length() - 1);
-            	handlerLogicControl.runCommand(operationType, textFieldInput, SEARCH_USER);
-            	handlerLogicControl.changeView(View.SEARCH);
-            	break;
-            // Only modify the user command for these operations by editing the 
-            // index from ViewIndexMap
-            case DELETE:
-            	// Run the command
-            	handlerLogicControl.runCommand(
-            			operationType, 
-            			handlerLogicControl.mapToFileIndex(textFieldInput), 
-            			SEARCH_USER);
-            	runBackgroundUpdate();
-            	break;
-            case EDIT:
-            	// Run the command
-            	handlerLogicControl.runCommand(
-            			operationType, 
-            			handlerLogicControl.mapToFileIndex(textFieldInput), 
-            			SEARCH_USER);
-            	runBackgroundUpdate();
-            	break;
-            case DONE:
-            	// Run the command
-            	handlerLogicControl.runCommand(
-            			operationType, 
-            			handlerLogicControl.mapToFileIndex(textFieldInput), 
-            			SEARCH_USER);
-            	runBackgroundUpdate();
-            	break;
-            default:
-            	// Run the command
-            	handlerLogicControl.runCommand(operationType, textFieldInput, SEARCH_USER);
-            	runBackgroundUpdate();
-            	break;
+	            case VIEW:
+	            	// Run another parse of the command to get the destination view
+	            	switch(LogicController.getLogic().getViewType(textFieldInput)) {
+		            	case DEF :
+		            		handlerLogicControl.changeView(View.DEFAULT);
+		            		break;
+		            	case ALL :
+		            		handlerLogicControl.changeView(View.ALL);
+		            		break;
+		            	case HIST :
+		            		handlerLogicControl.changeView(View.HISTORY);
+		            		break;
+		            	case UNRES :
+		            		handlerLogicControl.changeView(View.UNRESOLVED);
+		            		break;
+		            	case SEARCH :
+		            		handlerLogicControl.changeView(View.SEARCH);
+		            		break;
+		            	case DONE :
+		            		handlerLogicControl.changeView(View.DONE);
+		            		break;
+		            	case HELP :
+		            		handlerLogicControl.changeView(View.HELP);
+		            		break;
+		            	case OPENFILE :
+		            		handlerLogicControl.openFileLocation();
+		            		break;
+		            	case CONFIG :
+		            		handlerLogicControl.openConfigLocation();
+		            		break;
+		            	default:
+		            		break;
+		            	}
+	            	break;
+	            case EXIT:
+	            	handlerLogicControl.changeView(View.EXIT);
+	            	break;
+	            case SEARCH:
+	            	// Store the last search command to run the search again dynamically
+	            	// upon the user's next operation
+	            	// Modify the search query by replacing the first word with "search" to account
+	            	// for aliases since there is no parsing here
+	            	String[] textFieldInputSplit = textFieldInput.split(" ");
+	            	textFieldInputSplit[0] = COMMAND_SEARCH;
+	            	lastSearchCommand = "";
+	            	for (int i = 0; i < textFieldInputSplit.length; i++) {
+	            		lastSearchCommand += textFieldInputSplit[i] + " ";
+	            	}
+	            	lastSearchCommand = lastSearchCommand.substring(0, lastSearchCommand.length() - 1);
+	            	handlerLogicControl.runCommand(operationType, textFieldInput, SEARCH_USER);
+	            	handlerLogicControl.changeView(View.SEARCH);
+	            	break;
+	            // Only modify the user command for these operations by editing the 
+	            // index from ViewIndexMap
+	            case DELETE:
+	            	// Run the command
+	            	handlerLogicControl.runCommand(
+	            			operationType, 
+	            			handlerLogicControl.mapToFileIndex(textFieldInput), 
+	            			SEARCH_USER);
+	            	runBackgroundUpdate();
+	            	break;
+	            case EDIT:
+	            	// Run the command
+	            	handlerLogicControl.runCommand(
+	            			operationType, 
+	            			handlerLogicControl.mapToFileIndex(textFieldInput), 
+	            			SEARCH_USER);
+	            	runBackgroundUpdate();
+	            	break;
+	            case DONE:
+	            	// Run the command
+	            	handlerLogicControl.runCommand(
+	            			operationType, 
+	            			handlerLogicControl.mapToFileIndex(textFieldInput), 
+	            			SEARCH_USER);
+	            	runBackgroundUpdate();
+	            	break;
+	            default:
+	            	// Run the command
+	            	handlerLogicControl.runCommand(operationType, textFieldInput, SEARCH_USER);
+	            	runBackgroundUpdate();
+	            	break;
             }
 
         }
@@ -279,72 +280,72 @@ public class Handlers {
 		public void handle(KeyEvent event) {
 			if (event.isControlDown()) {
 				switch (event.getCode()) {
-				// For regular number keys
-				case DIGIT1:
-					handlerLogicControl.changeView(View.DEFAULT);
-					break;
-				case DIGIT2:
-					handlerLogicControl.changeView(View.ALL);
-					break;
-				case DIGIT3:
-					handlerLogicControl.changeView(View.UNRESOLVED);
-					break;
-				case DIGIT4:
-					handlerLogicControl.changeView(View.DONE);
-					break;
-				case DIGIT5:
-					handlerLogicControl.changeView(View.SEARCH);
-					break;
-				case DIGIT6:
-					handlerLogicControl.changeView(View.HISTORY);
-					break;
-				case DIGIT7:
-					handlerLogicControl.changeView(View.HELP);
-					break;
-				// For users with a number pad
-				case NUMPAD1:
-					handlerLogicControl.changeView(View.DEFAULT);
-					break;
-				case NUMPAD2:
-					handlerLogicControl.changeView(View.ALL);
-					break;
-				case NUMPAD3:
-					handlerLogicControl.changeView(View.HISTORY);
-					break;
-				case NUMPAD4:
-					handlerLogicControl.changeView(View.UNRESOLVED);
-					break;
-				case NUMPAD5:
-					handlerLogicControl.changeView(View.DONE);
-					break;
-				case NUMPAD6:
-					handlerLogicControl.changeView(View.SEARCH);
-					break;
-				case NUMPAD7:
-					handlerLogicControl.changeView(View.HELP);
-					break;
-				default:
-					// Do nothing
-					break;
+					// For regular number keys
+					case DIGIT1 :
+						handlerLogicControl.changeView(View.DEFAULT);
+						break;
+					case DIGIT2 :
+						handlerLogicControl.changeView(View.ALL);
+						break;
+					case DIGIT3 :
+						handlerLogicControl.changeView(View.UNRESOLVED);
+						break;
+					case DIGIT4 :
+						handlerLogicControl.changeView(View.DONE);
+						break;
+					case DIGIT5 :
+						handlerLogicControl.changeView(View.SEARCH);
+						break;
+					case DIGIT6 :
+						handlerLogicControl.changeView(View.HISTORY);
+						break;
+					case DIGIT7 :
+						handlerLogicControl.changeView(View.HELP);
+						break;
+					// For users with a number pad
+					case NUMPAD1 :
+						handlerLogicControl.changeView(View.DEFAULT);
+						break;
+					case NUMPAD2 :
+						handlerLogicControl.changeView(View.ALL);
+						break;
+					case NUMPAD3 :
+						handlerLogicControl.changeView(View.HISTORY);
+						break;
+					case NUMPAD4 :
+						handlerLogicControl.changeView(View.UNRESOLVED);
+						break;
+					case NUMPAD5 :
+						handlerLogicControl.changeView(View.DONE);
+						break;
+					case NUMPAD6 :
+						handlerLogicControl.changeView(View.SEARCH);
+						break;
+					case NUMPAD7 :
+						handlerLogicControl.changeView(View.HELP);
+						break;
+					default:
+						// Do nothing
+						break;
 				}
 			} else {
 				switch (event.getCode()) {
-				case F1:
-					handlerLogicControl.changeView(View.HELP);
-					break;
-				// For opening text and config files
-				case F2:
-					handlerLogicControl.openFileLocation();
-					break;
-				case F3:
-					handlerLogicControl.openConfigLocation();
-					break;
-				case F4:
-					InterfaceController.toggleAutoCompleteIndicator();
-					handlerLogicControl.toggleAutoComplete();
-					break;
-				default:
-					break;
+					case F1 :
+						handlerLogicControl.changeView(View.HELP);
+						break;
+					// For opening text and config files
+					case F2 :
+						handlerLogicControl.openFileLocation();
+						break;
+					case F3 :
+						handlerLogicControl.openConfigLocation();
+						break;
+					case F4 :
+						InterfaceController.toggleAutoCompleteIndicator();
+						handlerLogicControl.toggleAutoComplete();
+						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -360,16 +361,16 @@ public class Handlers {
 			event.consume();
 			if (event.isControlDown()) {
 				switch (event.getCode()) {
-				// For regular number key
-				case DIGIT7:
-					handlerLogicControl.changeView(View.HELP);
-					break;
-				case NUMPAD7:
-					handlerLogicControl.changeView(View.HELP);
-					break;
-				default:
-					// Do nothing
-					break;
+					// For regular number key
+					case DIGIT7:
+						handlerLogicControl.changeView(View.HELP);
+						break;
+					case NUMPAD7:
+						handlerLogicControl.changeView(View.HELP);
+						break;
+					default:
+						// Do nothing
+						break;
 				}
 			} else {
 				if (event.getCode() == KeyCode.F1) {
@@ -396,116 +397,116 @@ public class Handlers {
     		if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
     			ImageView hover;
     			switch(buttonType) {
-    			case DEFAULT:
-    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
-    					hover = new ImageView(InterfaceController.PATH_DEFAULT_HOVER);
-    					InterfaceController.getHomeButton().getChildren().clear();
-    					InterfaceController.getHomeButton().getChildren().add(hover);
-    				}
-    				break;
-    			case ALL:
-    				if (InterfaceController.getCurrentView() != View.ALL) {
-    					hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
-    					InterfaceController.getAllButton().getChildren().clear();
-    					InterfaceController.getAllButton().getChildren().add(hover);
-    				}
-    				break;
-    			case HISTORY:
-    				if (InterfaceController.getCurrentView() != View.HISTORY) {
-    					hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
-    					InterfaceController.getHistButton().getChildren().clear();
-    					InterfaceController.getHistButton().getChildren().add(hover);
-    				}
-    				break;
-    			case UNRESOLVED:
-    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
-    					hover = new ImageView(InterfaceController.PATH_UNRESOLVED_HOVER);
-    					InterfaceController.getUnresButton().getChildren().clear();
-    					InterfaceController.getUnresButton().getChildren().add(hover);
-    				}
-    				break;
-    			case DONE:
-    				if (InterfaceController.getCurrentView() != View.DONE) {
-    					hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
-    					InterfaceController.getDoneButton().getChildren().clear();
-    					InterfaceController.getDoneButton().getChildren().add(hover);
-    				}
-    				break;
-    			case SEARCH:
-    				if (InterfaceController.getCurrentView() != View.SEARCH) {
-    					hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
-    					InterfaceController.getSearchButton().getChildren().clear();
-    					InterfaceController.getSearchButton().getChildren().add(hover);
-    				}
-    				break;
-    			case HELP:
-    				// Do not change the button if help dialog is showing
-    				if (!MainApp.help.isShowing()) {
-    					hover = new ImageView(InterfaceController.PATH_HELP_HOVER);
-    					InterfaceController.getHelpButton().getChildren().clear();
-    					InterfaceController.getHelpButton().getChildren().add(hover);
-    				}
-    				break;
-    			default:
-    				break;
+	    			case DEFAULT:
+	    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
+	    					hover = new ImageView(InterfaceController.PATH_DEFAULT_HOVER);
+	    					InterfaceController.getHomeButton().getChildren().clear();
+	    					InterfaceController.getHomeButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case ALL:
+	    				if (InterfaceController.getCurrentView() != View.ALL) {
+	    					hover = new ImageView(InterfaceController.PATH_ALL_HOVER);
+	    					InterfaceController.getAllButton().getChildren().clear();
+	    					InterfaceController.getAllButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case HISTORY:
+	    				if (InterfaceController.getCurrentView() != View.HISTORY) {
+	    					hover = new ImageView(InterfaceController.PATH_HIST_HOVER);
+	    					InterfaceController.getHistButton().getChildren().clear();
+	    					InterfaceController.getHistButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case UNRESOLVED:
+	    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
+	    					hover = new ImageView(InterfaceController.PATH_UNRESOLVED_HOVER);
+	    					InterfaceController.getUnresButton().getChildren().clear();
+	    					InterfaceController.getUnresButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case DONE:
+	    				if (InterfaceController.getCurrentView() != View.DONE) {
+	    					hover = new ImageView(InterfaceController.PATH_DONE_HOVER);
+	    					InterfaceController.getDoneButton().getChildren().clear();
+	    					InterfaceController.getDoneButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case SEARCH:
+	    				if (InterfaceController.getCurrentView() != View.SEARCH) {
+	    					hover = new ImageView(InterfaceController.PATH_SEARCH_HOVER);
+	    					InterfaceController.getSearchButton().getChildren().clear();
+	    					InterfaceController.getSearchButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case HELP:
+	    				// Do not change the button if help dialog is showing
+	    				if (!MainApp.help.isShowing()) {
+	    					hover = new ImageView(InterfaceController.PATH_HELP_HOVER);
+	    					InterfaceController.getHelpButton().getChildren().clear();
+	    					InterfaceController.getHelpButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			default:
+	    				break;
     			}
     		}
     		// For handling mouse not hovering
     		if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
     			ImageView hover;
     			switch(buttonType) {
-    			case DEFAULT:
-    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
-    					hover = new ImageView(InterfaceController.PATH_DEFAULT);
-    					InterfaceController.getHomeButton().getChildren().clear();
-    					InterfaceController.getHomeButton().getChildren().add(hover);
-    				}
-    				break;
-    			case ALL:
-    				if (InterfaceController.getCurrentView() != View.ALL) {
-    					hover = new ImageView(InterfaceController.PATH_ALL);
-    					InterfaceController.getAllButton().getChildren().clear();
-    					InterfaceController.getAllButton().getChildren().add(hover);
-    				}
-    				break;
-    			case HISTORY:
-    				if (InterfaceController.getCurrentView() != View.HISTORY) {
-    					hover = new ImageView(InterfaceController.PATH_HIST);
-    					InterfaceController.getHistButton().getChildren().clear();
-    					InterfaceController.getHistButton().getChildren().add(hover);
-    				}
-    				break;
-    			case UNRESOLVED:
-    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
-    					hover = new ImageView(InterfaceController.PATH_UNRESOLVED);
-    					InterfaceController.getUnresButton().getChildren().clear();
-    					InterfaceController.getUnresButton().getChildren().add(hover);
-    				}
-    				break;
-    			case DONE:
-    				if (InterfaceController.getCurrentView() != View.DONE) {
-    					hover = new ImageView(InterfaceController.PATH_DONE);
-    					InterfaceController.getDoneButton().getChildren().clear();
-    					InterfaceController.getDoneButton().getChildren().add(hover);
-    				}
-    				break;
-    			case SEARCH:
-    				if (InterfaceController.getCurrentView() != View.SEARCH) {
-    					hover = new ImageView(InterfaceController.PATH_SEARCH);
-    					InterfaceController.getSearchButton().getChildren().clear();
-    					InterfaceController.getSearchButton().getChildren().add(hover);
-    				}
-    				break;
-    			case HELP:
-    				// Do not change the button if help dialog is showing
-    				if (!MainApp.help.isShowing()) {
-    					hover = new ImageView(InterfaceController.PATH_HELP);
-    					InterfaceController.getHelpButton().getChildren().clear();
-    					InterfaceController.getHelpButton().getChildren().add(hover);
-    				}
-    				break;
-    			default:
-    				break;
+	    			case DEFAULT:
+	    				if (InterfaceController.getCurrentView() != View.DEFAULT) {
+	    					hover = new ImageView(InterfaceController.PATH_DEFAULT);
+	    					InterfaceController.getHomeButton().getChildren().clear();
+	    					InterfaceController.getHomeButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case ALL:
+	    				if (InterfaceController.getCurrentView() != View.ALL) {
+	    					hover = new ImageView(InterfaceController.PATH_ALL);
+	    					InterfaceController.getAllButton().getChildren().clear();
+	    					InterfaceController.getAllButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case HISTORY:
+	    				if (InterfaceController.getCurrentView() != View.HISTORY) {
+	    					hover = new ImageView(InterfaceController.PATH_HIST);
+	    					InterfaceController.getHistButton().getChildren().clear();
+	    					InterfaceController.getHistButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case UNRESOLVED:
+	    				if (InterfaceController.getCurrentView() != View.UNRESOLVED) {
+	    					hover = new ImageView(InterfaceController.PATH_UNRESOLVED);
+	    					InterfaceController.getUnresButton().getChildren().clear();
+	    					InterfaceController.getUnresButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case DONE:
+	    				if (InterfaceController.getCurrentView() != View.DONE) {
+	    					hover = new ImageView(InterfaceController.PATH_DONE);
+	    					InterfaceController.getDoneButton().getChildren().clear();
+	    					InterfaceController.getDoneButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case SEARCH:
+	    				if (InterfaceController.getCurrentView() != View.SEARCH) {
+	    					hover = new ImageView(InterfaceController.PATH_SEARCH);
+	    					InterfaceController.getSearchButton().getChildren().clear();
+	    					InterfaceController.getSearchButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			case HELP:
+	    				// Do not change the button if help dialog is showing
+	    				if (!MainApp.help.isShowing()) {
+	    					hover = new ImageView(InterfaceController.PATH_HELP);
+	    					InterfaceController.getHelpButton().getChildren().clear();
+	    					InterfaceController.getHelpButton().getChildren().add(hover);
+	    				}
+	    				break;
+	    			default:
+	    				break;
     			}
     		}
     	}

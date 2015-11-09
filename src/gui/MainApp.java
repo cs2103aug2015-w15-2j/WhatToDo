@@ -7,6 +7,9 @@
 
 package gui;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
@@ -28,13 +31,24 @@ public class MainApp extends Application {
     
     private static final String TITLE_STAGE = "WhatToDo";
     private static final String TITLE_HELP = "Help Dialog";
+    
+    protected static final String LOG_START = "Starting WhatToDo...";
+    protected static final String LOG_HELP_OPEN = "Opening Help dialog...";
+    protected static final String LOG_HELP_CLOSE = "Closing Help dialog...";
 
 	// ============================================================
 	// Scenes and stages used by the application
 	// ============================================================
+    
     protected static Scene scene, helpScene;
     protected static Stage stage, help;
 
+	// ============================================================
+	// Logger object used to log events and details
+	// ============================================================
+    
+    protected static final Logger logger = Logger.getLogger(MainApp.class.getName()); 
+    
 	/**
 	 * This method is the driver method which starts the application and
 	 * displays the interface
@@ -50,6 +64,7 @@ public class MainApp extends Application {
         initHelpStage();
 
         stage.show();
+        logger.log(Level.INFO, LOG_START);
         
         // Set the first view to be the default view
         InterfaceController.updateMainInterface(View.DEFAULT);
