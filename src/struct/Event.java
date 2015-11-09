@@ -1,13 +1,13 @@
 /**
  * This class defines the Event object and its methods used in the application
  *
- * @author Adrian
+ * @@author A0127051U
  */
 
 package struct;
 
 
-public class Event extends Data implements Comparable<Event>{
+public class Event extends TodoItem implements Comparable<Event>{
 
 	private static final String SEMICOLON = ";";
 	

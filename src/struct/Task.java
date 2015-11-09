@@ -6,7 +6,7 @@
 
 package struct;
 
-public class Task extends Data implements Comparable<Task>{
+public class Task extends TodoItem implements Comparable<Task>{
 
 	private static final String SEMICOLON = ";";
 	

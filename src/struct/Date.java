@@ -1,7 +1,7 @@
 /**
  * This class defines the Date object and its methods used in the application
  *
- * @author Adrian
+ * @@author A0124238L
  */
 
 package struct;

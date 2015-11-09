@@ -1,3 +1,9 @@
+/**
+ * This class encapsulates aliases 
+ * 
+ * @@author A0124238L
+ */
+
 package struct;
 
 public class Alias implements Comparable<Alias> {

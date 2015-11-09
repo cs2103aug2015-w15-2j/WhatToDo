@@ -1,3 +1,9 @@
+/**
+ * This class encapsulates memory of the application 
+ * 
+ * @@author A0127051U
+ */
+
 package backend;
 
 import java.util.Stack;

@@ -1,5 +1,7 @@
 /**
+ * This abstract class encpasulates todo-items 
  * 
+ * @@author A0124238L
  */
 
 package struct;

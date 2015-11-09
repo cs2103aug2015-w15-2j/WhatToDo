@@ -1,3 +1,9 @@
+/**
+ * This class class other backend classes so that user can make changes to the file
+ * 
+ * @@author A0127051U
+ */
+
 package backend;
 
 import java.nio.file.FileSystemException;
@@ -16,7 +22,6 @@ import struct.FloatingTask;
 import struct.State;
 import struct.Task;
 
-//@@author A0127051U
 public class Logic {
 	
     private static final int CONVERSION_NOT_REQ = 0; 
@@ -245,10 +250,6 @@ public class Logic {
 		} 
     }
     
-    public String getAliasFileContents() throws FileSystemException{
-    	return storage.readAliasFile(); 
-    }
-    
     public String getFilepath() {
     	try{
     		return storage.getFilePath();
@@ -256,6 +257,10 @@ public class Logic {
     	catch(Exception e){
     		return MESSAGE_ERROR_UNKNOWN;
     	}
+    }
+    
+    public String getAliasFileContents() throws FileSystemException{
+    	return storage.readAliasFile(); 
     }
     
 	//============================================
@@ -443,7 +448,6 @@ public class Logic {
 	    			newEndDate, oldName, newName, newStartTime, newEndTime, isDone);	
 	    }
 	 
-	//TODO refactor edit float? 
 	private String executeEditFloat(Command command) throws FileSystemException{
 		State stateBeforeExecutingCommand = getState(command);
 			

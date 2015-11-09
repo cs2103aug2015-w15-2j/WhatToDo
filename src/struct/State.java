@@ -1,3 +1,9 @@
+/**
+ * This class encapsulates the state of the file 
+ * 
+ * @@author A0127051U
+ */
+
 package struct;
 
 public class State {
