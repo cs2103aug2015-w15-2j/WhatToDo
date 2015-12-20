@@ -18,7 +18,9 @@ public class Filter {
 	private static final int INDEX_ISDONE = 2; 
 	private static final int INDEX_DUEDATE = 3;
 	private static final int INDEX_STARTDATE = 3; 
+	private static final int INDEX_STARTTIME = 4;
 	private static final int INDEX_ENDDATE = 5; 
+	private static final int INDEX_ENDTIME = 6;
 	
     private static final String TYPE_TASK = "task";
     private static final String TYPE_EVENT = "event";
@@ -53,6 +55,20 @@ public class Filter {
 		 
 		 return resultList; 
 	}
+	
+	public ArrayList<Integer> filterDateAndTime(String[] linesInFile, Date date, String time){
+		ArrayList<Integer> resultList = new ArrayList<Integer>();
+		 
+		 for(int i = 0; i < linesInFile.length; i++){ 
+			 String line = linesInFile[i]; 
+			 if (isType(TYPE_EVENT, line) && isReqStatus(false, line) && isOnDate(date, line) &&
+					 !isOngoing(line) && !isPastTime(line)){
+				 resultList.add(i); 
+			 }
+		 } 
+		 
+		 return resultList;
+    }
 	
 	/**
 	 * filters for ongoing events - events starting earlier than today 
@@ -110,6 +126,19 @@ public class Filter {
 		for(int i = 0; i < linesInFile.length; i++){ 
 			 String line = linesInFile[i];
 			 if(isType(type, line) && isPast(type, line) &&isReqStatus(false, line)){
+				 resultList.add(i); 
+			 }
+		 }
+
+		return resultList; 
+	}
+	
+	public ArrayList<Integer> filterPastUncompletedEvent(String[] linesInFile) { 		
+		ArrayList<Integer> resultList = new ArrayList<Integer>(); 
+		
+		for (int i = 0; i < linesInFile.length; i++) { 
+			 String line = linesInFile[i];
+			 if (isType(TYPE_EVENT, line) && isPastDateAndTime(line) && isReqStatus(false, line)) {
 				 resultList.add(i); 
 			 }
 		 }
@@ -177,7 +206,40 @@ public class Filter {
 		Date startDate = new Date(lineFields[INDEX_STARTDATE]);
 		Date endDate = new Date(lineFields[INDEX_ENDDATE]);
 		
-		return startDate.compareTo(todayDate) < 0 && endDate.compareTo(todayDate) >= 0; 
+		String currentTime = Date.currentTime();
+		String startTime = lineFields[INDEX_STARTTIME];
+		String endTime = lineFields[INDEX_ENDTIME];
+		
+		return isTodayAfterStartPeriod(todayDate, startDate, currentTime, startTime) &&
+				isTodayBeforeEndPeriod(todayDate, endDate, currentTime, endTime);
+	}
+	
+	private boolean isTodayAfterStartPeriod(Date todayDate, Date startDate, String currentTime, String startTime) {
+		if (startDate.compareTo(todayDate) > 0) {
+			return false;
+		} else if (startDate.compareTo(todayDate) == 0) {
+			if (currentTime.compareTo(startTime) >= 0) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean isTodayBeforeEndPeriod(Date todayDate, Date endDate, String currentTime, String endTime) {
+		if (endDate.compareTo(todayDate) > 0) {
+			return true;
+		} else if (endDate.compareTo(todayDate) == 0) {
+			if (currentTime.compareTo(endTime) <= 0) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 	
 	private boolean isCompleted(String line){ 
@@ -186,7 +248,7 @@ public class Filter {
 		return lineIsDone.equals(DONE); 
 	}
 	
-	private boolean isPast(String type, String line){ 
+	private boolean isPast(String type, String line){
 		assert(type.equals(TYPE_TASK) || type.equals(TYPE_EVENT));
 		
 		String[] lineFields = line.split(SEMICOLON);
@@ -201,6 +263,38 @@ public class Filter {
 			return false; 
 		}
 	}
+	
+	private boolean isPastTime(String line) {
+		String[] lineFields = line.split(SEMICOLON);
+		String lineTimeStr = lineFields[INDEX_ENDTIME];
+		String currentTime = Date.currentTime();
+		
+		if (lineTimeStr.compareTo(currentTime) < 0) {
+			return true; 
+		}
+		else{ 
+			return false; 
+		}
+	}
+	
+	private boolean isPastDateAndTime(String line) {
+		String[] lineFields = line.split(SEMICOLON);
+		String lineDateStr = getPastDate(TYPE_EVENT, lineFields); 
+		Date lineDate = new Date(lineDateStr); 
+		Date todayDate = Date.todayDate(); 
+		String endTime = lineFields[INDEX_ENDTIME];
+		String currentTime = Date.currentTime();
+		
+		if (lineDate.compareTo(todayDate) < 0) {
+			return true; 
+		}
+		else if ((lineDate.compareTo(todayDate) == 0) && (endTime.compareTo(currentTime) < 0)) { 
+			return true; 
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * get date to compare to today's date to determine if item is past 
 	 * @param type

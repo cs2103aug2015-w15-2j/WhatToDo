@@ -172,8 +172,10 @@ public class Logic {
     		String[] linesInFile = getLinesInFile();
     		ArrayList<Integer> taskTodayIndexList = getDateContent(linesInFile, TYPE_TASK, Date.todayDate()); 
             ArrayList<Integer> taskTmrIndexList = getDateContent(linesInFile, TYPE_TASK, Date.tomorrowDate());
+            ArrayList<Integer> task2DaysIndexList = getDateContent(linesInFile, TYPE_TASK, Date.twoDaysDate());
         	ArrayList<Integer> floatIndexList = getAllStatus(linesInFile, TYPE_FLOAT, false); 
-            return formatter.formatDefTaskView(linesInFile, taskTodayIndexList, taskTmrIndexList, floatIndexList);
+            return formatter.formatDefTaskView(linesInFile, taskTodayIndexList, taskTmrIndexList,
+            		task2DaysIndexList, floatIndexList);
     	}
     	catch(FileSystemException e){
     		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
@@ -188,10 +190,11 @@ public class Logic {
     	try{
     		String[] linesInFile = getLinesInFile();
         	ArrayList<Integer> eventOngoingIndexList = getOngoingEventContent(linesInFile); 
-            ArrayList<Integer> eventTodayIndexList = getDateContent(linesInFile, TYPE_EVENT, Date.todayDate());
-            ArrayList<Integer> eventTmrIndexList = getDateContent(linesInFile, TYPE_EVENT, Date.tomorrowDate()); 
+            ArrayList<Integer> eventTodayIndexList = getDateAndTimeContent(linesInFile, Date.todayDate(), Date.currentTime());
+            ArrayList<Integer> eventTmrIndexList = getDateContent(linesInFile, TYPE_EVENT, Date.tomorrowDate());
+            ArrayList<Integer> event2DaysIndexList = getDateContent(linesInFile, TYPE_EVENT, Date.twoDaysDate());
     		return formatter.formatDefEventView(linesInFile, eventOngoingIndexList, 
-    				eventTodayIndexList, eventTmrIndexList); 
+    				eventTodayIndexList, eventTmrIndexList, event2DaysIndexList); 
     	}
     	catch(FileSystemException e){
     		LOGGER.log(Level.SEVERE, MESSAGE_LOG_ERROR_FILE_SYSTEM);
@@ -270,7 +273,7 @@ public class Logic {
     public String eventPastUncompletedView(){
     	try{
     		String[] linesInFile = getLinesInFile();
-    		ArrayList<Integer> pastEventIndexes = filter.filterPastUncompleted(linesInFile, TYPE_EVENT); 
+    		ArrayList<Integer> pastEventIndexes = filter.filterPastUncompletedEvent(linesInFile); 
     		String formattedContent = formatter.formatEventWithHeaders(linesInFile, pastEventIndexes, false); 
     		return formattedContent; 
     	}
@@ -986,6 +989,10 @@ public class Logic {
     
     private ArrayList<Integer> getDateContent(String[] linesInFile ,String type, Date date){
     	return filter.filterDate(linesInFile, type, date); 
+    }
+    
+    private ArrayList<Integer> getDateAndTimeContent(String[] linesInFile, Date date, String time){
+    	return filter.filterDateAndTime(linesInFile, date, time); 
     }
     
     private ArrayList<Integer> getOngoingEventContent(String[] linesInFile){ 

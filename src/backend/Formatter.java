@@ -29,8 +29,8 @@ public class Formatter {
     private static final String DISPLAY_FORMAT_DELETED_OR_MARKDONE = "%s \"%s\"";
     
     private static final String DISPLAY_LAYOUT_ALL_TASK = "%s\nFLOAT\n%s"; 
-    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nFLOAT\n%s";
-    private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s";
+    private static final String DISPLAY_LAYOUT_DEFAULT_TASK = "TODAY - %s \n%s\nTOMORROW - %s \n%s\nDAY AFTER - %s \n%s\nFLOAT\n%s";
+    private static final String DISPLAY_LAYOUT_DEFAULT_EVENT = "ONGOING\n%s\nTODAY - %s \n%s\nTOMORROW - %s \n%s\nDAY AFTER - %s \n%s";
     private static final String DISPLAY_LAYOUT_SEARCH_RESULTS = "Showing results for \"%s\"\nTASK\n%s\nFLOAT\n%s\nEVENT\n%s"; 
     
     private static final String TYPE_FLOAT = "float";
@@ -57,16 +57,19 @@ public class Formatter {
 	 * @return formatted string
 	 */
 	public String formatDefEventView(String[] linesInFile, ArrayList<Integer> eventOngoingIndexList, 
-			ArrayList<Integer> eventTodayIndexList, ArrayList<Integer> eventTmrIndexList){ 
+			ArrayList<Integer> eventTodayIndexList, ArrayList<Integer> eventTmrIndexList,
+			ArrayList<Integer> event2DaysIndexList){ 
 		
 		String ongoingContent = formatEventWithoutHeaders(linesInFile, eventOngoingIndexList, true); 
 		String todayContent = formatEventWithoutHeaders(linesInFile, eventTodayIndexList, false); 
 		String tmrContent = formatEventWithoutHeaders(linesInFile, eventTmrIndexList, false); 
+		String twoDaysContent = formatEventWithoutHeaders(linesInFile, event2DaysIndexList, false); 
 		String todayDate = Date.todayDateLong(); 
 		String tmrDate = Date.tomorrowDateLong();
+		String twoDaysDate = Date.twoDaysDateLong();
 		
 		return String.format(DISPLAY_LAYOUT_DEFAULT_EVENT, ongoingContent, todayDate, todayContent, 
-        		tmrDate, tmrContent).trim();
+        		tmrDate, tmrContent, twoDaysDate, twoDaysContent).trim();
 	}
 
 	/**
@@ -78,16 +81,19 @@ public class Formatter {
 	 * @return formatted string
 	 */
 	public String formatDefTaskView(String[] linesInFile, ArrayList<Integer> taskTodayIndexList, 
-			ArrayList<Integer> taskTmrIndexList, ArrayList<Integer> floatIndexList){ 
+			ArrayList<Integer> taskTmrIndexList, ArrayList<Integer> task2DaysIndexList, 
+			ArrayList<Integer> floatIndexList){ 
 		
 		String taskTodayContent = formatFloatOrTaskWithoutHeaders(linesInFile, taskTodayIndexList, false); 
 		String taskTmrContent = formatFloatOrTaskWithoutHeaders(linesInFile, taskTmrIndexList, false); 
+		String task2DaysContent = formatFloatOrTaskWithoutHeaders(linesInFile, task2DaysIndexList, false);
 		String floatContent = formatFloatOrTaskWithoutHeaders(linesInFile, floatIndexList, false); 
 		String todayDate = Date.todayDateLong(); 
 		String tmrDate = Date.tomorrowDateLong(); 
+		String twoDaysDate = Date.twoDaysDateLong();
 		
         return String.format(DISPLAY_LAYOUT_DEFAULT_TASK, todayDate, taskTodayContent, 
-        		tmrDate, taskTmrContent, floatContent).trim();
+        		tmrDate, taskTmrContent, twoDaysDate, task2DaysContent,floatContent).trim();
 	}
 	
 	/**

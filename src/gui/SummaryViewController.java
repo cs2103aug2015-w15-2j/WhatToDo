@@ -50,8 +50,8 @@ public class SummaryViewController {
 	private static final String PATH_UNRES_TICK = "gui/resources/unres_tick.png";
 	private static final String PATH_UNRES_ALERT = "gui/resources/unres_alert.png";
 	
-	private static final String HEADER_TASK_TWO_DAYS = "Tasks due within two days";
-	private static final String HEADER_EVENT_TWO_DAYS = "Events starting within two days";
+	private static final String HEADER_TASK_THREE_DAYS = "Tasks due within three days";
+	private static final String HEADER_EVENT_THREE_DAYS = "Events starting within three days";
 	private static final String HEADER_TASK_FLOAT = "Tasks with no deadline";
 	private static final String HEADER_EVENT_ONGOING = "Ongoing events";
 	private static final String HEADER_ALL_UNRES = "Unresolved tasks/events past deadline";
@@ -196,7 +196,7 @@ public class SummaryViewController {
 	
 	private static void initTaskTwoDays(int count, double maxWidth) {
 		taskTwoDaysCount = new Label(String.valueOf(count));
-		taskTwoDaysLabel = new Label(HEADER_TASK_TWO_DAYS);
+		taskTwoDaysLabel = new Label(HEADER_TASK_THREE_DAYS);
 		
 		taskTwoDaysCountBox = new HBox(taskTwoDaysCount);
 		taskTwoDaysLabelBox = new HBox(taskTwoDaysLabel);
@@ -221,7 +221,7 @@ public class SummaryViewController {
 	
 	private static void initEventTwoDays(int count, double maxWidth) {
 		eventTwoDaysCount = new Label(String.valueOf(count));
-		eventTwoDaysLabel = new Label(HEADER_EVENT_TWO_DAYS);
+		eventTwoDaysLabel = new Label(HEADER_EVENT_THREE_DAYS);
 		
 		eventTwoDaysCountBox = new HBox(eventTwoDaysCount);
 		eventTwoDaysLabelBox = new HBox(eventTwoDaysLabel);

@@ -20,6 +20,7 @@ public class Date implements Comparable<Date>{
 	
 	private static final int INVALID = -1;
 	private static final int FIRST_DATE = 1;
+	private static final int SECOND_DATE = 2;
 	private static final int YEAR_2000 = 2000;
 	private static final int PARAM_FIRST_CHAR = 0;
 	private static final int PARAM_THIRD_CHAR = 2;
@@ -47,7 +48,7 @@ public class Date implements Comparable<Date>{
         this.year = INVALID;
     }
     
-    public Date(String fullDate){
+    public Date(String fullDate) {
     	this.fullDate = fullDate;
         this.day = Integer.parseInt(fullDate.substring(PARAM_FIRST_CHAR, PARAM_THIRD_CHAR));
         this.month = Integer.parseInt(fullDate.substring(PARAM_THIRD_CHAR, PARAM_FIFTH_CHAR));
@@ -58,14 +59,14 @@ public class Date implements Comparable<Date>{
     // Static methods 
     //============================================
     
-    public static String todayDateShort(){
+    public static String todayDateShort() {
     	Calendar cal = Calendar.getInstance(); 
     	
     	SimpleDateFormat sdf = new SimpleDateFormat(DAY_MONTH_YEAR); 
     	return sdf.format(cal.getTime());
     }
     
-    public static String tomorrowDateShort(){
+    public static String tomorrowDateShort() {
     	Calendar cal = Calendar.getInstance(); 
     	cal.add(Calendar.DATE, FIRST_DATE); 
     	
@@ -73,14 +74,22 @@ public class Date implements Comparable<Date>{
     	return sdf.format(cal.getTime());
     }
     
-    public static String todayDateLong(){
+    public static String twoDaysDateShort() {
+    	Calendar cal = Calendar.getInstance(); 
+    	cal.add(Calendar.DATE, SECOND_DATE); 
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat(DAY_MONTH_YEAR); 
+    	return sdf.format(cal.getTime());
+    }
+    
+    public static String todayDateLong() {
     	Calendar cal = Calendar.getInstance(); 
     	
     	SimpleDateFormat sdf = new SimpleDateFormat(DATE_LONG_FORMAT); 
     	return sdf.format(cal.getTime());
     }
     
-    public static String tomorrowDateLong(){
+    public static String tomorrowDateLong() {
     	Calendar cal = Calendar.getInstance();
     	cal.add(Calendar.DATE, FIRST_DATE); 
     	
@@ -88,12 +97,31 @@ public class Date implements Comparable<Date>{
     	return sdf.format(cal.getTime());
     }
     
-    public static Date todayDate(){
+    public static String twoDaysDateLong() {
+    	Calendar cal = Calendar.getInstance();
+    	cal.add(Calendar.DATE, SECOND_DATE); 
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat(DATE_LONG_FORMAT); 
+    	return sdf.format(cal.getTime());
+    }
+    
+    public static Date todayDate() {
     	 return new Date(Date.todayDateShort()); 
     }
     
     public static Date tomorrowDate() {
     	return new Date(Date.tomorrowDateShort());
+    }
+    
+    public static Date twoDaysDate() {
+    	return new Date(Date.twoDaysDateShort());
+    }
+    
+    public static String currentTime() {
+    	Calendar cal = Calendar.getInstance(); 
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat("HHmm"); 
+    	return sdf.format(cal.getTime());
     }
 
 	//============================================
